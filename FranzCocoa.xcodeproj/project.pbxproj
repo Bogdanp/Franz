@@ -21,6 +21,8 @@
 		43CD623B28CE27DB00095144 /* WelcomeWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CD623928CE27DB00095144 /* WelcomeWindowController.swift */; };
 		43CD623E28CE282400095144 /* WelcomeWindowContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CD623D28CE282400095144 /* WelcomeWindowContentViewController.swift */; };
 		43CD623F28CE289F00095144 /* WelcomeWindowContentViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43CD623C28CE282400095144 /* WelcomeWindowContentViewController.xib */; };
+		43CD624828CE3B5D00095144 /* ConnectionDetailsFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CD624628CE3B5D00095144 /* ConnectionDetailsFormViewController.swift */; };
+		43CD624928CE3B5D00095144 /* ConnectionDetailsFormViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43CD624728CE3B5D00095144 /* ConnectionDetailsFormViewController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +40,8 @@
 		43CD623928CE27DB00095144 /* WelcomeWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WelcomeWindowController.swift; sourceTree = "<group>"; };
 		43CD623C28CE282400095144 /* WelcomeWindowContentViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WelcomeWindowContentViewController.xib; sourceTree = "<group>"; };
 		43CD623D28CE282400095144 /* WelcomeWindowContentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeWindowContentViewController.swift; sourceTree = "<group>"; };
+		43CD624628CE3B5D00095144 /* ConnectionDetailsFormViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionDetailsFormViewController.swift; sourceTree = "<group>"; };
+		43CD624728CE3B5D00095144 /* ConnectionDetailsFormViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ConnectionDetailsFormViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +83,8 @@
 				43CD621A28CE24B100095144 /* Assets.xcassets */,
 				43CD622E28CE258100095144 /* Backend.swift */,
 				43CD623028CE258F00095144 /* BackendExtensions.swift */,
+				43CD624628CE3B5D00095144 /* ConnectionDetailsFormViewController.swift */,
+				43CD624728CE3B5D00095144 /* ConnectionDetailsFormViewController.xib */,
 				43CD621F28CE24B100095144 /* FranzCocoa.entitlements */,
 				43CD621C28CE24B100095144 /* MainMenu.xib */,
 				43CD623228CE25F300095144 /* resources */,
@@ -171,6 +177,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				43CD623A28CE27DB00095144 /* WelcomeWindowController.xib in Resources */,
+				43CD624928CE3B5D00095144 /* ConnectionDetailsFormViewController.xib in Resources */,
 				43CD623F28CE289F00095144 /* WelcomeWindowContentViewController.xib in Resources */,
 				43CD621B28CE24B100095144 /* Assets.xcassets in Resources */,
 				43CD623328CE25F300095144 /* resources in Resources */,
@@ -207,6 +214,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				43CD622F28CE258100095144 /* Backend.swift in Sources */,
+				43CD624828CE3B5D00095144 /* ConnectionDetailsFormViewController.swift in Sources */,
 				43CD623B28CE27DB00095144 /* WelcomeWindowController.swift in Sources */,
 				43CD623728CE27B200095144 /* WindowManager.swift in Sources */,
 				43CD621928CE24B000095144 /* AppDelegate.swift in Sources */,
