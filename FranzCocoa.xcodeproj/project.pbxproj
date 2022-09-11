@@ -16,6 +16,11 @@
 		43CD622F28CE258100095144 /* Backend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CD622E28CE258100095144 /* Backend.swift */; };
 		43CD623128CE258F00095144 /* BackendExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CD623028CE258F00095144 /* BackendExtensions.swift */; };
 		43CD623328CE25F300095144 /* resources in Resources */ = {isa = PBXBuildFile; fileRef = 43CD623228CE25F300095144 /* resources */; };
+		43CD623728CE27B200095144 /* WindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CD623628CE27B200095144 /* WindowManager.swift */; };
+		43CD623A28CE27DB00095144 /* WelcomeWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43CD623828CE27DB00095144 /* WelcomeWindowController.xib */; };
+		43CD623B28CE27DB00095144 /* WelcomeWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CD623928CE27DB00095144 /* WelcomeWindowController.swift */; };
+		43CD623E28CE282400095144 /* WelcomeWindowContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CD623D28CE282400095144 /* WelcomeWindowContentViewController.swift */; };
+		43CD623F28CE289F00095144 /* WelcomeWindowContentViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43CD623C28CE282400095144 /* WelcomeWindowContentViewController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +33,11 @@
 		43CD623028CE258F00095144 /* BackendExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendExtensions.swift; sourceTree = "<group>"; };
 		43CD623228CE25F300095144 /* resources */ = {isa = PBXFileReference; lastKnownFileType = folder; path = resources; sourceTree = "<group>"; };
 		43CD623428CE261400095144 /* Noise */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Noise; path = ../../sandbox/Noise; sourceTree = "<group>"; };
+		43CD623628CE27B200095144 /* WindowManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WindowManager.swift; sourceTree = "<group>"; };
+		43CD623828CE27DB00095144 /* WelcomeWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = WelcomeWindowController.xib; sourceTree = "<group>"; };
+		43CD623928CE27DB00095144 /* WelcomeWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WelcomeWindowController.swift; sourceTree = "<group>"; };
+		43CD623C28CE282400095144 /* WelcomeWindowContentViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WelcomeWindowContentViewController.xib; sourceTree = "<group>"; };
+		43CD623D28CE282400095144 /* WelcomeWindowContentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeWindowContentViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +82,11 @@
 				43CD621F28CE24B100095144 /* FranzCocoa.entitlements */,
 				43CD621C28CE24B100095144 /* MainMenu.xib */,
 				43CD623228CE25F300095144 /* resources */,
+				43CD623D28CE282400095144 /* WelcomeWindowContentViewController.swift */,
+				43CD623C28CE282400095144 /* WelcomeWindowContentViewController.xib */,
+				43CD623928CE27DB00095144 /* WelcomeWindowController.swift */,
+				43CD623828CE27DB00095144 /* WelcomeWindowController.xib */,
+				43CD623628CE27B200095144 /* WindowManager.swift */,
 			);
 			path = FranzCocoa;
 			sourceTree = "<group>";
@@ -155,6 +170,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				43CD623A28CE27DB00095144 /* WelcomeWindowController.xib in Resources */,
+				43CD623F28CE289F00095144 /* WelcomeWindowContentViewController.xib in Resources */,
 				43CD621B28CE24B100095144 /* Assets.xcassets in Resources */,
 				43CD623328CE25F300095144 /* resources in Resources */,
 				43CD621E28CE24B100095144 /* MainMenu.xib in Resources */,
@@ -190,8 +207,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				43CD622F28CE258100095144 /* Backend.swift in Sources */,
+				43CD623B28CE27DB00095144 /* WelcomeWindowController.swift in Sources */,
+				43CD623728CE27B200095144 /* WindowManager.swift in Sources */,
 				43CD621928CE24B000095144 /* AppDelegate.swift in Sources */,
 				43CD623128CE258F00095144 /* BackendExtensions.swift in Sources */,
+				43CD623E28CE282400095144 /* WelcomeWindowContentViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

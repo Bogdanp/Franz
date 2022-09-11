@@ -3,8 +3,7 @@ import Cocoa
 @main
 class AppDelegate: NSObject, NSApplicationDelegate {
   func applicationDidFinishLaunching(_ aNotification: Notification) {
-    let res = Backend.shared.hello().wait()
-    print("res=\(res)")
+    WindowManager.shared.showWelcomeWindow()
   }
 
   func applicationWillTerminate(_ aNotification: Notification) {
@@ -12,5 +11,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
   func applicationSupportsSecureRestorableState(_ app: NSApplication) -> Bool {
     return true
+  }
+
+  @IBAction func didPushWelcomeToFranzButton(_ sender: Any) {
+    WindowManager.shared.showWelcomeWindow()
   }
 }
