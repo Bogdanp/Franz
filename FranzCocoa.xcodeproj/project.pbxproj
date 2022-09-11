@@ -1,0 +1,420 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 55;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		43CD621928CE24B000095144 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CD621828CE24B000095144 /* AppDelegate.swift */; };
+		43CD621B28CE24B100095144 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 43CD621A28CE24B100095144 /* Assets.xcassets */; };
+		43CD621E28CE24B100095144 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43CD621C28CE24B100095144 /* MainMenu.xib */; };
+		43CD622928CE251F00095144 /* Noise in Frameworks */ = {isa = PBXBuildFile; productRef = 43CD622828CE251F00095144 /* Noise */; };
+		43CD622B28CE251F00095144 /* NoiseBackend in Frameworks */ = {isa = PBXBuildFile; productRef = 43CD622A28CE251F00095144 /* NoiseBackend */; };
+		43CD622D28CE251F00095144 /* NoiseSerde in Frameworks */ = {isa = PBXBuildFile; productRef = 43CD622C28CE251F00095144 /* NoiseSerde */; };
+		43CD622F28CE258100095144 /* Backend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CD622E28CE258100095144 /* Backend.swift */; };
+		43CD623128CE258F00095144 /* BackendExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CD623028CE258F00095144 /* BackendExtensions.swift */; };
+		43CD623328CE25F300095144 /* resources in Resources */ = {isa = PBXBuildFile; fileRef = 43CD623228CE25F300095144 /* resources */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		43CD621528CE24B000095144 /* Franz.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Franz.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		43CD621828CE24B000095144 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		43CD621A28CE24B100095144 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		43CD621D28CE24B100095144 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		43CD621F28CE24B100095144 /* FranzCocoa.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FranzCocoa.entitlements; sourceTree = "<group>"; };
+		43CD622E28CE258100095144 /* Backend.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Backend.swift; sourceTree = "<group>"; };
+		43CD623028CE258F00095144 /* BackendExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendExtensions.swift; sourceTree = "<group>"; };
+		43CD623228CE25F300095144 /* resources */ = {isa = PBXFileReference; lastKnownFileType = folder; path = resources; sourceTree = "<group>"; };
+		43CD623428CE261400095144 /* Noise */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Noise; path = ../../sandbox/Noise; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		43CD621228CE24B000095144 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				43CD622D28CE251F00095144 /* NoiseSerde in Frameworks */,
+				43CD622B28CE251F00095144 /* NoiseBackend in Frameworks */,
+				43CD622928CE251F00095144 /* Noise in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		43CD620C28CE24B000095144 = {
+			isa = PBXGroup;
+			children = (
+				43CD622528CE251600095144 /* Packages */,
+				43CD621728CE24B000095144 /* FranzCocoa */,
+				43CD621628CE24B000095144 /* Products */,
+				43CD622728CE251F00095144 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		43CD621628CE24B000095144 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				43CD621528CE24B000095144 /* Franz.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		43CD621728CE24B000095144 /* FranzCocoa */ = {
+			isa = PBXGroup;
+			children = (
+				43CD621828CE24B000095144 /* AppDelegate.swift */,
+				43CD621A28CE24B100095144 /* Assets.xcassets */,
+				43CD622E28CE258100095144 /* Backend.swift */,
+				43CD623028CE258F00095144 /* BackendExtensions.swift */,
+				43CD621F28CE24B100095144 /* FranzCocoa.entitlements */,
+				43CD621C28CE24B100095144 /* MainMenu.xib */,
+				43CD623228CE25F300095144 /* resources */,
+			);
+			path = FranzCocoa;
+			sourceTree = "<group>";
+		};
+		43CD622528CE251600095144 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				43CD623428CE261400095144 /* Noise */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		43CD622728CE251F00095144 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		43CD621428CE24B000095144 /* Franz */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 43CD622228CE24B100095144 /* Build configuration list for PBXNativeTarget "Franz" */;
+			buildPhases = (
+				43CD623528CE264A00095144 /* ShellScript */,
+				43CD621128CE24B000095144 /* Sources */,
+				43CD621228CE24B000095144 /* Frameworks */,
+				43CD621328CE24B000095144 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Franz;
+			packageProductDependencies = (
+				43CD622828CE251F00095144 /* Noise */,
+				43CD622A28CE251F00095144 /* NoiseBackend */,
+				43CD622C28CE251F00095144 /* NoiseSerde */,
+			);
+			productName = FranzCocoa;
+			productReference = 43CD621528CE24B000095144 /* Franz.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		43CD620D28CE24B000095144 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1340;
+				LastUpgradeCheck = 1340;
+				TargetAttributes = {
+					43CD621428CE24B000095144 = {
+						CreatedOnToolsVersion = 13.4.1;
+					};
+				};
+			};
+			buildConfigurationList = 43CD621028CE24B000095144 /* Build configuration list for PBXProject "FranzCocoa" */;
+			compatibilityVersion = "Xcode 13.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 43CD620C28CE24B000095144;
+			productRefGroup = 43CD621628CE24B000095144 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				43CD621428CE24B000095144 /* Franz */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		43CD621328CE24B000095144 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				43CD621B28CE24B100095144 /* Assets.xcassets in Resources */,
+				43CD623328CE25F300095144 /* resources in Resources */,
+				43CD621E28CE24B100095144 /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		43CD623528CE264A00095144 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "make\nBin/sign-dylibs\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		43CD621128CE24B000095144 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				43CD622F28CE258100095144 /* Backend.swift in Sources */,
+				43CD621928CE24B000095144 /* AppDelegate.swift in Sources */,
+				43CD623128CE258F00095144 /* BackendExtensions.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		43CD621C28CE24B100095144 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				43CD621D28CE24B100095144 /* Base */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		43CD622028CE24B100095144 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.3;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		43CD622128CE24B100095144 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+			};
+			name = Release;
+		};
+		43CD622328CE24B100095144 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = FranzCocoa/FranzCocoa.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = H3YE679B58;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainNibFile = MainMenu;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.defn.Franz;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		43CD622428CE24B100095144 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = FranzCocoa/FranzCocoa.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = H3YE679B58;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainNibFile = MainMenu;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.defn.Franz;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		43CD621028CE24B000095144 /* Build configuration list for PBXProject "FranzCocoa" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				43CD622028CE24B100095144 /* Debug */,
+				43CD622128CE24B100095144 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		43CD622228CE24B100095144 /* Build configuration list for PBXNativeTarget "Franz" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				43CD622328CE24B100095144 /* Debug */,
+				43CD622428CE24B100095144 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		43CD622828CE251F00095144 /* Noise */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Noise;
+		};
+		43CD622A28CE251F00095144 /* NoiseBackend */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = NoiseBackend;
+		};
+		43CD622C28CE251F00095144 /* NoiseSerde */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = NoiseSerde;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 43CD620D28CE24B000095144 /* Project object */;
+}

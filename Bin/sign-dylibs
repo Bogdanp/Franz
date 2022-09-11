@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+while read -r path; do
+    filename=$(basename "$path")
+    libname=$(echo "$filename" | cut -d. -f1)
+    codesign --remove-signature "$path"
+    codesign \
+        --timestamp \
+        --entitlements="${PROJECT_DIR}/core/dylib.entitlements" \
+        --sign "${EXPANDED_CODE_SIGN_IDENTITY}" \
+        -i "${PRODUCT_BUNDLE_IDENTIFIER}.${libname}" \
+        -o runtime \
+        "$path"
+done < <(find "${PROJECT_DIR}/${PROJECT_NAME}/resources" -name '*.dylib')
