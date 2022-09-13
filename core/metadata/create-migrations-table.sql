@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS migrations(
+  filename TEXT PRIMARY KEY NOT NULL,
+  migrated_at INTEGER NOT NULL
+);

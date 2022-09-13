@@ -60,13 +60,25 @@ public class Backend {
     impl = NoiseBackend.Backend(withZo: zo, andMod: mod, andProc: proc)
   }
 
-  public func hello() -> Future<String> {
+  public func getConnections() -> Future<[ConnectionDetails]> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0000).write(to: out)
       },
-      readProc: { (inp: InputPort, buf: inout Data) -> String in
-        return String.read(from: inp, using: &buf)
+      readProc: { (inp: InputPort, buf: inout Data) -> [ConnectionDetails] in
+        return [ConnectionDetails].read(from: inp, using: &buf)
+      }
+    )
+  }
+
+  public func saveConnection(_ c: ConnectionDetails) -> Future<UVarint> {
+    return impl.send(
+      writeProc: { (out: OutputPort) in
+        UVarint(0x0001).write(to: out)
+        c.write(to: out)
+      },
+      readProc: { (inp: InputPort, buf: inout Data) -> UVarint in
+        return UVarint.read(from: inp, using: &buf)
       }
     )
   }
