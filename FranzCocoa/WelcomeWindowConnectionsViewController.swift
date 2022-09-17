@@ -42,7 +42,8 @@ extension WelcomeWindowConnectionsViewController: NSTableViewDelegate {
       return nil
     }
 
-    view.imageView?.image = NSImage(systemSymbolName: "server.rack", accessibilityDescription: "Server Rack")?.withSymbolConfiguration(.init(pointSize: 24, weight: .regular))
+    view.imageView?.image = NSImage(systemSymbolName: "server.rack", accessibilityDescription: "Server")?
+      .withSymbolConfiguration(.init(pointSize: 24, weight: .light))
     view.textField?.stringValue = connections[row].name
     view.detailsView?.stringValue = connections[row].bootstrapHost
     return view
