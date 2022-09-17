@@ -71,10 +71,21 @@ public class Backend {
     )
   }
 
-  public func saveConnection(_ c: ConnectionDetails) -> Future<UVarint> {
+  public func ping() -> Future<String> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0001).write(to: out)
+      },
+      readProc: { (inp: InputPort, buf: inout Data) -> String in
+        return String.read(from: inp, using: &buf)
+      }
+    )
+  }
+
+  public func saveConnection(_ c: ConnectionDetails) -> Future<UVarint> {
+    return impl.send(
+      writeProc: { (out: OutputPort) in
+        UVarint(0x0002).write(to: out)
         c.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> UVarint in

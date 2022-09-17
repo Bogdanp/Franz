@@ -2,6 +2,7 @@
 
 (require (only-in db sqlite3-connect)
          noise/backend
+         noise/serde
 
          "appdata.rkt"
          "metadata.rkt"
@@ -11,6 +12,9 @@
 
 (provide
  main)
+
+(define-rpc (ping : String)
+  "pong")
 
 (define (main in-fd out-fd)
   (module-cache-clear!)
