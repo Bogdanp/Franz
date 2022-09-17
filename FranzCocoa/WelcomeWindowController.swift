@@ -15,7 +15,7 @@ class WelcomeWindowController: NSWindowController {
 
     split = SplitViewController()
     split.addSplitViewItem(NSSplitViewItem(viewController: WelcomeWindowContentViewController()))
-//    split.addSplitViewItem(NSSplitViewItem(sidebarWithViewController: WelcomeWindowDatabaseListController()))
+    split.addSplitViewItem(NSSplitViewItem(sidebarWithViewController: WelcomeWindowConnectionsViewController()))
     contentViewController = split
   }
 }

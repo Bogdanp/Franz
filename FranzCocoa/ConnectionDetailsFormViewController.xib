@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="20037" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21225" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="20037"/>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21225"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -12,7 +13,7 @@
                 <outlet property="bootstrapPortField" destination="clO-aY-uLb" id="bmE-bM-b1H"/>
                 <outlet property="cancelButton" destination="8jD-8V-wdc" id="TwR-sD-N5G"/>
                 <outlet property="enableSSLCheckbox" destination="11T-ax-bcq" id="KnC-dE-gg2"/>
-                <outlet property="nameField" destination="UUR-Gw-led" id="NPZ-8K-KnV"/>
+                <outlet property="nameField" destination="UUR-Gw-led" id="mzJ-k9-Znd"/>
                 <outlet property="passwordField" destination="0cc-2q-sDM" id="c5g-Rd-g2V"/>
                 <outlet property="usernameField" destination="94v-KK-t4R" id="eBp-49-Hem"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>

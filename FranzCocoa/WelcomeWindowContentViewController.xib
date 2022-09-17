@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="20037" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21225" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="20037"/>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21225"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -27,9 +28,11 @@
                         <action selector="didPushCloseButton:" target="-2" id="tuj-CS-zHB"/>
                     </connections>
                 </button>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="b2Y-Vs-r0i">
-                    <rect key="frame" x="-2" y="196" width="544" height="35"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinY="YES" flexibleMaxY="YES"/>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="b2Y-Vs-r0i">
+                    <rect key="frame" x="-2" y="177" width="544" height="35"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="540" id="poh-tz-Dwd"/>
+                    </constraints>
                     <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="Welcome to Franz" id="mxE-sh-ehq">
                         <font key="font" metaFont="system" size="30"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -37,7 +40,7 @@
                     </textFieldCell>
                 </textField>
                 <button verticalHuggingPriority="750" id="ujh-Zs-h45">
-                    <rect key="frame" x="197" y="154" width="146" height="32"/>
+                    <rect key="frame" x="197" y="142" width="146" height="32"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="push" title="New Connection..." bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="xAK-xC-Lob">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -50,6 +53,11 @@
                     </connections>
                 </button>
             </subviews>
+            <constraints>
+                <constraint firstItem="b2Y-Vs-r0i" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" id="A9h-oa-uHV"/>
+                <constraint firstItem="b2Y-Vs-r0i" firstAttribute="top" secondItem="f0k-Md-MNf" secondAttribute="bottom" constant="160" id="V1l-Y0-sHW"/>
+                <constraint firstItem="ujh-Zs-h45" firstAttribute="top" secondItem="b2Y-Vs-r0i" secondAttribute="bottom" constant="8" symbolic="YES" id="ixf-hu-rij"/>
+            </constraints>
             <point key="canvasLocation" x="139" y="154"/>
         </customView>
     </objects>

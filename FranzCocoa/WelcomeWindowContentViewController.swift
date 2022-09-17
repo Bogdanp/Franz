@@ -2,13 +2,6 @@ import Cocoa
 import SwiftUI
 
 class WelcomeWindowContentViewController: NSViewController {
-  private var connections = [ConnectionDetails]()
-
-  override func viewDidAppear() {
-    connections = Backend.shared.getConnections().wait()
-    print("connections=\(connections)")
-  }
-
   @IBAction func didPushCloseButton(_ sender: Any) {
     WindowManager.shared.closeWelcomeWindow()
   }
