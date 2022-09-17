@@ -1,7 +1,6 @@
 import Cocoa
 
 class ConnectionDetailsFormViewController: NSViewController {
-
   @IBOutlet weak var nameField: NSTextField!
   @IBOutlet weak var bootstrapHostField: NSTextField!
   @IBOutlet weak var bootstrapPortField: NSTextField!
@@ -16,8 +15,15 @@ class ConnectionDetailsFormViewController: NSViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
+
     actionButton.title = actionLabel
     actionButton.sizeToFit()
+
+    let portFormatter = NumberFormatter()
+    portFormatter.minimum = 1
+    portFormatter.maximum = 65535
+    portFormatter.allowsFloats = false
+    bootstrapPortField.formatter = portFormatter
   }
 
   override func viewDidAppear() {
