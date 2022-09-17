@@ -13,3 +13,13 @@ extension Backend {
     andProc: "main"
   )
 }
+
+extension ConnectionDetails {
+  func detailsString() -> String {
+    let host = "\(bootstrapHost):\(bootstrapPort)"
+    guard let username = username else {
+      return host
+    }
+    return "\(username) @ \(host)"
+  }
+}

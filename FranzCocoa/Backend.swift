@@ -93,4 +93,16 @@ public class Backend {
       }
     )
   }
+
+  public func touchConnection(_ c: ConnectionDetails) -> Future<Bool> {
+    return impl.send(
+      writeProc: { (out: OutputPort) in
+        UVarint(0x0003).write(to: out)
+        c.write(to: out)
+      },
+      readProc: { (inp: InputPort, buf: inout Data) -> Bool in
+        return Bool.read(from: inp, using: &buf)
+      }
+    )
+  }
 }

@@ -5,6 +5,7 @@
          noise/serde
          racket/contract
          racket/string
+         threading
          (prefix-in meta: "metadata.rkt"))
 
 (provide
@@ -50,3 +51,9 @@
   (meta:connection-details-id
    (meta:insert-connection!
     (ConnectionDetails->meta c))))
+
+(define-rpc (touch-connection [_ c : ConnectionDetails] : Bool)
+  (and
+   (and~> (ConnectionDetails-id c)
+          (meta:touch-connection!))
+   #t))

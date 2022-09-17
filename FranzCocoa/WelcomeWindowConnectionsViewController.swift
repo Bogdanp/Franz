@@ -13,6 +13,7 @@ class WelcomeWindowConnectionsViewController: NSViewController {
     connectionsTableView.register(.init(nibNamed: "ConnectionTableCellView", bundle: nil), forIdentifier: .connectionColumn)
     connectionsTableView.dataSource = self
     connectionsTableView.delegate = self
+    connectionsTableView.doubleAction = #selector(didDoubleClickConnection(_:))
   }
 
   override func viewDidAppear() {
@@ -20,6 +21,12 @@ class WelcomeWindowConnectionsViewController: NSViewController {
     connections = Backend.shared.getConnections().wait()
     recentConnectionsLabel.isHidden = !connections.isEmpty
     connectionsTableView.reloadData()
+  }
+
+  @objc func didDoubleClickConnection(_ sender: NSTableView) {
+    let conn = connections[sender.selectedRow]
+    let _ = Backend.shared.touchConnection(conn)
+    print("clicked \(conn)")
   }
 }
 
@@ -42,10 +49,11 @@ extension WelcomeWindowConnectionsViewController: NSTableViewDelegate {
       return nil
     }
 
+    let conn = connections[row]
     view.imageView?.image = NSImage(systemSymbolName: "server.rack", accessibilityDescription: "Server")?
       .withSymbolConfiguration(.init(pointSize: 24, weight: .light))
-    view.textField?.stringValue = connections[row].name
-    view.detailsView?.stringValue = connections[row].bootstrapHost
+    view.textField?.stringValue = conn.name
+    view.detailsView?.stringValue = conn.detailsString()
     return view
   }
 }
