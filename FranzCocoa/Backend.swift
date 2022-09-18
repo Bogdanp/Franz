@@ -53,6 +53,31 @@ public struct ConnectionDetails: Readable, Writable {
   }
 }
 
+public struct Topic: Readable, Writable {
+  public let name: String
+  public let partitions: UVarint
+
+  public init(
+    name: String,
+    partitions: UVarint
+  ) {
+    self.name = name
+    self.partitions = partitions
+  }
+
+  public static func read(from inp: InputPort, using buf: inout Data) -> Topic {
+    return Topic(
+      name: String.read(from: inp, using: &buf),
+      partitions: UVarint.read(from: inp, using: &buf)
+    )
+  }
+
+  public func write(to out: OutputPort) {
+    name.write(to: out)
+    partitions.write(to: out)
+  }
+}
+
 public class Backend {
   let impl: NoiseBackend.Backend!
 
@@ -82,14 +107,14 @@ public class Backend {
     )
   }
 
-  public func listTopics(_ id: UVarint) -> Future<[String]> {
+  public func listTopics(_ id: UVarint) -> Future<[Topic]> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0002).write(to: out)
         id.write(to: out)
       },
-      readProc: { (inp: InputPort, buf: inout Data) -> [String] in
-        return [String].read(from: inp, using: &buf)
+      readProc: { (inp: InputPort, buf: inout Data) -> [Topic] in
+        return [Topic].read(from: inp, using: &buf)
       }
     )
   }
