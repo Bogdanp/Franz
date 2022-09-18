@@ -16,8 +16,7 @@ class WindowManager {
       workspace.showWindow(self)
       return
     }
-    let workspace = WorkspaceWindowController()
-    workspace.configure(withConn: conn)
+    let workspace = WorkspaceWindowController(withConn: conn)
     workspace.showWindow(self)
     workspaces[id] = workspace
   }

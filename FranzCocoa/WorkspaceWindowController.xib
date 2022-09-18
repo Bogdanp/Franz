@@ -24,9 +24,12 @@
             </view>
             <toolbar key="toolbar" implicitIdentifier="24869AEE-7A30-4F82-9909-672F49F710E9" autosavesConfiguration="NO" displayMode="iconAndLabel" sizeMode="regular" id="WTD-sD-htk">
                 <allowedToolbarItems>
-                    <toolbarItem implicitItemIdentifier="CAAC9ECD-DAD7-45AC-9EBF-59E7509A62D5" label="Sidebar" paletteLabel="Sidebar" tag="-1" image="sidebar.left" catalog="system" bordered="YES" id="Dkq-6H-GZQ">
+                    <toolbarItem implicitItemIdentifier="CAAC9ECD-DAD7-45AC-9EBF-59E7509A62D5" label="Toggle Sidebar" paletteLabel="Toggle Sidebar" tag="-1" image="sidebar.left" catalog="system" bordered="YES" id="Dkq-6H-GZQ">
                         <size key="minSize" width="30" height="25"/>
                         <size key="maxSize" width="30" height="25"/>
+                        <connections>
+                            <action selector="didPressToggleSidebarButton:" target="-2" id="JDf-Jg-bsi"/>
+                        </connections>
                     </toolbarItem>
                     <toolbarItem implicitItemIdentifier="NSToolbarFlexibleSpaceItem" id="z7f-ec-0sf"/>
                 </allowedToolbarItems>

@@ -82,10 +82,22 @@ public class Backend {
     )
   }
 
-  public func openWorkspace(withConn conn: ConnectionDetails) -> Future<UVarint> {
+  public func listTopics(_ id: UVarint) -> Future<[String]> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0002).write(to: out)
+        id.write(to: out)
+      },
+      readProc: { (inp: InputPort, buf: inout Data) -> [String] in
+        return [String].read(from: inp, using: &buf)
+      }
+    )
+  }
+
+  public func openWorkspace(withConn conn: ConnectionDetails) -> Future<UVarint> {
+    return impl.send(
+      writeProc: { (out: OutputPort) in
+        UVarint(0x0003).write(to: out)
         conn.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> UVarint in
@@ -97,7 +109,7 @@ public class Backend {
   public func ping() -> Future<String> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0003).write(to: out)
+        UVarint(0x0004).write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> String in
         return String.read(from: inp, using: &buf)
@@ -108,7 +120,7 @@ public class Backend {
   public func saveConnection(_ c: ConnectionDetails) -> Future<ConnectionDetails> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0004).write(to: out)
+        UVarint(0x0005).write(to: out)
         c.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> ConnectionDetails in
@@ -120,7 +132,7 @@ public class Backend {
   public func touchConnection(_ c: ConnectionDetails) -> Future<Bool> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0005).write(to: out)
+        UVarint(0x0006).write(to: out)
         c.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> Bool in
