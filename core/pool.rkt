@@ -12,7 +12,8 @@
  current-pool
  pool-open
  pool-close
- pool-ref)
+ pool-ref
+ pool-shutdown)
 
 (struct pool (ch thd))
 
@@ -52,7 +53,12 @@
                    [`(ref ,res-ch ,nack ,id)
                     (~> (state-ref-client s id)
                         (ref-req _ res-ch nack)
-                        (state-add-req s _))])))
+                        (state-add-req s _))]
+
+                   [`(shutdown ,res-ch ,nack)
+                    (for-each k:disconnect-all (hash-values (state-clients s)))
+                    (~> (state-clear-clients s)
+                        (state-add-req _ (shutdown-req #t res-ch nack)))])))
               (append
                (for/list ([r (in-list (state-reqs s))])
                  (match-define (req res res-ch _nack) r)
@@ -80,6 +86,9 @@
 (define (pool-ref id [p (current-pool)])
   (sync (pool-send p ref id)))
 
+(define (pool-shutdown [p (current-pool)])
+  (sync (pool-send p shutdown)))
+
 (define-syntax-rule (pool-send p command . args)
   (make-pool-evt p 'command . args))
 
@@ -104,6 +113,7 @@
 (struct open-req req ())
 (struct close-req req ())
 (struct ref-req req ())
+(struct shutdown-req req ())
 
 ;; state ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -132,3 +142,6 @@
 
 (define (state-remove-client s id)
   (struct-copy state s [clients (hash-remove (state-clients s) id)]))
+
+(define (state-clear-clients s)
+  (struct-copy state s [clients (hasheqv)]))

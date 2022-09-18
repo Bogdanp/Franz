@@ -8,7 +8,8 @@
          "metadata.rkt"
 
          ;; For RPC:
-         "connection-details.rkt")
+         "connection-details.rkt"
+         "workspace.rkt")
 
 (provide
  main)

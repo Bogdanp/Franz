@@ -8,6 +8,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
   }
 
   func applicationWillTerminate(_ aNotification: Notification) {
+    assert(Backend.shared.closeAllWorkspaces().wait())
   }
 
   func applicationSupportsSecureRestorableState(_ app: NSApplication) -> Bool {

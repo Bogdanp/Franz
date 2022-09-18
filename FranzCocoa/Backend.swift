@@ -60,10 +60,21 @@ public class Backend {
     impl = NoiseBackend.Backend(withZo: zo, andMod: mod, andProc: proc)
   }
 
-  public func getConnections() -> Future<[ConnectionDetails]> {
+  public func closeAllWorkspaces() -> Future<Bool> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0000).write(to: out)
+      },
+      readProc: { (inp: InputPort, buf: inout Data) -> Bool in
+        return Bool.read(from: inp, using: &buf)
+      }
+    )
+  }
+
+  public func getConnections() -> Future<[ConnectionDetails]> {
+    return impl.send(
+      writeProc: { (out: OutputPort) in
+        UVarint(0x0001).write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> [ConnectionDetails] in
         return [ConnectionDetails].read(from: inp, using: &buf)
@@ -71,22 +82,11 @@ public class Backend {
     )
   }
 
-  public func ping() -> Future<String> {
-    return impl.send(
-      writeProc: { (out: OutputPort) in
-        UVarint(0x0001).write(to: out)
-      },
-      readProc: { (inp: InputPort, buf: inout Data) -> String in
-        return String.read(from: inp, using: &buf)
-      }
-    )
-  }
-
-  public func saveConnection(_ c: ConnectionDetails) -> Future<UVarint> {
+  public func openWorkspace(withConn conn: ConnectionDetails) -> Future<UVarint> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0002).write(to: out)
-        c.write(to: out)
+        conn.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> UVarint in
         return UVarint.read(from: inp, using: &buf)
@@ -94,10 +94,33 @@ public class Backend {
     )
   }
 
-  public func touchConnection(_ c: ConnectionDetails) -> Future<Bool> {
+  public func ping() -> Future<String> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0003).write(to: out)
+      },
+      readProc: { (inp: InputPort, buf: inout Data) -> String in
+        return String.read(from: inp, using: &buf)
+      }
+    )
+  }
+
+  public func saveConnection(_ c: ConnectionDetails) -> Future<ConnectionDetails> {
+    return impl.send(
+      writeProc: { (out: OutputPort) in
+        UVarint(0x0004).write(to: out)
+        c.write(to: out)
+      },
+      readProc: { (inp: InputPort, buf: inout Data) -> ConnectionDetails in
+        return ConnectionDetails.read(from: inp, using: &buf)
+      }
+    )
+  }
+
+  public func touchConnection(_ c: ConnectionDetails) -> Future<Bool> {
+    return impl.send(
+      writeProc: { (out: OutputPort) in
+        UVarint(0x0005).write(to: out)
         c.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> Bool in

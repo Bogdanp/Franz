@@ -26,7 +26,8 @@ class WelcomeWindowConnectionsViewController: NSViewController {
   @objc func didDoubleClickConnection(_ sender: NSTableView) {
     let conn = connections[sender.selectedRow]
     let _ = Backend.shared.touchConnection(conn)
-    print("clicked \(conn)")
+    WindowManager.shared.launchWorkspace(withConn: conn)
+    WindowManager.shared.closeWelcomeWindow()
   }
 }
 

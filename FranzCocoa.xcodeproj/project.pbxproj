@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		436E71FA28D7511400ECBF49 /* WorkspaceWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436E71F828D7511400ECBF49 /* WorkspaceWindowController.swift */; };
+		436E71FB28D7511400ECBF49 /* WorkspaceWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 436E71F928D7511400ECBF49 /* WorkspaceWindowController.xib */; };
 		43804AB428D19ACD002880FE /* WelcomeWindowConnectionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43804AB228D19ACD002880FE /* WelcomeWindowConnectionsViewController.swift */; };
 		43804AB528D19ACD002880FE /* WelcomeWindowConnectionsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43804AB328D19ACD002880FE /* WelcomeWindowConnectionsViewController.xib */; };
 		43804AB728D1A014002880FE /* ConnectionTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43804AB628D1A014002880FE /* ConnectionTableCellView.swift */; };
@@ -30,6 +32,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		436E71F828D7511400ECBF49 /* WorkspaceWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceWindowController.swift; sourceTree = "<group>"; };
+		436E71F928D7511400ECBF49 /* WorkspaceWindowController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WorkspaceWindowController.xib; sourceTree = "<group>"; };
 		43804AB228D19ACD002880FE /* WelcomeWindowConnectionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeWindowConnectionsViewController.swift; sourceTree = "<group>"; };
 		43804AB328D19ACD002880FE /* WelcomeWindowConnectionsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WelcomeWindowConnectionsViewController.xib; sourceTree = "<group>"; };
 		43804AB628D1A014002880FE /* ConnectionTableCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionTableCellView.swift; sourceTree = "<group>"; };
@@ -105,6 +109,8 @@
 				43CD623928CE27DB00095144 /* WelcomeWindowController.swift */,
 				43CD623828CE27DB00095144 /* WelcomeWindowController.xib */,
 				43CD623628CE27B200095144 /* WindowManager.swift */,
+				436E71F828D7511400ECBF49 /* WorkspaceWindowController.swift */,
+				436E71F928D7511400ECBF49 /* WorkspaceWindowController.xib */,
 			);
 			path = FranzCocoa;
 			sourceTree = "<group>";
@@ -189,6 +195,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				43CD623A28CE27DB00095144 /* WelcomeWindowController.xib in Resources */,
+				436E71FB28D7511400ECBF49 /* WorkspaceWindowController.xib in Resources */,
 				43804AB528D19ACD002880FE /* WelcomeWindowConnectionsViewController.xib in Resources */,
 				43CD624928CE3B5D00095144 /* ConnectionDetailsFormViewController.xib in Resources */,
 				43CD623F28CE289F00095144 /* WelcomeWindowContentViewController.xib in Resources */,
@@ -236,6 +243,7 @@
 				43804AB428D19ACD002880FE /* WelcomeWindowConnectionsViewController.swift in Sources */,
 				43CD623128CE258F00095144 /* BackendExtensions.swift in Sources */,
 				43CD623E28CE282400095144 /* WelcomeWindowContentViewController.swift in Sources */,
+				436E71FA28D7511400ECBF49 /* WorkspaceWindowController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

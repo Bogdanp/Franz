@@ -9,8 +9,9 @@ class WelcomeWindowContentViewController: NSViewController {
   @IBAction func didPushNewConnectionButton(_ sender: Any) {
     let formController = ConnectionDetailsFormViewController()
     formController.configure(actionLabel: "Connect", { details in
-      let id = Backend.shared.saveConnection(details).wait()
-      print("id=\(id)")
+      let conn = Backend.shared.saveConnection(details).wait()
+      WindowManager.shared.launchWorkspace(withConn: conn)
+      WindowManager.shared.closeWelcomeWindow()
     })
     presentAsSheet(formController)
   }
