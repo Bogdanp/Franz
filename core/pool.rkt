@@ -4,7 +4,8 @@
          racket/match
          threading
          "connection-details.rkt"
-         "logger.rkt")
+         "logger.rkt"
+         "topic.rkt")
 
 (provide
  pool?
@@ -13,6 +14,7 @@
  pool-open
  pool-close
  pool-ref
+ pool-topics
  pool-shutdown)
 
 (struct pool (ch thd))
@@ -35,11 +37,11 @@
                (lambda (msg)
                  (match msg
                    [`(open ,res-ch ,nack ,conf)
-                    (define-values (client-id next-state)
+                    (define-values (client-id-or-exn next-state)
                       (with-handlers ([exn:fail? (λ (e) (values e s))])
-                        (state-add-client s (ConnectionDetails->client conf))))
-                    (log-franz-debug "pool: opened client ~a" client-id)
-                    (state-add-req next-state (open-req client-id res-ch nack))]
+                        (begin0 (state-add-client s (ConnectionDetails->client conf))
+                          (log-franz-debug "pool: opened client ~a" client-id-or-exn))))
+                    (state-add-req next-state (open-req client-id-or-exn res-ch nack))]
 
                    [`(close ,res-ch ,nack ,id)
                     (define client
@@ -54,6 +56,16 @@
                     (~> (state-ref-client s id)
                         (ref-req _ res-ch nack)
                         (state-add-req s _))]
+
+                   [`(topics ,res-ch ,nack ,id)
+                    (define topics-or-exn
+                      (with-handlers ([exn:fail? values])
+                        (define meta (k:get-metadata (state-ref-client s id)))
+                        (for/list ([t (in-list (k:Metadata-topics meta))])
+                          (make-Topic
+                           #:name (k:TopicMetadata-name t)
+                           #:partitions (length (k:TopicMetadata-partitions t))))))
+                    (state-add-req s (topics-req topics-or-exn res-ch nack))]
 
                    [`(shutdown ,res-ch ,nack)
                     (for-each k:disconnect-all (hash-values (state-clients s)))
@@ -86,6 +98,9 @@
 (define (pool-ref id [p (current-pool)])
   (sync (pool-send p ref id)))
 
+(define (pool-topics id [p (current-pool)])
+  (sync (pool-send p topics id)))
+
 (define (pool-shutdown [p (current-pool)])
   (sync (pool-send p shutdown)))
 
@@ -113,6 +128,7 @@
 (struct open-req req ())
 (struct close-req req ())
 (struct ref-req req ())
+(struct topics-req req ())
 (struct shutdown-req req ())
 
 ;; state ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
