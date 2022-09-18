@@ -64,7 +64,8 @@
                         (for/list ([t (in-list (k:Metadata-topics meta))])
                           (make-Topic
                            #:name (k:TopicMetadata-name t)
-                           #:partitions (length (k:TopicMetadata-partitions t))))))
+                           #:partitions (length (k:TopicMetadata-partitions t))
+                           #:is-internal (k:TopicMetadata-internal? t)))))
                     (state-add-req s (topics-req topics-or-exn res-ch nack))]
 
                    [`(shutdown ,res-ch ,nack)

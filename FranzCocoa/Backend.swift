@@ -56,25 +56,30 @@ public struct ConnectionDetails: Readable, Writable {
 public struct Topic: Readable, Writable {
   public let name: String
   public let partitions: UVarint
+  public let isInternal: Bool
 
   public init(
     name: String,
-    partitions: UVarint
+    partitions: UVarint,
+    isInternal: Bool
   ) {
     self.name = name
     self.partitions = partitions
+    self.isInternal = isInternal
   }
 
   public static func read(from inp: InputPort, using buf: inout Data) -> Topic {
     return Topic(
       name: String.read(from: inp, using: &buf),
-      partitions: UVarint.read(from: inp, using: &buf)
+      partitions: UVarint.read(from: inp, using: &buf),
+      isInternal: Bool.read(from: inp, using: &buf)
     )
   }
 
   public func write(to out: OutputPort) {
     name.write(to: out)
     partitions.write(to: out)
+    isInternal.write(to: out)
   }
 }
 

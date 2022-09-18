@@ -14,11 +14,11 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="6T3-vA-sWM">
-                    <rect key="frame" x="9" y="9" width="15" height="15"/>
+                    <rect key="frame" x="9" y="8" width="15" height="16"/>
                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSActionTemplate" id="AMB-I0-GbU"/>
                 </imageView>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="vG3-yg-FU3">
-                    <rect key="frame" x="30" y="9" width="76" height="15"/>
+                    <rect key="frame" x="30" y="8" width="76" height="16"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="Topic Name" id="Rov-3c-x8m">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -26,7 +26,7 @@
                     </textFieldCell>
                 </textField>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="gk0-a1-1Ex">
-                    <rect key="frame" x="257" y="9" width="20" height="15"/>
+                    <rect key="frame" x="257" y="8" width="20" height="14"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="12" id="mwW-kM-o77">
                         <font key="font" metaFont="system" size="11"/>
                         <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
@@ -40,7 +40,7 @@
                 <constraint firstItem="gk0-a1-1Ex" firstAttribute="baseline" secondItem="6T3-vA-sWM" secondAttribute="baseline" id="Q8R-Ou-drE"/>
                 <constraint firstItem="vG3-yg-FU3" firstAttribute="leading" secondItem="c22-O7-iKe" secondAttribute="leading" constant="32" id="YzG-IM-UFa"/>
                 <constraint firstItem="vG3-yg-FU3" firstAttribute="leading" secondItem="6T3-vA-sWM" secondAttribute="trailing" constant="8" symbolic="YES" id="aKP-9f-GH4"/>
-                <constraint firstItem="gk0-a1-1Ex" firstAttribute="centerY" secondItem="c22-O7-iKe" secondAttribute="centerY" id="aUP-wX-Rtb"/>
+                <constraint firstItem="gk0-a1-1Ex" firstAttribute="firstBaseline" secondItem="vG3-yg-FU3" secondAttribute="baseline" id="aUP-wX-Rtb"/>
                 <constraint firstItem="6T3-vA-sWM" firstAttribute="centerY" secondItem="c22-O7-iKe" secondAttribute="centerY" id="eih-Ds-tHL"/>
                 <constraint firstItem="gk0-a1-1Ex" firstAttribute="baseline" secondItem="vG3-yg-FU3" secondAttribute="baseline" id="fKn-9z-gyB"/>
             </constraints>

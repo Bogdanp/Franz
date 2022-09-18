@@ -7,4 +7,5 @@
 
 (define-record Topic
   [name : String #:contract string?]
-  [partitions : UVarint #:contract exact-positive-integer?])
+  [partitions : UVarint #:contract exact-positive-integer?]
+  [(is-internal #f) : Bool])

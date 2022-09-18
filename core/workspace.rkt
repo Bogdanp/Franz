@@ -11,7 +11,7 @@
   (pool-open conn))
 
 (define-rpc (list-topics [_ id : UVarint] : (Listof Topic))
-  (pool-topics id))
+  (sort (pool-topics id) string<? #:key Topic-name))
 
 (define-rpc (close-all-workspaces : Bool)
   (begin0 #t
