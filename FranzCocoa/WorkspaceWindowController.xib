@@ -8,6 +8,10 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="WorkspaceWindowController" customModule="Franz" customModuleProvider="target">
             <connections>
+                <outlet property="statusBarNameField" destination="T4q-IH-Z6t" id="Oat-3l-dfc"/>
+                <outlet property="statusBarStatusField" destination="iNm-gp-3aO" id="VGq-bT-OEr"/>
+                <outlet property="statusBarView" destination="8en-9O-LIY" id="Qgp-PC-csv"/>
+                <outlet property="toolbar" destination="WTD-sD-htk" id="ph4-lA-n1g"/>
                 <outlet property="window" destination="F0z-JX-Cv5" id="gIp-Ho-8D9"/>
             </connections>
         </customObject>
@@ -20,31 +24,58 @@
             <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1055"/>
             <view key="contentView" id="se5-gp-TjO">
                 <rect key="frame" x="0.0" y="0.0" width="800" height="600"/>
-                <autoresizingMask key="autoresizingMask"/>
+                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             </view>
-            <toolbar key="toolbar" implicitIdentifier="24869AEE-7A30-4F82-9909-672F49F710E9" autosavesConfiguration="NO" displayMode="iconAndLabel" sizeMode="regular" id="WTD-sD-htk">
-                <allowedToolbarItems>
-                    <toolbarItem implicitItemIdentifier="CAAC9ECD-DAD7-45AC-9EBF-59E7509A62D5" label="Toggle Sidebar" paletteLabel="Toggle Sidebar" tag="-1" image="sidebar.left" catalog="system" bordered="YES" id="Dkq-6H-GZQ">
-                        <size key="minSize" width="30" height="25"/>
-                        <size key="maxSize" width="30" height="25"/>
-                        <connections>
-                            <action selector="didPressToggleSidebarButton:" target="-2" id="JDf-Jg-bsi"/>
-                        </connections>
-                    </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="NSToolbarFlexibleSpaceItem" id="z7f-ec-0sf"/>
-                </allowedToolbarItems>
-                <defaultToolbarItems>
-                    <toolbarItem reference="Dkq-6H-GZQ"/>
-                    <toolbarItem reference="z7f-ec-0sf"/>
-                </defaultToolbarItems>
+            <toolbar key="toolbar" implicitIdentifier="24869AEE-7A30-4F82-9909-672F49F710E9" autosavesConfiguration="NO" allowsUserCustomization="NO" displayMode="iconOnly" sizeMode="regular" id="WTD-sD-htk">
+                <allowedToolbarItems/>
+                <defaultToolbarItems/>
+                <connections>
+                    <outlet property="delegate" destination="-2" id="zGM-7g-yna"/>
+                </connections>
             </toolbar>
             <connections>
                 <outlet property="delegate" destination="-2" id="0bl-1N-AYu"/>
             </connections>
             <point key="canvasLocation" x="108" y="133"/>
         </window>
+        <customView id="8en-9O-LIY" userLabel="Status Bar">
+            <rect key="frame" x="0.0" y="0.0" width="420" height="24"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <box fixedFrame="YES" borderType="line" title="Box" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="IS8-OA-uNO">
+                    <rect key="frame" x="-3" y="-4" width="426" height="30"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <view key="contentView" id="Srx-n6-Dqq">
+                        <rect key="frame" x="3" y="3" width="420" height="24"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" verticalCompressionResistancePriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="T4q-IH-Z6t">
+                                <rect key="frame" x="6" y="4" width="136" height="16"/>
+                                <textFieldCell key="cell" lineBreakMode="clipping" title="Unnamed Connection" id="wxj-Jj-AfM">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="iNm-gp-3aO">
+                                <rect key="frame" x="342" y="5" width="75" height="14"/>
+                                <textFieldCell key="cell" lineBreakMode="clipping" title="Connecting..." id="C2q-m3-mBt">
+                                    <font key="font" metaFont="system" size="11"/>
+                                    <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="T4q-IH-Z6t" firstAttribute="leading" secondItem="Srx-n6-Dqq" secondAttribute="leading" constant="8" id="Oh9-9H-LmU"/>
+                            <constraint firstAttribute="trailing" secondItem="iNm-gp-3aO" secondAttribute="trailing" constant="5" id="fW0-m6-P1z"/>
+                            <constraint firstItem="iNm-gp-3aO" firstAttribute="centerY" secondItem="Srx-n6-Dqq" secondAttribute="centerY" id="frn-0s-QDY"/>
+                            <constraint firstItem="T4q-IH-Z6t" firstAttribute="centerY" secondItem="Srx-n6-Dqq" secondAttribute="centerY" id="hOI-r9-HOG"/>
+                        </constraints>
+                    </view>
+                </box>
+            </subviews>
+            <point key="canvasLocation" x="-6" y="648"/>
+        </customView>
     </objects>
-    <resources>
-        <image name="sidebar.left" catalog="system" width="18" height="14"/>
-    </resources>
 </document>

@@ -2,16 +2,9 @@ import Cocoa
 import NoiseSerde
 
 class WorkspaceSidebarViewController: NSViewController {
-  private var id: UVarint!
   private var topics = [Topic]()
 
   @IBOutlet weak var tableView: NSTableView!
-
-  convenience init(withClientID id: UVarint) {
-    self.init()
-    self.id = id
-    self.topics = Backend.shared.listTopics(id).wait()
-  }
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -20,6 +13,11 @@ class WorkspaceSidebarViewController: NSViewController {
     tableView.delegate = self
     tableView.dataSource = self
     tableView.reloadData()
+  }
+
+  func configure(withTopics topics: [Topic]) {
+    self.topics = topics
+    self.tableView.reloadData()
   }
 }
 
