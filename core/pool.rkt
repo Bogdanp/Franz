@@ -3,9 +3,9 @@
 (require (prefix-in k: kafka)
          racket/match
          threading
+         "broker.rkt"
          "connection-details.rkt"
-         "logger.rkt"
-         "topic.rkt")
+         "logger.rkt")
 
 (provide
  pool?
@@ -13,8 +13,7 @@
  current-pool
  pool-open
  pool-close
- pool-ref
- pool-topics
+ pool-get-metadata
  pool-shutdown)
 
 (struct pool (ch thd))
@@ -41,7 +40,7 @@
                       (with-handlers ([exn:fail? (λ (e) (values e s))])
                         (begin0 (state-add-client s (ConnectionDetails->client conf))
                           (log-franz-debug "pool: opened client ~a" client-id-or-exn))))
-                    (state-add-req next-state (open-req client-id-or-exn res-ch nack))]
+                    (state-add-req next-state (req client-id-or-exn res-ch nack))]
 
                    [`(close ,res-ch ,nack ,id)
                     (define client
@@ -50,28 +49,39 @@
                       (k:disconnect-all client)
                       (log-franz-debug "pool: closed client ~a" id))
                     (~> (state-remove-client s id)
-                        (state-add-req (close-req (and client #t) res-ch nack)))]
+                        (state-add-req (req (and client #t) res-ch nack)))]
 
-                   [`(ref ,res-ch ,nack ,id)
-                    (~> (state-ref-client s id)
-                        (ref-req _ res-ch nack)
-                        (state-add-req s _))]
-
-                   [`(topics ,res-ch ,nack ,id)
-                    (define topics-or-exn
+                   [`(get-metadata ,res-ch ,nack ,id)
+                    (define metadata-or-exn
                       (with-handlers ([exn:fail? values])
-                        (define meta (k:get-metadata (state-ref-client s id)))
-                        (for/list ([t (in-list (k:Metadata-topics meta))])
-                          (make-Topic
-                           #:name (k:TopicMetadata-name t)
-                           #:partitions (length (k:TopicMetadata-partitions t))
-                           #:is-internal (k:TopicMetadata-internal? t)))))
-                    (state-add-req s (topics-req topics-or-exn res-ch nack))]
+                        (define meta
+                          (k:get-metadata (state-ref-client s id)))
+                        (define brokers
+                          (for/list ([b (in-list (k:Metadata-brokers meta))])
+                            (make-Broker
+                             #:id (k:BrokerMetadata-node-id b)
+                             #:host (k:BrokerMetadata-host b)
+                             #:port (k:BrokerMetadata-port b)
+                             #:rack (nil-> (k:BrokerMetadata-rack b)))))
+                        (define topics
+                          (for/list ([t (in-list (k:Metadata-topics meta))])
+                            (define parts
+                              (for/list ([p (in-list (k:TopicMetadata-partitions t))])
+                                (make-TopicPartition
+                                 #:id (k:PartitionMetadata-id p))))
+                            (make-Topic
+                             #:name (k:TopicMetadata-name t)
+                             #:partitions (sort parts < #:key TopicPartition-id)
+                             #:is-internal (k:TopicMetadata-internal? t))))
+                        (make-Metadata
+                         #:brokers (sort brokers < #:key Broker-id)
+                         #:topics (sort topics string<? #:key Topic-name))))
+                    (state-add-req s (req metadata-or-exn res-ch nack))]
 
                    [`(shutdown ,res-ch ,nack)
                     (for-each k:disconnect-all (hash-values (state-clients s)))
                     (~> (state-clear-clients s)
-                        (state-add-req _ (shutdown-req #t res-ch nack)))])))
+                        (state-add-req _ (req #t res-ch nack)))])))
               (append
                (for/list ([r (in-list (state-reqs s))])
                  (match-define (req res res-ch _nack) r)
@@ -96,11 +106,8 @@
 (define (pool-close id [p (current-pool)])
   (sync (pool-send p close id)))
 
-(define (pool-ref id [p (current-pool)])
-  (sync (pool-send p ref id)))
-
-(define (pool-topics id [p (current-pool)])
-  (sync (pool-send p topics id)))
+(define (pool-get-metadata id [p (current-pool)])
+  (sync (pool-send p get-metadata id)))
 
 (define (pool-shutdown [p (current-pool)])
   (sync (pool-send p shutdown)))
@@ -126,11 +133,6 @@
 ;; request ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (struct req (res res-ch nack))
-(struct open-req req ())
-(struct close-req req ())
-(struct ref-req req ())
-(struct topics-req req ())
-(struct shutdown-req req ())
 
 ;; state ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -162,3 +164,9 @@
 
 (define (state-clear-clients s)
   (struct-copy state s [clients (hasheqv)]))
+
+
+;; help ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define (nil-> v)
+  (if (eq? v 'nil) #f v))

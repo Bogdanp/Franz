@@ -3,6 +3,41 @@ import Foundation
 import NoiseBackend
 import NoiseSerde
 
+public struct Broker: Readable, Writable {
+  public let id: UVarint
+  public let host: String
+  public let port: UVarint
+  public let rack: String?
+
+  public init(
+    id: UVarint,
+    host: String,
+    port: UVarint,
+    rack: String?
+  ) {
+    self.id = id
+    self.host = host
+    self.port = port
+    self.rack = rack
+  }
+
+  public static func read(from inp: InputPort, using buf: inout Data) -> Broker {
+    return Broker(
+      id: UVarint.read(from: inp, using: &buf),
+      host: String.read(from: inp, using: &buf),
+      port: UVarint.read(from: inp, using: &buf),
+      rack: String?.read(from: inp, using: &buf)
+    )
+  }
+
+  public func write(to out: OutputPort) {
+    id.write(to: out)
+    host.write(to: out)
+    port.write(to: out)
+    rack.write(to: out)
+  }
+}
+
 public struct ConnectionDetails: Readable, Writable {
   public let id: UVarint?
   public let name: String
@@ -53,14 +88,39 @@ public struct ConnectionDetails: Readable, Writable {
   }
 }
 
+public struct Metadata: Readable, Writable {
+  public let brokers: [Broker]
+  public let topics: [Topic]
+
+  public init(
+    brokers: [Broker],
+    topics: [Topic]
+  ) {
+    self.brokers = brokers
+    self.topics = topics
+  }
+
+  public static func read(from inp: InputPort, using buf: inout Data) -> Metadata {
+    return Metadata(
+      brokers: [Broker].read(from: inp, using: &buf),
+      topics: [Topic].read(from: inp, using: &buf)
+    )
+  }
+
+  public func write(to out: OutputPort) {
+    brokers.write(to: out)
+    topics.write(to: out)
+  }
+}
+
 public struct Topic: Readable, Writable {
   public let name: String
-  public let partitions: UVarint
+  public let partitions: [TopicPartition]
   public let isInternal: Bool
 
   public init(
     name: String,
-    partitions: UVarint,
+    partitions: [TopicPartition],
     isInternal: Bool
   ) {
     self.name = name
@@ -71,7 +131,7 @@ public struct Topic: Readable, Writable {
   public static func read(from inp: InputPort, using buf: inout Data) -> Topic {
     return Topic(
       name: String.read(from: inp, using: &buf),
-      partitions: UVarint.read(from: inp, using: &buf),
+      partitions: [TopicPartition].read(from: inp, using: &buf),
       isInternal: Bool.read(from: inp, using: &buf)
     )
   }
@@ -80,6 +140,26 @@ public struct Topic: Readable, Writable {
     name.write(to: out)
     partitions.write(to: out)
     isInternal.write(to: out)
+  }
+}
+
+public struct TopicPartition: Readable, Writable {
+  public let id: UVarint
+
+  public init(
+    id: UVarint
+  ) {
+    self.id = id
+  }
+
+  public static func read(from inp: InputPort, using buf: inout Data) -> TopicPartition {
+    return TopicPartition(
+      id: UVarint.read(from: inp, using: &buf)
+    )
+  }
+
+  public func write(to out: OutputPort) {
+    id.write(to: out)
   }
 }
 
@@ -112,14 +192,14 @@ public class Backend {
     )
   }
 
-  public func listTopics(_ id: UVarint) -> Future<[Topic]> {
+  public func getMetadata(_ id: UVarint) -> Future<Metadata> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0002).write(to: out)
         id.write(to: out)
       },
-      readProc: { (inp: InputPort, buf: inout Data) -> [Topic] in
-        return [Topic].read(from: inp, using: &buf)
+      readProc: { (inp: InputPort, buf: inout Data) -> Metadata in
+        return Metadata.read(from: inp, using: &buf)
       }
     )
   }

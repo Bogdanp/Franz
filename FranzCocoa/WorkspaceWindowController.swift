@@ -27,9 +27,9 @@ class WorkspaceWindowController: NSWindowController {
     status("Connecting...")
     Backend.shared.openWorkspace(withConn: conn).onComplete { id in
       self.id = id
-      self.status("Loading topics...")
-      Backend.shared.listTopics(id).onComplete { topics in
-        self.sidebarCtl.configure(withTopics: topics)
+      self.status("Getting metadata...")
+      Backend.shared.getMetadata(id).onComplete { meta in
+        self.sidebarCtl.configure(withTopics: meta.topics)
         self.status("Ready")
       }
     }

@@ -1,17 +1,16 @@
 #lang racket/base
 
-(require (prefix-in k: kafka)
-         noise/backend
+(require noise/backend
          noise/serde
+         "broker.rkt"
          "connection-details.rkt"
-         "pool.rkt"
-         "topic.rkt")
+         "pool.rkt")
 
 (define-rpc (open-workspace [with-conn conn : ConnectionDetails] : UVarint)
   (pool-open conn))
 
-(define-rpc (list-topics [_ id : UVarint] : (Listof Topic))
-  (sort (pool-topics id) string<? #:key Topic-name))
+(define-rpc (get-metadata [_ id : UVarint] : Metadata)
+  (pool-get-metadata id))
 
 (define-rpc (close-all-workspaces : Bool)
   (begin0 #t

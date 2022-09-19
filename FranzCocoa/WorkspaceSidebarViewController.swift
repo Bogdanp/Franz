@@ -31,7 +31,7 @@ extension WorkspaceSidebarViewController: NSTableViewDelegate {
 
     let topic = topics[row]
     view.textField?.stringValue = topic.name
-    view.partitionsField.stringValue = "\(topic.partitions)"
+    view.partitionsField.stringValue = "\(topic.partitions.count)"
     view.imageView?.image = NSImage(systemSymbolName: "tray.full", accessibilityDescription: "Topic")?
       .withSymbolConfiguration(.init(pointSize: 14, weight: .light))
     return view
