@@ -7,14 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4314EDF628D85DD800431770 /* SidebarGroupCellView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4314EDF528D85DD800431770 /* SidebarGroupCellView.xib */; };
+		4314EDF828D85E0E00431770 /* SidebarGroupCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4314EDF728D85E0E00431770 /* SidebarGroupCellView.swift */; };
 		436E71FA28D7511400ECBF49 /* WorkspaceWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436E71F828D7511400ECBF49 /* WorkspaceWindowController.swift */; };
 		436E71FB28D7511400ECBF49 /* WorkspaceWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 436E71F928D7511400ECBF49 /* WorkspaceWindowController.xib */; };
 		436E720228D759F400ECBF49 /* WorkspaceSidebarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436E720028D759F400ECBF49 /* WorkspaceSidebarViewController.swift */; };
 		436E720328D759F400ECBF49 /* WorkspaceSidebarViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 436E720128D759F400ECBF49 /* WorkspaceSidebarViewController.xib */; };
 		436E720628D75B0500ECBF49 /* WorkspaceDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436E720428D75B0500ECBF49 /* WorkspaceDetailViewController.swift */; };
 		436E720728D75B0500ECBF49 /* WorkspaceDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 436E720528D75B0500ECBF49 /* WorkspaceDetailViewController.xib */; };
-		436E720D28D760BF00ECBF49 /* TopicTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436E720C28D760BF00ECBF49 /* TopicTableCellView.swift */; };
-		436E720F28D760D400ECBF49 /* TopicTableCellView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 436E720E28D760D400ECBF49 /* TopicTableCellView.xib */; };
+		436E720D28D760BF00ECBF49 /* SidebarEntryCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436E720C28D760BF00ECBF49 /* SidebarEntryCellView.swift */; };
+		436E720F28D760D400ECBF49 /* SidebarEntryCellView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 436E720E28D760D400ECBF49 /* SidebarEntryCellView.xib */; };
 		43804AB428D19ACD002880FE /* WelcomeWindowConnectionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43804AB228D19ACD002880FE /* WelcomeWindowConnectionsViewController.swift */; };
 		43804AB528D19ACD002880FE /* WelcomeWindowConnectionsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43804AB328D19ACD002880FE /* WelcomeWindowConnectionsViewController.xib */; };
 		43804AB728D1A014002880FE /* ConnectionTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43804AB628D1A014002880FE /* ConnectionTableCellView.swift */; };
@@ -38,14 +40,16 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4314EDF528D85DD800431770 /* SidebarGroupCellView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SidebarGroupCellView.xib; sourceTree = "<group>"; };
+		4314EDF728D85E0E00431770 /* SidebarGroupCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarGroupCellView.swift; sourceTree = "<group>"; };
 		436E71F828D7511400ECBF49 /* WorkspaceWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceWindowController.swift; sourceTree = "<group>"; };
 		436E71F928D7511400ECBF49 /* WorkspaceWindowController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WorkspaceWindowController.xib; sourceTree = "<group>"; };
 		436E720028D759F400ECBF49 /* WorkspaceSidebarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceSidebarViewController.swift; sourceTree = "<group>"; };
 		436E720128D759F400ECBF49 /* WorkspaceSidebarViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WorkspaceSidebarViewController.xib; sourceTree = "<group>"; };
 		436E720428D75B0500ECBF49 /* WorkspaceDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceDetailViewController.swift; sourceTree = "<group>"; };
 		436E720528D75B0500ECBF49 /* WorkspaceDetailViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WorkspaceDetailViewController.xib; sourceTree = "<group>"; };
-		436E720C28D760BF00ECBF49 /* TopicTableCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopicTableCellView.swift; sourceTree = "<group>"; };
-		436E720E28D760D400ECBF49 /* TopicTableCellView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TopicTableCellView.xib; sourceTree = "<group>"; };
+		436E720C28D760BF00ECBF49 /* SidebarEntryCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarEntryCellView.swift; sourceTree = "<group>"; };
+		436E720E28D760D400ECBF49 /* SidebarEntryCellView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SidebarEntryCellView.xib; sourceTree = "<group>"; };
 		43804AB228D19ACD002880FE /* WelcomeWindowConnectionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeWindowConnectionsViewController.swift; sourceTree = "<group>"; };
 		43804AB328D19ACD002880FE /* WelcomeWindowConnectionsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WelcomeWindowConnectionsViewController.xib; sourceTree = "<group>"; };
 		43804AB628D1A014002880FE /* ConnectionTableCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionTableCellView.swift; sourceTree = "<group>"; };
@@ -114,8 +118,10 @@
 				43CD621F28CE24B100095144 /* FranzCocoa.entitlements */,
 				43CD621C28CE24B100095144 /* MainMenu.xib */,
 				43CD623228CE25F300095144 /* resources */,
-				436E720C28D760BF00ECBF49 /* TopicTableCellView.swift */,
-				436E720E28D760D400ECBF49 /* TopicTableCellView.xib */,
+				436E720C28D760BF00ECBF49 /* SidebarEntryCellView.swift */,
+				436E720E28D760D400ECBF49 /* SidebarEntryCellView.xib */,
+				4314EDF728D85E0E00431770 /* SidebarGroupCellView.swift */,
+				4314EDF528D85DD800431770 /* SidebarGroupCellView.xib */,
 				43804AB228D19ACD002880FE /* WelcomeWindowConnectionsViewController.swift */,
 				43804AB328D19ACD002880FE /* WelcomeWindowConnectionsViewController.xib */,
 				43CD623D28CE282400095144 /* WelcomeWindowContentViewController.swift */,
@@ -213,12 +219,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				43CD623A28CE27DB00095144 /* WelcomeWindowController.xib in Resources */,
-				436E720F28D760D400ECBF49 /* TopicTableCellView.xib in Resources */,
+				436E720F28D760D400ECBF49 /* SidebarEntryCellView.xib in Resources */,
 				436E71FB28D7511400ECBF49 /* WorkspaceWindowController.xib in Resources */,
 				43804AB528D19ACD002880FE /* WelcomeWindowConnectionsViewController.xib in Resources */,
 				43CD624928CE3B5D00095144 /* ConnectionDetailsFormViewController.xib in Resources */,
 				436E720728D75B0500ECBF49 /* WorkspaceDetailViewController.xib in Resources */,
 				43CD623F28CE289F00095144 /* WelcomeWindowContentViewController.xib in Resources */,
+				4314EDF628D85DD800431770 /* SidebarGroupCellView.xib in Resources */,
 				43CD621B28CE24B100095144 /* Assets.xcassets in Resources */,
 				43CD623328CE25F300095144 /* resources in Resources */,
 				43CD621E28CE24B100095144 /* MainMenu.xib in Resources */,
@@ -266,8 +273,9 @@
 				43804AB428D19ACD002880FE /* WelcomeWindowConnectionsViewController.swift in Sources */,
 				43CD623128CE258F00095144 /* BackendExtensions.swift in Sources */,
 				43CD623E28CE282400095144 /* WelcomeWindowContentViewController.swift in Sources */,
+				4314EDF828D85E0E00431770 /* SidebarGroupCellView.swift in Sources */,
 				436E71FA28D7511400ECBF49 /* WorkspaceWindowController.swift in Sources */,
-				436E720D28D760BF00ECBF49 /* TopicTableCellView.swift in Sources */,
+				436E720D28D760BF00ECBF49 /* SidebarEntryCellView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

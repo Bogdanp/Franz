@@ -2,21 +2,35 @@ import Cocoa
 import NoiseSerde
 
 class WorkspaceSidebarViewController: NSViewController {
-  private var topics = [Topic]()
+  private var metadata = Metadata(brokers: [], topics: [])
+  private var entries = [SidebarEntry]()
 
   @IBOutlet weak var tableView: NSTableView!
 
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    tableView.register(.init(nibNamed: "TopicTableCellView", bundle: nil), forIdentifier: .topics)
+    tableView.register(.init(nibNamed: "SidebarEntryCellView", bundle: nil), forIdentifier: .entry)
+    tableView.register(.init(nibNamed: "SidebarGroupCellView", bundle: nil), forIdentifier: .group)
     tableView.delegate = self
     tableView.dataSource = self
     tableView.reloadData()
   }
 
-  func configure(withTopics topics: [Topic]) {
-    self.topics = topics
+  func configure(withMetadata metadata: Metadata) {
+    self.metadata = metadata
+
+    self.entries.removeAll(keepingCapacity: true)
+    self.entries.append(SidebarEntry(withKind: .group, label: "Brokers"))
+    for b in metadata.brokers {
+      self.entries.append(SidebarEntry(withKind: .broker, label: "\(b.host):\(b.port)"))
+    }
+
+    self.entries.append(SidebarEntry(withKind: .group, label: "Topics"))
+    for t in metadata.topics {
+      self.entries.append(SidebarEntry(withKind: .topic, label: t.name, andCount: "\(t.partitions.count)"))
+    }
+
     self.tableView.reloadData()
   }
 }
@@ -24,17 +38,43 @@ class WorkspaceSidebarViewController: NSViewController {
 // MARK: -NSTableViewDelegate
 extension WorkspaceSidebarViewController: NSTableViewDelegate {
   func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
-    guard let view = tableView.makeView(withIdentifier: .topics, owner: nil) as? TopicTableCellView else {
-      print("not found")
-      return nil
-    }
+    let entry = entries[row]
+    switch entry.kind {
+    case .topic, .broker:
+      guard let view = tableView.makeView(withIdentifier: .entry, owner: nil) as? SidebarEntryCellView else {
+        return nil
+      }
 
-    let topic = topics[row]
-    view.textField?.stringValue = topic.name
-    view.partitionsField.stringValue = "\(topic.partitions.count)"
-    view.imageView?.image = NSImage(systemSymbolName: "tray.full", accessibilityDescription: "Topic")?
-      .withSymbolConfiguration(.init(pointSize: 14, weight: .light))
-    return view
+      view.textField?.stringValue = entry.label
+      view.partitionsField.stringValue = entry.count ?? ""
+
+      var image: NSImage?
+      switch entry.kind {
+      case .topic:
+        image = NSImage(systemSymbolName: "tray.full", accessibilityDescription: "Topic")
+      case .broker:
+        image = NSImage(systemSymbolName: "xserve", accessibilityDescription: "Broker")
+      default:
+        image = nil
+      }
+      view.imageView?.image = image
+      return view
+    case .group:
+      guard let view = tableView.makeView(withIdentifier: .group, owner: nil) as? SidebarGroupCellView else {
+        return nil
+      }
+
+      view.textField.stringValue = entry.label
+      return view
+    }
+  }
+
+  func tableView(_ tableView: NSTableView, isGroupRow row: Int) -> Bool {
+    return entries[row].kind == .group
+  }
+
+  func tableView(_ tableView: NSTableView, shouldSelectRow row: Int) -> Bool {
+    return entries[row].kind != .group
   }
 }
 
@@ -42,15 +82,35 @@ extension WorkspaceSidebarViewController: NSTableViewDelegate {
 extension WorkspaceSidebarViewController: NSTableViewDataSource {
 
   func numberOfRows(in tableView: NSTableView) -> Int {
-    return topics.count
+    return entries.count
   }
 
   func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any? {
-    return topics[row]
+    return entries[row]
   }
 }
 
 // MARK: -NSUserInterfaceItemIdentifier
 extension NSUserInterfaceItemIdentifier {
-  static let topics = NSUserInterfaceItemIdentifier("Topics")
+  static let entry = NSUserInterfaceItemIdentifier("Entry")
+  static let group = NSUserInterfaceItemIdentifier("Group")
+}
+
+// MARK: -SidebarEntry
+private enum SidebarEntryKind {
+  case group
+  case broker
+  case topic
+}
+
+private class SidebarEntry: NSObject {
+  let kind: SidebarEntryKind
+  let label: String
+  let count: String?
+
+  init(withKind kind: SidebarEntryKind, label: String, andCount count: String? = nil) {
+    self.kind = kind
+    self.label = label
+    self.count = count
+  }
 }

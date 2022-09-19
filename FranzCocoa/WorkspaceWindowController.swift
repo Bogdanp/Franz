@@ -29,7 +29,7 @@ class WorkspaceWindowController: NSWindowController {
       self.id = id
       self.status("Getting metadata...")
       Backend.shared.getMetadata(id).onComplete { meta in
-        self.sidebarCtl.configure(withTopics: meta.topics)
+        self.sidebarCtl.configure(withMetadata: meta)
         self.status("Ready")
       }
     }

@@ -6,10 +6,10 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
-        <customObject id="-2" userLabel="File's Owner" customClass="TopicTableCellView" customModule="Franz" customModuleProvider="target"/>
+        <customObject id="-2" userLabel="File's Owner" customClass="SidebarEntryCellView" customModule="Franz" customModuleProvider="target"/>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
-        <customView id="c22-O7-iKe" customClass="TopicTableCellView" customModule="Franz" customModuleProvider="target">
+        <customView id="c22-O7-iKe" customClass="SidebarEntryCellView" customModule="Franz" customModuleProvider="target">
             <rect key="frame" x="0.0" y="0.0" width="280" height="32"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
@@ -28,7 +28,7 @@
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="gk0-a1-1Ex">
                     <rect key="frame" x="257" y="8" width="20" height="14"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="12" id="mwW-kM-o77">
-                        <font key="font" metaFont="system" size="11"/>
+                        <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>

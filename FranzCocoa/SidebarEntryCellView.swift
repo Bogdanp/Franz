@@ -1,5 +1,5 @@
 import Cocoa
 
-class TopicTableCellView: NSTableCellView {
+class SidebarEntryCellView: NSTableCellView {
   @IBOutlet weak var partitionsField: NSTextField!
 }
