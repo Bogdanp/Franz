@@ -16,10 +16,6 @@ extension Backend {
 
 extension ConnectionDetails {
   func detailsString() -> String {
-    let host = "\(bootstrapHost):\(bootstrapPort)"
-    guard let username = username else {
-      return host
-    }
-    return "\(username) @ \(host)"
+    return "\(bootstrapHost):\(bootstrapPort)"
   }
 }

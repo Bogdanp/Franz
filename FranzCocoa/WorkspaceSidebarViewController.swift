@@ -48,7 +48,12 @@ extension WorkspaceSidebarViewController: NSTableViewDelegate {
       }
 
       view.textField?.stringValue = entry.label
-      view.partitionsField.stringValue = entry.count ?? ""
+      if let count = entry.count {
+        view.partitionsField.stringValue = count
+        view.partitionsField.isHidden = false
+      } else {
+        view.partitionsField.isHidden = true
+      }
 
       var image: NSImage?
       switch entry.kind {
