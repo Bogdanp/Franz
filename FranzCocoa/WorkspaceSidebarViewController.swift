@@ -6,6 +6,7 @@ class WorkspaceSidebarViewController: NSViewController {
   private var entries = [SidebarEntry]()
 
   @IBOutlet weak var tableView: NSTableView!
+  @IBOutlet weak var noTopicsField: NSTextField!
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -31,6 +32,7 @@ class WorkspaceSidebarViewController: NSViewController {
       self.entries.append(SidebarEntry(withKind: .topic, label: t.name, andCount: "\(t.partitions.count)"))
     }
 
+    self.noTopicsField.isHidden = !(self.metadata.topics.isEmpty && self.metadata.brokers.isEmpty)
     self.tableView.reloadData()
   }
 }

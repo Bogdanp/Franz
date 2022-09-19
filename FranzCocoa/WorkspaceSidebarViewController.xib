@@ -8,6 +8,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="WorkspaceSidebarViewController" customModule="Franz" customModuleProvider="target">
             <connections>
+                <outlet property="noTopicsField" destination="7fa-sM-Yl7" id="oo1-JA-vre"/>
                 <outlet property="tableView" destination="N3m-ts-FJj" id="Xf9-mH-mqO"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>
@@ -58,7 +59,20 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
                 </scrollView>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="7fa-sM-Yl7">
+                    <rect key="frame" x="-2" y="292" width="284" height="16"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="No Topics" id="6KA-uL-mDc">
+                        <font key="font" usesAppearanceFont="YES"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
             </subviews>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="7fa-sM-Yl7" secondAttribute="trailing" id="Hkq-He-tV7"/>
+                <constraint firstItem="7fa-sM-Yl7" firstAttribute="centerY" secondItem="Hz6-mo-xeY" secondAttribute="centerY" id="Ljk-fz-UeP"/>
+                <constraint firstItem="7fa-sM-Yl7" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" id="Z7o-oX-uzN"/>
+            </constraints>
             <point key="canvasLocation" x="108" y="143"/>
         </customView>
     </objects>
