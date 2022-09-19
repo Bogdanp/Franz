@@ -74,3 +74,9 @@
    (and~> (ConnectionDetails-id c)
           (meta:touch-connection!))
    #t))
+
+(define-rpc (delete-connection [_ c : ConnectionDetails] : Bool)
+  (and
+   (and~> (ConnectionDetails-id c)
+          (meta:delete-connection!))
+   #t))
