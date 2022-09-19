@@ -3,24 +3,34 @@ import Cocoa
 class WelcomeWindowConnectionsViewController: NSViewController {
 
   @IBOutlet weak var recentConnectionsLabel: NSTextField!
-  @IBOutlet weak var connectionsTableView: NSTableView!
+  @IBOutlet weak var connectionsTable: NSTableView!
 
   private var connections = [ConnectionDetails]()
 
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    connectionsTableView.register(.init(nibNamed: "ConnectionTableCellView", bundle: nil), forIdentifier: .connectionColumn)
-    connectionsTableView.dataSource = self
-    connectionsTableView.delegate = self
-    connectionsTableView.doubleAction = #selector(didDoubleClickConnection(_:))
+    connectionsTable.register(.init(nibNamed: "ConnectionTableCellView", bundle: nil), forIdentifier: .connectionColumn)
+    connectionsTable.dataSource = self
+    connectionsTable.delegate = self
+    connectionsTable.doubleAction = #selector(didDoubleClickConnection(_:))
+
+    let menu = NSMenu()
+    menu.addItem(NSMenuItem(title: "Edit...", action: nil, keyEquivalent: ""))
+    menu.addItem(.separator())
+    menu.addItem(NSMenuItem(title: "Delete", action: #selector(didPressDeleteMenuItem(_:)), keyEquivalent: ""))
+    connectionsTable.menu = menu
   }
 
   override func viewDidAppear() {
     super.viewDidAppear()
+    reload()
+  }
+
+  private func reload() {
     connections = Backend.shared.getConnections().wait()
     recentConnectionsLabel.isHidden = !connections.isEmpty
-    connectionsTableView.reloadData()
+    connectionsTable.reloadData()
   }
 
   @objc func didDoubleClickConnection(_ sender: NSTableView) {
@@ -28,6 +38,13 @@ class WelcomeWindowConnectionsViewController: NSViewController {
     let _ = Backend.shared.touchConnection(conn)
     WindowManager.shared.launchWorkspace(withConn: conn)
     WindowManager.shared.closeWelcomeWindow()
+  }
+
+  @objc func didPressDeleteMenuItem(_ sender: NSMenuItem) {
+    let conn = connections[connectionsTable.clickedRow]
+    if Backend.shared.deleteConnection(conn).wait() {
+      reload()
+    }
   }
 }
 

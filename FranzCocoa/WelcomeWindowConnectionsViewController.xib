@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21225" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21225"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="WelcomeWindowConnectionsViewController" customModule="Franz" customModuleProvider="target">
             <connections>
-                <outlet property="connectionsTableView" destination="bIC-RB-rnQ" id="JXY-MZ-UEO"/>
+                <outlet property="connectionsTable" destination="bIC-RB-rnQ" id="JXY-MZ-UEO"/>
                 <outlet property="recentConnectionsLabel" destination="VHb-QH-bbw" id="a27-HX-MFk"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>
@@ -26,7 +25,7 @@
                             <rect key="frame" x="0.0" y="0.0" width="280" height="360"/>
                             <clipView key="contentView" drawsBackground="NO" id="gVG-Qw-gHd">
                                 <rect key="frame" x="1" y="1" width="278" height="358"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <autoresizingMask key="autoresizingMask"/>
                                 <subviews>
                                     <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="sourceList" selectionHighlightStyle="sourceList" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="50" viewBased="YES" id="bIC-RB-rnQ">
                                         <rect key="frame" x="0.0" y="0.0" width="278" height="338"/>
