@@ -13,7 +13,7 @@
             <rect key="frame" x="0.0" y="0.0" width="280" height="22"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <visualEffectView fixedFrame="YES" blendingMode="behindWindow" material="appearanceBased" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="RAY-R6-e27">
+                <visualEffectView fixedFrame="YES" blendingMode="behindWindow" material="sidebar" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="RAY-R6-e27">
                     <rect key="frame" x="0.0" y="0.0" width="280" height="22"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 </visualEffectView>
