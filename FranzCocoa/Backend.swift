@@ -170,7 +170,7 @@ public class Backend {
     impl = NoiseBackend.Backend(withZo: zo, andMod: mod, andProc: proc)
   }
 
-  public func closeAllWorkspaces() -> Future<Bool> {
+  public func closeAllWorkspaces() -> Future<String, Bool> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0000).write(to: out)
@@ -181,7 +181,7 @@ public class Backend {
     )
   }
 
-  public func deleteConnection(_ c: ConnectionDetails) -> Future<Bool> {
+  public func deleteConnection(_ c: ConnectionDetails) -> Future<String, Bool> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0001).write(to: out)
@@ -193,7 +193,7 @@ public class Backend {
     )
   }
 
-  public func getConnections() -> Future<[ConnectionDetails]> {
+  public func getConnections() -> Future<String, [ConnectionDetails]> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0002).write(to: out)
@@ -204,7 +204,7 @@ public class Backend {
     )
   }
 
-  public func getMetadata(_ id: UVarint) -> Future<Metadata> {
+  public func getMetadata(_ id: UVarint) -> Future<String, Metadata> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0003).write(to: out)
@@ -216,7 +216,7 @@ public class Backend {
     )
   }
 
-  public func openWorkspace(withConn conn: ConnectionDetails) -> Future<UVarint> {
+  public func openWorkspace(withConn conn: ConnectionDetails) -> Future<String, UVarint> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0004).write(to: out)
@@ -228,7 +228,7 @@ public class Backend {
     )
   }
 
-  public func ping() -> Future<String> {
+  public func ping() -> Future<String, String> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0005).write(to: out)
@@ -239,7 +239,7 @@ public class Backend {
     )
   }
 
-  public func saveConnection(_ c: ConnectionDetails) -> Future<ConnectionDetails> {
+  public func saveConnection(_ c: ConnectionDetails) -> Future<String, ConnectionDetails> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0006).write(to: out)
@@ -251,7 +251,7 @@ public class Backend {
     )
   }
 
-  public func touchConnection(_ c: ConnectionDetails) -> Future<Bool> {
+  public func touchConnection(_ c: ConnectionDetails) -> Future<String, Bool> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0007).write(to: out)

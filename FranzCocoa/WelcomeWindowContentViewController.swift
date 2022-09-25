@@ -9,7 +9,7 @@ class WelcomeWindowContentViewController: NSViewController {
   @IBAction func didPushNewConnectionButton(_ sender: Any) {
     let formController = ConnectionDetailsFormViewController()
     formController.configure(actionLabel: "Connect", { details in
-      let conn = Backend.shared.saveConnection(details).wait()
+      let conn = try! Backend.shared.saveConnection(details).wait()
       WindowManager.shared.launchWorkspace(withConn: conn)
       WindowManager.shared.closeWelcomeWindow()
     })

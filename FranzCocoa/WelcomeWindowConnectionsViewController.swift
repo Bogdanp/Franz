@@ -28,7 +28,7 @@ class WelcomeWindowConnectionsViewController: NSViewController {
   }
 
   private func reload() {
-    connections = Backend.shared.getConnections().wait()
+    connections = try! Backend.shared.getConnections().wait()
     recentConnectionsLabel.isHidden = !connections.isEmpty
     connectionsTable.reloadData()
   }
@@ -42,7 +42,7 @@ class WelcomeWindowConnectionsViewController: NSViewController {
 
   @objc func didPressDeleteMenuItem(_ sender: NSMenuItem) {
     let conn = connections[connectionsTable.clickedRow]
-    if Backend.shared.deleteConnection(conn).wait() {
+    if try! Backend.shared.deleteConnection(conn).wait() {
       reload()
     }
   }
