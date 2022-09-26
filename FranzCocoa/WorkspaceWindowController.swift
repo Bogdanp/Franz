@@ -23,23 +23,7 @@ class WorkspaceWindowController: NSWindowController {
     super.windowDidLoad()
 
     statusBarNameField.stringValue = conn.name
-
-    status("Connecting...")
-    Backend.shared.openWorkspace(withConn: conn).sink(
-      onError: { err in
-        let alert = NSAlert()
-        alert.messageText = err
-        alert.alertStyle = .critical
-        alert.runModal()
-        self.status("Connection Failed")
-      }) { id in
-        self.id = id
-        self.status("Getting metadata...")
-        Backend.shared.getMetadata(id).onComplete { meta in
-          self.sidebarCtl.configure(withMetadata: meta)
-          self.status("Ready")
-        }
-      }
+    connect()
 
     self.splitCtl.addSplitViewItem(NSSplitViewItem(sidebarWithViewController: sidebarCtl))
     self.splitCtl.addSplitViewItem(NSSplitViewItem(viewController: WorkspaceDetailViewController()))
@@ -48,6 +32,35 @@ class WorkspaceWindowController: NSWindowController {
     window?.title = "\(conn.name) : \(conn.detailsString())"
     window?.setFrame(NSRect(x: 0, y: 0, width: 800, height: 600), display: true)
     window?.center()
+  }
+
+  private func connect() {
+    status("Connecting...")
+    Backend.shared.openWorkspace(withConn: conn).sink(
+      onError: { err in
+        self.status("Connection Failed")
+        let alert = NSAlert()
+        alert.messageText = "Connection Error"
+        alert.informativeText = err
+        alert.alertStyle = .critical
+        alert.addButton(withTitle: "OK")
+        alert.addButton(withTitle: "Retry")
+        switch alert.runModal() {
+        case .alertFirstButtonReturn:
+          return
+        case .alertSecondButtonReturn:
+          self.connect()
+        default:
+          preconditionFailure()
+        }
+      }) { id in
+        self.id = id
+        self.status("Getting metadata...")
+        Backend.shared.getMetadata(id).onComplete { meta in
+          self.sidebarCtl.configure(withMetadata: meta)
+          self.status("Ready")
+        }
+      }
   }
 
   private func status(_ s: String) {
