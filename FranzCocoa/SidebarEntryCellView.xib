@@ -52,9 +52,9 @@
                 <constraint firstItem="gk0-a1-1Ex" firstAttribute="centerY" secondItem="c22-O7-iKe" secondAttribute="centerY" id="hdw-Yp-RcE"/>
             </constraints>
             <connections>
+                <outlet property="countField" destination="gk0-a1-1Ex" id="U2k-F5-vBJ"/>
                 <outlet property="extendedTextField" destination="hOL-aI-LUH" id="j4C-Y6-10q"/>
                 <outlet property="imageView" destination="6T3-vA-sWM" id="nkW-8w-oSL"/>
-                <outlet property="partitionsField" destination="gk0-a1-1Ex" id="U2k-F5-vBJ"/>
                 <outlet property="textField" destination="vG3-yg-FU3" id="wJB-ay-seo"/>
             </connections>
             <point key="canvasLocation" x="108" y="143"/>
