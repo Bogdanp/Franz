@@ -55,12 +55,16 @@ class WorkspaceWindowController: NSWindowController {
         }
       }) { id in
         self.id = id
-        self.status("Getting metadata...")
-        Backend.shared.getMetadata(id).onComplete { meta in
-          self.sidebarCtl.configure(withMetadata: meta)
-          self.status("Ready")
-        }
+        self.loadMetadata()
       }
+  }
+
+  private func loadMetadata() {
+    self.status("Getting metadata...")
+    Backend.shared.getMetadata(id).onComplete { meta in
+      self.sidebarCtl.configure(withMetadata: meta)
+      self.status("Ready")
+    }
   }
 
   private func status(_ s: String) {
@@ -87,21 +91,32 @@ extension WorkspaceWindowController: NSToolbarDelegate {
         let item = NSToolbarItem(itemIdentifier: itemIdentifier)
         item.view = statusBarView
         return item
+      case .reloadButton:
+        let item = NSToolbarItem(itemIdentifier: itemIdentifier)
+        item.image = NSImage(systemSymbolName: "goforward", accessibilityDescription: "Reload")?
+          .withSymbolConfiguration(.init(pointSize: 18, weight: .light))
+        item.label = "Reload Metadata"
+        item.action = #selector(didPressReloadButton(_:))
+        return item
       default:
         return nil
       }
   }
 
   func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-    return [.toggleSidebar, .flexibleSpace, .statusBar, .flexibleSpace]
+    return [.toggleSidebar, .flexibleSpace, .statusBar, .reloadButton, .flexibleSpace]
   }
 
   func toolbarAllowedItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-    return [.toggleSidebar, .statusBar, .flexibleSpace]
+    return [.toggleSidebar, .statusBar, .reloadButton, .flexibleSpace]
   }
 
   @objc func didPressToggleSidebarButton(_ sender: Any) {
     splitCtl.toggleSidebar(sender)
+  }
+
+  @objc func didPressReloadButton(_ sender: Any) {
+    loadMetadata()
   }
 }
 
@@ -109,4 +124,5 @@ extension WorkspaceWindowController: NSToolbarDelegate {
 extension NSToolbarItem.Identifier {
   static let toggleSidebar = NSToolbarItem.Identifier("toggleSidebar")
   static let statusBar = NSToolbarItem.Identifier("statusBar")
+  static let reloadButton = NSToolbarItem.Identifier("reloadButton")
 }

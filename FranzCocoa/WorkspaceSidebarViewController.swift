@@ -63,9 +63,9 @@ extension WorkspaceSidebarViewController: NSTableViewDelegate {
       case .broker:
         image = NSImage(systemSymbolName: "xserve", accessibilityDescription: "Broker")
       case .topic:
-        image = NSImage(systemSymbolName: "tray.full", accessibilityDescription: "Topic")
+        image = NSImage(systemSymbolName: "tray.full.fill", accessibilityDescription: "Topic")
       case .consumerGroup:
-        image = NSImage(systemSymbolName: "rectangle.3.group", accessibilityDescription: "Consumer Group")
+        image = NSImage(systemSymbolName: "circle.grid.3x3.fill", accessibilityDescription: "Consumer Group")
       default:
         image = nil
       }
