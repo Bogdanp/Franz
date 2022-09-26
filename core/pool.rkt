@@ -2,6 +2,7 @@
 
 (require (prefix-in k: kafka)
          racket/match
+         racket/promise
          threading
          "broker.rkt"
          "connection-details.rkt"
@@ -54,8 +55,12 @@
                    [`(get-metadata ,res-ch ,nack ,id)
                     (define metadata-or-exn
                       (with-handlers ([exn:fail? values])
+                        (define c (state-ref-client s id))
                         (define meta
-                          (k:get-metadata (state-ref-client s id)))
+                          (k:client-metadata c))
+                        (define groups
+                          (for/list ([g (in-list (k:list-groups c))])
+                            (make-Group #:id (k:Group-id g))))
                         (define brokers
                           (for/list ([b (in-list (k:Metadata-brokers meta))])
                             (make-Broker
@@ -75,11 +80,13 @@
                              #:is-internal (k:TopicMetadata-internal? t))))
                         (make-Metadata
                          #:brokers (sort brokers < #:key Broker-id)
-                         #:topics (sort topics string<? #:key Topic-name))))
+                         #:topics (sort topics string<? #:key Topic-name)
+                         #:groups (sort groups string<? #:key Group-id))))
                     (state-add-req s (req metadata-or-exn res-ch nack))]
 
                    [`(shutdown ,res-ch ,nack)
-                    (for-each k:disconnect-all (hash-values (state-clients s)))
+                    (for ([c (in-hash-values (state-clients s))])
+                      (k:disconnect-all c))
                     (~> (state-clear-clients s)
                         (state-add-req _ (req #t res-ch nack)))])))
               (append

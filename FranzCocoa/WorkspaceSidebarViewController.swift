@@ -2,7 +2,7 @@ import Cocoa
 import NoiseSerde
 
 class WorkspaceSidebarViewController: NSViewController {
-  private var metadata = Metadata(brokers: [], topics: [])
+  private var metadata = Metadata(brokers: [], topics: [], groups: [])
   private var entries = [SidebarEntry]()
 
   @IBOutlet weak var tableView: NSTableView!
@@ -32,6 +32,11 @@ class WorkspaceSidebarViewController: NSViewController {
       self.entries.append(SidebarEntry(withKind: .topic, label: t.name, andCount: "\(t.partitions.count)"))
     }
 
+    self.entries.append(SidebarEntry(withKind: .group, label: "Consumer Groups"))
+    for g in metadata.groups {
+      self.entries.append(SidebarEntry(withKind: .consumerGroup, label: g.id))
+    }
+
     self.noTopicsField.isHidden = !(self.metadata.topics.isEmpty && self.metadata.brokers.isEmpty)
     self.tableView.reloadData()
   }
@@ -42,7 +47,7 @@ extension WorkspaceSidebarViewController: NSTableViewDelegate {
   func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
     let entry = entries[row]
     switch entry.kind {
-    case .topic, .broker:
+    case .broker, .topic, .consumerGroup:
       guard let view = tableView.makeView(withIdentifier: .entry, owner: nil) as? SidebarEntryCellView else {
         return nil
       }
@@ -55,10 +60,12 @@ extension WorkspaceSidebarViewController: NSTableViewDelegate {
 
       var image: NSImage?
       switch entry.kind {
-      case .topic:
-        image = NSImage(systemSymbolName: "tray.full", accessibilityDescription: "Topic")
       case .broker:
         image = NSImage(systemSymbolName: "xserve", accessibilityDescription: "Broker")
+      case .topic:
+        image = NSImage(systemSymbolName: "tray.full", accessibilityDescription: "Topic")
+      case .consumerGroup:
+        image = NSImage(systemSymbolName: "rectangle.3.group", accessibilityDescription: "Consumer Group")
       default:
         image = nil
       }
@@ -106,6 +113,7 @@ private enum SidebarEntryKind {
   case group
   case broker
   case topic
+  case consumerGroup
 }
 
 private class SidebarEntry: NSObject {

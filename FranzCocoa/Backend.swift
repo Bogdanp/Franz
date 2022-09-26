@@ -88,28 +88,53 @@ public struct ConnectionDetails: Readable, Writable {
   }
 }
 
+public struct Group: Readable, Writable {
+  public let id: String
+
+  public init(
+    id: String
+  ) {
+    self.id = id
+  }
+
+  public static func read(from inp: InputPort, using buf: inout Data) -> Group {
+    return Group(
+      id: String.read(from: inp, using: &buf)
+    )
+  }
+
+  public func write(to out: OutputPort) {
+    id.write(to: out)
+  }
+}
+
 public struct Metadata: Readable, Writable {
   public let brokers: [Broker]
   public let topics: [Topic]
+  public let groups: [Group]
 
   public init(
     brokers: [Broker],
-    topics: [Topic]
+    topics: [Topic],
+    groups: [Group]
   ) {
     self.brokers = brokers
     self.topics = topics
+    self.groups = groups
   }
 
   public static func read(from inp: InputPort, using buf: inout Data) -> Metadata {
     return Metadata(
       brokers: [Broker].read(from: inp, using: &buf),
-      topics: [Topic].read(from: inp, using: &buf)
+      topics: [Topic].read(from: inp, using: &buf),
+      groups: [Group].read(from: inp, using: &buf)
     )
   }
 
   public func write(to out: OutputPort) {
     brokers.write(to: out)
     topics.write(to: out)
+    groups.write(to: out)
   }
 }
 
