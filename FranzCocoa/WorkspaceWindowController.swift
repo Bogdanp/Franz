@@ -25,8 +25,8 @@ class WorkspaceWindowController: NSWindowController {
     statusBarNameField.stringValue = conn.name
     connect()
 
-    self.splitCtl.addSplitViewItem(NSSplitViewItem(sidebarWithViewController: sidebarCtl))
-    self.splitCtl.addSplitViewItem(NSSplitViewItem(viewController: WorkspaceDetailViewController()))
+    splitCtl.addSplitViewItem(NSSplitViewItem(sidebarWithViewController: sidebarCtl))
+    splitCtl.addSplitViewItem(NSSplitViewItem(viewController: WorkspaceDetailViewController()))
 
     window?.contentViewController = splitCtl
     window?.title = "\(conn.name) : \(conn.detailsString())"
@@ -90,6 +90,8 @@ extension WorkspaceWindowController: NSToolbarDelegate {
       case .statusBar:
         let item = NSToolbarItem(itemIdentifier: itemIdentifier)
         item.view = statusBarView
+        item.minSize.width = 200
+        item.maxSize.width = .infinity
         return item
       case .reloadButton:
         let item = NSToolbarItem(itemIdentifier: itemIdentifier)
@@ -104,7 +106,7 @@ extension WorkspaceWindowController: NSToolbarDelegate {
   }
 
   func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-    return [.toggleSidebar, .flexibleSpace, .statusBar, .reloadButton, .flexibleSpace]
+    return [.toggleSidebar, .statusBar, .reloadButton]
   }
 
   func toolbarAllowedItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {

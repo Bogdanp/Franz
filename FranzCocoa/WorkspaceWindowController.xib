@@ -40,11 +40,11 @@
         </window>
         <customView id="8en-9O-LIY" userLabel="Status Bar">
             <rect key="frame" x="0.0" y="0.0" width="420" height="24"/>
-            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
             <subviews>
-                <box fixedFrame="YES" borderType="line" title="Box" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="IS8-OA-uNO">
+                <box fixedFrame="YES" borderType="line" title="Box" titlePosition="noTitle" id="IS8-OA-uNO">
                     <rect key="frame" x="-3" y="-4" width="426" height="30"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="Srx-n6-Dqq">
                         <rect key="frame" x="3" y="3" width="420" height="24"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
