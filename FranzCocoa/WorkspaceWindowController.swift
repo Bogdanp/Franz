@@ -22,6 +22,8 @@ class WorkspaceWindowController: NSWindowController {
   override func windowDidLoad() {
     super.windowDidLoad()
 
+    sidebarCtl.delegate = self
+
     statusBarNameField.stringValue = conn.name
     connect()
 
@@ -127,4 +129,11 @@ extension NSToolbarItem.Identifier {
   static let toggleSidebar = NSToolbarItem.Identifier("toggleSidebar")
   static let statusBar = NSToolbarItem.Identifier("statusBar")
   static let reloadButton = NSToolbarItem.Identifier("reloadButton")
+}
+
+// MARK: -WorkspaceSidebarDelegate
+extension WorkspaceWindowController: WorkspaceSidebarDelegate {
+  func sidebar(didSelectEntry entry: SidebarEntry) {
+    print("selected \(entry)")
+  }
 }

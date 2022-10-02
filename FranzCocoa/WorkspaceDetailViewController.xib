@@ -8,6 +8,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="WorkspaceDetailViewController" customModule="Franz" customModuleProvider="target">
             <connections>
+                <outlet property="selectLabel" destination="vJf-1Q-sYE" id="lzJ-uM-O4t"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>
         </customObject>
@@ -16,6 +17,20 @@
         <customView id="Hz6-mo-xeY">
             <rect key="frame" x="0.0" y="0.0" width="480" height="600"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="vJf-1Q-sYE">
+                    <rect key="frame" x="111" y="292" width="258" height="16"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" title="Select a Broker, Topic or Consumer Group" id="ipv-Rr-dWX">
+                        <font key="font" usesAppearanceFont="YES"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+            </subviews>
+            <constraints>
+                <constraint firstItem="vJf-1Q-sYE" firstAttribute="centerY" secondItem="Hz6-mo-xeY" secondAttribute="centerY" id="BAk-cE-BsJ"/>
+                <constraint firstItem="vJf-1Q-sYE" firstAttribute="centerX" secondItem="Hz6-mo-xeY" secondAttribute="centerX" id="MLj-te-5Xz"/>
+            </constraints>
             <point key="canvasLocation" x="108" y="143"/>
         </customView>
     </objects>

@@ -8,6 +8,8 @@ class WorkspaceSidebarViewController: NSViewController {
   @IBOutlet weak var tableView: NSTableView!
   @IBOutlet weak var noTopicsField: NSTextField!
 
+  var delegate: WorkspaceSidebarDelegate?
+
   override func viewDidLoad() {
     super.viewDidLoad()
 
@@ -88,6 +90,10 @@ extension WorkspaceSidebarViewController: NSTableViewDelegate {
   func tableView(_ tableView: NSTableView, shouldSelectRow row: Int) -> Bool {
     return entries[row].kind != .group
   }
+
+  func tableViewSelectionDidChange(_ notification: Notification) {
+    delegate?.sidebar(didSelectEntry: entries[tableView.selectedRow])
+  }
 }
 
 // MARK: -NSTableViewDataSource
@@ -109,14 +115,14 @@ extension NSUserInterfaceItemIdentifier {
 }
 
 // MARK: -SidebarEntry
-private enum SidebarEntryKind {
+enum SidebarEntryKind {
   case group
   case broker
   case topic
   case consumerGroup
 }
 
-private class SidebarEntry: NSObject {
+class SidebarEntry: NSObject {
   let kind: SidebarEntryKind
   let label: String
   let count: String?
@@ -126,4 +132,9 @@ private class SidebarEntry: NSObject {
     self.label = label
     self.count = count
   }
+}
+
+// MARK: -WorkspaceSidebarDelegate
+protocol WorkspaceSidebarDelegate {
+  func sidebar(didSelectEntry entry: SidebarEntry)
 }
