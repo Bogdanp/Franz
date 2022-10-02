@@ -67,7 +67,7 @@
                              #:id (k:BrokerMetadata-node-id b)
                              #:host (k:BrokerMetadata-host b)
                              #:port (k:BrokerMetadata-port b)
-                             #:rack (nil-> (k:BrokerMetadata-rack b)))))
+                             #:rack (k:BrokerMetadata-rack b))))
                         (define topics
                           (for/list ([t (in-list (k:Metadata-topics meta))])
                             (define parts
@@ -171,9 +171,3 @@
 
 (define (state-clear-clients s)
   (struct-copy state s [clients (hasheqv)]))
-
-
-;; help ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(define (nil-> v)
-  (if (eq? v 'nil) #f v))
