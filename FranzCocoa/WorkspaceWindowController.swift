@@ -13,6 +13,7 @@ class WorkspaceWindowController: NSWindowController {
 
   private let splitCtl = NSSplitViewController()
   private let sidebarCtl = WorkspaceSidebarViewController()
+  private let detailCtl = WorkspaceDetailViewController()
 
   convenience init(withConn conn: ConnectionDetails) {
     self.init(windowNibName: "WorkspaceWindowController")
@@ -28,7 +29,7 @@ class WorkspaceWindowController: NSWindowController {
     connect()
 
     splitCtl.addSplitViewItem(NSSplitViewItem(sidebarWithViewController: sidebarCtl))
-    splitCtl.addSplitViewItem(NSSplitViewItem(viewController: WorkspaceDetailViewController()))
+    splitCtl.addSplitViewItem(NSSplitViewItem(viewController: detailCtl))
 
     window?.contentViewController = splitCtl
     window?.title = "\(conn.name) : \(conn.detailsString())"
@@ -133,7 +134,7 @@ extension NSToolbarItem.Identifier {
 
 // MARK: -WorkspaceSidebarDelegate
 extension WorkspaceWindowController: WorkspaceSidebarDelegate {
-  func sidebar(didSelectEntry entry: SidebarEntry) {
-    print("selected \(entry)")
+  func sidebar(didSelectEntry entry: Any, withKind kind: SidebarEntryKind) {
+    detailCtl.show(entry: entry, withKind: kind)
   }
 }

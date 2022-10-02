@@ -17,6 +17,7 @@
 		436E720728D75B0500ECBF49 /* WorkspaceDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 436E720528D75B0500ECBF49 /* WorkspaceDetailViewController.xib */; };
 		436E720D28D760BF00ECBF49 /* SidebarEntryCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436E720C28D760BF00ECBF49 /* SidebarEntryCellView.swift */; };
 		436E720F28D760D400ECBF49 /* SidebarEntryCellView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 436E720E28D760D400ECBF49 /* SidebarEntryCellView.xib */; };
+		437887F628E9FE5900D0B263 /* WorkspaceBrokerDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 437887F528E9FE5900D0B263 /* WorkspaceBrokerDetailView.swift */; };
 		43804AB428D19ACD002880FE /* WelcomeWindowConnectionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43804AB228D19ACD002880FE /* WelcomeWindowConnectionsViewController.swift */; };
 		43804AB528D19ACD002880FE /* WelcomeWindowConnectionsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43804AB328D19ACD002880FE /* WelcomeWindowConnectionsViewController.xib */; };
 		43804AB728D1A014002880FE /* ConnectionTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43804AB628D1A014002880FE /* ConnectionTableCellView.swift */; };
@@ -50,6 +51,7 @@
 		436E720528D75B0500ECBF49 /* WorkspaceDetailViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WorkspaceDetailViewController.xib; sourceTree = "<group>"; };
 		436E720C28D760BF00ECBF49 /* SidebarEntryCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarEntryCellView.swift; sourceTree = "<group>"; };
 		436E720E28D760D400ECBF49 /* SidebarEntryCellView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SidebarEntryCellView.xib; sourceTree = "<group>"; };
+		437887F528E9FE5900D0B263 /* WorkspaceBrokerDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceBrokerDetailView.swift; sourceTree = "<group>"; };
 		43804AB228D19ACD002880FE /* WelcomeWindowConnectionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeWindowConnectionsViewController.swift; sourceTree = "<group>"; };
 		43804AB328D19ACD002880FE /* WelcomeWindowConnectionsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WelcomeWindowConnectionsViewController.xib; sourceTree = "<group>"; };
 		43804AB628D1A014002880FE /* ConnectionTableCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionTableCellView.swift; sourceTree = "<group>"; };
@@ -129,6 +131,7 @@
 				43CD623928CE27DB00095144 /* WelcomeWindowController.swift */,
 				43CD623828CE27DB00095144 /* WelcomeWindowController.xib */,
 				43CD623628CE27B200095144 /* WindowManager.swift */,
+				437887F528E9FE5900D0B263 /* WorkspaceBrokerDetailView.swift */,
 				436E720428D75B0500ECBF49 /* WorkspaceDetailViewController.swift */,
 				436E720528D75B0500ECBF49 /* WorkspaceDetailViewController.xib */,
 				436E720028D759F400ECBF49 /* WorkspaceSidebarViewController.swift */,
@@ -275,6 +278,7 @@
 				43CD623E28CE282400095144 /* WelcomeWindowContentViewController.swift in Sources */,
 				4314EDF828D85E0E00431770 /* SidebarGroupCellView.swift in Sources */,
 				436E71FA28D7511400ECBF49 /* WorkspaceWindowController.swift in Sources */,
+				437887F628E9FE5900D0B263 /* WorkspaceBrokerDetailView.swift in Sources */,
 				436E720D28D760BF00ECBF49 /* SidebarEntryCellView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

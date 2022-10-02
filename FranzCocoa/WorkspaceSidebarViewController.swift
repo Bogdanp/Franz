@@ -26,17 +26,17 @@ class WorkspaceSidebarViewController: NSViewController {
     self.entries.removeAll(keepingCapacity: true)
     self.entries.append(SidebarEntry(withKind: .group, label: "Brokers"))
     for b in metadata.brokers {
-      self.entries.append(SidebarEntry(withKind: .broker, label: "\(b.host):\(b.port)"))
+      self.entries.append(SidebarEntry(withKind: .broker, label: "\(b.host):\(b.port)", andData: b))
     }
 
     self.entries.append(SidebarEntry(withKind: .group, label: "Topics"))
     for t in metadata.topics {
-      self.entries.append(SidebarEntry(withKind: .topic, label: t.name, andCount: "\(t.partitions.count)"))
+      self.entries.append(SidebarEntry(withKind: .topic, label: t.name, count: "\(t.partitions.count)", andData: t))
     }
 
     self.entries.append(SidebarEntry(withKind: .group, label: "Consumer Groups"))
     for g in metadata.groups {
-      self.entries.append(SidebarEntry(withKind: .consumerGroup, label: g.id))
+      self.entries.append(SidebarEntry(withKind: .consumerGroup, label: g.id, andData: g))
     }
 
     self.noTopicsField.isHidden = !(self.metadata.topics.isEmpty && self.metadata.brokers.isEmpty)
@@ -92,7 +92,8 @@ extension WorkspaceSidebarViewController: NSTableViewDelegate {
   }
 
   func tableViewSelectionDidChange(_ notification: Notification) {
-    delegate?.sidebar(didSelectEntry: entries[tableView.selectedRow])
+    let e = entries[tableView.selectedRow]
+    delegate?.sidebar(didSelectEntry: e.data, withKind: e.kind)
   }
 }
 
@@ -126,15 +127,17 @@ class SidebarEntry: NSObject {
   let kind: SidebarEntryKind
   let label: String
   let count: String?
+  let data: Any?
 
-  init(withKind kind: SidebarEntryKind, label: String, andCount count: String? = nil) {
+  init(withKind kind: SidebarEntryKind, label: String, count: String? = nil, andData data: Any? = nil) {
     self.kind = kind
     self.label = label
     self.count = count
+    self.data = data
   }
 }
 
 // MARK: -WorkspaceSidebarDelegate
 protocol WorkspaceSidebarDelegate {
-  func sidebar(didSelectEntry entry: SidebarEntry)
+  func sidebar(didSelectEntry entry: Any, withKind kind: SidebarEntryKind)
 }
