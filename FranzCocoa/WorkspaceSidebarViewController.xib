@@ -61,7 +61,7 @@
                 </scrollView>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="7fa-sM-Yl7">
                     <rect key="frame" x="-2" y="292" width="284" height="16"/>
-                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="No Topics" id="6KA-uL-mDc">
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="No Metadata" id="6KA-uL-mDc">
                         <font key="font" usesAppearanceFont="YES"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
