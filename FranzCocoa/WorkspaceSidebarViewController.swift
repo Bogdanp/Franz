@@ -4,6 +4,7 @@ import NoiseSerde
 class WorkspaceSidebarViewController: NSViewController {
   private var metadata = Metadata(brokers: [], topics: [], groups: [])
   private var entries = [SidebarEntry]()
+  private var selectedEntry: SidebarEntry?
 
   @IBOutlet weak var tableView: NSTableView!
   @IBOutlet weak var noTopicsField: NSTextField!
@@ -23,28 +24,78 @@ class WorkspaceSidebarViewController: NSViewController {
   func configure(withMetadata metadata: Metadata) {
     self.metadata = metadata
 
+    var oldBrokers = [String: SidebarEntry]()
+    var oldTopics = [String: SidebarEntry]()
+    var oldGroups = [String: SidebarEntry]()
+    for e in self.entries {
+      switch e.kind {
+      case .broker:
+        oldBrokers[e.label] = e
+      case .topic:
+        oldTopics[e.label] = e
+      case .group:
+        oldGroups[e.label] = e
+      default:
+        ()
+      }
+    }
+
     self.entries.removeAll(keepingCapacity: true)
     self.entries.append(SidebarEntry(withKind: .group, label: "Brokers"))
     for b in metadata.brokers {
-      self.entries.append(SidebarEntry(withKind: .broker, label: "\(b.host):\(b.port)", andData: b))
+      if let e = oldBrokers[b.address] {
+        e.data = b
+        self.entries.append(e)
+      } else {
+        let e = SidebarEntry(withKind: .broker, label: b.address, andData: b)
+        self.entries.append(e)
+      }
     }
 
     self.entries.append(SidebarEntry(withKind: .group, label: "Topics"))
     for t in metadata.topics {
-      self.entries.append(SidebarEntry(withKind: .topic, label: t.name, count: "\(t.partitions.count)", andData: t))
+      if let e = oldTopics[t.name] {
+        e.data = t
+        e.count = "\(t.partitions.count)"
+        self.entries.append(e)
+      } else {
+        let e = SidebarEntry(withKind: .topic, label: t.name, count: "\(t.partitions.count)", andData: t)
+        self.entries.append(e)
+      }
     }
 
     self.entries.append(SidebarEntry(withKind: .group, label: "Consumer Groups"))
     for g in metadata.groups {
-      self.entries.append(SidebarEntry(withKind: .consumerGroup, label: g.id, andData: g))
+      if let e = oldGroups[g.id] {
+        e.data = g
+        self.entries.append(e)
+      } else {
+        let e = SidebarEntry(withKind: .consumerGroup, label: g.id, andData: g)
+        self.entries.append(e)
+      }
+    }
+
+    var keepSelection = false
+    var selectedRow = tableView.selectedRow
+    for e in self.entries {
+      if e == selectedEntry {
+        keepSelection = true
+        break
+      }
+    }
+    if !keepSelection {
+      selectedRow = -1
     }
 
     self.noTopicsField.isHidden = !(self.metadata.topics.isEmpty && self.metadata.brokers.isEmpty)
     self.tableView.reloadData()
+    if selectedRow >= 0 {
+      self.tableView.selectRowIndexes([selectedRow], byExtendingSelection: false)
+    }
   }
 }
 
-// MARK: -NSTableViewDelegate
+// MARK: NSTableViewDelegate
 extension WorkspaceSidebarViewController: NSTableViewDelegate {
   func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
     let entry = entries[row]
@@ -93,13 +144,13 @@ extension WorkspaceSidebarViewController: NSTableViewDelegate {
 
   func tableViewSelectionDidChange(_ notification: Notification) {
     let e = entries[tableView.selectedRow]
-    delegate?.sidebar(didSelectEntry: e.data, withKind: e.kind)
+    selectedEntry = e
+    delegate?.sidebar(didSelectEntry: e.data!, withKind: e.kind)
   }
 }
 
-// MARK: -NSTableViewDataSource
+// MARK: NSTableViewDataSource
 extension WorkspaceSidebarViewController: NSTableViewDataSource {
-
   func numberOfRows(in tableView: NSTableView) -> Int {
     return entries.count
   }
@@ -109,13 +160,13 @@ extension WorkspaceSidebarViewController: NSTableViewDataSource {
   }
 }
 
-// MARK: -NSUserInterfaceItemIdentifier
+// MARK: NSUserInterfaceItemIdentifier
 extension NSUserInterfaceItemIdentifier {
   static let entry = NSUserInterfaceItemIdentifier("Entry")
   static let group = NSUserInterfaceItemIdentifier("Group")
 }
 
-// MARK: -SidebarEntry
+// MARK: SidebarEntry
 enum SidebarEntryKind {
   case group
   case broker
@@ -126,8 +177,8 @@ enum SidebarEntryKind {
 class SidebarEntry: NSObject {
   let kind: SidebarEntryKind
   let label: String
-  let count: String?
-  let data: Any?
+  var count: String?
+  var data: Any?
 
   init(withKind kind: SidebarEntryKind, label: String, count: String? = nil, andData data: Any? = nil) {
     self.kind = kind
@@ -137,7 +188,7 @@ class SidebarEntry: NSObject {
   }
 }
 
-// MARK: -WorkspaceSidebarDelegate
+// MARK: WorkspaceSidebarDelegate
 protocol WorkspaceSidebarDelegate {
   func sidebar(didSelectEntry entry: Any, withKind kind: SidebarEntryKind)
 }

@@ -14,6 +14,15 @@ extension Backend {
   )
 }
 
+extension Broker {
+  var address: String {
+    get {
+      return "\(host):\(String(port))"
+    }
+  }
+}
+
+
 extension ConnectionDetails {
   func detailsString() -> String {
     return "\(bootstrapHost):\(bootstrapPort)"
