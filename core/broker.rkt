@@ -14,7 +14,8 @@
   [id : UVarint #:contract exact-nonnegative-integer?]
   [host : String]
   [port : UVarint #:contract (integer-in 1 65535)]
-  [(rack #f) : (Optional String)])
+  [(rack #f) : (Optional String)]
+  [is-controller : Bool])
 
 (define-record TopicPartition
   [id : UVarint #:contract exact-nonnegative-integer?])

@@ -8,17 +8,20 @@ public struct Broker: Readable, Writable {
   public let host: String
   public let port: UVarint
   public let rack: String?
+  public let isController: Bool
 
   public init(
     id: UVarint,
     host: String,
     port: UVarint,
-    rack: String?
+    rack: String?,
+    isController: Bool
   ) {
     self.id = id
     self.host = host
     self.port = port
     self.rack = rack
+    self.isController = isController
   }
 
   public static func read(from inp: InputPort, using buf: inout Data) -> Broker {
@@ -26,7 +29,8 @@ public struct Broker: Readable, Writable {
       id: UVarint.read(from: inp, using: &buf),
       host: String.read(from: inp, using: &buf),
       port: UVarint.read(from: inp, using: &buf),
-      rack: String?.read(from: inp, using: &buf)
+      rack: String?.read(from: inp, using: &buf),
+      isController: Bool.read(from: inp, using: &buf)
     )
   }
 
@@ -35,6 +39,7 @@ public struct Broker: Readable, Writable {
     host.write(to: out)
     port.write(to: out)
     rack.write(to: out)
+    isController.write(to: out)
   }
 }
 

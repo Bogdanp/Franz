@@ -58,16 +58,21 @@
                         (define c (state-ref-client s id))
                         (define meta
                           (k:client-metadata c))
+                        (define controller-id
+                          (k:Metadata-controller-id meta))
                         (define groups
                           (for/list ([g (in-list (k:list-groups c))])
                             (make-Group #:id (k:Group-id g))))
                         (define brokers
                           (for/list ([b (in-list (k:Metadata-brokers meta))])
+                            (define node-id
+                              (k:BrokerMetadata-node-id b))
                             (make-Broker
-                             #:id (k:BrokerMetadata-node-id b)
+                             #:id node-id
                              #:host (k:BrokerMetadata-host b)
                              #:port (k:BrokerMetadata-port b)
-                             #:rack (k:BrokerMetadata-rack b))))
+                             #:rack (k:BrokerMetadata-rack b)
+                             #:is-controller (= node-id controller-id))))
                         (define topics
                           (for/list ([t (in-list (k:Metadata-topics meta))])
                             (define parts
