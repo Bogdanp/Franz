@@ -14,7 +14,8 @@ struct WorkspaceBrokerDetailView: View {
           Text("Information").font(.headline)
           Spacer().frame(height: 10)
           Info(label: "Address", description: broker.address)
-          Info(label: "Node ID", description: "\(broker.id)", divider: broker.rack != nil)
+          Info(label: "Node ID", description: "\(broker.id)")
+          Info(label: "Controller", description: broker.isController ? "yes" : "no", divider: broker.rack != nil)
           if let rack = broker.rack {
             Info(label: "Rack", description: "\(rack)", divider: false)
           }
