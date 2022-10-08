@@ -42,7 +42,7 @@
             <rect key="frame" x="0.0" y="0.0" width="420" height="24"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
             <subviews>
-                <box fixedFrame="YES" borderType="line" title="Box" titlePosition="noTitle" id="IS8-OA-uNO">
+                <box borderType="line" title="Box" titlePosition="noTitle" id="IS8-OA-uNO">
                     <rect key="frame" x="-3" y="-4" width="426" height="30"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="Srx-n6-Dqq">

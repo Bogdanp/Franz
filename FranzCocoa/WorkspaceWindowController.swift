@@ -31,10 +31,14 @@ class WorkspaceWindowController: NSWindowController {
     splitCtl.addSplitViewItem(NSSplitViewItem(sidebarWithViewController: sidebarCtl))
     splitCtl.addSplitViewItem(NSSplitViewItem(viewController: detailCtl))
 
-    window?.contentViewController = splitCtl
+    shouldCascadeWindows = false
     window?.title = "\(conn.name) : \(conn.detailsString())"
-    window?.setFrame(NSRect(x: 0, y: 0, width: 960, height: 600), display: true)
-    window?.center()
+    window?.contentViewController = splitCtl
+    window?.setFrameAutosaveName("Franz:\(conn.name)")
+    if let didSet = window?.setFrameUsingName(window!.frameAutosaveName), !didSet {
+      window?.setFrame(NSRect(x: 0, y: 0, width: 960, height: 600), display: true)
+      window?.center()
+    }
   }
 
   private func connect() {
