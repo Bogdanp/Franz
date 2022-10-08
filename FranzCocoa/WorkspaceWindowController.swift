@@ -33,7 +33,7 @@ class WorkspaceWindowController: NSWindowController {
 
     window?.contentViewController = splitCtl
     window?.title = "\(conn.name) : \(conn.detailsString())"
-    window?.setFrame(NSRect(x: 0, y: 0, width: 800, height: 600), display: true)
+    window?.setFrame(NSRect(x: 0, y: 0, width: 960, height: 600), display: true)
     window?.center()
   }
 
