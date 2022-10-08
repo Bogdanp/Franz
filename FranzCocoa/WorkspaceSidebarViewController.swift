@@ -22,6 +22,8 @@ class WorkspaceSidebarViewController: NSViewController {
   }
 
   func configure(withMetadata metadata: Metadata) {
+    assert(Thread.isMainThread)
+
     self.metadata = metadata
 
     var oldBrokers = [String: SidebarEntry]()
