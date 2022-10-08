@@ -12,6 +12,10 @@
 (define-rpc (get-metadata [_ id : UVarint] : Metadata)
   (pool-get-metadata id))
 
+(define-rpc (delete-topic [named name : String] [for-client id : UVarint] : Bool)
+  (begin0 #t
+    (pool-delete-topic id name)))
+
 (define-rpc (close-all-workspaces : Bool)
   (begin0 #t
     (pool-shutdown)))

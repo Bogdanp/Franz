@@ -2,7 +2,6 @@
 
 (require (prefix-in k: kafka)
          racket/match
-         racket/promise
          threading
          "broker.rkt"
          "connection-details.rkt"
@@ -15,6 +14,7 @@
  pool-open
  pool-close
  pool-get-metadata
+ pool-delete-topic
  pool-shutdown)
 
 (struct pool (ch thd))
@@ -57,7 +57,7 @@
                       (with-handlers ([exn:fail? values])
                         (define c (state-ref-client s id))
                         (define meta
-                          (k:client-metadata c))
+                          (k:get-metadata c))
                         (define controller-id
                           (k:Metadata-controller-id meta))
                         (define groups
@@ -88,6 +88,12 @@
                          #:topics (sort topics string<? #:key Topic-name)
                          #:groups (sort groups string<? #:key Group-id))))
                     (state-add-req s (req metadata-or-exn res-ch nack))]
+
+                   [`(delete-topic ,res-ch ,nack ,id ,topic-name)
+                    (define deleted-topics-or-exn
+                      (with-handlers ([exn:fail? values])
+                        (k:delete-topics (state-ref-client s id) topic-name)))
+                    (state-add-req s (req deleted-topics-or-exn res-ch nack))]
 
                    [`(shutdown ,res-ch ,nack)
                     (for ([c (in-hash-values (state-clients s))])
@@ -120,6 +126,9 @@
 
 (define (pool-get-metadata id [p (current-pool)])
   (sync (pool-send p get-metadata id)))
+
+(define (pool-delete-topic id name [p (current-pool)])
+  (sync (pool-send p delete-topic id name)))
 
 (define (pool-shutdown [p (current-pool)])
   (sync (pool-send p shutdown)))
