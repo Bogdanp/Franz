@@ -19,6 +19,9 @@ class WorkspaceDetailViewController: NSViewController {
     case .topic:
       let hostingCtl = NSHostingController(rootView: WorkspaceTopicDetailView(topic: entry as! Topic))
       display(controller: hostingCtl)
+    case .consumerGroup:
+      let hostingCtl = NSHostingController(rootView: WorkspaceGroupDetailView(group: entry as! Group))
+      display(controller: hostingCtl)
     default:
       clear()
     }
