@@ -16,6 +16,9 @@ class WorkspaceDetailViewController: NSViewController {
     case .broker:
       let hostingCtl = NSHostingController(rootView: WorkspaceBrokerDetailView(broker: entry as! Broker))
       display(controller: hostingCtl)
+    case .topic:
+      let hostingCtl = NSHostingController(rootView: WorkspaceTopicDetailView(topic: entry as! Topic))
+      display(controller: hostingCtl)
     default:
       clear()
     }

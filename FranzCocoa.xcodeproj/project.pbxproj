@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		4314EDF628D85DD800431770 /* SidebarGroupCellView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4314EDF528D85DD800431770 /* SidebarGroupCellView.xib */; };
 		4314EDF828D85E0E00431770 /* SidebarGroupCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4314EDF728D85E0E00431770 /* SidebarGroupCellView.swift */; };
+		43196F8A28F1DAB2003C793B /* WorkspaceTopicDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43196F8928F1DAB2003C793B /* WorkspaceTopicDetailView.swift */; };
 		436E71FA28D7511400ECBF49 /* WorkspaceWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436E71F828D7511400ECBF49 /* WorkspaceWindowController.swift */; };
 		436E71FB28D7511400ECBF49 /* WorkspaceWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 436E71F928D7511400ECBF49 /* WorkspaceWindowController.xib */; };
 		436E720228D759F400ECBF49 /* WorkspaceSidebarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436E720028D759F400ECBF49 /* WorkspaceSidebarViewController.swift */; };
@@ -43,6 +44,7 @@
 /* Begin PBXFileReference section */
 		4314EDF528D85DD800431770 /* SidebarGroupCellView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SidebarGroupCellView.xib; sourceTree = "<group>"; };
 		4314EDF728D85E0E00431770 /* SidebarGroupCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarGroupCellView.swift; sourceTree = "<group>"; };
+		43196F8928F1DAB2003C793B /* WorkspaceTopicDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceTopicDetailView.swift; sourceTree = "<group>"; };
 		436E71F828D7511400ECBF49 /* WorkspaceWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceWindowController.swift; sourceTree = "<group>"; };
 		436E71F928D7511400ECBF49 /* WorkspaceWindowController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WorkspaceWindowController.xib; sourceTree = "<group>"; };
 		436E720028D759F400ECBF49 /* WorkspaceSidebarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceSidebarViewController.swift; sourceTree = "<group>"; };
@@ -132,6 +134,7 @@
 				43CD623828CE27DB00095144 /* WelcomeWindowController.xib */,
 				43CD623628CE27B200095144 /* WindowManager.swift */,
 				437887F528E9FE5900D0B263 /* WorkspaceBrokerDetailView.swift */,
+				43196F8928F1DAB2003C793B /* WorkspaceTopicDetailView.swift */,
 				436E720428D75B0500ECBF49 /* WorkspaceDetailViewController.swift */,
 				436E720528D75B0500ECBF49 /* WorkspaceDetailViewController.xib */,
 				436E720028D759F400ECBF49 /* WorkspaceSidebarViewController.swift */,
@@ -270,6 +273,7 @@
 				43804AB728D1A014002880FE /* ConnectionTableCellView.swift in Sources */,
 				436E720628D75B0500ECBF49 /* WorkspaceDetailViewController.swift in Sources */,
 				43CD624828CE3B5D00095144 /* ConnectionDetailsFormViewController.swift in Sources */,
+				43196F8A28F1DAB2003C793B /* WorkspaceTopicDetailView.swift in Sources */,
 				43CD623B28CE27DB00095144 /* WelcomeWindowController.swift in Sources */,
 				43CD623728CE27B200095144 /* WindowManager.swift in Sources */,
 				43CD621928CE24B000095144 /* AppDelegate.swift in Sources */,
