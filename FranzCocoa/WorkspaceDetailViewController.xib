@@ -8,7 +8,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="WorkspaceDetailViewController" customModule="Franz" customModuleProvider="target">
             <connections>
-                <outlet property="selectLabel" destination="vJf-1Q-sYE" id="lzJ-uM-O4t"/>
+                <outlet property="selectLabel" destination="vJf-1Q-sYE" id="Ghg-je-Doi"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>
         </customObject>
