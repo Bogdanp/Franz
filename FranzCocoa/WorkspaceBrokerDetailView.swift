@@ -7,7 +7,7 @@ struct WorkspaceBrokerDetailView: View {
     VStack(alignment: .leading) {
       HStack(alignment: .top) {
         VStack(alignment: .leading) {
-          Text(broker.address).font(.title)
+          Text(broker.host).font(.title)
           Text("Broker").font(.subheadline).foregroundColor(.secondary)
 
           Spacer().frame(height: 15)
