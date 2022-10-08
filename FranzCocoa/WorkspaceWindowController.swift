@@ -145,7 +145,9 @@ extension WorkspaceWindowController: WorkspaceSidebarDelegate {
 
   func sidebar(didDeleteTopic topic: Topic) {
     status("Deleting topic \(topic.name)...")
-    loadMetadata()
+    Backend.shared.deleteTopic(named: topic.name, forClient: id).onComplete { _ in
+      self.loadMetadata()
+    }
   }
 
   func sidebar(didDeleteConsumerGroup group: Group) {
