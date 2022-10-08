@@ -5,6 +5,7 @@ class WorkspaceSidebarViewController: NSViewController {
   private var metadata = Metadata(brokers: [], topics: [], groups: [])
   private var entries = [SidebarEntry]()
   private var selectedEntry: SidebarEntry?
+  private var contextMenu = NSMenu()
 
   @IBOutlet weak var tableView: NSTableView!
   @IBOutlet weak var noTopicsField: NSTextField!
@@ -14,6 +15,9 @@ class WorkspaceSidebarViewController: NSViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
+    contextMenu.delegate = self
+
+    tableView.menu = contextMenu
     tableView.register(.init(nibNamed: "SidebarEntryCellView", bundle: nil), forIdentifier: .entry)
     tableView.register(.init(nibNamed: "SidebarGroupCellView", bundle: nil), forIdentifier: .group)
     tableView.delegate = self
@@ -93,6 +97,62 @@ class WorkspaceSidebarViewController: NSViewController {
     self.tableView.reloadData()
     if selectedRow >= 0 {
       self.tableView.selectRowIndexes([selectedRow], byExtendingSelection: false)
+    }
+  }
+}
+
+// MARK: NSMenuDelegate
+extension WorkspaceSidebarViewController: NSMenuDelegate {
+  func menuNeedsUpdate(_ menu: NSMenu) {
+    menu.removeAllItems()
+    if tableView.clickedRow >= 0 {
+      let entry = entries[tableView.clickedRow]
+      switch entry.kind {
+      case .topic:
+        menu.addItem(.init(title: "Delete...", action: #selector(didPressDeleteTopic(_:)), keyEquivalent: "d"))
+      case .consumerGroup:
+        menu.addItem(.init(title: "Delete...", action: #selector(didPressDeleteConsumerGroup(_:)), keyEquivalent: "d"))
+      default:
+        ()
+      }
+    }
+  }
+
+  @objc func didPressDeleteTopic(_ sender: NSMenuItem) {
+    assert(tableView.clickedRow >= 0)
+    guard let topic = entries[tableView.clickedRow].data as? Topic else {
+      return
+    }
+    let alert = NSAlert()
+    alert.alertStyle = .warning
+    alert.messageText = "Delete topic \(topic.name)?"
+    alert.informativeText = "This action cannot be undone."
+    alert.addButton(withTitle: "Delete")
+    alert.addButton(withTitle: "Cancel")
+    switch alert.runModal() {
+    case .alertFirstButtonReturn:
+      delegate?.sidebar(didDeleteTopic: topic)
+    default:
+      ()
+    }
+  }
+
+  @objc func didPressDeleteConsumerGroup(_ sender: NSMenuItem) {
+    assert(tableView.clickedRow >= 0)
+    guard let group = entries[tableView.clickedRow].data as? Group else {
+      return
+    }
+    let alert = NSAlert()
+    alert.alertStyle = .warning
+    alert.messageText = "Delete consumer group \(group.id)?"
+    alert.informativeText = "This action cannot be undone."
+    alert.addButton(withTitle: "Delete")
+    alert.addButton(withTitle: "Cancel")
+    switch alert.runModal() {
+    case .alertFirstButtonReturn:
+      delegate?.sidebar(didDeleteConsumerGroup: group)
+    default:
+      ()
     }
   }
 }
@@ -193,4 +253,6 @@ class SidebarEntry: NSObject {
 // MARK: WorkspaceSidebarDelegate
 protocol WorkspaceSidebarDelegate {
   func sidebar(didSelectEntry entry: Any, withKind kind: SidebarEntryKind)
+  func sidebar(didDeleteTopic topic: Topic)
+  func sidebar(didDeleteConsumerGroup group: Group)
 }

@@ -75,6 +75,7 @@ class WorkspaceWindowController: NSWindowController {
   }
 
   private func status(_ s: String) {
+    assert(Thread.isMainThread)
     statusBarStatusField.stringValue = s
   }
 }
@@ -140,5 +141,15 @@ extension NSToolbarItem.Identifier {
 extension WorkspaceWindowController: WorkspaceSidebarDelegate {
   func sidebar(didSelectEntry entry: Any, withKind kind: SidebarEntryKind) {
     detailCtl.show(entry: entry, withKind: kind)
+  }
+
+  func sidebar(didDeleteTopic topic: Topic) {
+    status("Deleting topic \(topic.name)...")
+    loadMetadata()
+  }
+
+  func sidebar(didDeleteConsumerGroup group: Group) {
+    status("Deleting consumer group \(group.id)...")
+    loadMetadata()
   }
 }
