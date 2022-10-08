@@ -14,9 +14,9 @@ struct WorkspaceBrokerDetailView: View {
           Text("Information").font(.headline)
           Spacer().frame(height: 10)
           Info(label: "Address", description: broker.address)
-          Info(label: "Node ID", description: "\(broker.id)")
+          Info(label: "Node ID", description: "\(broker.id)", divider: broker.rack != nil)
           if let rack = broker.rack {
-            Info(label: "Rack", description: "\(rack)")
+            Info(label: "Rack", description: "\(rack)", divider: false)
           }
 
           Spacer()
@@ -32,17 +32,21 @@ struct WorkspaceBrokerDetailView: View {
 struct Info: View {
   var label: String
   var description: String
+  var divider = true
 
   var body: some View {
     VStack(alignment: .leading) {
-      HStack(alignment: .top) {
+      HStack(alignment: .lastTextBaseline) {
         Text(label)
+          .font(.system(size: 11, weight: .semibold))
           .foregroundColor(.secondary)
-          .fontWeight(.semibold)
-          .frame(width: 80, alignment: .leading)
+          .frame(width: 65, alignment: .leading)
         Text(description)
+          .fontWeight(.semibold)
       }
-      Divider()
+      if divider {
+        Divider()
+      }
     }
   }
 }
