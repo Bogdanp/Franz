@@ -7,7 +7,7 @@ class NewTopicFormViewController: NSViewController {
 
   @IBOutlet weak var nameField: NSTextField!
   @IBOutlet weak var partitionsField: NSTextField!
-  @IBOutlet weak var optionsTable: NSTableView!
+  @IBOutlet weak var optionsTable: TopicOptionsTableView!
 
   @IBOutlet weak var cancelButton: NSButton!
   @IBOutlet weak var createButton: NSButton!
@@ -17,7 +17,9 @@ class NewTopicFormViewController: NSViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
+    optionsTable.target = self
     optionsTable.doubleAction = #selector(didDoubleClickOptionsTable(_:))
+    optionsTable.deleteAction = #selector(didDeleteOption(_:))
     optionsTable.delegate = self
     optionsTable.dataSource = self
     optionsTable.reloadData()
@@ -43,6 +45,13 @@ class NewTopicFormViewController: NSViewController {
     optionsTable.reloadData()
     optionsTable.selectRowIndexes([options.count-1], byExtendingSelection: false)
     optionsTable.editColumn(0, row: options.count-1, with: nil, select: true)
+  }
+
+  @objc func didDeleteOption(_ sender: NSTableView) {
+    if optionsTable.selectedRow >= 0 {
+      options.remove(at: optionsTable.selectedRow)
+      optionsTable.reloadData()
+    }
   }
 
   @objc func didFinishEditingOptionName(_ sender: NSTextField) {
@@ -107,6 +116,23 @@ protocol NewTopicFormDelegate {
 fileprivate class EditableTopicOption: NSObject {
   var key = ""
   var value = ""
+}
+
+// MARK: -TopicOptionsTableView
+class TopicOptionsTableView: NSTableView {
+  var deleteAction: Selector?
+
+  override func keyDown(with event: NSEvent) {
+    switch event.keyCode {
+    case 51:
+      if selectedRow >= 0 {
+        let _ = target?.perform(deleteAction, with: self)
+        return
+      }
+    default:
+      super.keyDown(with: event)
+    }
+  }
 }
 
 // MARK: -NSTableViewDataSource

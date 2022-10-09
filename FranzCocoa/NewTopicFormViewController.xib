@@ -65,7 +65,7 @@
                         <rect key="frame" x="1" y="1" width="368" height="148"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" multipleSelection="NO" autosaveColumns="NO" rowHeight="24" rowSizeStyle="automatic" headerView="3xr-H1-Izs" viewBased="YES" id="Gyp-qs-7Bn">
+                            <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" multipleSelection="NO" autosaveColumns="NO" rowHeight="24" rowSizeStyle="automatic" headerView="3xr-H1-Izs" viewBased="YES" id="Gyp-qs-7Bn" customClass="TopicOptionsTableView" customModule="Franz" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="0.0" width="368" height="120"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <size key="intercellSpacing" width="17" height="0.0"/>
