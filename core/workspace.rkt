@@ -9,6 +9,10 @@
 (define-rpc (open-workspace [with-conn conn : ConnectionDetails] : UVarint)
   (pool-open conn))
 
+(define-rpc (close-workspace [with-id id : UVarint] : Bool)
+  (begin0 #t
+    (pool-close id)))
+
 (define-rpc (get-metadata [_ id : UVarint] : Metadata)
   (pool-get-metadata id))
 
