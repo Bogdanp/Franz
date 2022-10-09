@@ -32,6 +32,7 @@ class WorkspaceWindowController: NSWindowController {
     splitCtl.addSplitViewItem(NSSplitViewItem(viewController: detailCtl))
 
     shouldCascadeWindows = false
+    window?.delegate = self
     window?.title = "\(conn.name) : \(conn.detailsString())"
     window?.contentViewController = splitCtl
     window?.setFrameAutosaveName("Franz:\(conn.name)")
@@ -80,7 +81,15 @@ class WorkspaceWindowController: NSWindowController {
   }
 }
 
-// MARK: -NSToolbarDelegate
+// MARK: NSWindowDelegate
+extension WorkspaceWindowController: NSWindowDelegate {
+  func windowWillClose(_ notification: Notification) {
+    let _ = Backend.shared.closeWorkspace(withId: id)
+    WindowManager.shared.removeWorkspace(withId: conn.id!)
+  }
+}
+
+// MARK: NSToolbarDelegate
 extension WorkspaceWindowController: NSToolbarDelegate {
   func toolbar(
     _ toolbar: NSToolbar,
@@ -130,14 +139,14 @@ extension WorkspaceWindowController: NSToolbarDelegate {
   }
 }
 
-// MARK: -NSToolbarItem.Identifier
+// MARK: NSToolbarItem.Identifier
 extension NSToolbarItem.Identifier {
   static let toggleSidebar = NSToolbarItem.Identifier("toggleSidebar")
   static let statusBar = NSToolbarItem.Identifier("statusBar")
   static let reloadButton = NSToolbarItem.Identifier("reloadButton")
 }
 
-// MARK: -WorkspaceSidebarDelegate
+// MARK: WorkspaceSidebarDelegate
 extension WorkspaceWindowController: WorkspaceSidebarDelegate {
   func sidebar(didSelectEntry entry: Any, withKind kind: SidebarEntryKind) {
     detailCtl.show(entry: entry, withKind: kind)
