@@ -18,7 +18,7 @@
                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSActionTemplate" id="AMB-I0-GbU"/>
                 </imageView>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="749" id="vG3-yg-FU3">
-                    <rect key="frame" x="30" y="8" width="207" height="16"/>
+                    <rect key="frame" x="30" y="8" width="206" height="16"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="truncatingTail" title="Topic Name" usesSingleLineMode="YES" id="Rov-3c-x8m">
                         <font key="font" metaFont="system"/>
