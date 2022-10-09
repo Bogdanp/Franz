@@ -2,6 +2,7 @@ import Cocoa
 import NoiseSerde
 
 class WorkspaceSidebarViewController: NSViewController {
+  private var id: UVarint!
   private var metadata = Metadata(brokers: [], topics: [], groups: [])
   private var entries = [SidebarEntry]()
   private var selectedEntry: SidebarEntry?
@@ -25,9 +26,10 @@ class WorkspaceSidebarViewController: NSViewController {
     tableView.reloadData()
   }
 
-  func configure(withMetadata metadata: Metadata) {
+  func configure(withId id: UVarint, andMetadata metadata: Metadata) {
     assert(Thread.isMainThread)
 
+    self.id = id
     self.metadata = metadata
 
     var oldBrokers = [String: SidebarEntry]()
@@ -103,11 +105,21 @@ class WorkspaceSidebarViewController: NSViewController {
   }
 
   @IBAction func didPressNewTopicButton(_ sender: Any) {
-    print("new topic")
+    let ctl = NewTopicFormViewController()
+    ctl.configure(withId: id)
+    presentAsSheet(ctl)
   }
 }
 
-// MARK: NSMenuDelegate
+// MARK: -WorkspaceSidebarDelegate
+protocol WorkspaceSidebarDelegate {
+  func sidebar(didSelectEntry entry: Any, withKind kind: SidebarEntryKind)
+  func sidebar(didDeselectEntry entry: Any?)
+  func sidebar(didDeleteTopic topic: Topic)
+  func sidebar(didDeleteConsumerGroup group: Group)
+}
+
+// MARK: =NSMenuDelegate
 extension WorkspaceSidebarViewController: NSMenuDelegate {
   func menuNeedsUpdate(_ menu: NSMenu) {
     menu.removeAllItems()
@@ -173,7 +185,7 @@ extension WorkspaceSidebarViewController: NSMenuDelegate {
   }
 }
 
-// MARK: NSTableViewDelegate
+// MARK: -NSTableViewDelegate
 extension WorkspaceSidebarViewController: NSTableViewDelegate {
   func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
     let entry = entries[row]
@@ -227,7 +239,7 @@ extension WorkspaceSidebarViewController: NSTableViewDelegate {
   }
 }
 
-// MARK: NSTableViewDataSource
+// MARK: -NSTableViewDataSource
 extension WorkspaceSidebarViewController: NSTableViewDataSource {
   func numberOfRows(in tableView: NSTableView) -> Int {
     return entries.count
@@ -238,13 +250,13 @@ extension WorkspaceSidebarViewController: NSTableViewDataSource {
   }
 }
 
-// MARK: NSUserInterfaceItemIdentifier
+// MARK: -NSUserInterfaceItemIdentifier
 extension NSUserInterfaceItemIdentifier {
   static let entry = NSUserInterfaceItemIdentifier("Entry")
   static let group = NSUserInterfaceItemIdentifier("Group")
 }
 
-// MARK: SidebarEntry
+// MARK: -SidebarEntry
 enum SidebarEntryKind {
   case group
   case broker
@@ -264,12 +276,4 @@ class SidebarEntry: NSObject {
     self.count = count
     self.data = data
   }
-}
-
-// MARK: WorkspaceSidebarDelegate
-protocol WorkspaceSidebarDelegate {
-  func sidebar(didSelectEntry entry: Any, withKind kind: SidebarEntryKind)
-  func sidebar(didDeselectEntry entry: Any?)
-  func sidebar(didDeleteTopic topic: Topic)
-  func sidebar(didDeleteConsumerGroup group: Group)
 }
