@@ -97,6 +97,8 @@ class WorkspaceSidebarViewController: NSViewController {
     self.tableView.reloadData()
     if selectedRow >= 0 {
       self.tableView.selectRowIndexes([selectedRow], byExtendingSelection: false)
+    } else {
+      delegate?.sidebar(didDeselectEntry: selectedEntry)
     }
   }
 }
@@ -140,9 +142,6 @@ extension WorkspaceSidebarViewController: NSMenuDelegate {
     alert.addButton(withTitle: "Cancel")
     switch alert.runModal() {
     case .alertFirstButtonReturn:
-      if selected {
-        delegate?.sidebar(didDeselectEntry: entries[tableView.selectedRow])
-      }
       delegate?.sidebar(didDeleteTopic: topic)
     default:
       ()
@@ -163,9 +162,6 @@ extension WorkspaceSidebarViewController: NSMenuDelegate {
     alert.addButton(withTitle: "Cancel")
     switch alert.runModal() {
     case .alertFirstButtonReturn:
-      if selected {
-        delegate?.sidebar(didDeselectEntry: entries[tableView.selectedRow])
-      }
       delegate?.sidebar(didDeleteConsumerGroup: group)
     default:
       ()
