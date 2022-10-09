@@ -109,9 +109,17 @@ extension WorkspaceSidebarViewController: NSMenuDelegate {
       let entry = entries[tableView.clickedRow]
       switch entry.kind {
       case .topic:
-        menu.addItem(.init(title: "Delete...", action: #selector(didPressDeleteTopic(_:)), keyEquivalent: "d"))
+        menu.addItem(.init(
+          title: "Delete...",
+          action: #selector(didPressDeleteTopic(_:)),
+          keyEquivalent: .backspaceKeyEquivalent
+        ))
       case .consumerGroup:
-        menu.addItem(.init(title: "Delete...", action: #selector(didPressDeleteConsumerGroup(_:)), keyEquivalent: "d"))
+        menu.addItem(.init(
+          title: "Delete...",
+          action: #selector(didPressDeleteConsumerGroup(_:)),
+          keyEquivalent: .backspaceKeyEquivalent
+        ))
       default:
         ()
       }
