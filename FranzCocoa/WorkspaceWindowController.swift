@@ -152,6 +152,8 @@ extension WorkspaceWindowController: WorkspaceSidebarDelegate {
 
   func sidebar(didDeleteConsumerGroup group: Group) {
     status("Deleting consumer group \(group.id)...")
-    loadMetadata()
+    Backend.shared.deleteGroup(withId: group.id, forClient: id).onComplete { _ in
+      self.loadMetadata()
+    }
   }
 }

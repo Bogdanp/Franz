@@ -16,6 +16,10 @@
   (begin0 #t
     (pool-delete-topic id name)))
 
+(define-rpc (delete-group [with-id group-id : String] [for-client id : UVarint] : Bool)
+  (begin0 #t
+    (pool-delete-group id group-id)))
+
 (define-rpc (close-all-workspaces : Bool)
   (begin0 #t
     (pool-shutdown)))

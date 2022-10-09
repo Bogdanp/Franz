@@ -2,6 +2,7 @@
 
 (require (prefix-in k: kafka)
          racket/match
+         racket/promise
          threading
          "broker.rkt"
          "connection-details.rkt"
@@ -15,6 +16,7 @@
  pool-close
  pool-get-metadata
  pool-delete-topic
+ pool-delete-group
  pool-shutdown)
 
 (struct pool (ch thd))
@@ -53,6 +55,7 @@
                         (state-add-req (req (and client #t) res-ch nack)))]
 
                    [`(get-metadata ,res-ch ,nack ,id)
+                    ;; TODO: promise
                     (define metadata-or-exn
                       (with-handlers ([exn:fail? values])
                         (define c (state-ref-client s id))
@@ -90,10 +93,16 @@
                     (state-add-req s (req metadata-or-exn res-ch nack))]
 
                    [`(delete-topic ,res-ch ,nack ,id ,topic-name)
-                    (define deleted-topics-or-exn
-                      (with-handlers ([exn:fail? values])
-                        (k:delete-topics (state-ref-client s id) topic-name)))
-                    (state-add-req s (req deleted-topics-or-exn res-ch nack))]
+                    (define deleted-topics
+                      (delay/thread
+                       (k:delete-topics (state-ref-client s id) topic-name)))
+                    (state-add-req s (req deleted-topics res-ch nack))]
+
+                   [`(delete-group ,res-ch ,nack ,id ,group-id)
+                    (define deleted-groups
+                      (delay/thread
+                       (k:delete-groups (state-ref-client s id) group-id)))
+                    (state-add-req s (req deleted-groups res-ch nack))]
 
                    [`(shutdown ,res-ch ,nack)
                     (for ([c (in-hash-values (state-clients s))])
@@ -128,7 +137,10 @@
   (sync (pool-send p get-metadata id)))
 
 (define (pool-delete-topic id name [p (current-pool)])
-  (sync (pool-send p delete-topic id name)))
+  (force (sync (pool-send p delete-topic id name))))
+
+(define (pool-delete-group id group-id [p (current-pool)])
+  (force (sync (pool-send p delete-group id group-id))))
 
 (define (pool-shutdown [p (current-pool)])
   (sync (pool-send p shutdown)))
