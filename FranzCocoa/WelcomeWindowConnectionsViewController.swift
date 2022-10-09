@@ -13,7 +13,8 @@ class WelcomeWindowConnectionsViewController: NSViewController {
     connectionsTable.register(.init(nibNamed: "ConnectionTableCellView", bundle: nil), forIdentifier: .connectionColumn)
     connectionsTable.dataSource = self
     connectionsTable.delegate = self
-    connectionsTable.doubleAction = #selector(didDoubleClickConnection(_:))
+    connectionsTable.doubleAction = #selector(didRequestSelectConnection(_:))
+    connectionsTable.deleteAction = #selector(didRequestDeleteConnection(_:))
     connectionsTable.target = self
 
     let menu = NSMenu()
@@ -21,7 +22,7 @@ class WelcomeWindowConnectionsViewController: NSViewController {
     menu.addItem(.separator())
     menu.addItem(NSMenuItem(
       title: "Delete",
-      action: #selector(didPressDeleteMenuItem(_:)),
+      action: #selector(didRequestDeleteConnection(_:)),
       keyEquivalent: .backspaceKeyEquivalent
     ))
     connectionsTable.menu = menu
@@ -38,29 +39,49 @@ class WelcomeWindowConnectionsViewController: NSViewController {
     connectionsTable.reloadData()
   }
 
-  @objc func didDoubleClickConnection(_ sender: NSTableView) {
+  @objc func didRequestSelectConnection(_ sender: NSTableView) {
+    assert(Thread.isMainThread)
     let conn = connections[sender.selectedRow]
     let _ = Backend.shared.touchConnection(conn)
     WindowManager.shared.launchWorkspace(withConn: conn)
     WindowManager.shared.closeWelcomeWindow()
   }
 
-  @objc func didPressDeleteMenuItem(_ sender: NSMenuItem) {
-    let conn = connections[connectionsTable.clickedRow]
-    if try! Backend.shared.deleteConnection(conn).wait() {
-      reload()
+  @objc func didRequestDeleteConnection(_ sender: NSMenuItem) {
+    assert(Thread.isMainThread)
+    let conn = connections[connectionsTable.clickedRow < 0 ? connectionsTable.selectedRow : connectionsTable.clickedRow]
+    let alert = NSAlert()
+    alert.alertStyle = .warning
+    alert.messageText = "Delete \(conn.name)?"
+    alert.informativeText = "This action cannot be undone."
+    alert.addButton(withTitle: "Delete")
+    alert.addButton(withTitle: "Cancel")
+    switch alert.runModal() {
+    case .alertFirstButtonReturn:
+      if try! Backend.shared.deleteConnection(conn).wait() {
+        reload()
+      }
+    default:
+      ()
     }
   }
 }
 
 // MARK: -ConnectionsTableView
 class ConnectionsTableView: NSTableView {
+  var deleteAction: Selector?
+
   override func keyDown(with event: NSEvent) {
     if event.characters?.count == 1 {
       switch event.keyCode {
       case 36: // RET
         let _ = target?.perform(doubleAction, with: self)
         return
+      case 51: // BKSPC
+        if event.modifierFlags.contains(.command) {
+          let _ = target?.perform(deleteAction, with: self)
+          return
+        }
       default:
         ()
       }
