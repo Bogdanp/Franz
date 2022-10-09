@@ -28,3 +28,18 @@ extension ConnectionDetails {
     return "\(bootstrapHost):\(bootstrapPort)"
   }
 }
+
+
+extension ResourceConfig: Identifiable {
+  public var id: String {
+    get {
+      name
+    }
+  }
+
+  public var nonnullValue: String {
+    get {
+      value ?? ""
+    }
+  }
+}

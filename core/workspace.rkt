@@ -17,6 +17,23 @@
 (define-rpc (get-metadata [_ id : UVarint] : Metadata)
   (pool-get-metadata id))
 
+(define-rpc (get-resource-configs [with-id id : UVarint]
+                                  [resource-type type : Symbol]
+                                  [resource-name name : String] : (Listof ResourceConfig))
+  (define resource
+    (car
+     (k:DescribedResources-resources
+      (pool-get-resource-configs id type name))))
+  (sort
+   (for/list ([c (in-list (k:DescribedResource-configs resource))])
+     (make-ResourceConfig
+      #:name (k:ResourceConfig-name c)
+      #:value (k:ResourceConfig-value c)
+      #:is-read-only (k:ResourceConfig-read-only? c)
+      #:is-default (k:ResourceConfig-default? c)
+      #:is-sensitive (k:ResourceConfig-sensitive? c)))
+   #:key ResourceConfig-name string<?))
+
 (define-rpc (create-topic [with-id id : UVarint]
                           [named name : String]
                           [partitions partitions : UVarint]

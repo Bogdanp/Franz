@@ -143,6 +143,46 @@ public struct Metadata: Readable, Writable {
   }
 }
 
+public struct ResourceConfig: Readable, Writable {
+  public let name: String
+  public let value: String?
+  public let isReadOnly: Bool
+  public let isDefault: Bool
+  public let isSensitive: Bool
+
+  public init(
+    name: String,
+    value: String?,
+    isReadOnly: Bool,
+    isDefault: Bool,
+    isSensitive: Bool
+  ) {
+    self.name = name
+    self.value = value
+    self.isReadOnly = isReadOnly
+    self.isDefault = isDefault
+    self.isSensitive = isSensitive
+  }
+
+  public static func read(from inp: InputPort, using buf: inout Data) -> ResourceConfig {
+    return ResourceConfig(
+      name: String.read(from: inp, using: &buf),
+      value: String?.read(from: inp, using: &buf),
+      isReadOnly: Bool.read(from: inp, using: &buf),
+      isDefault: Bool.read(from: inp, using: &buf),
+      isSensitive: Bool.read(from: inp, using: &buf)
+    )
+  }
+
+  public func write(to out: OutputPort) {
+    name.write(to: out)
+    value.write(to: out)
+    isReadOnly.write(to: out)
+    isDefault.write(to: out)
+    isSensitive.write(to: out)
+  }
+}
+
 public struct Topic: Readable, Writable {
   public let name: String
   public let partitions: [TopicPartition]
@@ -324,10 +364,24 @@ public class Backend {
     )
   }
 
-  public func openWorkspace(withConn conn: ConnectionDetails) -> Future<String, UVarint> {
+  public func getResourceConfigs(withId id: UVarint, resourceType type: Symbol, resourceName name: String) -> Future<String, [ResourceConfig]> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0008).write(to: out)
+        id.write(to: out)
+        type.write(to: out)
+        name.write(to: out)
+      },
+      readProc: { (inp: InputPort, buf: inout Data) -> [ResourceConfig] in
+        return [ResourceConfig].read(from: inp, using: &buf)
+      }
+    )
+  }
+
+  public func openWorkspace(withConn conn: ConnectionDetails) -> Future<String, UVarint> {
+    return impl.send(
+      writeProc: { (out: OutputPort) in
+        UVarint(0x0009).write(to: out)
         conn.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> UVarint in
@@ -339,7 +393,7 @@ public class Backend {
   public func ping() -> Future<String, String> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0009).write(to: out)
+        UVarint(0x000a).write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> String in
         return String.read(from: inp, using: &buf)
@@ -350,7 +404,7 @@ public class Backend {
   public func saveConnection(_ c: ConnectionDetails) -> Future<String, ConnectionDetails> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x000a).write(to: out)
+        UVarint(0x000b).write(to: out)
         c.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> ConnectionDetails in
@@ -362,7 +416,7 @@ public class Backend {
   public func touchConnection(_ c: ConnectionDetails) -> Future<String, Bool> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x000b).write(to: out)
+        UVarint(0x000c).write(to: out)
         c.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> Bool in

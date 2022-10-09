@@ -9,7 +9,8 @@
  (record-out Topic)
  (record-out Group)
  (record-out Metadata)
- (record-out TopicOption))
+ (record-out TopicOption)  ;; TODO: replace with ResourceConfig?
+ (record-out ResourceConfig))
 
 (define-record Broker
   [id : UVarint #:contract exact-nonnegative-integer?]
@@ -37,3 +38,10 @@
 (define-record TopicOption
   [key : String]
   [value : String])
+
+(define-record ResourceConfig
+  [name : String]
+  [value : (Optional String)]
+  [is-read-only : Bool]
+  [is-default : Bool]
+  [is-sensitive : Bool])

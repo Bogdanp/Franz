@@ -15,6 +15,7 @@
  pool-open
  pool-close
  pool-get-metadata
+ pool-get-resource-configs
  pool-create-topic
  pool-delete-topic
  pool-delete-group
@@ -93,6 +94,16 @@
                          #:groups (sort groups string<? #:key Group-id))))
                     (state-add-req s (req metadata-or-exn res-ch nack))]
 
+                   [`(get-resource-configs ,res-ch ,nack ,id ,type ,name)
+                    (define described-resources
+                      (delay/thread
+                       (k:describe-configs
+                        (state-ref-client s id)
+                        (k:make-DescribeResource
+                         #:type type
+                         #:name name))))
+                    (state-add-req s (req described-resources res-ch nack))]
+
                    [`(create-topic ,res-ch ,nack ,id ,topic-name ,partitions ,options)
                     (define created-topics
                       (delay/thread
@@ -147,6 +158,9 @@
 
 (define (pool-get-metadata id [p (current-pool)])
   (sync (pool-send p get-metadata id)))
+
+(define (pool-get-resource-configs id type name [p (current-pool)])
+  (force (sync (pool-send p get-resource-configs id type name))))
 
 (define (pool-create-topic id name partitions options [p (current-pool)])
   (force (sync (pool-send p create-topic id name partitions options))))
