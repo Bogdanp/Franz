@@ -67,11 +67,12 @@ class WorkspaceWindowController: NSWindowController {
       }
   }
 
-  private func loadMetadata() {
+  private func loadMetadata(andThen proc: @escaping () -> Void = {}) {
     self.status("Getting metadata...")
     Backend.shared.getMetadata(id).onComplete { meta in
       self.sidebarCtl.configure(withId: self.id, andMetadata: meta)
       self.status("Ready")
+      proc()
     }
   }
 
@@ -167,6 +168,12 @@ extension WorkspaceWindowController: WorkspaceSidebarDelegate {
     status("Deleting consumer group \(group.id)...")
     Backend.shared.deleteGroup(withId: group.id, forClient: id).onComplete { _ in
       self.loadMetadata()
+    }
+  }
+
+  func sidebarRequestsReload(withNewTopic name: String) {
+    loadMetadata {
+      self.sidebarCtl.selectEntry(withKind: .topic, andLabel: name)
     }
   }
 }

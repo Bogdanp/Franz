@@ -104,8 +104,18 @@ class WorkspaceSidebarViewController: NSViewController {
     }
   }
 
+  func selectEntry(withKind kind: SidebarEntryKind, andLabel label: String) {
+    for (i, e) in entries.enumerated() {
+      if e.kind == kind && e.label == label {
+        tableView.selectRowIndexes([i], byExtendingSelection: false)
+        return
+      }
+    }
+  }
+
   @IBAction func didPressNewTopicButton(_ sender: Any) {
     let ctl = NewTopicFormViewController()
+    ctl.delegate = self
     ctl.configure(withId: id)
     presentAsSheet(ctl)
   }
@@ -117,9 +127,20 @@ protocol WorkspaceSidebarDelegate {
   func sidebar(didDeselectEntry entry: Any?)
   func sidebar(didDeleteTopic topic: Topic)
   func sidebar(didDeleteConsumerGroup group: Group)
+  func sidebarRequestsReload(withNewTopic name: String)
 }
 
-// MARK: =NSMenuDelegate
+// MARK: -NewTopicFormDelegate
+extension WorkspaceSidebarViewController: NewTopicFormDelegate {
+  func didCancelNewTopicForm(_ sender: NewTopicFormViewController) {
+  }
+
+  func newTopicFormCompleted(withName name: String, partitions: Int, andOptions options: [TopicOption]) {
+    delegate?.sidebarRequestsReload(withNewTopic: name)
+  }
+}
+
+// MARK: -NSMenuDelegate
 extension WorkspaceSidebarViewController: NSMenuDelegate {
   func menuNeedsUpdate(_ menu: NSMenu) {
     menu.removeAllItems()
