@@ -143,6 +143,10 @@ extension WorkspaceWindowController: WorkspaceSidebarDelegate {
     detailCtl.show(entry: entry, withKind: kind)
   }
 
+  func sidebar(didDeselectEntry entry: Any?) {
+    detailCtl.clear()
+  }
+
   func sidebar(didDeleteTopic topic: Topic) {
     status("Deleting topic \(topic.name)...")
     Backend.shared.deleteTopic(named: topic.name, forClient: id).onComplete { _ in

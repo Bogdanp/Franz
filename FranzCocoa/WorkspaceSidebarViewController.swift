@@ -123,6 +123,7 @@ extension WorkspaceSidebarViewController: NSMenuDelegate {
     guard let topic = entries[tableView.clickedRow].data as? Topic else {
       return
     }
+    let selected = tableView.clickedRow == tableView.selectedRow
     let alert = NSAlert()
     alert.alertStyle = .warning
     alert.messageText = "Delete topic \(topic.name)?"
@@ -131,6 +132,9 @@ extension WorkspaceSidebarViewController: NSMenuDelegate {
     alert.addButton(withTitle: "Cancel")
     switch alert.runModal() {
     case .alertFirstButtonReturn:
+      if selected {
+        delegate?.sidebar(didDeselectEntry: entries[tableView.selectedRow])
+      }
       delegate?.sidebar(didDeleteTopic: topic)
     default:
       ()
@@ -142,6 +146,7 @@ extension WorkspaceSidebarViewController: NSMenuDelegate {
     guard let group = entries[tableView.clickedRow].data as? Group else {
       return
     }
+    let selected = tableView.clickedRow == tableView.selectedRow
     let alert = NSAlert()
     alert.alertStyle = .warning
     alert.messageText = "Delete consumer group \(group.id)?"
@@ -150,6 +155,9 @@ extension WorkspaceSidebarViewController: NSMenuDelegate {
     alert.addButton(withTitle: "Cancel")
     switch alert.runModal() {
     case .alertFirstButtonReturn:
+      if selected {
+        delegate?.sidebar(didDeselectEntry: entries[tableView.selectedRow])
+      }
       delegate?.sidebar(didDeleteConsumerGroup: group)
     default:
       ()
@@ -253,6 +261,7 @@ class SidebarEntry: NSObject {
 // MARK: WorkspaceSidebarDelegate
 protocol WorkspaceSidebarDelegate {
   func sidebar(didSelectEntry entry: Any, withKind kind: SidebarEntryKind)
+  func sidebar(didDeselectEntry entry: Any?)
   func sidebar(didDeleteTopic topic: Topic)
   func sidebar(didDeleteConsumerGroup group: Group)
 }

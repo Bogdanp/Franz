@@ -27,6 +27,14 @@ class WorkspaceDetailViewController: NSViewController {
     }
   }
 
+  func clear() {
+    contentView?.removeFromSuperview()
+    if let contentViewConstraints {
+      NSLayoutConstraint.deactivate(contentViewConstraints)
+    }
+    selectLabel.isHidden = false
+  }
+
   private func display(controller: NSViewController) {
     selectLabel.isHidden = true
     contentView?.removeFromSuperviewWithoutNeedingDisplay()
@@ -39,14 +47,6 @@ class WorkspaceDetailViewController: NSViewController {
     view.addSubview(controller.view)
     contentViewConstraints = fullSizeConstraints(forSubview: controller.view)
     NSLayoutConstraint.activate(contentViewConstraints!)
-  }
-
-  private func clear() {
-    contentView?.removeFromSuperview()
-    if let contentViewConstraints {
-      NSLayoutConstraint.deactivate(contentViewConstraints)
-    }
-    selectLabel.isHidden = false
   }
 }
 
