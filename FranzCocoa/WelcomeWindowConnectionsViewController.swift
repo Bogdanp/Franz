@@ -3,7 +3,7 @@ import Cocoa
 class WelcomeWindowConnectionsViewController: NSViewController {
 
   @IBOutlet weak var recentConnectionsLabel: NSTextField!
-  @IBOutlet weak var connectionsTable: NSTableView!
+  @IBOutlet weak var connectionsTable: ConnectionsTableView!
 
   private var connections = [ConnectionDetails]()
 
@@ -14,11 +14,16 @@ class WelcomeWindowConnectionsViewController: NSViewController {
     connectionsTable.dataSource = self
     connectionsTable.delegate = self
     connectionsTable.doubleAction = #selector(didDoubleClickConnection(_:))
+    connectionsTable.target = self
 
     let menu = NSMenu()
     menu.addItem(NSMenuItem(title: "Edit...", action: nil, keyEquivalent: ""))
     menu.addItem(.separator())
-    menu.addItem(NSMenuItem(title: "Delete", action: #selector(didPressDeleteMenuItem(_:)), keyEquivalent: ""))
+    menu.addItem(NSMenuItem(
+      title: "Delete",
+      action: #selector(didPressDeleteMenuItem(_:)),
+      keyEquivalent: .backspaceKeyEquivalent
+    ))
     connectionsTable.menu = menu
   }
 
@@ -45,6 +50,22 @@ class WelcomeWindowConnectionsViewController: NSViewController {
     if try! Backend.shared.deleteConnection(conn).wait() {
       reload()
     }
+  }
+}
+
+// MARK: -ConnectionsTableView
+class ConnectionsTableView: NSTableView {
+  override func keyDown(with event: NSEvent) {
+    if event.characters?.count == 1 {
+      switch event.keyCode {
+      case 36: // RET
+        let _ = target?.perform(doubleAction, with: self)
+        return
+      default:
+        ()
+      }
+    }
+    super.keyDown(with: event)
   }
 }
 
