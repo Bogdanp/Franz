@@ -8,7 +8,8 @@
  (record-out TopicPartition)
  (record-out Topic)
  (record-out Group)
- (record-out Metadata))
+ (record-out Metadata)
+ (record-out TopicOption))
 
 (define-record Broker
   [id : UVarint #:contract exact-nonnegative-integer?]
@@ -32,3 +33,7 @@
   [brokers : (Listof Broker)]
   [topics : (Listof Topic)]
   [groups : (Listof Group)])
+
+(define-record TopicOption
+  [key : String]
+  [value : String])

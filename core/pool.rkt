@@ -15,6 +15,7 @@
  pool-open
  pool-close
  pool-get-metadata
+ pool-create-topic
  pool-delete-topic
  pool-delete-group
  pool-shutdown)
@@ -92,6 +93,17 @@
                          #:groups (sort groups string<? #:key Group-id))))
                     (state-add-req s (req metadata-or-exn res-ch nack))]
 
+                   [`(create-topic ,res-ch ,nack ,id ,topic-name ,partitions ,options)
+                    (define created-topics
+                      (delay/thread
+                       (k:create-topics
+                        (state-ref-client s id)
+                        (k:make-CreateTopic
+                         #:name topic-name
+                         #:partitions partitions
+                         #:configs options))))
+                    (state-add-req s (req created-topics res-ch nack))]
+
                    [`(delete-topic ,res-ch ,nack ,id ,topic-name)
                     (define deleted-topics
                       (delay/thread
@@ -135,6 +147,9 @@
 
 (define (pool-get-metadata id [p (current-pool)])
   (sync (pool-send p get-metadata id)))
+
+(define (pool-create-topic id name partitions options [p (current-pool)])
+  (force (sync (pool-send p create-topic id name partitions options))))
 
 (define (pool-delete-topic id name [p (current-pool)])
   (force (sync (pool-send p delete-topic id name))))

@@ -1,6 +1,7 @@
 #lang racket/base
 
-(require noise/backend
+(require (prefix-in k: kafka)
+         noise/backend
          noise/serde
          "broker.rkt"
          "connection-details.rkt"
@@ -15,6 +16,21 @@
 
 (define-rpc (get-metadata [_ id : UVarint] : Metadata)
   (pool-get-metadata id))
+
+(define-rpc (create-topic [with-id id : UVarint]
+                          [named name : String]
+                          [partitions partitions : UVarint]
+                          [and-options options : (Listof TopicOption)] : (Optional String))
+  (define options-hash
+    (for/hash ([opt (in-list options)])
+      (values
+       (TopicOption-key opt)
+       (TopicOption-value opt))))
+  (define res
+    (car
+     (k:CreatedTopics-topics
+      (pool-create-topic id name partitions options-hash))))
+  (k:CreatedTopic-error-message res))
 
 (define-rpc (delete-topic [named name : String] [for-client id : UVarint] : Bool)
   (begin0 #t
