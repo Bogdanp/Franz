@@ -1,7 +1,10 @@
 import Cocoa
+import NoiseSerde
 import SwiftUI
 
 class WorkspaceDetailViewController: NSViewController {
+  private var id: UVarint!
+
   @IBOutlet weak var selectLabel: NSTextField!
 
   private var contentView: NSView?
@@ -11,13 +14,17 @@ class WorkspaceDetailViewController: NSViewController {
     super.viewDidLoad()
   }
 
+  func configure(withId id: UVarint) {
+    self.id = id
+  }
+
   func show(entry: Any, withKind kind: SidebarEntryKind) {
     switch kind {
     case .broker:
-      let hostingCtl = NSHostingController(rootView: WorkspaceBrokerDetailView(broker: entry as! Broker))
+      let hostingCtl = NSHostingController(rootView: WorkspaceBrokerDetailView(id: id, broker: entry as! Broker))
       display(controller: hostingCtl)
     case .topic:
-      let hostingCtl = NSHostingController(rootView: WorkspaceTopicDetailView(topic: entry as! Topic))
+      let hostingCtl = NSHostingController(rootView: WorkspaceTopicDetailView(id: id, topic: entry as! Topic))
       display(controller: hostingCtl)
     case .consumerGroup:
       let hostingCtl = NSHostingController(rootView: WorkspaceGroupDetailView(group: entry as! Group))

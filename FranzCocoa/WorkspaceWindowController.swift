@@ -71,6 +71,7 @@ class WorkspaceWindowController: NSWindowController {
     self.status("Getting metadata...")
     Backend.shared.getMetadata(id).onComplete { meta in
       self.sidebarCtl.configure(withId: self.id, andMetadata: meta)
+      self.detailCtl.configure(withId: self.id)
       self.status("Ready")
       proc()
     }

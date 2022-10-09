@@ -1,7 +1,13 @@
+import NoiseSerde
 import SwiftUI
 
 struct WorkspaceBrokerDetailView: View {
+  var id: UVarint
   var broker: Broker
+
+  @State private var configsLoading = true
+  @State private var configs = [ResourceConfig]()
+  @State private var selectedConfigs = Set<String>()
 
   var body: some View {
     VStack(alignment: .leading) {
@@ -20,13 +26,29 @@ struct WorkspaceBrokerDetailView: View {
             Info(label: "Rack", description: "\(rack)", divider: false)
           }
 
-          Spacer()
+          if !configsLoading {
+            Table(configs, selection: $selectedConfigs) {
+              TableColumn("Config", value: \.name)
+              TableColumn("Value", value: \.nonnullValue)
+            }
+          }
         }
         Spacer()
       }
       Spacer()
     }
     .padding()
+    .onAppear {
+      self.configsLoading = true
+      Backend.shared.getResourceConfigs(
+        withId: id,
+        resourceType: "cluster",
+        resourceName: "1"
+      ).onComplete { configs in
+        self.configs = configs
+        self.configsLoading = false
+      }
+    }
   }
 }
 
