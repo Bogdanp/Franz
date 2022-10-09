@@ -20,6 +20,18 @@ class WelcomeWindowController: NSWindowController {
   }
 }
 
+// MARK: -WelcomeWindow
+class WelcomeWindow: NSWindow {
+  override func keyDown(with event: NSEvent) {
+    switch event.keyCode {
+    case 53: // ESC
+      WindowManager.shared.closeWelcomeWindow()
+    default:
+      super.keyDown(with: event)
+    }
+  }
+}
+
 // MARK: -NSSplitViewController
 fileprivate class SplitViewController: NSSplitViewController {
   override func splitView(_ splitView: NSSplitView, effectiveRect proposedEffectiveRect: NSRect, forDrawnRect drawnRect: NSRect, ofDividerAt dividerIndex: Int) -> NSRect {
