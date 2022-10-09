@@ -14,6 +14,8 @@ class NewTopicFormViewController: NSViewController {
 
   var delegate: NewTopicFormDelegate?
 
+  private var completionTimers = [TopicOptionTextField: Timer]()
+
   override func viewDidLoad() {
     super.viewDidLoad()
 
@@ -152,18 +154,131 @@ extension NewTopicFormViewController: NSTableViewDelegate {
     guard let view = tableView.makeView(withIdentifier: tableColumn!.identifier, owner: nil) as? NSTableCellView else {
       return nil
     }
+    guard let textField = view.textField as? TopicOptionTextField else {
+      return nil
+    }
     switch tableColumn?.identifier {
     case NSUserInterfaceItemIdentifier("TopicOptionName"):
-      view.textField?.stringValue = options[row].key
-      view.textField?.action = #selector(didFinishEditingOptionName(_:))
-      view.textField?.isAutomaticTextCompletionEnabled = true
+      textField.stringValue = options[row].key
+      textField.action = #selector(didFinishEditingOptionName(_:))
+      textField.isAutomaticTextCompletionEnabled = true
+      textField.delegate = self
+      textField.kind = .key
+      textField.row = row
     case NSUserInterfaceItemIdentifier("TopicOptionValue"):
-      view.textField?.stringValue = options[row].value
-      view.textField?.action = #selector(didFinishEditingOptionValue(_:))
-      view.textField?.isAutomaticTextCompletionEnabled = true
+      textField.stringValue = options[row].value
+      textField.action = #selector(didFinishEditingOptionValue(_:))
+      textField.isAutomaticTextCompletionEnabled = true
+      textField.delegate = self
+      textField.kind = .value
+      textField.row = row
     default:
       ()
     }
     return view
+  }
+}
+
+// MARK: -TopicOptionTextField
+enum TopicOptionTextFieldKind {
+  case key
+  case value
+}
+
+class TopicOptionTextField: NSTextField {
+  var kind: TopicOptionTextFieldKind = .key
+  var row: Int = -1
+}
+
+// MARK: -NSTextFieldDelegate
+extension NewTopicFormViewController: NSTextFieldDelegate {
+  static let completions: [String: [String]] = [
+    "cleanup.policy": [
+      "compact",
+      "delete"
+    ],
+    "compression.type": [
+      "gzip",
+      "lz4",
+      "producer",
+      "snappy",
+      "uncompressed",
+      "zstd",
+    ],
+    "delete.retention.ms": [],
+    "file.delete.delay.ms": [],
+    "flush.messages": [],
+    "flush.ms": [],
+    "follower.replication.throttled.replicas": [],
+    "index.interval.bytes": [],
+    "leader.replication.throttled.replicas": [],
+    "max.compaction.lag.ms": [],
+    "max.message.bytes": [],
+    "message.timestamp.difference.max.ms": [],
+    "message.timestamp.type": [
+      "CreateTime",
+      "LogAppendTime",
+    ],
+    "min.cleanable.dirty.ratio": [],
+    "min.compaction.lag.ms": [],
+    "min.insync.replicas": [],
+    "preallocate": [],
+    "retention.bytes": [],
+    "retention.ms": [],
+    "segment.bytes": [],
+    "segment.index.bytes": [],
+    "segment.jitter.ms": [],
+    "segment.ms": [],
+    "unclean.leader.election.enable": [],
+    "message.downconversion.enable": [],
+  ]
+
+  func control(_ control: NSControl, textView: NSTextView, completions words: [String], forPartialWordRange charRange: NSRange, indexOfSelectedItem index: UnsafeMutablePointer<Int>) -> [String] {
+    guard let textField = control as? TopicOptionTextField else {
+      return []
+    }
+    guard let range = Range(charRange, in: textView.string), !range.isEmpty else {
+      return []
+    }
+    let substr = String(textView.string[range])
+    switch textField.kind {
+    case .key:
+      if let _ = Self.completions[substr] {
+        return []
+      }
+      return Self.completions.keys.filter { k in
+        k.starts(with: substr)
+      }.sorted()
+    case .value:
+      let option = options[textField.row]
+      guard let completions = Self.completions[option.key] else {
+        return []
+      }
+      if let _ = completions.first(where: { $0 == substr }) {
+        return []
+      }
+      return completions.filter { k in
+        k.starts(with: substr)
+      }.sorted()
+    }
+  }
+
+  func controlTextDidChange(_ notification: Notification) {
+    guard let editor = notification.userInfo?["NSFieldEditor"] as? NSTextView else {
+      return
+    }
+    guard let textField = notification.object as? TopicOptionTextField else {
+      return
+    }
+    if let timer = completionTimers[textField] {
+      timer.invalidate()
+    }
+    completionTimers[textField] = Timer.scheduledTimer(
+      withTimeInterval: 0.3,
+      repeats: false,
+      block: { _ in
+        editor.complete(self)
+        self.completionTimers.removeValue(forKey: textField)
+      })
   }
 }
