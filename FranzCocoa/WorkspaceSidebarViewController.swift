@@ -101,6 +101,10 @@ class WorkspaceSidebarViewController: NSViewController {
       delegate?.sidebar(didDeselectEntry: selectedEntry)
     }
   }
+
+  @IBAction func didPressNewTopicButton(_ sender: Any) {
+    print("new topic")
+  }
 }
 
 // MARK: NSMenuDelegate
