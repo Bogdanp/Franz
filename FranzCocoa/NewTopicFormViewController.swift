@@ -47,6 +47,9 @@ class NewTopicFormViewController: NSViewController {
     optionsTable.reloadData()
     optionsTable.selectRowIndexes([options.count-1], byExtendingSelection: false)
     optionsTable.editColumn(0, row: options.count-1, with: nil, select: true)
+    if let view = optionsTable.view(atColumn: 0, row: options.count-1, makeIfNecessary: false) as? NSTableCellView {
+      view.textField?.currentEditor()?.complete(self)
+    }
   }
 
   @objc func didDeleteOption(_ sender: NSTableView) {
@@ -237,7 +240,7 @@ extension NewTopicFormViewController: NSTextFieldDelegate {
     guard let textField = control as? TopicOptionTextField else {
       return []
     }
-    guard let range = Range(charRange, in: textView.string), !range.isEmpty else {
+    guard let range = Range(charRange, in: textView.string) else {
       return []
     }
     let substr = String(textView.string[range])
@@ -273,12 +276,9 @@ extension NewTopicFormViewController: NSTextFieldDelegate {
     if let timer = completionTimers[textField] {
       timer.invalidate()
     }
-    completionTimers[textField] = Timer.scheduledTimer(
-      withTimeInterval: 0.3,
-      repeats: false,
-      block: { _ in
-        editor.complete(self)
-        self.completionTimers.removeValue(forKey: textField)
-      })
+    completionTimers[textField] = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
+      editor.complete(self)
+      self.completionTimers.removeValue(forKey: textField)
+    }
   }
 }
