@@ -28,7 +28,10 @@ class WorkspaceWindowController: NSWindowController {
     statusBarNameField.stringValue = conn.name
     connect()
 
-    splitCtl.addSplitViewItem(NSSplitViewItem(sidebarWithViewController: sidebarCtl))
+    let sidebarItem = NSSplitViewItem(sidebarWithViewController: sidebarCtl)
+    sidebarItem.minimumThickness = 200
+
+    splitCtl.addSplitViewItem(sidebarItem)
     splitCtl.addSplitViewItem(NSSplitViewItem(viewController: detailCtl))
 
     shouldCascadeWindows = false
