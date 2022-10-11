@@ -6,7 +6,6 @@ struct WorkspaceTopicDetailView: View {
   var topic: Topic
 
   @State private var configs = [ResourceConfig]()
-  @State private var selectedConfigs = Set<String>()
 
   var body: some View {
     VStack(alignment: .leading) {
@@ -21,10 +20,7 @@ struct WorkspaceTopicDetailView: View {
           Info(label: "Partitions", description: String(topic.partitions.count))
           Info(label: "Internal", description: topic.isInternal ? "yes" : "no", divider: false)
 
-          Table(configs, selection: $selectedConfigs) {
-            TableColumn("Config", value: \.name)
-            TableColumn("Value", value: \.nonnullValue)
-          }
+          ResourceConfigTable(configs: configs)
         }
         Spacer()
       }
@@ -39,6 +35,19 @@ struct WorkspaceTopicDetailView: View {
       ).onComplete { configs in
         self.configs = configs
       }
+    }
+  }
+}
+
+struct ResourceConfigTable: View {
+  var configs: [ResourceConfig]
+
+  @State private var selected = Set<String>()
+
+  var body: some View {
+    Table(configs, selection: $selected) {
+      TableColumn("Config", value: \.name)
+      TableColumn("Value", value: \.nonnullValue)
     }
   }
 }
