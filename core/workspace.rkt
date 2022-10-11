@@ -14,8 +14,8 @@
   (begin0 #t
     (pool-close id)))
 
-(define-rpc (get-metadata [_ id : UVarint] : Metadata)
-  (pool-get-metadata id))
+(define-rpc (get-metadata [_ id : UVarint] [forcing-reload reload : Bool] : Metadata)
+  (pool-get-metadata id reload))
 
 (define-rpc (get-resource-configs [with-id id : UVarint]
                                   [resource-type type : Symbol]

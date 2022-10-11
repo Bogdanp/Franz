@@ -63,13 +63,13 @@ class WorkspaceWindowController: NSWindowController {
         }
       }) { id in
         self.id = id
-        self.loadMetadata()
+        self.loadMetadata(forcingReload: false)
       }
   }
 
-  private func loadMetadata(andThen proc: @escaping () -> Void = {}) {
+  private func loadMetadata(forcingReload reload: Bool = true, andThen proc: @escaping () -> Void = {}) {
     self.status("Getting metadata...")
-    Backend.shared.getMetadata(id).onComplete { meta in
+    Backend.shared.getMetadata(id, forcingReload: reload).onComplete { meta in
       self.sidebarCtl.configure(withId: self.id, andMetadata: meta)
       self.detailCtl.configure(withId: self.id)
       self.status("Ready")

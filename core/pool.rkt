@@ -56,13 +56,15 @@
                     (~> (state-remove-client s id)
                         (state-add-req (req (and client #t) res-ch nack)))]
 
-                   [`(get-metadata ,res-ch ,nack ,id)
+                   [`(get-metadata ,res-ch ,nack ,id ,reload?)
                     ;; TODO: promise
                     (define metadata-or-exn
                       (with-handlers ([exn:fail? values])
                         (define c (state-ref-client s id))
                         (define meta
-                          (k:get-metadata c))
+                          (if reload?
+                              (k:get-metadata c)
+                              (k:client-metadata c)))
                         (define controller-id
                           (k:Metadata-controller-id meta))
                         (define groups
@@ -156,8 +158,8 @@
 (define (pool-close id [p (current-pool)])
   (sync (pool-send p close id)))
 
-(define (pool-get-metadata id [p (current-pool)])
-  (sync (pool-send p get-metadata id)))
+(define (pool-get-metadata id reload? [p (current-pool)])
+  (sync (pool-send p get-metadata id reload?)))
 
 (define (pool-get-resource-configs id type name [p (current-pool)])
   (force (sync (pool-send p get-resource-configs id type name))))

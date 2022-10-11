@@ -352,11 +352,12 @@ public class Backend {
     )
   }
 
-  public func getMetadata(_ id: UVarint) -> Future<String, Metadata> {
+  public func getMetadata(_ id: UVarint, forcingReload reload: Bool) -> Future<String, Metadata> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0007).write(to: out)
         id.write(to: out)
+        reload.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> Metadata in
         return Metadata.read(from: inp, using: &buf)
