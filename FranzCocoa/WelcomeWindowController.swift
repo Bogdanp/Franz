@@ -34,7 +34,19 @@ class WelcomeWindow: NSWindow {
 
 // MARK: -NSSplitViewController
 fileprivate class SplitViewController: NSSplitViewController {
+  override func loadView() {
+    splitView = SplitView()
+    splitView.isVertical = true // true = horizontal
+    super.loadView()
+  }
+
   override func splitView(_ splitView: NSSplitView, effectiveRect proposedEffectiveRect: NSRect, forDrawnRect drawnRect: NSRect, ofDividerAt dividerIndex: Int) -> NSRect {
-    return NSRect()
+    return .zero
+  }
+}
+
+fileprivate class SplitView: NSSplitView {
+  override var dividerThickness: CGFloat {
+    0
   }
 }
