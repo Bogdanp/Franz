@@ -38,8 +38,8 @@ struct WorkspaceBrokerDetailView: View {
     .onAppear {
       Backend.shared.getResourceConfigs(
         withId: id,
-        resourceType: "cluster",
-        resourceName: "1"
+        resourceType: "broker",
+        resourceName: String(broker.id)
       ).onComplete { configs in
         self.configs = configs
       }
