@@ -117,7 +117,7 @@ extension WorkspaceWindowController: NSToolbarDelegate {
         return item
       case .reloadButton:
         let item = NSToolbarItem(itemIdentifier: itemIdentifier)
-        item.image = NSImage(systemSymbolName: "goforward", accessibilityDescription: "Reload")?
+        item.image = NSImage(systemSymbolName: "arrow.clockwise", accessibilityDescription: "Reload")?
           .withSymbolConfiguration(.init(pointSize: 18, weight: .light))
         item.label = "Reload Metadata"
         item.action = #selector(didPressReloadButton(_:))
