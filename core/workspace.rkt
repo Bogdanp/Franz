@@ -21,9 +21,7 @@
                                   [resource-type type : Symbol]
                                   [resource-name name : String] : (Listof ResourceConfig))
   (define resource
-    (car
-     (k:DescribedResources-resources
-      (pool-get-resource-configs id type name))))
+    (car (pool-get-resource-configs id type name)))
   (sort
    (for/list ([c (in-list (k:DescribedResource-configs resource))])
      (make-ResourceConfig
