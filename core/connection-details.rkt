@@ -40,7 +40,6 @@
 (define (ConnectionDetails->meta c)
   (define meta:c
     (meta:make-connection-details
-     #:id (or (ConnectionDetails-id c) sql-null)
      #:name (ConnectionDetails-name c)
      #:bootstrap-host (ConnectionDetails-bootstrap-host c)
      #:bootstrap-port (ConnectionDetails-bootstrap-port c)
