@@ -4,6 +4,7 @@ import NoiseSerde
 
 class WorkspaceWindowController: NSWindowController {
   private var conn: ConnectionDetails!
+  private var pass: String?
   private var id: UVarint!
 
   @IBOutlet weak var toolbar: NSToolbar!
@@ -15,9 +16,10 @@ class WorkspaceWindowController: NSWindowController {
   private let sidebarCtl = WorkspaceSidebarViewController()
   private let detailCtl = WorkspaceDetailViewController()
 
-  convenience init(withConn conn: ConnectionDetails) {
+  convenience init(withConn conn: ConnectionDetails, andPassword password: String?) {
     self.init(windowNibName: "WorkspaceWindowController")
     self.conn = conn
+    self.pass = password
   }
 
   override func windowDidLoad() {
@@ -36,7 +38,7 @@ class WorkspaceWindowController: NSWindowController {
 
     shouldCascadeWindows = false
     window?.delegate = self
-    window?.title = "\(conn.name) : \(conn.detailsString())"
+    window?.title = "\(conn.name) : \(conn.bootstrapAddress)"
     window?.contentViewController = splitCtl
     window?.setFrameAutosaveName("Franz:\(conn.name)")
     if let didSet = window?.setFrameUsingName(window!.frameAutosaveName), !didSet {
@@ -47,7 +49,7 @@ class WorkspaceWindowController: NSWindowController {
 
   private func connect() {
     status("Connecting...")
-    Backend.shared.openWorkspace(withConn: conn).sink(
+    Backend.shared.openWorkspace(withConn: conn, andPassword: pass).sink(
       onError: { err in
         self.status("Connection Failed")
         let alert = NSAlert()
@@ -89,6 +91,7 @@ class WorkspaceWindowController: NSWindowController {
 // MARK: NSWindowDelegate
 extension WorkspaceWindowController: NSWindowDelegate {
   func windowWillClose(_ notification: Notification) {
+    guard let id else { return }
     let _ = Backend.shared.closeWorkspace(withId: id)
     WindowManager.shared.removeWorkspace(withId: conn.id!)
   }

@@ -7,8 +7,9 @@
          "connection-details.rkt"
          "pool.rkt")
 
-(define-rpc (open-workspace [with-conn conn : ConnectionDetails] : UVarint)
-  (pool-open conn))
+(define-rpc (open-workspace [with-conn conn : ConnectionDetails]
+                            [and-password password : (Optional String)] : UVarint)
+  (pool-open (set-ConnectionDetails-password conn password)))
 
 (define-rpc (close-workspace [with-id id : UVarint] : Bool)
   (begin0 #t

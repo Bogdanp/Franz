@@ -64,7 +64,7 @@
    [(bootstrap-host "127.0.0.1") string/f #:contract non-empty-string?]
    [(bootstrap-port 9092) integer/f #:contract (integer-in 0 65535)]
    [(username sql-null) string/f #:nullable]
-   [(password sql-null) string/f #:nullable]
+   [(password-id sql-null) string/f #:nullable]
    [(ssl-on? #f) boolean/f]
    [(created-at (current-seconds)) integer/f]
    [(updated-at (current-seconds)) integer/f]

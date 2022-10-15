@@ -43,6 +43,7 @@
 		43CD623F28CE289F00095144 /* WelcomeWindowContentViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43CD623C28CE282400095144 /* WelcomeWindowContentViewController.xib */; };
 		43CD624828CE3B5D00095144 /* ConnectionDetailsFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CD624628CE3B5D00095144 /* ConnectionDetailsFormViewController.swift */; };
 		43CD624928CE3B5D00095144 /* ConnectionDetailsFormViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43CD624728CE3B5D00095144 /* ConnectionDetailsFormViewController.xib */; };
+		43D03DD428FAC6030049D44D /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D03DD328FAC6030049D44D /* Keychain.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -82,6 +83,7 @@
 		43CD623D28CE282400095144 /* WelcomeWindowContentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeWindowContentViewController.swift; sourceTree = "<group>"; };
 		43CD624628CE3B5D00095144 /* ConnectionDetailsFormViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionDetailsFormViewController.swift; sourceTree = "<group>"; };
 		43CD624728CE3B5D00095144 /* ConnectionDetailsFormViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ConnectionDetailsFormViewController.xib; sourceTree = "<group>"; };
+		43D03DD328FAC6030049D44D /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -128,6 +130,7 @@
 				43804AB628D1A014002880FE /* ConnectionTableCellView.swift */,
 				43804AB828D1A026002880FE /* ConnectionTableCellView.xib */,
 				43CD621F28CE24B100095144 /* FranzCocoa.entitlements */,
+				43D03DD328FAC6030049D44D /* Keychain.swift */,
 				43CD621C28CE24B100095144 /* MainMenu.xib */,
 				431C698028F2E0C60082986A /* NewTopicFormViewController.swift */,
 				431C698128F2E0C60082986A /* NewTopicFormViewController.xib */,
@@ -290,6 +293,7 @@
 				431C698228F2E0C60082986A /* NewTopicFormViewController.swift in Sources */,
 				43CD624828CE3B5D00095144 /* ConnectionDetailsFormViewController.swift in Sources */,
 				43196F8A28F1DAB2003C793B /* WorkspaceTopicDetailView.swift in Sources */,
+				43D03DD428FAC6030049D44D /* Keychain.swift in Sources */,
 				43CD623B28CE27DB00095144 /* WelcomeWindowController.swift in Sources */,
 				43CD623728CE27B200095144 /* WindowManager.swift in Sources */,
 				43CD621928CE24B000095144 /* AppDelegate.swift in Sources */,

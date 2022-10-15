@@ -24,8 +24,10 @@ extension Broker {
 
 
 extension ConnectionDetails {
-  func detailsString() -> String {
-    return "\(bootstrapHost):\(bootstrapPort)"
+  var bootstrapAddress: String {
+    get {
+      "\(bootstrapHost):\(bootstrapPort)"
+    }
   }
 }
 

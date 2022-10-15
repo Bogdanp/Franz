@@ -43,8 +43,23 @@ class WelcomeWindowConnectionsViewController: NSViewController {
     assert(Thread.isMainThread)
     let conn = connections[sender.selectedRow]
     let _ = Backend.shared.touchConnection(conn)
-    WindowManager.shared.launchWorkspace(withConn: conn)
-    WindowManager.shared.closeWelcomeWindow()
+    guard let passwordId = conn.passwordId else {
+      WindowManager.shared.launchWorkspace(withConn: conn, andPassword: nil)
+      WindowManager.shared.closeWelcomeWindow()
+      return
+    }
+    switch Keychain.shared.get(passwordWithId: passwordId) {
+    case .aborted:
+      ()
+    case .error(let code):
+      let alert = NSAlert()
+      alert.messageText = "Error"
+      alert.informativeText = "Failed to retrieve password from Keychain (code: \(code))."
+      alert.runModal()
+    case .success(let password):
+      WindowManager.shared.launchWorkspace(withConn: conn, andPassword: password)
+      WindowManager.shared.closeWelcomeWindow()
+    }
   }
 
   @objc func didRequestDeleteConnection(_ sender: NSMenuItem) {
@@ -113,7 +128,7 @@ extension WelcomeWindowConnectionsViewController: NSTableViewDelegate {
     view.imageView?.image = NSImage(systemSymbolName: "server.rack", accessibilityDescription: "Server")?
       .withSymbolConfiguration(.init(pointSize: 24, weight: .light))
     view.textField?.stringValue = conn.name
-    view.detailsView?.stringValue = conn.detailsString()
+    view.detailsView?.stringValue = conn.bootstrapAddress
     return view
   }
 }

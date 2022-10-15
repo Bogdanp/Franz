@@ -7,7 +7,7 @@ class WindowManager {
   private var welcomeWindowController: WelcomeWindowController?
   private var workspaces = [UInt64: WorkspaceWindowController]()
 
-  func launchWorkspace(withConn conn: ConnectionDetails) {
+  func launchWorkspace(withConn conn: ConnectionDetails, andPassword password: String?) {
     assert(Thread.isMainThread)
     guard let id = conn.id else {
       preconditionFailure()
@@ -16,7 +16,7 @@ class WindowManager {
       workspace.showWindow(self)
       return
     }
-    let workspace = WorkspaceWindowController(withConn: conn)
+    let workspace = WorkspaceWindowController(withConn: conn, andPassword: password)
     workspace.showWindow(self)
     workspaces[id] = workspace
   }

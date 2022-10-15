@@ -50,6 +50,7 @@ class ConnectionDetailsFormViewController: NSViewController {
       bootstrapPort: bootstrapPortField.stringValue == "" ? 9092 : 9092,
       username: usernameField.stringValue == "" ? nil : usernameField.stringValue,
       password: passwordField.stringValue == "" ? nil : passwordField.stringValue,
+      passwordId: passwordField.stringValue == "" ? nil : try! Backend.shared.generatePasswordId().wait(),
       useSsl: enableSSLCheckbox.state == .on
     ))
   }

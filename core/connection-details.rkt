@@ -6,6 +6,8 @@
          noise/serde
          (only-in openssl ssl-secure-client-context)
          racket/contract
+         racket/port
+         racket/random
          racket/string
          (prefix-in sasl: sasl/plain)
          threading
@@ -22,6 +24,7 @@
   [(bootstrap-port 9092) : UVarint #:contract (integer-in 0 65535)]
   [(username #f) : (Optional String) #:contract (or/c #f string?)]
   [(password #f) : (Optional String) #:contract (or/c #f string?)]
+  [(password-id #f) : (Optional String) #:contract (or/c #f string?)]
   [(use-ssl #f) : Bool #:contract boolean?])
 
 (define (meta->ConnectionDetails c)
@@ -31,7 +34,7 @@
    #:bootstrap-host (meta:connection-details-bootstrap-host c)
    #:bootstrap-port (meta:connection-details-bootstrap-port c)
    #:username (sql-null->false (meta:connection-details-username c))
-   #:password (sql-null->false (meta:connection-details-password c))
+   #:password-id (sql-null->false (meta:connection-details-password-id c))
    #:use-ssl (meta:connection-details-ssl-on? c)))
 
 (define (ConnectionDetails->meta c)
@@ -41,7 +44,7 @@
      #:bootstrap-host (ConnectionDetails-bootstrap-host c)
      #:bootstrap-port (ConnectionDetails-bootstrap-port c)
      #:username (or (ConnectionDetails-username c) sql-null)
-     #:password (or (ConnectionDetails-password c) sql-null)
+     #:password-id (or (ConnectionDetails-password-id c) sql-null)
      #:ssl-on? (ConnectionDetails-use-ssl c)))
   (cond
     [(ConnectionDetails-id c)
@@ -80,3 +83,12 @@
    (and~> (ConnectionDetails-id c)
           (meta:delete-connection!))
    #t))
+
+(define-rpc (generate-password-id : String)
+  (call-with-output-string
+   (lambda (out)
+     (write-string "franz-" out)
+     (for ([b (in-bytes (crypto-random-bytes 32))])
+       (when (< b 16)
+         (write-string "0" out))
+       (write-string (number->string b 16) out)))))

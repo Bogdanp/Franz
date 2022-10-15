@@ -50,6 +50,7 @@ public struct ConnectionDetails: Readable, Writable {
   public let bootstrapPort: UVarint
   public let username: String?
   public let password: String?
+  public let passwordId: String?
   public let useSsl: Bool
 
   public init(
@@ -59,6 +60,7 @@ public struct ConnectionDetails: Readable, Writable {
     bootstrapPort: UVarint,
     username: String?,
     password: String?,
+    passwordId: String?,
     useSsl: Bool
   ) {
     self.id = id
@@ -67,6 +69,7 @@ public struct ConnectionDetails: Readable, Writable {
     self.bootstrapPort = bootstrapPort
     self.username = username
     self.password = password
+    self.passwordId = passwordId
     self.useSsl = useSsl
   }
 
@@ -78,6 +81,7 @@ public struct ConnectionDetails: Readable, Writable {
       bootstrapPort: UVarint.read(from: inp, using: &buf),
       username: String?.read(from: inp, using: &buf),
       password: String?.read(from: inp, using: &buf),
+      passwordId: String?.read(from: inp, using: &buf),
       useSsl: Bool.read(from: inp, using: &buf)
     )
   }
@@ -89,6 +93,7 @@ public struct ConnectionDetails: Readable, Writable {
     bootstrapPort.write(to: out)
     username.write(to: out)
     password.write(to: out)
+    passwordId.write(to: out)
     useSsl.write(to: out)
   }
 }
@@ -341,10 +346,21 @@ public class Backend {
     )
   }
 
-  public func getConnections() -> Future<String, [ConnectionDetails]> {
+  public func generatePasswordId() -> Future<String, String> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0006).write(to: out)
+      },
+      readProc: { (inp: InputPort, buf: inout Data) -> String in
+        return String.read(from: inp, using: &buf)
+      }
+    )
+  }
+
+  public func getConnections() -> Future<String, [ConnectionDetails]> {
+    return impl.send(
+      writeProc: { (out: OutputPort) in
+        UVarint(0x0007).write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> [ConnectionDetails] in
         return [ConnectionDetails].read(from: inp, using: &buf)
@@ -355,7 +371,7 @@ public class Backend {
   public func getMetadata(_ id: UVarint, forcingReload reload: Bool) -> Future<String, Metadata> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0007).write(to: out)
+        UVarint(0x0008).write(to: out)
         id.write(to: out)
         reload.write(to: out)
       },
@@ -368,7 +384,7 @@ public class Backend {
   public func getResourceConfigs(withId id: UVarint, resourceType type: Symbol, resourceName name: String) -> Future<String, [ResourceConfig]> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0008).write(to: out)
+        UVarint(0x0009).write(to: out)
         id.write(to: out)
         type.write(to: out)
         name.write(to: out)
@@ -379,11 +395,12 @@ public class Backend {
     )
   }
 
-  public func openWorkspace(withConn conn: ConnectionDetails) -> Future<String, UVarint> {
+  public func openWorkspace(withConn conn: ConnectionDetails, andPassword password: String?) -> Future<String, UVarint> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0009).write(to: out)
+        UVarint(0x000a).write(to: out)
         conn.write(to: out)
+        password.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> UVarint in
         return UVarint.read(from: inp, using: &buf)
@@ -394,7 +411,7 @@ public class Backend {
   public func ping() -> Future<String, String> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x000a).write(to: out)
+        UVarint(0x000b).write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> String in
         return String.read(from: inp, using: &buf)
@@ -405,7 +422,7 @@ public class Backend {
   public func saveConnection(_ c: ConnectionDetails) -> Future<String, ConnectionDetails> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x000b).write(to: out)
+        UVarint(0x000c).write(to: out)
         c.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> ConnectionDetails in
@@ -417,7 +434,7 @@ public class Backend {
   public func touchConnection(_ c: ConnectionDetails) -> Future<String, Bool> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x000c).write(to: out)
+        UVarint(0x000d).write(to: out)
         c.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> Bool in
