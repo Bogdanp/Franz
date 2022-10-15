@@ -13,6 +13,8 @@ class ConnectionDetailsFormViewController: NSViewController {
   private var actionLabel: String!
   private var actionProc: ((ConnectionDetails) -> Void)!
 
+  private var details: ConnectionDetails?
+
   override func viewDidLoad() {
     super.viewDidLoad()
 
@@ -24,6 +26,24 @@ class ConnectionDetailsFormViewController: NSViewController {
     portFormatter.maximum = 65535
     portFormatter.allowsFloats = false
     bootstrapPortField.formatter = portFormatter
+
+    if let details {
+      nameField.stringValue = details.name
+      bootstrapHostField.stringValue = details.bootstrapHost
+      bootstrapPortField.integerValue = Int(details.bootstrapPort)
+      if let username = details.username {
+        usernameField.stringValue = username
+      }
+      if let passwordId = details.passwordId {
+        switch Keychain.shared.get(passwordWithId: passwordId) {
+        case .success(let password):
+          passwordField.stringValue = password
+        default:
+          ()
+        }
+      }
+      enableSSLCheckbox.state = details.useSsl ? .on : .off
+    }
   }
 
   override func viewDidAppear() {
@@ -32,9 +52,10 @@ class ConnectionDetailsFormViewController: NSViewController {
     view.window?.styleMask.update(with: .fullSizeContentView)
   }
 
-  func configure(actionLabel label: String, _ proc: @escaping (ConnectionDetails) -> Void) {
+  func configure(actionLabel label: String, details: ConnectionDetails? = nil, _ proc: @escaping (ConnectionDetails) -> Void) {
     self.actionLabel = label
     self.actionProc = proc
+    self.details = details
   }
 
   @IBAction func didPushCancelButton(_ sender: Any) {
@@ -44,7 +65,7 @@ class ConnectionDetailsFormViewController: NSViewController {
   @IBAction func didPushActionButton(_ sender: Any) {
     self.dismiss(self)
     actionProc(ConnectionDetails(
-      id: nil,
+      id: details?.id,
       name: nameField.stringValue == "" ? "Unnamed Connection" : nameField.stringValue,
       bootstrapHost: bootstrapHostField.stringValue == "" ? "127.0.0.1" : bootstrapHostField.stringValue,
       bootstrapPort: bootstrapPortField.stringValue == "" ? 9092 : 9092,

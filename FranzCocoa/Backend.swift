@@ -442,4 +442,16 @@ public class Backend {
       }
     )
   }
+
+  public func updateConnection(_ c: ConnectionDetails) -> Future<String, ConnectionDetails> {
+    return impl.send(
+      writeProc: { (out: OutputPort) in
+        UVarint(0x000e).write(to: out)
+        c.write(to: out)
+      },
+      readProc: { (inp: InputPort, buf: inout Data) -> ConnectionDetails in
+        return ConnectionDetails.read(from: inp, using: &buf)
+      }
+    )
+  }
 }

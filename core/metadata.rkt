@@ -12,13 +12,13 @@
          "query.rkt")
 
 (provide
- engine/c
  current-connection
  migrate!
 
  (schema-out connection-details)
  get-connections
  insert-connection!
+ update-connection!
  touch-connection!
  delete-connection!)
 
@@ -32,9 +32,6 @@
 
 (define id/c
   exact-nonnegative-integer?)
-
-(define engine/c
-  (or/c 'postgresql))
 
 (define/contract current-connection
   (parameter/c (or/c #f connection?))
@@ -83,6 +80,10 @@
   (-> connection-details? connection-details?)
   (insert-one! conn c))
 
+(define/contract (update-connection! c)
+  (-> connection-details? connection-details?)
+  (update-one! conn c #:force? #t))
+
 (define/contract (touch-connection! id)
   (-> id/c void?)
   (query-exec conn (~> (from connection-details #:as c)
@@ -124,6 +125,9 @@
           (make-connection-details
            #:name "Unnamed Connection"
            #:ssl-on? #t)))
+       (check-not-false (member c (get-connections)))
+       (set! c (update-connection!
+                (set-connection-details-ssl-on? c #f)))
        (check-not-false (member c (get-connections)))
        (delete-connection! (connection-details-id c))
        (check-true (null? (get-connections)))))))

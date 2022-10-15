@@ -40,6 +40,7 @@
 (define (ConnectionDetails->meta c)
   (define meta:c
     (meta:make-connection-details
+     #:id (or (ConnectionDetails-id c) sql-null)
      #:name (ConnectionDetails-name c)
      #:bootstrap-host (ConnectionDetails-bootstrap-host c)
      #:bootstrap-port (ConnectionDetails-bootstrap-port c)
@@ -70,6 +71,11 @@
 (define-rpc (save-connection [_ c : ConnectionDetails] : ConnectionDetails)
   (meta->ConnectionDetails
    (meta:insert-connection!
+    (ConnectionDetails->meta c))))
+
+(define-rpc (update-connection [_ c : ConnectionDetails] : ConnectionDetails)
+  (meta->ConnectionDetails
+   (meta:update-connection!
     (ConnectionDetails->meta c))))
 
 (define-rpc (touch-connection [_ c : ConnectionDetails] : Bool)

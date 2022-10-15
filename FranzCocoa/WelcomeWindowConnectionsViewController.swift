@@ -18,7 +18,11 @@ class WelcomeWindowConnectionsViewController: NSViewController {
     connectionsTable.target = self
 
     let menu = NSMenu()
-    menu.addItem(NSMenuItem(title: "Edit...", action: nil, keyEquivalent: ""))
+    menu.addItem(NSMenuItem(
+      title: "Edit...",
+      action: #selector(didPressEditConnection(_:)),
+      keyEquivalent: ""
+    ))
     menu.addItem(.separator())
     menu.addItem(NSMenuItem(
       title: "Delete",
@@ -60,6 +64,17 @@ class WelcomeWindowConnectionsViewController: NSViewController {
       WindowManager.shared.launchWorkspace(withConn: conn, andPassword: password)
       WindowManager.shared.closeWelcomeWindow()
     }
+  }
+
+  @objc func didPressEditConnection(_ sender: NSMenuItem) {
+    assert(Thread.isMainThread)
+    let conn = connections[connectionsTable.clickedRow]
+    let formController = ConnectionDetailsFormViewController()
+    formController.configure(actionLabel: "Save", details: conn, { changedConn in
+      let _ = try! Backend.shared.updateConnection(changedConn).wait()
+      self.reload()
+    })
+    presentAsSheet(formController)
   }
 
   @objc func didRequestDeleteConnection(_ sender: NSMenuItem) {
