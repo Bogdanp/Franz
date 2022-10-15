@@ -16,6 +16,8 @@ class WorkspaceWindowController: NSWindowController {
   private let sidebarCtl = WorkspaceSidebarViewController()
   private let detailCtl = WorkspaceDetailViewController()
 
+  private weak var newTopicMenuItem: NSMenuItem?
+
   convenience init(withConn conn: ConnectionDetails, andPassword password: String?) {
     self.init(windowNibName: "WorkspaceWindowController")
     self.conn = conn
@@ -35,6 +37,8 @@ class WorkspaceWindowController: NSWindowController {
 
     splitCtl.addSplitViewItem(sidebarItem)
     splitCtl.addSplitViewItem(NSSplitViewItem(viewController: detailCtl))
+
+    newTopicMenuItem = MainMenu.shared.find(itemByPath: [.FileMenuItem, .NewTopicMenuItem])
 
     shouldCascadeWindows = false
     window?.delegate = self
@@ -82,14 +86,43 @@ class WorkspaceWindowController: NSWindowController {
     }
   }
 
+  private func loadMetadata(andSelectTopic name: String) {
+    loadMetadata {
+      self.sidebarCtl.selectEntry(withKind: .topic, andLabel: name)
+    }
+  }
+
   private func status(_ s: String) {
     assert(Thread.isMainThread)
     statusBarStatusField.stringValue = s
+  }
+
+  @objc func didPressNewTopicItem(_ sender: Any) {
+    let ctl = NewTopicFormViewController()
+    ctl.delegate = self
+    ctl.configure(withId: id)
+    window?.contentViewController?.presentAsSheet(ctl)
   }
 }
 
 // MARK: NSWindowDelegate
 extension WorkspaceWindowController: NSWindowDelegate {
+  func windowDidBecomeKey(_ notification: Notification) {
+    guard let item = newTopicMenuItem else {
+      return
+    }
+    item.target = self
+    item.action = #selector(didPressNewTopicItem(_:))
+  }
+
+  func windowDidResignKey(_ notification: Notification) {
+    guard let item = newTopicMenuItem else {
+      return
+    }
+    item.target = nil
+    item.action = nil
+  }
+
   func windowWillClose(_ notification: Notification) {
     guard let id else { return }
     let _ = Backend.shared.closeWorkspace(withId: id)
@@ -147,14 +180,24 @@ extension WorkspaceWindowController: NSToolbarDelegate {
   }
 }
 
-// MARK: NSToolbarItem.Identifier
+// MARK: -NSToolbarItem.Identifier
 extension NSToolbarItem.Identifier {
   static let toggleSidebar = NSToolbarItem.Identifier("toggleSidebar")
   static let statusBar = NSToolbarItem.Identifier("statusBar")
   static let reloadButton = NSToolbarItem.Identifier("reloadButton")
 }
 
-// MARK: WorkspaceSidebarDelegate
+// MARK: -NewTopicFormDelegate
+extension WorkspaceWindowController: NewTopicFormDelegate {
+  func didCancelNewTopicForm(_ sender: NewTopicFormViewController) {
+  }
+
+  func didCompleteNewTopicForm(withName name: String, partitions: Int, andOptions options: [TopicOption]) {
+    loadMetadata(andSelectTopic: name)
+  }
+}
+
+// MARK: -WorkspaceSidebarDelegate
 extension WorkspaceWindowController: WorkspaceSidebarDelegate {
   func sidebar(didSelectEntry entry: Any, withKind kind: SidebarEntryKind) {
     detailCtl.show(entry: entry, withKind: kind)
@@ -179,8 +222,6 @@ extension WorkspaceWindowController: WorkspaceSidebarDelegate {
   }
 
   func sidebarRequestsReload(withNewTopic name: String) {
-    loadMetadata {
-      self.sidebarCtl.selectEntry(withKind: .topic, andLabel: name)
-    }
+    loadMetadata(andSelectTopic: name)
   }
 }

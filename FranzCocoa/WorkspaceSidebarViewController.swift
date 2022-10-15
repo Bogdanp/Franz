@@ -135,7 +135,7 @@ extension WorkspaceSidebarViewController: NewTopicFormDelegate {
   func didCancelNewTopicForm(_ sender: NewTopicFormViewController) {
   }
 
-  func newTopicFormCompleted(withName name: String, partitions: Int, andOptions options: [TopicOption]) {
+  func didCompleteNewTopicForm(withName name: String, partitions: Int, andOptions options: [TopicOption]) {
     delegate?.sidebarRequestsReload(withNewTopic: name)
   }
 }

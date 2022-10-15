@@ -99,7 +99,7 @@ class NewTopicFormViewController: NSViewController {
       self.createButton.isEnabled = true
       guard let error else {
         self.dismiss(self)
-        self.delegate?.newTopicFormCompleted(withName: name, partitions: partitions, andOptions: options)
+        self.delegate?.didCompleteNewTopicForm(withName: name, partitions: partitions, andOptions: options)
         return
       }
 
@@ -114,7 +114,7 @@ class NewTopicFormViewController: NSViewController {
 // MARK: -NewTopicFormDelegate
 protocol NewTopicFormDelegate {
   func didCancelNewTopicForm(_ sender: NewTopicFormViewController)
-  func newTopicFormCompleted(withName name: String, partitions: Int, andOptions options: [TopicOption])
+  func didCompleteNewTopicForm(withName name: String, partitions: Int, andOptions options: [TopicOption])
 }
 
 // MARK: -EditableTopicOption
