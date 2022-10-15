@@ -44,6 +44,7 @@
 		43CD624828CE3B5D00095144 /* ConnectionDetailsFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CD624628CE3B5D00095144 /* ConnectionDetailsFormViewController.swift */; };
 		43CD624928CE3B5D00095144 /* ConnectionDetailsFormViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43CD624728CE3B5D00095144 /* ConnectionDetailsFormViewController.xib */; };
 		43D03DD428FAC6030049D44D /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D03DD328FAC6030049D44D /* Keychain.swift */; };
+		43D03DD628FAFE3B0049D44D /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D03DD528FAFE3B0049D44D /* Notifications.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -84,6 +85,7 @@
 		43CD624628CE3B5D00095144 /* ConnectionDetailsFormViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionDetailsFormViewController.swift; sourceTree = "<group>"; };
 		43CD624728CE3B5D00095144 /* ConnectionDetailsFormViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ConnectionDetailsFormViewController.xib; sourceTree = "<group>"; };
 		43D03DD328FAC6030049D44D /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
+		43D03DD528FAFE3B0049D44D /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -134,6 +136,7 @@
 				43CD621C28CE24B100095144 /* MainMenu.xib */,
 				431C698028F2E0C60082986A /* NewTopicFormViewController.swift */,
 				431C698128F2E0C60082986A /* NewTopicFormViewController.xib */,
+				43D03DD528FAFE3B0049D44D /* Notifications.swift */,
 				43CD623228CE25F300095144 /* resources */,
 				436E720C28D760BF00ECBF49 /* SidebarEntryCellView.swift */,
 				436E720E28D760D400ECBF49 /* SidebarEntryCellView.xib */,
@@ -299,6 +302,7 @@
 				43CD621928CE24B000095144 /* AppDelegate.swift in Sources */,
 				43804AB428D19ACD002880FE /* WelcomeWindowConnectionsViewController.swift in Sources */,
 				43CD623128CE258F00095144 /* BackendExtensions.swift in Sources */,
+				43D03DD628FAFE3B0049D44D /* Notifications.swift in Sources */,
 				43CD623E28CE282400095144 /* WelcomeWindowContentViewController.swift in Sources */,
 				4314EDF828D85E0E00431770 /* SidebarGroupCellView.swift in Sources */,
 				436E71FA28D7511400ECBF49 /* WorkspaceWindowController.swift in Sources */,

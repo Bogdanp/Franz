@@ -2,6 +2,7 @@ import Cocoa
 
 class WelcomeWindowController: NSWindowController {
   private var split: SplitViewController!
+  private var newConnectionObserver: Any?
 
   convenience init() {
     self.init(windowNibName: "WelcomeWindowController")
@@ -10,13 +11,32 @@ class WelcomeWindowController: NSWindowController {
   override func windowDidLoad() {
     super.windowDidLoad()
 
+    window?.delegate = self
     window?.isMovableByWindowBackground = true
     window?.center()
 
+    let contentCtl = WelcomeWindowContentViewController()
     split = SplitViewController()
-    split.addSplitViewItem(NSSplitViewItem(viewController: WelcomeWindowContentViewController()))
+    split.addSplitViewItem(NSSplitViewItem(viewController: contentCtl))
     split.addSplitViewItem(NSSplitViewItem(sidebarWithViewController: WelcomeWindowConnectionsViewController()))
     contentViewController = split
+
+    newConnectionObserver = NotificationCenter.default.addObserver(
+      forName: .NewConnectionRequested,
+      object: nil,
+      queue: .main) { _ in
+        contentCtl.newConnection()
+    }
+  }
+}
+
+// MARK: -NSWindowDelegate
+extension WelcomeWindowController: NSWindowDelegate {
+  func windowWillClose(_ notification: Notification) {
+    if let observer = newConnectionObserver {
+      NotificationCenter.default.removeObserver(observer)
+      newConnectionObserver = nil
+    }
   }
 }
 

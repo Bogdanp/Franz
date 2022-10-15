@@ -12,11 +12,8 @@ class WelcomeWindowContentViewController: NSViewController {
     versionLabel.stringValue = "Version \(version) (Build \(build))"
   }
 
-  @IBAction func didPushCloseButton(_ sender: Any) {
-    WindowManager.shared.closeWelcomeWindow()
-  }
-  
-  @IBAction func didPushNewConnectionButton(_ sender: Any) {
+  func newConnection() {
+    assert(Thread.isMainThread)
     let formController = ConnectionDetailsFormViewController()
     formController.configure(actionLabel: "Connect", { details in
       let conn = try! Backend.shared.saveConnection(details).wait()
@@ -27,5 +24,13 @@ class WelcomeWindowContentViewController: NSViewController {
       WindowManager.shared.closeWelcomeWindow()
     })
     presentAsSheet(formController)
+  }
+
+  @IBAction func didPushCloseButton(_ sender: Any) {
+    WindowManager.shared.closeWelcomeWindow()
+  }
+  
+  @IBAction func didPushNewConnectionButton(_ sender: Any) {
+    newConnection()
   }
 }

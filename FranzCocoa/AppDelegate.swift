@@ -18,4 +18,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
   @IBAction func didPushWelcomeToFranzButton(_ sender: Any) {
     WindowManager.shared.showWelcomeWindow()
   }
+
+  @IBAction func didPushNewConnectionButton(_ sender: Any) {
+    WindowManager.shared.showWelcomeWindow()
+    NotificationCenter.default.post(name: .NewConnectionRequested, object: nil)
+  }
 }

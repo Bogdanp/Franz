@@ -6,6 +6,7 @@ let ARCH="x86_64"
 let ARCH="arm64"
 #endif
 
+// MARK: -Backend
 extension Backend {
   static let shared = Backend(
     withZo: Bundle.main.url(forResource: "resources/core-\(ARCH)", withExtension: "zo")!,
@@ -14,6 +15,7 @@ extension Backend {
   )
 }
 
+// MARK: -Broker
 extension Broker {
   var address: String {
     get {
@@ -22,7 +24,7 @@ extension Broker {
   }
 }
 
-
+// MARK: -ConnectionDetails
 extension ConnectionDetails {
   var bootstrapAddress: String {
     get {
@@ -31,7 +33,7 @@ extension ConnectionDetails {
   }
 }
 
-
+// MARK: -ResourceConfig
 extension ResourceConfig: Identifiable {
   public var id: String {
     get {
