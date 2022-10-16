@@ -125,8 +125,9 @@ extension WorkspaceWindowController: NSWindowDelegate {
 
   func windowWillClose(_ notification: Notification) {
     guard let id else { return }
-    let _ = Backend.shared.closeWorkspace(id)
-    WindowManager.shared.removeWorkspace(withId: conn.id!)
+    if WindowManager.shared.removeWorkspace(withId: conn.id!) {
+      let _ = Backend.shared.closeWorkspace(id)
+    }
   }
 }
 

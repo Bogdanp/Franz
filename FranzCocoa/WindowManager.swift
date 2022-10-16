@@ -30,9 +30,14 @@ class WindowManager {
     workspace.close()
   }
 
-  func removeWorkspace(withId id: UInt64) {
+  func removeAllWorkspaces() {
     assert(Thread.isMainThread)
-    workspaces.removeValue(forKey: id)
+    workspaces.removeAll()
+  }
+
+  func removeWorkspace(withId id: UInt64) -> Bool {
+    assert(Thread.isMainThread)
+    return workspaces.removeValue(forKey: id) != nil
   }
 
   func showWelcomeWindow() {

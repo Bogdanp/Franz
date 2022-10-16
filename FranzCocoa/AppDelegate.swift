@@ -8,6 +8,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
   }
 
   func applicationWillTerminate(_ aNotification: Notification) {
+    WindowManager.shared.removeAllWorkspaces()
     try! Backend.shared.closeAllWorkspaces().wait()
   }
 

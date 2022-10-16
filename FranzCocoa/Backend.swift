@@ -345,8 +345,7 @@ public class Backend {
       writeProc: { (out: OutputPort) in
         UVarint(0x0000).write(to: out)
       },
-      readProc: { (inp: InputPort, buf: inout Data) -> Void in
-      }
+      readProc: { (inp: InputPort, buf: inout Data) -> Void in }
     )
   }
 
@@ -356,8 +355,7 @@ public class Backend {
         UVarint(0x0001).write(to: out)
         id.write(to: out)
       },
-      readProc: { (inp: InputPort, buf: inout Data) -> Void in
-      }
+      readProc: { (inp: InputPort, buf: inout Data) -> Void in }
     )
   }
 
@@ -382,8 +380,7 @@ public class Backend {
         UVarint(0x0003).write(to: out)
         c.write(to: out)
       },
-      readProc: { (inp: InputPort, buf: inout Data) -> Void in
-      }
+      readProc: { (inp: InputPort, buf: inout Data) -> Void in }
     )
   }
 
@@ -394,8 +391,7 @@ public class Backend {
         groupId.write(to: out)
         id.write(to: out)
       },
-      readProc: { (inp: InputPort, buf: inout Data) -> Void in
-      }
+      readProc: { (inp: InputPort, buf: inout Data) -> Void in }
     )
   }
 
@@ -406,8 +402,7 @@ public class Backend {
         name.write(to: out)
         id.write(to: out)
       },
-      readProc: { (inp: InputPort, buf: inout Data) -> Void in
-      }
+      readProc: { (inp: InputPort, buf: inout Data) -> Void in }
     )
   }
 
@@ -515,8 +510,7 @@ public class Backend {
         UVarint(0x000e).write(to: out)
         c.write(to: out)
       },
-      readProc: { (inp: InputPort, buf: inout Data) -> Void in
-      }
+      readProc: { (inp: InputPort, buf: inout Data) -> Void in }
     )
   }
 
