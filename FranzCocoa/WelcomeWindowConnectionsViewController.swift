@@ -88,7 +88,7 @@ class WelcomeWindowConnectionsViewController: NSViewController {
     alert.addButton(withTitle: "Cancel")
     switch alert.runModal() {
     case .alertFirstButtonReturn:
-      if try! Backend.shared.deleteConnection(conn).wait() {
+      if try! Backend.shared.deleteConnectionAndSystemResources(conn).wait() {
         reload()
       }
     default:
