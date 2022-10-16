@@ -57,44 +57,43 @@
                         (state-add-req (req (and client #t) res-ch nack)))]
 
                    [`(get-metadata ,res-ch ,nack ,id ,reload?)
-                    ;; TODO: promise
-                    (define metadata-or-exn
-                      (with-handlers ([exn:fail? values])
-                        (define c (state-ref-client s id))
-                        (define meta
-                          (if reload?
-                              (k:get-metadata c)
-                              (k:client-metadata c)))
-                        (define controller-id
-                          (k:Metadata-controller-id meta))
-                        (define groups
-                          (for/list ([g (in-list (k:list-groups c))])
-                            (make-Group #:id (k:Group-id g))))
-                        (define brokers
-                          (for/list ([b (in-list (k:Metadata-brokers meta))])
-                            (define node-id
-                              (k:BrokerMetadata-node-id b))
-                            (make-Broker
-                             #:id node-id
-                             #:host (k:BrokerMetadata-host b)
-                             #:port (k:BrokerMetadata-port b)
-                             #:rack (k:BrokerMetadata-rack b)
-                             #:is-controller (= node-id controller-id))))
-                        (define topics
-                          (for/list ([t (in-list (k:Metadata-topics meta))])
-                            (define parts
-                              (for/list ([p (in-list (k:TopicMetadata-partitions t))])
-                                (make-TopicPartition
-                                 #:id (k:PartitionMetadata-id p))))
-                            (make-Topic
-                             #:name (k:TopicMetadata-name t)
-                             #:partitions (sort parts < #:key TopicPartition-id)
-                             #:is-internal (k:TopicMetadata-internal? t))))
-                        (make-Metadata
-                         #:brokers (sort brokers < #:key Broker-id)
-                         #:topics (sort topics string<? #:key Topic-name)
-                         #:groups (sort groups string<? #:key Group-id))))
-                    (state-add-req s (req metadata-or-exn res-ch nack))]
+                    (define metadata
+                      (delay/thread
+                       (define c (state-ref-client s id))
+                       (define meta
+                         (if reload?
+                             (k:get-metadata c)
+                             (k:client-metadata c)))
+                       (define controller-id
+                         (k:Metadata-controller-id meta))
+                       (define groups
+                         (for/list ([g (in-list (k:list-groups c))])
+                           (make-Group #:id (k:Group-id g))))
+                       (define brokers
+                         (for/list ([b (in-list (k:Metadata-brokers meta))])
+                           (define node-id
+                             (k:BrokerMetadata-node-id b))
+                           (make-Broker
+                            #:id node-id
+                            #:host (k:BrokerMetadata-host b)
+                            #:port (k:BrokerMetadata-port b)
+                            #:rack (k:BrokerMetadata-rack b)
+                            #:is-controller (= node-id controller-id))))
+                       (define topics
+                         (for/list ([t (in-list (k:Metadata-topics meta))])
+                           (define parts
+                             (for/list ([p (in-list (k:TopicMetadata-partitions t))])
+                               (make-TopicPartition
+                                #:id (k:PartitionMetadata-id p))))
+                           (make-Topic
+                            #:name (k:TopicMetadata-name t)
+                            #:partitions (sort parts < #:key TopicPartition-id)
+                            #:is-internal (k:TopicMetadata-internal? t))))
+                       (make-Metadata
+                        #:brokers (sort brokers < #:key Broker-id)
+                        #:topics (sort topics string<? #:key Topic-name)
+                        #:groups (sort groups string<? #:key Group-id))))
+                    (state-add-req s (req metadata res-ch nack))]
 
                    [`(get-resource-configs ,res-ch ,nack ,id ,type ,name)
                     (define described-resources
@@ -159,7 +158,7 @@
   (sync (pool-send p close id)))
 
 (define (pool-get-metadata id reload? [p (current-pool)])
-  (sync (pool-send p get-metadata id reload?)))
+  (force (sync (pool-send p get-metadata id reload?))))
 
 (define (pool-get-resource-configs id type name [p (current-pool)])
   (force (sync (pool-send p get-resource-configs id type name))))
