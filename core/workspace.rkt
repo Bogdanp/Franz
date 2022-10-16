@@ -5,6 +5,7 @@
          noise/serde
          "broker.rkt"
          "connection-details.rkt"
+         "group.rkt"
          "pool.rkt")
 
 (define-rpc (open-workspace [with-conn conn : ConnectionDetails]
@@ -55,6 +56,20 @@
 (define-rpc (delete-group [with-id group-id : String] [for-client id : UVarint] : Bool)
   (begin0 #t
     (pool-delete-group id group-id)))
+
+(define-rpc (fetch-offsets [for-group group-id : String]
+                           [and-client id : UVarint] : GroupOffsets)
+  (define topics
+    (k:GroupOffsets-topics
+     (pool-fetch-offsets id group-id)))
+  (make-GroupOffsets
+   #:topics (for/list ([(topic parts) (in-hash topics)])
+              (make-GroupTopic
+               #:name topic
+               #:partitions (for/list ([part (in-list parts)])
+                              (make-GroupPartitionOffset
+                               #:partition-id (k:GroupPartitionOffset-id part)
+                               #:offset (k:GroupPartitionOffset-offset part)))))))
 
 (define-rpc (close-all-workspaces : Bool)
   (begin0 #t

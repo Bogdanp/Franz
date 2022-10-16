@@ -1,6 +1,8 @@
+import NoiseSerde
 import SwiftUI
 
 struct WorkspaceGroupDetailView: View {
+  var id: UVarint
   var group: Group
 
   var body: some View {
@@ -17,5 +19,10 @@ struct WorkspaceGroupDetailView: View {
       Spacer()
     }
     .padding()
+    .onAppear {
+      Backend.shared.fetchOffsets(forGroup: group.id, andClient: id).onComplete { offsets in
+        print("offsets=\(offsets)")
+      }
+    }
   }
 }

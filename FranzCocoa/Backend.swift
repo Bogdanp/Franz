@@ -118,6 +118,76 @@ public struct Group: Readable, Writable {
   }
 }
 
+public struct GroupOffsets: Readable, Writable {
+  public let topics: [GroupTopic]
+
+  public init(
+    topics: [GroupTopic]
+  ) {
+    self.topics = topics
+  }
+
+  public static func read(from inp: InputPort, using buf: inout Data) -> GroupOffsets {
+    return GroupOffsets(
+      topics: [GroupTopic].read(from: inp, using: &buf)
+    )
+  }
+
+  public func write(to out: OutputPort) {
+    topics.write(to: out)
+  }
+}
+
+public struct GroupPartitionOffset: Readable, Writable {
+  public let partitionId: UVarint
+  public let offset: Varint
+
+  public init(
+    partitionId: UVarint,
+    offset: Varint
+  ) {
+    self.partitionId = partitionId
+    self.offset = offset
+  }
+
+  public static func read(from inp: InputPort, using buf: inout Data) -> GroupPartitionOffset {
+    return GroupPartitionOffset(
+      partitionId: UVarint.read(from: inp, using: &buf),
+      offset: Varint.read(from: inp, using: &buf)
+    )
+  }
+
+  public func write(to out: OutputPort) {
+    partitionId.write(to: out)
+    offset.write(to: out)
+  }
+}
+
+public struct GroupTopic: Readable, Writable {
+  public let name: String
+  public let partitions: [GroupPartitionOffset]
+
+  public init(
+    name: String,
+    partitions: [GroupPartitionOffset]
+  ) {
+    self.name = name
+    self.partitions = partitions
+  }
+
+  public static func read(from inp: InputPort, using buf: inout Data) -> GroupTopic {
+    return GroupTopic(
+      name: String.read(from: inp, using: &buf),
+      partitions: [GroupPartitionOffset].read(from: inp, using: &buf)
+    )
+  }
+
+  public func write(to out: OutputPort) {
+    name.write(to: out)
+    partitions.write(to: out)
+  }
+}
+
 public struct Metadata: Readable, Writable {
   public let brokers: [Broker]
   public let topics: [Topic]
@@ -346,10 +416,23 @@ public class Backend {
     )
   }
 
-  public func generatePasswordId() -> Future<String, String> {
+  public func fetchOffsets(forGroup groupId: String, andClient id: UVarint) -> Future<String, GroupOffsets> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0006).write(to: out)
+        groupId.write(to: out)
+        id.write(to: out)
+      },
+      readProc: { (inp: InputPort, buf: inout Data) -> GroupOffsets in
+        return GroupOffsets.read(from: inp, using: &buf)
+      }
+    )
+  }
+
+  public func generatePasswordId() -> Future<String, String> {
+    return impl.send(
+      writeProc: { (out: OutputPort) in
+        UVarint(0x0007).write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> String in
         return String.read(from: inp, using: &buf)
@@ -360,7 +443,7 @@ public class Backend {
   public func getConnections() -> Future<String, [ConnectionDetails]> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0007).write(to: out)
+        UVarint(0x0008).write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> [ConnectionDetails] in
         return [ConnectionDetails].read(from: inp, using: &buf)
@@ -371,7 +454,7 @@ public class Backend {
   public func getMetadata(_ id: UVarint, forcingReload reload: Bool) -> Future<String, Metadata> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0008).write(to: out)
+        UVarint(0x0009).write(to: out)
         id.write(to: out)
         reload.write(to: out)
       },
@@ -384,7 +467,7 @@ public class Backend {
   public func getResourceConfigs(withId id: UVarint, resourceType type: Symbol, resourceName name: String) -> Future<String, [ResourceConfig]> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0009).write(to: out)
+        UVarint(0x000a).write(to: out)
         id.write(to: out)
         type.write(to: out)
         name.write(to: out)
@@ -398,7 +481,7 @@ public class Backend {
   public func openWorkspace(withConn conn: ConnectionDetails, andPassword password: String?) -> Future<String, UVarint> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x000a).write(to: out)
+        UVarint(0x000b).write(to: out)
         conn.write(to: out)
         password.write(to: out)
       },
@@ -411,7 +494,7 @@ public class Backend {
   public func ping() -> Future<String, String> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x000b).write(to: out)
+        UVarint(0x000c).write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> String in
         return String.read(from: inp, using: &buf)
@@ -422,7 +505,7 @@ public class Backend {
   public func saveConnection(_ c: ConnectionDetails) -> Future<String, ConnectionDetails> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x000c).write(to: out)
+        UVarint(0x000d).write(to: out)
         c.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> ConnectionDetails in
@@ -434,7 +517,7 @@ public class Backend {
   public func touchConnection(_ c: ConnectionDetails) -> Future<String, Bool> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x000d).write(to: out)
+        UVarint(0x000e).write(to: out)
         c.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> Bool in
@@ -446,7 +529,7 @@ public class Backend {
   public func updateConnection(_ c: ConnectionDetails) -> Future<String, ConnectionDetails> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x000e).write(to: out)
+        UVarint(0x000f).write(to: out)
         c.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> ConnectionDetails in

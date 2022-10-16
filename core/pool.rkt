@@ -19,6 +19,7 @@
  pool-create-topic
  pool-delete-topic
  pool-delete-group
+ pool-fetch-offsets
  pool-shutdown)
 
 (struct pool (ch thd))
@@ -128,6 +129,12 @@
                        (k:delete-groups (state-ref-client s id) group-id)))
                     (state-add-req s (req deleted-groups res-ch nack))]
 
+                   [`(fetch-offsets ,res-ch ,nack ,id ,group-id)
+                    (define offsets
+                      (delay/thread
+                       (k:fetch-offsets (state-ref-client s id) group-id)))
+                    (state-add-req s (req offsets res-ch nack))]
+
                    [`(shutdown ,res-ch ,nack)
                     (for ([c (in-hash-values (state-clients s))])
                       (k:disconnect-all c))
@@ -171,6 +178,9 @@
 
 (define (pool-delete-group id group-id [p (current-pool)])
   (force (sync (pool-send p delete-group id group-id))))
+
+(define (pool-fetch-offsets id group-id [p (current-pool)])
+  (force (sync (pool-send p fetch-offsets id group-id))))
 
 (define (pool-shutdown [p (current-pool)])
   (sync (pool-send p shutdown)))

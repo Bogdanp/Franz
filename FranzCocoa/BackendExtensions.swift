@@ -35,7 +35,7 @@ extension Backend {
 extension Broker {
   var address: String {
     get {
-      return "\(host):\(String(port))"
+      "\(host):\(String(port))"
     }
   }
 }
