@@ -12,9 +12,8 @@
                             [and-password password : (Optional String)] : UVarint)
   (pool-open (set-ConnectionDetails-password conn password)))
 
-(define-rpc (close-workspace [_ id : UVarint] : Bool)
-  (begin0 #t
-    (pool-close id)))
+(define-rpc (close-workspace [_ id : UVarint])
+  (pool-close id))
 
 (define-rpc (get-metadata [forcing-reload reload : Bool]
                           [in-workspace id : UVarint] : Metadata)
@@ -51,14 +50,12 @@
   (k:CreatedTopic-error-message res))
 
 (define-rpc (delete-topic [named name : String]
-                          [in-workspace id : UVarint] : Bool)
-  (begin0 #t
-    (pool-delete-topic id name)))
+                          [in-workspace id : UVarint])
+  (pool-delete-topic id name))
 
 (define-rpc (delete-group [named group-id : String]
-                          [in-workspace id : UVarint] : Bool)
-  (begin0 #t
-    (pool-delete-group id group-id)))
+                          [in-workspace id : UVarint])
+  (pool-delete-group id group-id))
 
 (define-rpc (fetch-offsets [for-group-named group-id : String]
                            [in-workspace id : UVarint] : GroupOffsets)
@@ -74,6 +71,5 @@
                                #:partition-id (k:GroupPartitionOffset-id part)
                                #:offset (k:GroupPartitionOffset-offset part)))))))
 
-(define-rpc (close-all-workspaces : Bool)
-  (begin0 #t
-    (pool-shutdown)))
+(define-rpc (close-all-workspaces)
+  (void (pool-shutdown)))

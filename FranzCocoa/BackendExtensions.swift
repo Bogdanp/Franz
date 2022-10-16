@@ -16,16 +16,12 @@ extension Backend {
   )
 
   /// Deletes a connection and any related system-level resources (eg. Keychain passwords).
-  func deleteConnectionAndSystemResources(_ c: ConnectionDetails) -> Future<String, Bool> {
-    return deleteConnection(c).andThen { deleted in
-      guard deleted else {
-        return Future<String, Bool>.resolved(with: false)
-          .mapError({ _ in preconditionFailure("unreachable") })
-      }
+  func deleteConnectionAndSystemResources(_ c: ConnectionDetails) -> Future<String, Void> {
+    return deleteConnection(c).andThen { _ in
       if let id = c.passwordId {
         let _ = Keychain.shared.delete(passwordWithId: id)
       }
-      return Future<String, Bool>.resolved(with: true)
+      return Future<String, Bool>.resolved(with: ())
         .mapError({ _ in preconditionFailure("unreachable") })
     }
   }

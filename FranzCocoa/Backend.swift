@@ -340,25 +340,23 @@ public class Backend {
     impl = NoiseBackend.Backend(withZo: zo, andMod: mod, andProc: proc)
   }
 
-  public func closeAllWorkspaces() -> Future<String, Bool> {
+  public func closeAllWorkspaces() -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0000).write(to: out)
       },
-      readProc: { (inp: InputPort, buf: inout Data) -> Bool in
-        return Bool.read(from: inp, using: &buf)
+      readProc: { (inp: InputPort, buf: inout Data) -> Void in
       }
     )
   }
 
-  public func closeWorkspace(_ id: UVarint) -> Future<String, Bool> {
+  public func closeWorkspace(_ id: UVarint) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0001).write(to: out)
         id.write(to: out)
       },
-      readProc: { (inp: InputPort, buf: inout Data) -> Bool in
-        return Bool.read(from: inp, using: &buf)
+      readProc: { (inp: InputPort, buf: inout Data) -> Void in
       }
     )
   }
@@ -378,40 +376,37 @@ public class Backend {
     )
   }
 
-  public func deleteConnection(_ c: ConnectionDetails) -> Future<String, Bool> {
+  public func deleteConnection(_ c: ConnectionDetails) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0003).write(to: out)
         c.write(to: out)
       },
-      readProc: { (inp: InputPort, buf: inout Data) -> Bool in
-        return Bool.read(from: inp, using: &buf)
+      readProc: { (inp: InputPort, buf: inout Data) -> Void in
       }
     )
   }
 
-  public func deleteGroup(named groupId: String, inWorkspace id: UVarint) -> Future<String, Bool> {
+  public func deleteGroup(named groupId: String, inWorkspace id: UVarint) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0004).write(to: out)
         groupId.write(to: out)
         id.write(to: out)
       },
-      readProc: { (inp: InputPort, buf: inout Data) -> Bool in
-        return Bool.read(from: inp, using: &buf)
+      readProc: { (inp: InputPort, buf: inout Data) -> Void in
       }
     )
   }
 
-  public func deleteTopic(named name: String, inWorkspace id: UVarint) -> Future<String, Bool> {
+  public func deleteTopic(named name: String, inWorkspace id: UVarint) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0005).write(to: out)
         name.write(to: out)
         id.write(to: out)
       },
-      readProc: { (inp: InputPort, buf: inout Data) -> Bool in
-        return Bool.read(from: inp, using: &buf)
+      readProc: { (inp: InputPort, buf: inout Data) -> Void in
       }
     )
   }
@@ -514,14 +509,13 @@ public class Backend {
     )
   }
 
-  public func touchConnection(_ c: ConnectionDetails) -> Future<String, Bool> {
+  public func touchConnection(_ c: ConnectionDetails) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x000e).write(to: out)
         c.write(to: out)
       },
-      readProc: { (inp: InputPort, buf: inout Data) -> Bool in
-        return Bool.read(from: inp, using: &buf)
+      readProc: { (inp: InputPort, buf: inout Data) -> Void in
       }
     )
   }

@@ -77,17 +77,13 @@
    (meta:update-connection!
     (ConnectionDetails->meta c))))
 
-(define-rpc (touch-connection [_ c : ConnectionDetails] : Bool)
-  (and
-   (and~> (ConnectionDetails-id c)
-          (meta:touch-connection!))
-   #t))
+(define-rpc (touch-connection [_ c : ConnectionDetails])
+  (and~> (ConnectionDetails-id c)
+         (meta:touch-connection!)))
 
-(define-rpc (delete-connection [_ c : ConnectionDetails] : Bool)
-  (and
-   (and~> (ConnectionDetails-id c)
-          (meta:delete-connection!))
-   #t))
+(define-rpc (delete-connection [_ c : ConnectionDetails])
+  (and~> (ConnectionDetails-id c)
+         (meta:delete-connection!)))
 
 (define-rpc (generate-password-id : String)
   (call-with-output-string
