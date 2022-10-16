@@ -20,7 +20,7 @@ struct WorkspaceGroupDetailView: View {
     }
     .padding()
     .onAppear {
-      Backend.shared.fetchOffsets(forGroup: group.id, andClient: id).onComplete { offsets in
+      Backend.shared.fetchOffsets(forGroupNamed: group.id, inWorkspace: id).onComplete { offsets in
         print("offsets=\(offsets)")
       }
     }

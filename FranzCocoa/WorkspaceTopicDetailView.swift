@@ -29,9 +29,9 @@ struct WorkspaceTopicDetailView: View {
     .padding()
     .onAppear {
       Backend.shared.getResourceConfigs(
-        withId: id,
+        forResourceNamed: topic.name,
         resourceType: "topic",
-        resourceName: topic.name
+        inWorkspace: id
       ).onComplete { configs in
         self.configs = configs
       }

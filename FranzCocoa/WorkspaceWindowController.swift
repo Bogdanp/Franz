@@ -78,7 +78,7 @@ class WorkspaceWindowController: NSWindowController {
 
   private func loadMetadata(forcingReload reload: Bool = true, andThen proc: @escaping () -> Void = {}) {
     self.status("Getting metadata...")
-    Backend.shared.getMetadata(id, forcingReload: reload).onComplete { meta in
+    Backend.shared.getMetadata(forcingReload: reload, inWorkspace: id).onComplete { meta in
       self.sidebarCtl.configure(withId: self.id, andMetadata: meta)
       self.detailCtl.configure(withId: self.id)
       self.status("Ready")
@@ -125,7 +125,7 @@ extension WorkspaceWindowController: NSWindowDelegate {
 
   func windowWillClose(_ notification: Notification) {
     guard let id else { return }
-    let _ = Backend.shared.closeWorkspace(withId: id)
+    let _ = Backend.shared.closeWorkspace(id)
     WindowManager.shared.removeWorkspace(withId: conn.id!)
   }
 }
@@ -209,14 +209,14 @@ extension WorkspaceWindowController: WorkspaceSidebarDelegate {
 
   func sidebar(didDeleteTopic topic: Topic) {
     status("Deleting topic \(topic.name)...")
-    Backend.shared.deleteTopic(named: topic.name, forClient: id).onComplete { _ in
+    Backend.shared.deleteTopic(named: topic.name, inWorkspace: id).onComplete { _ in
       self.loadMetadata()
     }
   }
 
   func sidebar(didDeleteConsumerGroup group: Group) {
     status("Deleting consumer group \(group.id)...")
-    Backend.shared.deleteGroup(withId: group.id, forClient: id).onComplete { _ in
+    Backend.shared.deleteGroup(named: group.id, inWorkspace: id).onComplete { _ in
       self.loadMetadata()
     }
   }

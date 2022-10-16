@@ -351,7 +351,7 @@ public class Backend {
     )
   }
 
-  public func closeWorkspace(withId id: UVarint) -> Future<String, Bool> {
+  public func closeWorkspace(_ id: UVarint) -> Future<String, Bool> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0001).write(to: out)
@@ -363,14 +363,14 @@ public class Backend {
     )
   }
 
-  public func createTopic(withId id: UVarint, named name: String, partitions partitions: UVarint, andOptions options: [TopicOption]) -> Future<String, String?> {
+  public func createTopic(named name: String, withPartitions partitions: UVarint, andOptions options: [TopicOption], inWorkspace id: UVarint) -> Future<String, String?> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0002).write(to: out)
-        id.write(to: out)
         name.write(to: out)
         partitions.write(to: out)
         options.write(to: out)
+        id.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> String? in
         return String?.read(from: inp, using: &buf)
@@ -390,7 +390,7 @@ public class Backend {
     )
   }
 
-  public func deleteGroup(withId groupId: String, forClient id: UVarint) -> Future<String, Bool> {
+  public func deleteGroup(named groupId: String, inWorkspace id: UVarint) -> Future<String, Bool> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0004).write(to: out)
@@ -403,7 +403,7 @@ public class Backend {
     )
   }
 
-  public func deleteTopic(named name: String, forClient id: UVarint) -> Future<String, Bool> {
+  public func deleteTopic(named name: String, inWorkspace id: UVarint) -> Future<String, Bool> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0005).write(to: out)
@@ -416,7 +416,7 @@ public class Backend {
     )
   }
 
-  public func fetchOffsets(forGroup groupId: String, andClient id: UVarint) -> Future<String, GroupOffsets> {
+  public func fetchOffsets(forGroupNamed groupId: String, inWorkspace id: UVarint) -> Future<String, GroupOffsets> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0006).write(to: out)
@@ -451,12 +451,12 @@ public class Backend {
     )
   }
 
-  public func getMetadata(_ id: UVarint, forcingReload reload: Bool) -> Future<String, Metadata> {
+  public func getMetadata(forcingReload reload: Bool, inWorkspace id: UVarint) -> Future<String, Metadata> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0009).write(to: out)
-        id.write(to: out)
         reload.write(to: out)
+        id.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> Metadata in
         return Metadata.read(from: inp, using: &buf)
@@ -464,13 +464,13 @@ public class Backend {
     )
   }
 
-  public func getResourceConfigs(withId id: UVarint, resourceType type: Symbol, resourceName name: String) -> Future<String, [ResourceConfig]> {
+  public func getResourceConfigs(forResourceNamed name: String, resourceType type: Symbol, inWorkspace id: UVarint) -> Future<String, [ResourceConfig]> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x000a).write(to: out)
-        id.write(to: out)
-        type.write(to: out)
         name.write(to: out)
+        type.write(to: out)
+        id.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> [ResourceConfig] in
         return [ResourceConfig].read(from: inp, using: &buf)

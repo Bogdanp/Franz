@@ -90,10 +90,10 @@ class NewTopicFormViewController: NSViewController {
     cancelButton.isEnabled = false
     createButton.isEnabled = false
     Backend.shared.createTopic(
-      withId: id,
       named: name,
-      partitions: UVarint(partitions),
-      andOptions: options
+      withPartitions: UVarint(partitions),
+      andOptions: options,
+      inWorkspace: id
     ).onComplete { error in
       self.cancelButton.isEnabled = true
       self.createButton.isEnabled = true

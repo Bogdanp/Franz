@@ -12,16 +12,17 @@
                             [and-password password : (Optional String)] : UVarint)
   (pool-open (set-ConnectionDetails-password conn password)))
 
-(define-rpc (close-workspace [with-id id : UVarint] : Bool)
+(define-rpc (close-workspace [_ id : UVarint] : Bool)
   (begin0 #t
     (pool-close id)))
 
-(define-rpc (get-metadata [_ id : UVarint] [forcing-reload reload : Bool] : Metadata)
+(define-rpc (get-metadata [forcing-reload reload : Bool]
+                          [in-workspace id : UVarint] : Metadata)
   (pool-get-metadata id reload))
 
-(define-rpc (get-resource-configs [with-id id : UVarint]
+(define-rpc (get-resource-configs [for-resource-named name : String]
                                   [resource-type type : Symbol]
-                                  [resource-name name : String] : (Listof ResourceConfig))
+                                  [in-workspace id : UVarint] : (Listof ResourceConfig))
   (define resource
     (car (pool-get-resource-configs id type name)))
   (sort
@@ -34,10 +35,10 @@
       #:is-sensitive (k:ResourceConfig-sensitive? c)))
    #:key ResourceConfig-name string<?))
 
-(define-rpc (create-topic [with-id id : UVarint]
-                          [named name : String]
-                          [partitions partitions : UVarint]
-                          [and-options options : (Listof TopicOption)] : (Optional String))
+(define-rpc (create-topic [named name : String]
+                          [with-partitions partitions : UVarint]
+                          [and-options options : (Listof TopicOption)]
+                          [in-workspace id : UVarint] : (Optional String))
   (define options-hash
     (for/hash ([opt (in-list options)])
       (values
@@ -49,16 +50,18 @@
       (pool-create-topic id name partitions options-hash))))
   (k:CreatedTopic-error-message res))
 
-(define-rpc (delete-topic [named name : String] [for-client id : UVarint] : Bool)
+(define-rpc (delete-topic [named name : String]
+                          [in-workspace id : UVarint] : Bool)
   (begin0 #t
     (pool-delete-topic id name)))
 
-(define-rpc (delete-group [with-id group-id : String] [for-client id : UVarint] : Bool)
+(define-rpc (delete-group [named group-id : String]
+                          [in-workspace id : UVarint] : Bool)
   (begin0 #t
     (pool-delete-group id group-id)))
 
-(define-rpc (fetch-offsets [for-group group-id : String]
-                           [and-client id : UVarint] : GroupOffsets)
+(define-rpc (fetch-offsets [for-group-named group-id : String]
+                           [in-workspace id : UVarint] : GroupOffsets)
   (define topics
     (k:GroupOffsets-topics
      (pool-fetch-offsets id group-id)))
