@@ -193,7 +193,7 @@ extension WorkspaceWindowController: NewTopicFormDelegate {
   func didCancelNewTopicForm(_ sender: NewTopicFormViewController) {
   }
 
-  func didCompleteNewTopicForm(withName name: String, partitions: Int, andOptions options: [TopicOption]) {
+  func didCreateNewTopic(named name: String) {
     loadMetadata(andSelectTopic: name)
   }
 }

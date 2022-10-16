@@ -359,7 +359,7 @@ public class Backend {
     )
   }
 
-  public func createTopic(named name: String, withPartitions partitions: UVarint, andOptions options: [TopicOption], inWorkspace id: UVarint) -> Future<String, String?> {
+  public func createTopic(named name: String, withPartitions partitions: UVarint, andOptions options: [TopicOption], inWorkspace id: UVarint) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0002).write(to: out)
@@ -368,9 +368,7 @@ public class Backend {
         options.write(to: out)
         id.write(to: out)
       },
-      readProc: { (inp: InputPort, buf: inout Data) -> String? in
-        return String?.read(from: inp, using: &buf)
-      }
+      readProc: { (inp: InputPort, buf: inout Data) -> Void in }
     )
   }
 

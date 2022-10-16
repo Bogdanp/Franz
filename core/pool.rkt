@@ -6,6 +6,7 @@
          threading
          "broker.rkt"
          "connection-details.rkt"
+         "group.rkt"
          "logger.rkt")
 
 (provide
@@ -34,7 +35,9 @@
            (with-handlers ([exn:fail?
                             (lambda (e)
                               (begin0 s
-                                ((error-display-handler) (format "pool: ~a" (exn-message e)) e)))])
+                                ((error-display-handler)
+                                 (format "pool: ~a" (exn-message e))
+                                 e)))])
              (apply
               sync
               (handle-evt
@@ -97,25 +100,38 @@
                     (state-add-req s (req metadata res-ch nack))]
 
                    [`(get-resource-configs ,res-ch ,nack ,id ,type ,name)
-                    (define described-resources
+                    (define described-resource
                       (delay/thread
-                       (k:describe-configs
-                        (state-ref-client s id)
-                        (k:make-DescribeResource
-                         #:type type
-                         #:name name))))
-                    (state-add-req s (req described-resources res-ch nack))]
+                       (define resource
+                         (car
+                          (k:describe-configs
+                           (state-ref-client s id)
+                           (k:make-DescribeResource
+                            #:type type
+                            #:name name))))
+                       (sort
+                        (for/list ([c (in-list (k:DescribedResource-configs resource))])
+                          (make-ResourceConfig
+                           #:name (k:ResourceConfig-name c)
+                           #:value (k:ResourceConfig-value c)
+                           #:is-read-only (k:ResourceConfig-read-only? c)
+                           #:is-default (k:ResourceConfig-default? c)
+                           #:is-sensitive (k:ResourceConfig-sensitive? c)))
+                        #:key ResourceConfig-name string<?)))
+                    (state-add-req s (req described-resource res-ch nack))]
 
                    [`(create-topic ,res-ch ,nack ,id ,topic-name ,partitions ,options)
-                    (define created-topics
+                    (define created-topic
                       (delay/thread
-                       (k:create-topics
-                        (state-ref-client s id)
-                        (k:make-CreateTopic
-                         #:name topic-name
-                         #:partitions partitions
-                         #:configs options))))
-                    (state-add-req s (req created-topics res-ch nack))]
+                       (car
+                        (k:CreatedTopics-topics
+                         (k:create-topics
+                          (state-ref-client s id)
+                          (k:make-CreateTopic
+                           #:name topic-name
+                           #:partitions partitions
+                           #:configs options))))))
+                    (state-add-req s (req created-topic res-ch nack))]
 
                    [`(delete-topic ,res-ch ,nack ,id ,topic-name)
                     (define deleted-topics
@@ -132,7 +148,17 @@
                    [`(fetch-offsets ,res-ch ,nack ,id ,group-id)
                     (define offsets
                       (delay/thread
-                       (k:fetch-offsets (state-ref-client s id) group-id)))
+                       (define topics
+                         (k:GroupOffsets-topics
+                          (k:fetch-offsets (state-ref-client s id) group-id)))
+                       (make-GroupOffsets
+                        #:topics (for/list ([(topic parts) (in-hash topics)])
+                                   (make-GroupTopic
+                                    #:name topic
+                                    #:partitions (for/list ([part (in-list parts)])
+                                                   (make-GroupPartitionOffset
+                                                    #:partition-id (k:GroupPartitionOffset-id part)
+                                                    #:offset (k:GroupPartitionOffset-offset part))))))))
                     (state-add-req s (req offsets res-ch nack))]
 
                    [`(shutdown ,res-ch ,nack)

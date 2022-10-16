@@ -94,27 +94,31 @@ class NewTopicFormViewController: NSViewController {
       withPartitions: UVarint(partitions),
       andOptions: options,
       inWorkspace: id
-    ).onComplete { error in
-      self.cancelButton.isEnabled = true
-      self.createButton.isEnabled = true
-      guard let error else {
-        self.dismiss(self)
-        self.delegate?.didCompleteNewTopicForm(withName: name, partitions: partitions, andOptions: options)
-        return
-      }
+    ).sink(
+      queue: .main,
+      onError: { message in
+        self.cancelButton.isEnabled = true
+        self.createButton.isEnabled = true
 
-      let alert = NSAlert()
-      alert.messageText = "Error"
-      alert.informativeText = error
-      alert.runModal()
-    }
+        let alert = NSAlert()
+        alert.messageText = "Error"
+        alert.informativeText = message
+        alert.runModal()
+      },
+      onComplete: {
+        self.cancelButton.isEnabled = true
+        self.createButton.isEnabled = true
+        self.dismiss(self)
+        self.delegate?.didCreateNewTopic(named: name)
+      }
+    )
   }
 }
 
 // MARK: -NewTopicFormDelegate
 protocol NewTopicFormDelegate {
   func didCancelNewTopicForm(_ sender: NewTopicFormViewController)
-  func didCompleteNewTopicForm(withName name: String, partitions: Int, andOptions options: [TopicOption])
+  func didCreateNewTopic(named name: String)
 }
 
 // MARK: -EditableTopicOption
