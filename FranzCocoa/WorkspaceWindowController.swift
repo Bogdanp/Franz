@@ -18,6 +18,9 @@ class WorkspaceWindowController: NSWindowController {
 
   private weak var newTopicMenuItem: NSMenuItem?
 
+  private var statusMu = DispatchSemaphore(value: 1)
+  private var statusCookie = 0
+
   convenience init(withConn conn: ConnectionDetails, andPassword password: String?) {
     self.init(windowNibName: "WorkspaceWindowController")
     self.conn = conn
@@ -28,6 +31,7 @@ class WorkspaceWindowController: NSWindowController {
     super.windowDidLoad()
 
     sidebarCtl.delegate = self
+    detailCtl.delegate = self
 
     statusBarNameField.stringValue = conn.name
     connect()
@@ -195,6 +199,27 @@ extension WorkspaceWindowController: NewTopicFormDelegate {
 
   func didCreateNewTopic(named name: String) {
     loadMetadata(andSelectTopic: name)
+  }
+}
+
+// MARK: -WorkspaceDetailDelegate
+extension WorkspaceWindowController: WorkspaceDetailDelegate {
+  func makeStatusCookie() -> Int {
+    statusMu.wait()
+    statusCookie += 1
+    let cookie = statusCookie
+    statusMu.signal()
+    return cookie
+  }
+
+  func request(status message: String, withCookie cookie: Int) {
+    statusMu.wait()
+    guard cookie == statusCookie else {
+      statusMu.signal()
+      return
+    }
+    statusMu.signal()
+    status(message)
   }
 }
 

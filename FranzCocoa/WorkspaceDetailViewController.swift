@@ -5,6 +5,8 @@ import SwiftUI
 class WorkspaceDetailViewController: NSViewController {
   private var id: UVarint!
 
+  var delegate: WorkspaceDetailDelegate?
+
   @IBOutlet weak var selectLabel: NSTextField!
 
   private var contentView: NSView?
@@ -27,7 +29,11 @@ class WorkspaceDetailViewController: NSViewController {
       let hostingCtl = NSHostingController(rootView: WorkspaceTopicDetailView(id: id, topic: entry as! Topic))
       display(controller: hostingCtl)
     case .consumerGroup:
-      let hostingCtl = NSHostingController(rootView: WorkspaceGroupDetailView(id: id, group: entry as! Group))
+      let hostingCtl = NSHostingController(rootView: WorkspaceGroupDetailView(
+        id: id,
+        group: entry as! Group,
+        delegate: delegate
+      ))
       display(controller: hostingCtl)
     default:
       clear()
@@ -57,8 +63,13 @@ class WorkspaceDetailViewController: NSViewController {
   }
 }
 
+// MARK: -WorkspaceDetailDelegate
+protocol WorkspaceDetailDelegate {
+  func makeStatusCookie() -> Int
+  func request(status: String, withCookie cookie: Int)
+}
 
-// - MARK: NSViewController
+// MARK: -NSViewController
 extension NSViewController {
   func fullSizeConstraints(forSubview subview: NSView) -> [NSLayoutConstraint] {
     let leading = NSLayoutConstraint(

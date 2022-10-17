@@ -94,24 +94,20 @@ class NewTopicFormViewController: NSViewController {
       withPartitions: UVarint(partitions),
       andOptions: options,
       inWorkspace: id
-    ).sink(
-      queue: .main,
-      onError: { message in
-        self.cancelButton.isEnabled = true
-        self.createButton.isEnabled = true
+    ).sink(onError: { message in
+      self.cancelButton.isEnabled = true
+      self.createButton.isEnabled = true
 
-        let alert = NSAlert()
-        alert.messageText = "Error"
-        alert.informativeText = message
-        alert.runModal()
-      },
-      onComplete: {
-        self.cancelButton.isEnabled = true
-        self.createButton.isEnabled = true
-        self.dismiss(self)
-        self.delegate?.didCreateNewTopic(named: name)
-      }
-    )
+      let alert = NSAlert()
+      alert.messageText = "Error"
+      alert.informativeText = message
+      alert.runModal()
+    }) {
+      self.cancelButton.isEnabled = true
+      self.createButton.isEnabled = true
+      self.dismiss(self)
+      self.delegate?.didCreateNewTopic(named: name)
+    }
   }
 }
 
