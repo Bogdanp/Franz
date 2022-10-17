@@ -11,6 +11,9 @@ struct GroupOffsetsItem: Hashable, Identifiable {
   var kind: GroupOffsetsItemKind
   var label: String
   var offset: String = ""
+  var memberId: String = ""
+  var clientId: String = ""
+  var clientHost: String = ""
   var children: [GroupOffsetsItem]? = nil
 }
 
@@ -37,7 +40,10 @@ class GroupOffsetsOutlineViewController: NSViewController {
         item.children?.append(GroupOffsetsItem(
           kind: .partition,
           label: "Partition \(p.partitionId)",
-          offset: String(p.offset)
+          offset: String(p.offset),
+          memberId: p.memberId ?? "",
+          clientId: p.clientId ?? "",
+          clientHost: p.clientHost ?? ""
         ))
       }
       items.append(item)
@@ -68,11 +74,11 @@ extension GroupOffsetsOutlineViewController: NSOutlineViewDelegate {
       } else if id == .GroupOffsetsLag {
         text = "1024"
       } else if id == .GroupOffsetsConsumerId {
-        text = "consumer-1"
+        text = item.memberId
       } else if id == .GroupOffsetsHost {
-        text = "/127.0.0.1"
+        text = item.clientHost
       } else if id == .GroupOffsetsClientId {
-        text = "racket-kafka"
+        text = item.clientId
       }
     }
     textField.stringValue = text
