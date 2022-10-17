@@ -148,17 +148,32 @@
                    [`(fetch-offsets ,res-ch ,nack ,id ,group-id)
                     (define offsets
                       (delay/thread
+                       (define c (state-ref-client s id))
+                       (define group
+                         (car (k:describe-groups c group-id)))
+                       (define member-assignments
+                         (for*/hash ([m (in-list (k:Group-members group))]
+                                     [(topic pids) (in-hash (k:GroupMember-assignments m))]
+                                     [pid (in-list pids)])
+                           (values (cons topic pid) m)))
                        (define topics
                          (k:GroupOffsets-topics
-                          (k:fetch-offsets (state-ref-client s id) group-id)))
+                          (k:fetch-offsets c group-id)))
                        (make-GroupOffsets
                         #:topics (for/list ([(topic parts) (in-hash topics)])
                                    (make-GroupTopic
                                     #:name topic
-                                    #:partitions (for/list ([part (in-list parts)])
-                                                   (make-GroupPartitionOffset
-                                                    #:partition-id (k:GroupPartitionOffset-id part)
-                                                    #:offset (k:GroupPartitionOffset-offset part))))))))
+                                    #:partitions (sort
+                                                  (for/list ([part (in-list parts)])
+                                                    (define pid (k:GroupPartitionOffset-id part))
+                                                    (define m (hash-ref member-assignments (cons topic pid) #f))
+                                                    (make-GroupPartitionOffset
+                                                     #:partition-id pid
+                                                     #:offset (k:GroupPartitionOffset-offset part)
+                                                     #:member-id (and m (k:GroupMember-id m))
+                                                     #:client-id (and m (k:GroupMember-client-id m))
+                                                     #:client-host (and m (k:GroupMember-client-host m))))
+                                                  #:key GroupPartitionOffset-partition-id <))))))
                     (state-add-req s (req offsets res-ch nack))]
 
                    [`(shutdown ,res-ch ,nack)

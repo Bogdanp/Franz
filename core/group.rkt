@@ -9,7 +9,10 @@
 
 (define-record GroupPartitionOffset
   [partition-id : UVarint]
-  [offset : Varint])
+  [offset : Varint]
+  [member-id : (Optional String)]
+  [client-id : (Optional String)]
+  [client-host : (Optional String)])
 
 (define-record GroupTopic
   [name : String]
