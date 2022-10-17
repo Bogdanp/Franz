@@ -27,6 +27,8 @@
 		43804AB528D19ACD002880FE /* WelcomeWindowConnectionsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43804AB328D19ACD002880FE /* WelcomeWindowConnectionsViewController.xib */; };
 		43804AB728D1A014002880FE /* ConnectionTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43804AB628D1A014002880FE /* ConnectionTableCellView.swift */; };
 		43804AB928D1A026002880FE /* ConnectionTableCellView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43804AB828D1A026002880FE /* ConnectionTableCellView.xib */; };
+		4395503828FD45B000CC0050 /* GroupOffsetsOutlineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4395503628FD45B000CC0050 /* GroupOffsetsOutlineViewController.swift */; };
+		4395503928FD45B000CC0050 /* GroupOffsetsOutlineViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4395503728FD45B000CC0050 /* GroupOffsetsOutlineViewController.xib */; };
 		43CD621928CE24B000095144 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CD621828CE24B000095144 /* AppDelegate.swift */; };
 		43CD621B28CE24B100095144 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 43CD621A28CE24B100095144 /* Assets.xcassets */; };
 		43CD621E28CE24B100095144 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43CD621C28CE24B100095144 /* MainMenu.xib */; };
@@ -70,6 +72,8 @@
 		43804AB328D19ACD002880FE /* WelcomeWindowConnectionsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WelcomeWindowConnectionsViewController.xib; sourceTree = "<group>"; };
 		43804AB628D1A014002880FE /* ConnectionTableCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionTableCellView.swift; sourceTree = "<group>"; };
 		43804AB828D1A026002880FE /* ConnectionTableCellView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ConnectionTableCellView.xib; sourceTree = "<group>"; };
+		4395503628FD45B000CC0050 /* GroupOffsetsOutlineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupOffsetsOutlineViewController.swift; sourceTree = "<group>"; };
+		4395503728FD45B000CC0050 /* GroupOffsetsOutlineViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GroupOffsetsOutlineViewController.xib; sourceTree = "<group>"; };
 		43CD621528CE24B000095144 /* Franz.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Franz.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		43CD621828CE24B000095144 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		43CD621A28CE24B100095144 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -136,6 +140,8 @@
 				43804AB628D1A014002880FE /* ConnectionTableCellView.swift */,
 				43804AB828D1A026002880FE /* ConnectionTableCellView.xib */,
 				43CD621F28CE24B100095144 /* FranzCocoa.entitlements */,
+				4395503628FD45B000CC0050 /* GroupOffsetsOutlineViewController.swift */,
+				4395503728FD45B000CC0050 /* GroupOffsetsOutlineViewController.xib */,
 				43D03DD728FB03940049D44D /* Identifiers.swift */,
 				43D03DD328FAC6030049D44D /* Keychain.swift */,
 				43D03DD928FB05000049D44D /* MainMenu.swift */,
@@ -248,6 +254,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4395503928FD45B000CC0050 /* GroupOffsetsOutlineViewController.xib in Resources */,
 				43CD623A28CE27DB00095144 /* WelcomeWindowController.xib in Resources */,
 				436E720F28D760D400ECBF49 /* SidebarEntryCellView.xib in Resources */,
 				436E71FB28D7511400ECBF49 /* WorkspaceWindowController.xib in Resources */,
@@ -301,6 +308,7 @@
 				436E720628D75B0500ECBF49 /* WorkspaceDetailViewController.swift in Sources */,
 				431C698228F2E0C60082986A /* NewTopicFormViewController.swift in Sources */,
 				43CD624828CE3B5D00095144 /* ConnectionDetailsFormViewController.swift in Sources */,
+				4395503828FD45B000CC0050 /* GroupOffsetsOutlineViewController.swift in Sources */,
 				43196F8A28F1DAB2003C793B /* WorkspaceTopicDetailView.swift in Sources */,
 				43D03DD428FAC6030049D44D /* Keychain.swift in Sources */,
 				43D03DD828FB03940049D44D /* Identifiers.swift in Sources */,
