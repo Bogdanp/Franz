@@ -61,6 +61,7 @@ extension GroupOffsetsOutlineViewController: NSOutlineViewDelegate {
     guard let item = item as? GroupOffsetsItem else { return nil }
     guard let textField = view.textField else { return nil }
     var text = ""
+    textField.font = .systemFont(ofSize: 12, weight: .regular)
     switch item.kind {
     case .topic:
       if id == .GroupOffsetsTopic {
@@ -71,8 +72,10 @@ extension GroupOffsetsOutlineViewController: NSOutlineViewDelegate {
         text = item.label
       } else if id == .GroupOffsetsOffset {
         text = item.offset
+        textField.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
       } else if id == .GroupOffsetsLag {
         text = "1024"
+        textField.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
       } else if id == .GroupOffsetsConsumerId {
         text = item.memberId
       } else if id == .GroupOffsetsHost {

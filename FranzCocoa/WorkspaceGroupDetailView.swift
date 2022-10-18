@@ -16,6 +16,7 @@ struct WorkspaceGroupDetailView: View {
           Text("Group").font(.subheadline).foregroundColor(.secondary)
 
           if let offsets {
+            Spacer().frame(height: 15)
             Text("Topics").font(.headline)
             GroupOffsetsTable(offsets: offsets)
           }
