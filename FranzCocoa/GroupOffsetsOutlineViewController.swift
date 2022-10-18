@@ -21,13 +21,19 @@ struct GroupOffsetsItem: Hashable, Identifiable {
 
 class GroupOffsetsOutlineViewController: NSViewController {
   private var offsets: GroupOffsets!
-  private var items: [GroupOffsetsItem]!
+  private var items = [GroupOffsetsItem]()
+  private var itemsSeq = [GroupOffsetsItem]()
+
+  private var contextMenu = NSMenu()
 
   @IBOutlet weak var outlineView: NSOutlineView!
 
   override func viewDidLoad() {
     super.viewDidLoad()
 
+    contextMenu.delegate = self
+
+    outlineView?.menu = contextMenu
     outlineView?.delegate = self
     outlineView?.dataSource = self
     outlineView?.expandItem(nil, expandChildren: true)
@@ -36,7 +42,8 @@ class GroupOffsetsOutlineViewController: NSViewController {
   func configure(withOffsets offsets: GroupOffsets) {
     self.offsets = offsets
 
-    var items = [GroupOffsetsItem]()
+    items.removeAll(keepingCapacity: true)
+    itemsSeq.removeAll(keepingCapacity: true)
     for t in offsets.topics {
       var item = GroupOffsetsItem(kind: .topic, label: t.name, children: [])
       var lag = Varint(0)
@@ -54,8 +61,9 @@ class GroupOffsetsOutlineViewController: NSViewController {
       }
       item.lag = String(lag)
       items.append(item)
+      itemsSeq.append(item)
+      itemsSeq.append(contentsOf: item.children!)
     }
-    self.items = items
   }
 }
 
@@ -95,6 +103,56 @@ extension GroupOffsetsOutlineViewController: NSOutlineViewDelegate {
     }
     textField.stringValue = text
     return view
+  }
+}
+
+// MARK: -NSMenuDelegate
+extension GroupOffsetsOutlineViewController: NSMenuDelegate {
+  func menuNeedsUpdate(_ menu: NSMenu) {
+    menu.removeAllItems()
+    guard let row = outlineView?.clickedRow, row >= 0 else { return }
+    let item = itemsSeq[row]
+    switch item.kind {
+    case .topic:
+      menu.addItem(.init(title: "Copy Name", action: #selector(didPressCopyTopicNameItem(_:)), keyEquivalent: "c"))
+      menu.addItem(.separator())
+      menu.addItem(.init(title: "Reset Offsets...", action: #selector(didPressResetTopicOffsetsItem(_:)), keyEquivalent: .backspaceKeyEquivalent))
+    case .partition:
+      menu.addItem(.init(title: "Copy Offset", action: #selector(didPressCopyPartitionOffsetItem(_:)), keyEquivalent: "c"))
+      menu.addItem(.init(title: "Copy Member ID", action: #selector(didPressCopyPartitionMemberIDItem(_:)), keyEquivalent: "C"))
+      menu.addItem(.init(title: "Copy Client ID", action: #selector(didPressCopyPartitionClientIDItem(_:)), keyEquivalent: ""))
+    }
+  }
+
+  @objc func didPressCopyTopicNameItem(_ sender: Any) {
+    guard let row = outlineView?.clickedRow, row >= 0 else { return }
+    NSPasteboard.general.clearContents()
+    NSPasteboard.general.setString(itemsSeq[row].label, forType: .string)
+  }
+
+  @objc func didPressResetTopicOffsetsItem(_ sender: Any) {
+    guard let row = outlineView?.clickedRow, row >= 0 else { return }
+    let item = itemsSeq[row]
+    guard item.kind == .topic else { return }
+
+  }
+
+  @objc func didPressCopyPartitionOffsetItem(_ sender: Any) {
+    guard let row = outlineView?.clickedRow, row >= 0 else { return }
+    NSPasteboard.general.clearContents()
+    NSPasteboard.general.setString(itemsSeq[row].offset, forType: .string)
+  }
+
+  @objc func didPressCopyPartitionMemberIDItem(_ sender: Any) {
+    guard let row = outlineView?.clickedRow, row >= 0 else { return }
+    NSPasteboard.general.clearContents()
+    NSPasteboard.general.setString(itemsSeq[row].memberId, forType: .string)
+  }
+
+  @objc func didPressCopyPartitionClientIDItem(_ sender: Any) {
+    guard let row = outlineView?.clickedRow, row >= 0 else { return }
+    NSPasteboard.general.clearContents()
+    NSPasteboard.general.setString(itemsSeq[row].clientId, forType: .string)
   }
 }
 
