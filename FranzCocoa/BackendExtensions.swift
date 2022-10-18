@@ -1,5 +1,6 @@
 import Foundation
 import NoiseBackend
+import NoiseSerde
 
 #if arch(x86_64)
 let ARCH="x86_64"
@@ -42,6 +43,13 @@ extension ConnectionDetails {
     get {
       "\(bootstrapHost):\(bootstrapPort)"
     }
+  }
+}
+
+// MARK: -GroupPartitionOffset
+extension GroupPartitionOffset {
+  var lag: Varint {
+    highWatermark - offset
   }
 }
 

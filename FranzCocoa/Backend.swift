@@ -140,6 +140,7 @@ public struct GroupOffsets: Readable, Writable {
 
 public struct GroupPartitionOffset: Readable, Writable {
   public let partitionId: UVarint
+  public let highWatermark: Varint
   public let offset: Varint
   public let memberId: String?
   public let clientId: String?
@@ -147,12 +148,14 @@ public struct GroupPartitionOffset: Readable, Writable {
 
   public init(
     partitionId: UVarint,
+    highWatermark: Varint,
     offset: Varint,
     memberId: String?,
     clientId: String?,
     clientHost: String?
   ) {
     self.partitionId = partitionId
+    self.highWatermark = highWatermark
     self.offset = offset
     self.memberId = memberId
     self.clientId = clientId
@@ -162,6 +165,7 @@ public struct GroupPartitionOffset: Readable, Writable {
   public static func read(from inp: InputPort, using buf: inout Data) -> GroupPartitionOffset {
     return GroupPartitionOffset(
       partitionId: UVarint.read(from: inp, using: &buf),
+      highWatermark: Varint.read(from: inp, using: &buf),
       offset: Varint.read(from: inp, using: &buf),
       memberId: String?.read(from: inp, using: &buf),
       clientId: String?.read(from: inp, using: &buf),
@@ -171,6 +175,7 @@ public struct GroupPartitionOffset: Readable, Writable {
 
   public func write(to out: OutputPort) {
     partitionId.write(to: out)
+    highWatermark.write(to: out)
     offset.write(to: out)
     memberId.write(to: out)
     clientId.write(to: out)

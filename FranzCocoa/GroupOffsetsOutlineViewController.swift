@@ -1,4 +1,5 @@
 import Cocoa
+import NoiseSerde
 import SwiftUI
 
 enum GroupOffsetsItemKind {
@@ -11,6 +12,7 @@ struct GroupOffsetsItem: Hashable, Identifiable {
   var kind: GroupOffsetsItemKind
   var label: String
   var offset: String = ""
+  var lag: String = ""
   var memberId: String = ""
   var clientId: String = ""
   var clientHost: String = ""
@@ -36,16 +38,20 @@ class GroupOffsetsOutlineViewController: NSViewController {
     var items = [GroupOffsetsItem]()
     for t in offsets.topics {
       var item = GroupOffsetsItem(kind: .topic, label: t.name, children: [])
+      var lag = Varint(0)
       for p in t.partitions {
+        lag += p.lag
         item.children?.append(GroupOffsetsItem(
           kind: .partition,
           label: "Partition \(p.partitionId)",
           offset: String(p.offset),
+          lag: String(p.lag),
           memberId: p.memberId ?? "",
           clientId: p.clientId ?? "",
           clientHost: p.clientHost ?? ""
         ))
       }
+      item.lag = String(lag)
       items.append(item)
     }
     self.items = items
@@ -66,6 +72,8 @@ extension GroupOffsetsOutlineViewController: NSOutlineViewDelegate {
     case .topic:
       if id == .GroupOffsetsTopic {
         text = item.label
+      } else if id == .GroupOffsetsLag {
+        text = item.lag
       }
     case .partition:
       if id == .GroupOffsetsTopic {
@@ -74,7 +82,7 @@ extension GroupOffsetsOutlineViewController: NSOutlineViewDelegate {
         text = item.offset
         textField.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
       } else if id == .GroupOffsetsLag {
-        text = "1024"
+        text = item.lag
         textField.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
       } else if id == .GroupOffsetsConsumerId {
         text = item.memberId
