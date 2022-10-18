@@ -1,6 +1,7 @@
 #lang racket/base
 
 (require (prefix-in k: kafka)
+         (prefix-in kerr: kafka/private/error) ;; FIXME
          noise/backend
          noise/serde
          "broker.rkt"
@@ -51,6 +52,15 @@
 (define-rpc (fetch-offsets [for-group-named group-id : String]
                            [in-workspace id : UVarint] : GroupOffsets)
   (pool-fetch-offsets id group-id))
+
+(define-rpc (reset-offsets [for-group-named group-id : String]
+                           [and-topic topic : String]
+                           [and-target target : Symbol]
+                           [in-workspace id : UVarint])
+  (for ([(_ res) (in-hash (pool-reset-offsets id group-id topic target))])
+    (define err (k:CommitPartitionResult-error-code res))
+    (unless (zero? err)
+      (kerr:raise-server-error err))))
 
 (define-rpc (close-all-workspaces)
   (void (pool-shutdown)))

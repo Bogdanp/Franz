@@ -20,4 +20,5 @@
   [partitions : (Listof GroupPartitionOffset)])
 
 (define-record GroupOffsets
+  [group-id : String]
   [topics : (Listof GroupTopic)])

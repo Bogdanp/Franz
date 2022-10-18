@@ -21,6 +21,7 @@
  pool-delete-topic
  pool-delete-group
  pool-fetch-offsets
+ pool-reset-offsets
  pool-shutdown)
 
 (struct pool (ch thd))
@@ -165,6 +166,7 @@
                                              (define t&p (cons topic (k:GroupPartitionOffset-id part)))
                                              (values t&p 'latest))))
                        (make-GroupOffsets
+                        #:group-id group-id
                         #:topics (sort
                                   (for/list ([(topic parts) (in-hash topics)])
                                     (make-GroupTopic
@@ -185,6 +187,22 @@
                                                    #:key GroupPartitionOffset-partition-id <)))
                                   #:key GroupTopic-name string<?))))
                     (state-add-req s (req offsets res-ch nack))]
+
+                   [`(reset-offsets ,res-ch ,nack ,id ,group-id ,topic ,target)
+                    (define result
+                      (delay/thread
+                       (define c (state-ref-client s id))
+                       (define t
+                         (for/first ([t (in-list (k:Metadata-topics (k:client-metadata c)))]
+                                     #:when (equal? (k:TopicMetadata-name t) topic))
+                           t))
+                       (define offsets
+                         (k:list-offsets c (for/hash ([p (in-list (k:TopicMetadata-partitions t))])
+                                             (define t&p (cons topic (k:PartitionMetadata-id p)))
+                                             (values t&p target))))
+                       (k:reset-offsets c group-id (for/hash ([(t&p o) (in-hash offsets)])
+                                                     (values t&p (k:PartitionOffset-offset o))))))
+                    (state-add-req s (req result res-ch nack))]
 
                    [`(shutdown ,res-ch ,nack)
                     (for ([c (in-hash-values (state-clients s))])
@@ -233,8 +251,11 @@
 (define (pool-fetch-offsets id group-id [p (current-pool)])
   (force (sync (pool-send p fetch-offsets id group-id))))
 
+(define (pool-reset-offsets id group-id topic target [p (current-pool)])
+  (force (sync (pool-send p reset-offsets id group-id topic target))))
+
 (define (pool-shutdown [p (current-pool)])
-  (sync (pool-send p shutdown)))
+ (sync (pool-send p shutdown)))
 
 (define-syntax-rule (pool-send p command . args)
   (make-pool-evt p 'command . args))
