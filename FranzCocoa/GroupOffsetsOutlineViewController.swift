@@ -32,6 +32,7 @@ class GroupOffsetsItem: NSObject {
 }
 
 class GroupOffsetsOutlineViewController: NSViewController {
+  private var id: UVarint!
   private var offsets: GroupOffsets!
   private var items = [GroupOffsetsItem]()
   private var itemsSeq = [GroupOffsetsItem]()
@@ -51,7 +52,8 @@ class GroupOffsetsOutlineViewController: NSViewController {
     outlineView?.expandItem(nil, expandChildren: true)
   }
 
-  func configure(withOffsets offsets: GroupOffsets) {
+  func configure(withId id: UVarint, andOffsets offsets: GroupOffsets) {
+    self.id = id
     self.offsets = offsets
 
     var itemsById = [String: GroupOffsetsItem]()
@@ -187,6 +189,14 @@ extension GroupOffsetsOutlineViewController: NSMenuDelegate {
     let item = itemsSeq[row]
     guard item.kind == .topic else { return }
 
+    Backend.shared.resetOffsets(
+      forGroupNamed: offsets!.groupId,
+      andTopic: item.label,
+      andTarget: "latest",
+      inWorkspace: id
+    ).onComplete { _ in
+
+      }
   }
 
   @objc func didPressCopyPartitionOffsetItem(_ sender: Any) {
@@ -230,18 +240,19 @@ extension GroupOffsetsOutlineViewController: NSOutlineViewDataSource {
 struct GroupOffsetsTable: NSViewControllerRepresentable {
   typealias NSViewController = GroupOffsetsOutlineViewController
 
+  var id: UVarint
   @Binding var offsets: GroupOffsets?
 
   func makeNSViewController(context: Context) -> some NSViewController {
     let ctl = GroupOffsetsOutlineViewController()
     if let offsets {
-      ctl.configure(withOffsets: offsets)
+      ctl.configure(withId: id, andOffsets: offsets)
     }
     return ctl
   }
 
   func updateNSViewController(_ nsViewController: NSViewControllerType, context: Context) {
     guard let offsets else { return }
-    nsViewController.configure(withOffsets: offsets)
+    nsViewController.configure(withId: id, andOffsets: offsets)
   }
 }
