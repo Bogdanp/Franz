@@ -8,12 +8,46 @@ struct WorkspaceGroupDetailView: View {
 
   @State var offsets: GroupOffsets?
 
+  var totalLag: String? {
+    get {
+      guard let offsets else { return nil }
+      var total = Varint(0)
+      for t in offsets.topics {
+        for p in t.partitions {
+          total += p.lag
+        }
+      }
+      return NumberFormatter.localizedString(from: NSNumber(value: total), number: .decimal)
+    }
+  }
+
   var body: some View {
     VStack(alignment: .leading) {
       HStack(alignment: .top) {
         VStack(alignment: .leading) {
-          Text(group.id).font(.title)
-          Text("Group").font(.subheadline).foregroundColor(.secondary)
+          HStack(alignment: .top) {
+            VStack(alignment: .leading) {
+              Text(group.id)
+                .font(.title)
+                .truncationMode(.tail)
+              Text("Group")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            }
+
+            if let totalLag {
+              Spacer()
+              VStack(alignment: .trailing) {
+                Text("Messages behind:")
+                  .font(.subheadline)
+                  .foregroundColor(.secondary)
+                Text(totalLag)
+                  .font(.title)
+                  .fontWeight(.semibold)
+                  .monospacedDigit()
+              }
+            }
+          }
 
           if let offsets {
             Spacer().frame(height: 15)
