@@ -6,6 +6,7 @@ struct WorkspaceGroupDetailView: View {
   var group: Group
   var delegate: WorkspaceDetailDelegate?
 
+  @State var offsetsLoading = false
   @State var offsets: GroupOffsets?
 
   var totalLag: String? {
@@ -20,6 +21,9 @@ struct WorkspaceGroupDetailView: View {
       return NumberFormatter.localizedString(from: NSNumber(value: total), number: .decimal)
     }
   }
+
+  // TODO: Make this a setting.
+  let timer = Timer.publish(every: 15, on: .main, in: .common).autoconnect()
 
   var body: some View {
     VStack(alignment: .leading) {
@@ -52,7 +56,7 @@ struct WorkspaceGroupDetailView: View {
           if let offsets {
             Spacer().frame(height: 15)
             Text("Topics").font(.headline)
-            GroupOffsetsTable(offsets: offsets)
+            GroupOffsetsTable(offsets: $offsets)
           }
           Spacer()
         }
@@ -62,13 +66,23 @@ struct WorkspaceGroupDetailView: View {
     }
     .padding()
     .onAppear {
-      guard let delegate else { return }
-      let cookie = delegate.makeStatusCookie()
-      delegate.request(status: "Fetching offsets...", withCookie: cookie)
-      Backend.shared.fetchOffsets(forGroupNamed: group.id, inWorkspace: id).onComplete { offsets in
-        delegate.request(status: "Ready", withCookie: cookie)
-        self.offsets = offsets
-      }
+      fetchOffsets()
+    }
+    .onReceive(timer) { _ in
+      fetchOffsets()
+    }
+  }
+
+  private func fetchOffsets() {
+    guard let delegate else { return }
+    guard !offsetsLoading else { return }
+    offsetsLoading = true
+    let cookie = delegate.makeStatusCookie()
+    delegate.request(status: "Fetching offsets...", withCookie: cookie)
+    Backend.shared.fetchOffsets(forGroupNamed: group.id, inWorkspace: id).onComplete { offsets in
+      delegate.request(status: "Ready", withCookie: cookie)
+      self.offsets = offsets
+      self.offsetsLoading = false
     }
   }
 }

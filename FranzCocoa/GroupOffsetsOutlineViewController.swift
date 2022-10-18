@@ -7,8 +7,8 @@ enum GroupOffsetsItemKind {
   case partition
 }
 
-struct GroupOffsetsItem: Hashable, Identifiable {
-  var id: Self { self }
+class GroupOffsetsItem: NSObject {
+  var id: String
   var kind: GroupOffsetsItemKind
   var label: String
   var offset: String = ""
@@ -17,6 +17,18 @@ struct GroupOffsetsItem: Hashable, Identifiable {
   var clientId: String = ""
   var clientHost: String = ""
   var children: [GroupOffsetsItem]? = nil
+
+  init(id: String, kind: GroupOffsetsItemKind, label: String, children: [GroupOffsetsItem]? = nil) {
+    self.id = id
+    self.kind = kind
+    self.label = label
+    self.children = children
+  }
+
+  override func isEqual(to object: Any?) -> Bool {
+    guard let other = object as? GroupOffsetsItem else { return false }
+    return id == other.id
+  }
 }
 
 class GroupOffsetsOutlineViewController: NSViewController {
@@ -42,27 +54,67 @@ class GroupOffsetsOutlineViewController: NSViewController {
   func configure(withOffsets offsets: GroupOffsets) {
     self.offsets = offsets
 
+    var itemsById = [String: GroupOffsetsItem]()
+    for item in itemsSeq {
+      itemsById[item.id] = item
+    }
+
+    var selection: GroupOffsetsItem?
+    if let row = outlineView?.selectedRow, row >= 0 {
+      selection = itemsSeq[row]
+    }
+
     items.removeAll(keepingCapacity: true)
     itemsSeq.removeAll(keepingCapacity: true)
     for t in offsets.topics {
-      var item = GroupOffsetsItem(kind: .topic, label: t.name, children: [])
+      var item: GroupOffsetsItem!
+      let topicId = "topic-\(t.name)"
+      if let it = itemsById[topicId] {
+        item = it
+        item.children?.removeAll(keepingCapacity: true)
+      } else {
+        item = GroupOffsetsItem(
+          id: topicId,
+          kind: .topic,
+          label: t.name,
+          children: [])
+      }
       var lag = Varint(0)
       for p in t.partitions {
+        let partitionId = "\(topicId)-\(p.partitionId)"
+        var partitionItem: GroupOffsetsItem!
+        if let it = itemsById[partitionId] {
+          partitionItem = it
+        } else {
+          partitionItem = GroupOffsetsItem(
+            id: partitionId,
+            kind: .partition,
+            label: "Partition \(p.partitionId)")
+        }
+        partitionItem.offset = String(p.offset)
+        partitionItem.lag = String(p.lag)
+        partitionItem.memberId = p.memberId ?? ""
+        partitionItem.clientId = p.clientId ?? ""
+        partitionItem.clientHost = p.clientHost ?? ""
+        item.children?.append(partitionItem)
         lag += p.lag
-        item.children?.append(GroupOffsetsItem(
-          kind: .partition,
-          label: "Partition \(p.partitionId)",
-          offset: String(p.offset),
-          lag: String(p.lag),
-          memberId: p.memberId ?? "",
-          clientId: p.clientId ?? "",
-          clientHost: p.clientHost ?? ""
-        ))
       }
       item.lag = String(lag)
       items.append(item)
       itemsSeq.append(item)
       itemsSeq.append(contentsOf: item.children!)
+    }
+
+    outlineView?.reloadData()
+    outlineView?.expandItem(nil, expandChildren: true)
+
+    if let selection {
+      for (i, item) in itemsSeq.enumerated() {
+        if item == selection {
+          outlineView.selectRowIndexes([i], byExtendingSelection: false)
+          break
+        }
+      }
     }
   }
 }
@@ -178,7 +230,7 @@ extension GroupOffsetsOutlineViewController: NSOutlineViewDataSource {
 struct GroupOffsetsTable: NSViewControllerRepresentable {
   typealias NSViewController = GroupOffsetsOutlineViewController
 
-  let offsets: GroupOffsets
+  @Binding var offsets: GroupOffsets!
 
   func makeNSViewController(context: Context) -> some NSViewController {
     let ctl = GroupOffsetsOutlineViewController()
@@ -187,5 +239,6 @@ struct GroupOffsetsTable: NSViewControllerRepresentable {
   }
 
   func updateNSViewController(_ nsViewController: NSViewControllerType, context: Context) {
+    nsViewController.configure(withOffsets: offsets)
   }
 }
