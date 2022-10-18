@@ -22,7 +22,7 @@ extension Backend {
       if let id = c.passwordId {
         let _ = Keychain.shared.delete(passwordWithId: id)
       }
-      return Future<String, Bool>.resolved(with: ())
+      return FutureUtil.resolved(with: ())
         .mapError({ _ in preconditionFailure("unreachable") })
     }
   }
