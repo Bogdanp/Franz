@@ -30,6 +30,7 @@ class GroupOffsetsOutlineViewController: NSViewController {
 
     outlineView?.delegate = self
     outlineView?.dataSource = self
+    outlineView?.expandItem(nil, expandChildren: true)
   }
 
   func configure(withOffsets offsets: GroupOffsets) {
