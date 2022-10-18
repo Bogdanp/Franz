@@ -86,7 +86,6 @@ class WorkspaceSidebarViewController: NSViewController {
     var keepSelection = false
     var selectedRow = tableView.selectedRow
     for e in self.entries {
-      print("e=\(e) selected=\(selectedEntry)")
       if e == selectedEntry {
         keepSelection = true
         break
