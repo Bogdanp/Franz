@@ -230,15 +230,18 @@ extension GroupOffsetsOutlineViewController: NSOutlineViewDataSource {
 struct GroupOffsetsTable: NSViewControllerRepresentable {
   typealias NSViewController = GroupOffsetsOutlineViewController
 
-  @Binding var offsets: GroupOffsets!
+  @Binding var offsets: GroupOffsets?
 
   func makeNSViewController(context: Context) -> some NSViewController {
     let ctl = GroupOffsetsOutlineViewController()
-    ctl.configure(withOffsets: offsets)
+    if let offsets {
+      ctl.configure(withOffsets: offsets)
+    }
     return ctl
   }
 
   func updateNSViewController(_ nsViewController: NSViewControllerType, context: Context) {
+    guard let offsets else { return }
     nsViewController.configure(withOffsets: offsets)
   }
 }

@@ -53,11 +53,9 @@ struct WorkspaceGroupDetailView: View {
             }
           }
 
-          if let offsets {
-            Spacer().frame(height: 15)
-            Text("Topics").font(.headline)
-            GroupOffsetsTable(offsets: $offsets)
-          }
+          Spacer().frame(height: 15)
+          Text("Topics").font(.headline)
+          GroupOffsetsTable(offsets: $offsets)
           Spacer()
         }
         Spacer()
