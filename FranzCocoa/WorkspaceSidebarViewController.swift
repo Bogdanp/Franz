@@ -41,7 +41,7 @@ class WorkspaceSidebarViewController: NSViewController {
         oldBrokers[e.label] = e
       case .topic:
         oldTopics[e.label] = e
-      case .group:
+      case .consumerGroup:
         oldGroups[e.label] = e
       default:
         ()
@@ -86,6 +86,7 @@ class WorkspaceSidebarViewController: NSViewController {
     var keepSelection = false
     var selectedRow = tableView.selectedRow
     for e in self.entries {
+      print("e=\(e) selected=\(selectedEntry)")
       if e == selectedEntry {
         keepSelection = true
         break
