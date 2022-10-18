@@ -9,6 +9,7 @@
 
 (define-record GroupPartitionOffset
   [partition-id : UVarint]
+  [high-watermark : Varint]
   [offset : Varint]
   [member-id : (Optional String)]
   [client-id : (Optional String)]

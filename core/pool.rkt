@@ -159,21 +159,31 @@
                        (define topics
                          (k:GroupOffsets-topics
                           (k:fetch-offsets c group-id)))
+                       (define topic-offsets
+                         (k:list-offsets c (for*/hash ([(topic parts) (in-hash topics)]
+                                                       [part (in-list parts)])
+                                             (define t&p (cons topic (k:GroupPartitionOffset-id part)))
+                                             (values t&p 'latest))))
                        (make-GroupOffsets
-                        #:topics (for/list ([(topic parts) (in-hash topics)])
-                                   (make-GroupTopic
-                                    #:name topic
-                                    #:partitions (sort
-                                                  (for/list ([part (in-list parts)])
-                                                    (define pid (k:GroupPartitionOffset-id part))
-                                                    (define m (hash-ref member-assignments (cons topic pid) #f))
-                                                    (make-GroupPartitionOffset
-                                                     #:partition-id pid
-                                                     #:offset (k:GroupPartitionOffset-offset part)
-                                                     #:member-id (and m (k:GroupMember-id m))
-                                                     #:client-id (and m (k:GroupMember-client-id m))
-                                                     #:client-host (and m (k:GroupMember-client-host m))))
-                                                  #:key GroupPartitionOffset-partition-id <))))))
+                        #:topics (sort
+                                  (for/list ([(topic parts) (in-hash topics)])
+                                    (make-GroupTopic
+                                     #:name topic
+                                     #:partitions (sort
+                                                   (for/list ([part (in-list parts)])
+                                                     (define pid (k:GroupPartitionOffset-id part))
+                                                     (define t&p (cons topic pid))
+                                                     (define m (hash-ref member-assignments t&p #f))
+                                                     (define o (hash-ref topic-offsets t&p #f))
+                                                     (make-GroupPartitionOffset
+                                                      #:partition-id pid
+                                                      #:high-watermark (and o (k:PartitionOffset-offset o))
+                                                      #:offset (k:GroupPartitionOffset-offset part)
+                                                      #:member-id (and m (k:GroupMember-id m))
+                                                      #:client-id (and m (k:GroupMember-client-id m))
+                                                      #:client-host (and m (k:GroupMember-client-host m))))
+                                                   #:key GroupPartitionOffset-partition-id <)))
+                                  #:key GroupTopic-name string<?))))
                     (state-add-req s (req offsets res-ch nack))]
 
                    [`(shutdown ,res-ch ,nack)
