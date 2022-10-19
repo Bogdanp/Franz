@@ -188,15 +188,20 @@ extension GroupOffsetsOutlineViewController: NSMenuDelegate {
     guard let row = outlineView?.clickedRow, row >= 0 else { return }
     let item = itemsSeq[row]
     guard item.kind == .topic else { return }
+    guard let id else { return }
+    guard let groupId = self.offsets?.groupId else { return }
 
-    Backend.shared.resetOffsets(
-      forGroupNamed: offsets!.groupId,
-      andTopic: item.label,
-      andTarget: "latest",
-      inWorkspace: id
-    ).onComplete { _ in
+    let ctl = NSHostingController(rootView: ResetOffsetsView(parent: self) { target in
+      Backend.shared.resetOffsets(
+        forGroupNamed: groupId,
+        andTopic: item.label,
+        andTarget: target,
+        inWorkspace: id
+      ).onComplete { _ in
 
       }
+    })
+    presentAsSheet(ctl)
   }
 
   @objc func didPressCopyPartitionOffsetItem(_ sender: Any) {
@@ -254,5 +259,43 @@ struct GroupOffsetsTable: NSViewControllerRepresentable {
   func updateNSViewController(_ nsViewController: NSViewControllerType, context: Context) {
     guard let offsets else { return }
     nsViewController.configure(withId: id, andOffsets: offsets)
+  }
+}
+
+// MARK: ResetOffsetsView
+fileprivate struct ResetOffsetsView: View {
+  @State var target = Symbol("earliest")
+
+  var parent: NSViewController
+  var resetAction: (Symbol) -> Void
+
+  var body: some View {
+    Form {
+      Picker("Reset to:", selection: $target) {
+        Text("Earliest").tag(Symbol("earliest"))
+        Text("Latest").tag(Symbol("latest"))
+      }
+      HStack {
+        Button("Cancel", role: .cancel) {
+          dismiss()
+        }
+        .keyboardShortcut(.cancelAction)
+        Button("Reset", role: .destructive) {
+          dismiss()
+          resetAction(target)
+        }
+        .keyboardShortcut(.defaultAction)
+      }
+    }
+    .padding()
+    .frame(minWidth: 240)
+  }
+
+  private func dismiss() {
+    parent.presentedViewControllers?.forEach { ctl in
+      if let ctl = ctl as? NSHostingController<Self> {
+        ctl.dismiss(self)
+      }
+    }
   }
 }
