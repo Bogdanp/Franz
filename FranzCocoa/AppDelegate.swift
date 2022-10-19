@@ -1,5 +1,11 @@
 import Cocoa
 import NoiseBackend
+import os
+
+let logger = Logger(
+  subsystem: Bundle.main.bundleIdentifier!,
+  category: "network"
+)
 
 @main
 class AppDelegate: NSObject, NSApplicationDelegate {

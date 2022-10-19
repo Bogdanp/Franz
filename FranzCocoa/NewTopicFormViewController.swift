@@ -94,36 +94,39 @@ class NewTopicFormViewController: NSViewController {
       withPartitions: UVarint(partitions),
       andOptions: options,
       inWorkspace: id
-    ).sink(onError: { message in
-      self.cancelButton.isEnabled = true
-      self.createButton.isEnabled = true
+    ).sink(
+      onError: { message in
+        self.cancelButton.isEnabled = true
+        self.createButton.isEnabled = true
 
-      let alert = NSAlert()
-      alert.messageText = "Error"
-      alert.informativeText = message
-      alert.runModal()
-    }) {
-      self.cancelButton.isEnabled = true
-      self.createButton.isEnabled = true
-      self.dismiss(self)
-      self.delegate?.didCreateNewTopic(named: name)
-    }
+        let alert = NSAlert()
+        alert.messageText = "Error"
+        alert.informativeText = message
+        alert.runModal()
+      },
+      onComplete: {
+        self.cancelButton.isEnabled = true
+        self.createButton.isEnabled = true
+        self.dismiss(self)
+        self.delegate?.didCreateNewTopic(named: name)
+      }
+    )
   }
 }
 
-// MARK: -NewTopicFormDelegate
-protocol NewTopicFormDelegate {
+// MARK: - NewTopicFormDelegate
+protocol NewTopicFormDelegate: AnyObject {
   func didCancelNewTopicForm(_ sender: NewTopicFormViewController)
   func didCreateNewTopic(named name: String)
 }
 
-// MARK: -EditableTopicOption
+// MARK: - EditableTopicOption
 fileprivate class EditableTopicOption: NSObject {
   var key = ""
   var value = ""
 }
 
-// MARK: -TopicOptionsTableView
+// MARK: - TopicOptionsTableView
 class TopicOptionsTableView: NSTableView {
   var deleteAction: Selector?
 
@@ -131,7 +134,7 @@ class TopicOptionsTableView: NSTableView {
     switch event.keyCode {
     case 51:
       if selectedRow >= 0 {
-        let _ = target?.perform(deleteAction, with: self)
+        _ = target?.perform(deleteAction, with: self)
         return
       }
     default:
@@ -140,14 +143,14 @@ class TopicOptionsTableView: NSTableView {
   }
 }
 
-// MARK: -NSTableViewDataSource
+// MARK: - NSTableViewDataSource
 extension NewTopicFormViewController: NSTableViewDataSource {
   func numberOfRows(in tableView: NSTableView) -> Int {
     return options.count
   }
 }
 
-// MARK: -NSTableViewDelegate
+// MARK: - NSTableViewDelegate
 extension NewTopicFormViewController: NSTableViewDelegate {
   func tableView(_ tableView: NSTableView, shouldEdit tableColumn: NSTableColumn?, row: Int) -> Bool {
     return true
@@ -182,7 +185,7 @@ extension NewTopicFormViewController: NSTableViewDelegate {
   }
 }
 
-// MARK: -TopicOptionTextField
+// MARK: - TopicOptionTextField
 enum TopicOptionTextFieldKind {
   case key
   case value
@@ -193,12 +196,12 @@ class TopicOptionTextField: NSTextField {
   var row: Int = -1
 }
 
-// MARK: -NSTextFieldDelegate
+// MARK: - NSTextFieldDelegate
 extension NewTopicFormViewController: NSTextFieldDelegate {
   static let completions: [String: [String]] = [
     "cleanup.policy": [
       "compact",
-      "delete"
+      "delete",
     ],
     "compression.type": [
       "gzip",
@@ -236,7 +239,11 @@ extension NewTopicFormViewController: NSTextFieldDelegate {
     "message.downconversion.enable": [],
   ]
 
-  func control(_ control: NSControl, textView: NSTextView, completions words: [String], forPartialWordRange charRange: NSRange, indexOfSelectedItem index: UnsafeMutablePointer<Int>) -> [String] {
+  func control(_ control: NSControl,
+               textView: NSTextView,
+               completions words: [String],
+               forPartialWordRange charRange: NSRange,
+               indexOfSelectedItem index: UnsafeMutablePointer<Int>) -> [String] {
     guard let textField = control as? TopicOptionTextField else {
       return []
     }
@@ -246,7 +253,7 @@ extension NewTopicFormViewController: NSTextFieldDelegate {
     let substr = String(textView.string[range])
     switch textField.kind {
     case .key:
-      if let _ = Self.completions[substr] {
+      if Self.completions[substr] != nil {
         return []
       }
       return Self.completions.keys.filter { k in
@@ -257,7 +264,7 @@ extension NewTopicFormViewController: NSTextFieldDelegate {
       guard let completions = Self.completions[option.key] else {
         return []
       }
-      if let _ = completions.first(where: { $0 == substr }) {
+      if completions.first(where: { $0 == substr }) != nil {
         return []
       }
       return completions.filter { k in

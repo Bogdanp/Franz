@@ -74,10 +74,12 @@ class WorkspaceWindowController: NSWindowController {
         default:
           preconditionFailure()
         }
-      }) { id in
+      },
+      onComplete: { id in
         self.id = id
         self.loadMetadata(forcingReload: false)
       }
+    )
   }
 
   private func loadMetadata(forcingReload reload: Bool = true, andThen proc: @escaping () -> Void = {}) {
@@ -130,7 +132,7 @@ extension WorkspaceWindowController: NSWindowDelegate {
   func windowWillClose(_ notification: Notification) {
     guard let id else { return }
     if WindowManager.shared.removeWorkspace(withId: conn.id!) {
-      let _ = Backend.shared.closeWorkspace(id)
+      _ = Backend.shared.closeWorkspace(id)
     }
   }
 }
@@ -185,14 +187,14 @@ extension WorkspaceWindowController: NSToolbarDelegate {
   }
 }
 
-// MARK: -NSToolbarItem.Identifier
+// MARK: - NSToolbarItem.Identifier
 extension NSToolbarItem.Identifier {
   static let toggleSidebar = NSToolbarItem.Identifier("toggleSidebar")
   static let statusBar = NSToolbarItem.Identifier("statusBar")
   static let reloadButton = NSToolbarItem.Identifier("reloadButton")
 }
 
-// MARK: -NewTopicFormDelegate
+// MARK: - NewTopicFormDelegate
 extension WorkspaceWindowController: NewTopicFormDelegate {
   func didCancelNewTopicForm(_ sender: NewTopicFormViewController) {
   }
@@ -202,7 +204,7 @@ extension WorkspaceWindowController: NewTopicFormDelegate {
   }
 }
 
-// MARK: -WorkspaceDetailDelegate
+// MARK: - WorkspaceDetailDelegate
 extension WorkspaceWindowController: WorkspaceDetailDelegate {
   func makeStatusCookie() -> Int {
     statusMu.wait()
@@ -223,7 +225,7 @@ extension WorkspaceWindowController: WorkspaceDetailDelegate {
   }
 }
 
-// MARK: -WorkspaceSidebarDelegate
+// MARK: - WorkspaceSidebarDelegate
 extension WorkspaceWindowController: WorkspaceSidebarDelegate {
   func sidebar(didSelectEntry entry: Any, withKind kind: SidebarEntryKind) {
     detailCtl.show(entry: entry, withKind: kind)

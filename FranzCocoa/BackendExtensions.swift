@@ -8,7 +8,7 @@ let ARCH="x86_64"
 let ARCH="arm64"
 #endif
 
-// MARK: -Backend
+// MARK: - Backend
 extension Backend {
   static let shared = Backend(
     withZo: Bundle.main.url(forResource: "resources/core-\(ARCH)", withExtension: "zo")!,
@@ -20,7 +20,7 @@ extension Backend {
   func deleteConnectionAndSystemResources(_ c: ConnectionDetails) -> Future<String, Void> {
     return deleteConnection(c).andThen { _ in
       if let id = c.passwordId {
-        let _ = Keychain.shared.delete(passwordWithId: id)
+        _ = Keychain.shared.delete(passwordWithId: id)
       }
       return FutureUtil.resolved(with: ())
         .mapError({ _ in preconditionFailure("unreachable") })
@@ -28,42 +28,34 @@ extension Backend {
   }
 }
 
-// MARK: -Broker
+// MARK: - Broker
 extension Broker {
   var address: String {
-    get {
-      "\(host):\(String(port))"
-    }
+    "\(host):\(String(port))"
   }
 }
 
-// MARK: -ConnectionDetails
+// MARK: - ConnectionDetails
 extension ConnectionDetails {
   var bootstrapAddress: String {
-    get {
-      "\(bootstrapHost):\(bootstrapPort)"
-    }
+    "\(bootstrapHost):\(bootstrapPort)"
   }
 }
 
-// MARK: -GroupPartitionOffset
+// MARK: - GroupPartitionOffset
 extension GroupPartitionOffset {
   var lag: Varint {
     highWatermark - offset
   }
 }
 
-// MARK: -ResourceConfig
+// MARK: - ResourceConfig
 extension ResourceConfig: Identifiable {
   public var id: String {
-    get {
-      name
-    }
+    name
   }
 
   public var nonnullValue: String {
-    get {
-      value ?? ""
-    }
+    value ?? ""
   }
 }

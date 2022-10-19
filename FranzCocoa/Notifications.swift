@@ -1,6 +1,6 @@
 import Foundation
 
-// MARK: -Notification
+// MARK: - Notification
 extension Notification.Name {
   static let NewConnectionRequested = Self("Franz.NewConnectionRequested")
 }

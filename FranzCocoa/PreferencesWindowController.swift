@@ -31,7 +31,7 @@ class PreferencesWindowController: NSWindowController {
   }
 }
 
-// MARK: -PreferencesTabViewDelegate
+// MARK: - PreferencesTabViewDelegate
 extension PreferencesWindowController: PreferencesTabViewDelegate {
   func preferencesTabView(didSelectItem item: NSTabViewItem) {
     guard let window else { return }
@@ -48,8 +48,8 @@ extension PreferencesWindowController: PreferencesTabViewDelegate {
   }
 }
 
-// MARK: -PreferencesTabViewController
-protocol PreferencesTabViewDelegate {
+// MARK: - PreferencesTabViewController
+protocol PreferencesTabViewDelegate: AnyObject {
   func preferencesTabView(didSelectItem item: NSTabViewItem)
 }
 
@@ -63,7 +63,7 @@ fileprivate class PreferencesTabViewController: NSTabViewController {
   }
 }
 
-// MARK: -GeneralView
+// MARK: - GeneralView
 fileprivate struct GeneralView: View {
   @State var reloadIvl = Double(Defaults.shared.reloadIntervalMs)/1000.0
 
@@ -87,7 +87,7 @@ fileprivate struct GeneralView: View {
   }
 }
 
-// MARK: -LicenseView
+// MARK: - LicenseView
 fileprivate struct LicenseView: View {
   var body: some View {
     Text("License")

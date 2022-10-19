@@ -24,7 +24,9 @@ class GroupOffsetsOutlineViewController: NSViewController {
     outlineView?.expandItem(nil, expandChildren: true)
   }
 
-  func configure(withId id: UVarint, andOffsets offsets: GroupOffsets, andReloadAction reloadAction: @escaping () -> Void) {
+  func configure(withId id: UVarint,
+                 andOffsets offsets: GroupOffsets,
+                 andReloadAction reloadAction: @escaping () -> Void) {
     self.id = id
     self.offsets = offsets
     self.reloadAction = reloadAction
@@ -84,17 +86,15 @@ class GroupOffsetsOutlineViewController: NSViewController {
     outlineView?.expandItem(nil, expandChildren: true)
 
     if let selection {
-      for (i, item) in itemsSeq.enumerated() {
-        if item == selection {
-          outlineView.selectRowIndexes([i], byExtendingSelection: false)
-          break
-        }
+      for (i, item) in itemsSeq.enumerated() where item == selection {
+        outlineView.selectRowIndexes([i], byExtendingSelection: false)
+        break
       }
     }
   }
 }
 
-// MARK: -GroupOffsetsItem
+// MARK: - GroupOffsetsItem
 fileprivate class GroupOffsetsItem: NSObject {
   var id: String
   var kind: GroupOffsetsItemKind
@@ -104,7 +104,7 @@ fileprivate class GroupOffsetsItem: NSObject {
   var memberId: String = ""
   var clientId: String = ""
   var clientHost: String = ""
-  var children: [GroupOffsetsItem]? = nil
+  var children: [GroupOffsetsItem]?
 
   init(id: String, kind: GroupOffsetsItemKind, label: String, children: [GroupOffsetsItem]? = nil) {
     self.id = id
@@ -124,7 +124,7 @@ fileprivate enum GroupOffsetsItemKind {
   case partition
 }
 
-// MARK: -GroupOffsetsTable
+// MARK: - GroupOffsetsTable
 struct GroupOffsetsTable: NSViewControllerRepresentable {
   typealias NSViewController = GroupOffsetsOutlineViewController
 
@@ -146,7 +146,7 @@ struct GroupOffsetsTable: NSViewControllerRepresentable {
   }
 }
 
-// MARK: -NSOutlineViewDataSource
+// MARK: - NSOutlineViewDataSource
 extension GroupOffsetsOutlineViewController: NSOutlineViewDataSource {
   func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: Any?) -> Int {
     guard let item = item as? GroupOffsetsItem else { return items.count }
@@ -164,7 +164,7 @@ extension GroupOffsetsOutlineViewController: NSOutlineViewDataSource {
   }
 }
 
-// MARK: -NSOutlineViewDelegate
+// MARK: - NSOutlineViewDelegate
 extension GroupOffsetsOutlineViewController: NSOutlineViewDelegate {
   func outlineView(_ outlineView: NSOutlineView, viewFor tableColumn: NSTableColumn?, item: Any) -> NSView? {
     guard let id = tableColumn?.identifier else { return nil }
@@ -203,7 +203,7 @@ extension GroupOffsetsOutlineViewController: NSOutlineViewDelegate {
   }
 }
 
-// MARK: -NSMenuDelegate
+// MARK: - NSMenuDelegate
 extension GroupOffsetsOutlineViewController: NSMenuDelegate {
   func menuNeedsUpdate(_ menu: NSMenu) {
     menu.removeAllItems()
@@ -211,13 +211,28 @@ extension GroupOffsetsOutlineViewController: NSMenuDelegate {
     let item = itemsSeq[row]
     switch item.kind {
     case .topic:
-      menu.addItem(.init(title: "Copy Name", action: #selector(didPressCopyTopicNameItem(_:)), keyEquivalent: "c"))
+      menu.addItem(.init(
+        title: "Copy Name",
+        action: #selector(didPressCopyTopicNameItem(_:)),
+        keyEquivalent: "c"))
       menu.addItem(.separator())
-      menu.addItem(.init(title: "Reset Offsets...", action: #selector(didPressResetTopicOffsetsItem(_:)), keyEquivalent: .backspaceKeyEquivalent))
+      menu.addItem(.init(
+        title: "Reset Offsets...",
+        action: #selector(didPressResetTopicOffsetsItem(_:)),
+        keyEquivalent: .backspaceKeyEquivalent))
     case .partition:
-      menu.addItem(.init(title: "Copy Offset", action: #selector(didPressCopyPartitionOffsetItem(_:)), keyEquivalent: "c"))
-      menu.addItem(.init(title: "Copy Member ID", action: #selector(didPressCopyPartitionMemberIDItem(_:)), keyEquivalent: "C"))
-      menu.addItem(.init(title: "Copy Client ID", action: #selector(didPressCopyPartitionClientIDItem(_:)), keyEquivalent: ""))
+      menu.addItem(.init(
+        title: "Copy Offset",
+        action: #selector(didPressCopyPartitionOffsetItem(_:)),
+        keyEquivalent: "c"))
+      menu.addItem(.init(
+        title: "Copy Member ID",
+        action: #selector(didPressCopyPartitionMemberIDItem(_:)),
+        keyEquivalent: "C"))
+      menu.addItem(.init(
+        title: "Copy Client ID",
+        action: #selector(didPressCopyPartitionClientIDItem(_:)),
+        keyEquivalent: ""))
     }
   }
 
@@ -262,7 +277,7 @@ extension GroupOffsetsOutlineViewController: NSMenuDelegate {
   }
 }
 
-// MARK: ResetOffsetsView
+// MARK: - ResetOffsetsView
 fileprivate struct ResetOffsetsView: View {
   @State var target = Symbol("earliest")
 

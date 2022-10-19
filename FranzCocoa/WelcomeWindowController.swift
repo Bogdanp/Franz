@@ -30,7 +30,7 @@ class WelcomeWindowController: NSWindowController {
   }
 }
 
-// MARK: -NSWindowDelegate
+// MARK: - NSWindowDelegate
 extension WelcomeWindowController: NSWindowDelegate {
   func windowWillClose(_ notification: Notification) {
     if let observer = newConnectionObserver {
@@ -40,7 +40,7 @@ extension WelcomeWindowController: NSWindowDelegate {
   }
 }
 
-// MARK: -WelcomeWindow
+// MARK: - WelcomeWindow
 class WelcomeWindow: NSWindow {
   override func keyDown(with event: NSEvent) {
     switch event.keyCode {
@@ -52,7 +52,7 @@ class WelcomeWindow: NSWindow {
   }
 }
 
-// MARK: -NSSplitViewController
+// MARK: - NSSplitViewController
 fileprivate class SplitViewController: NSSplitViewController {
   override func loadView() {
     splitView = SplitView()
@@ -60,7 +60,10 @@ fileprivate class SplitViewController: NSSplitViewController {
     super.loadView()
   }
 
-  override func splitView(_ splitView: NSSplitView, effectiveRect proposedEffectiveRect: NSRect, forDrawnRect drawnRect: NSRect, ofDividerAt dividerIndex: Int) -> NSRect {
+  override func splitView(_ splitView: NSSplitView,
+                          effectiveRect proposedEffectiveRect: NSRect,
+                          forDrawnRect drawnRect: NSRect,
+                          ofDividerAt dividerIndex: Int) -> NSRect {
     return .zero
   }
 }

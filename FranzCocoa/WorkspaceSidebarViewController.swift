@@ -85,11 +85,9 @@ class WorkspaceSidebarViewController: NSViewController {
 
     var keepSelection = false
     var selectedRow = tableView.selectedRow
-    for e in self.entries {
-      if e == selectedEntry {
-        keepSelection = true
-        break
-      }
+    for e in self.entries where e == selectedEntry {
+      keepSelection = true
+      break
     }
     if !keepSelection {
       selectedRow = -1
@@ -121,8 +119,8 @@ class WorkspaceSidebarViewController: NSViewController {
   }
 }
 
-// MARK: -WorkspaceSidebarDelegate
-protocol WorkspaceSidebarDelegate {
+// MARK: - WorkspaceSidebarDelegate
+protocol WorkspaceSidebarDelegate: AnyObject {
   func sidebar(didSelectEntry entry: Any, withKind kind: SidebarEntryKind)
   func sidebar(didDeselectEntry entry: Any?)
   func sidebar(didDeleteTopic topic: Topic)
@@ -130,7 +128,7 @@ protocol WorkspaceSidebarDelegate {
   func sidebarRequestsReload(withNewTopic name: String)
 }
 
-// MARK: -NewTopicFormDelegate
+// MARK: - NewTopicFormDelegate
 extension WorkspaceSidebarViewController: NewTopicFormDelegate {
   func didCancelNewTopicForm(_ sender: NewTopicFormViewController) {
   }
@@ -140,7 +138,7 @@ extension WorkspaceSidebarViewController: NewTopicFormDelegate {
   }
 }
 
-// MARK: -NSMenuDelegate
+// MARK: - NSMenuDelegate
 extension WorkspaceSidebarViewController: NSMenuDelegate {
   func menuNeedsUpdate(_ menu: NSMenu) {
     menu.removeAllItems()
@@ -170,7 +168,6 @@ extension WorkspaceSidebarViewController: NSMenuDelegate {
     guard let topic = entries[tableView.clickedRow].data as? Topic else {
       return
     }
-    let selected = tableView.clickedRow == tableView.selectedRow
     let alert = NSAlert()
     alert.alertStyle = .warning
     alert.messageText = "Delete topic \(topic.name)?"
@@ -190,7 +187,6 @@ extension WorkspaceSidebarViewController: NSMenuDelegate {
     guard let group = entries[tableView.clickedRow].data as? Group else {
       return
     }
-    let selected = tableView.clickedRow == tableView.selectedRow
     let alert = NSAlert()
     alert.alertStyle = .warning
     alert.messageText = "Delete consumer group \(group.id)?"
@@ -206,7 +202,7 @@ extension WorkspaceSidebarViewController: NSMenuDelegate {
   }
 }
 
-// MARK: -NSTableViewDelegate
+// MARK: - NSTableViewDelegate
 extension WorkspaceSidebarViewController: NSTableViewDelegate {
   func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
     let entry = entries[row]
@@ -260,7 +256,7 @@ extension WorkspaceSidebarViewController: NSTableViewDelegate {
   }
 }
 
-// MARK: -NSTableViewDataSource
+// MARK: - NSTableViewDataSource
 extension WorkspaceSidebarViewController: NSTableViewDataSource {
   func numberOfRows(in tableView: NSTableView) -> Int {
     return entries.count
@@ -271,13 +267,13 @@ extension WorkspaceSidebarViewController: NSTableViewDataSource {
   }
 }
 
-// MARK: -NSUserInterfaceItemIdentifier
+// MARK: - NSUserInterfaceItemIdentifier
 extension NSUserInterfaceItemIdentifier {
   static let entry = NSUserInterfaceItemIdentifier("Entry")
   static let group = NSUserInterfaceItemIdentifier("Group")
 }
 
-// MARK: -SidebarEntry
+// MARK: - SidebarEntry
 enum SidebarEntryKind {
   case group
   case broker

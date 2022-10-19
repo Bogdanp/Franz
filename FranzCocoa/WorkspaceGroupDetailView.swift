@@ -10,16 +10,14 @@ struct WorkspaceGroupDetailView: View {
   @State var offsets: GroupOffsets?
 
   var totalLag: String? {
-    get {
-      guard let offsets else { return nil }
-      var total = Varint(0)
-      for t in offsets.topics {
-        for p in t.partitions {
-          total += p.lag
-        }
+    guard let offsets else { return nil }
+    var total = Varint(0)
+    for t in offsets.topics {
+      for p in t.partitions {
+        total += p.lag
       }
-      return NumberFormatter.localizedString(from: NSNumber(value: total), number: .decimal)
     }
+    return NumberFormatter.localizedString(from: NSNumber(value: total), number: .decimal)
   }
 
   let timer = Timer.publish(

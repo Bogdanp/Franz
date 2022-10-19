@@ -40,7 +40,7 @@ class Keychain {
       switch alert.runModal() {
       case .alertFirstButtonReturn:
         let password = passwordField.stringValue
-        let _ = upsert(password: password, withId: id)
+        _ = upsert(password: password, withId: id)
         return .success(password)
       default:
         return .aborted
@@ -69,7 +69,7 @@ class Keychain {
       kSecClass: kSecClassGenericPassword,
       kSecAttrLabel: "Franz",
       kSecAttrAccount: id,
-    ] as [String : Any]
+    ] as [String: Any]
     let res = SecItemDelete(query as CFDictionary)
     switch res {
     case errSecSuccess:
@@ -86,7 +86,7 @@ class Keychain {
       kSecAttrAccount: id,
       kSecMatchLimit: kSecMatchLimitOne,
       kSecReturnData: true,
-    ] as [String : Any]
+    ] as [String: Any]
     var ref: CFTypeRef?
     let res = SecItemCopyMatching(query as CFDictionary, &ref)
     switch res {
@@ -112,7 +112,7 @@ class Keychain {
       kSecAttrLabel: "Franz",
       kSecAttrAccount: id,
       kSecValueData: password,
-    ] as [String : Any]
+    ] as [String: Any]
     let res = SecItemAdd(attrs as CFDictionary, nil)
     switch res {
     case errSecSuccess:
@@ -126,10 +126,10 @@ class Keychain {
     let query = [
       kSecClass: kSecClassGenericPassword,
       kSecAttrAccount: id,
-    ] as [String : Any]
+    ] as [String: Any]
     let attrs = [
       kSecValueData: password,
-    ] as [String : Any]
+    ] as [String: Any]
     let res = SecItemUpdate(query as CFDictionary, attrs as CFDictionary)
     switch res {
     case errSecSuccess:

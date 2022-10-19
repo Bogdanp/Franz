@@ -23,17 +23,26 @@ class WorkspaceDetailViewController: NSViewController {
   func show(entry: Any, withKind kind: SidebarEntryKind) {
     switch kind {
     case .broker:
-      let hostingCtl = NSHostingController(rootView: WorkspaceBrokerDetailView(id: id, broker: entry as! Broker))
+      guard let broker = entry as? Broker else { return }
+      let hostingCtl = NSHostingController(
+        rootView: WorkspaceBrokerDetailView(
+          id: id,
+          broker: broker))
       display(controller: hostingCtl)
     case .topic:
-      let hostingCtl = NSHostingController(rootView: WorkspaceTopicDetailView(id: id, topic: entry as! Topic))
+      guard let topic = entry as? Topic else { return }
+      let hostingCtl = NSHostingController(
+        rootView: WorkspaceTopicDetailView(
+          id: id,
+          topic: topic))
       display(controller: hostingCtl)
     case .consumerGroup:
-      let hostingCtl = NSHostingController(rootView: WorkspaceGroupDetailView(
-        id: id,
-        group: entry as! Group,
-        delegate: delegate
-      ))
+      guard let group = entry as? Group else { return }
+      let hostingCtl = NSHostingController(
+        rootView: WorkspaceGroupDetailView(
+          id: id,
+          group: group,
+          delegate: delegate))
       display(controller: hostingCtl)
     default:
       clear()
@@ -63,13 +72,13 @@ class WorkspaceDetailViewController: NSViewController {
   }
 }
 
-// MARK: -WorkspaceDetailDelegate
-protocol WorkspaceDetailDelegate {
+// MARK: - WorkspaceDetailDelegate
+protocol WorkspaceDetailDelegate: AnyObject {
   func makeStatusCookie() -> Int
   func request(status: String, withCookie cookie: Int)
 }
 
-// MARK: -NSViewController
+// MARK: - NSViewController
 extension NSViewController {
   func fullSizeConstraints(forSubview subview: NSView) -> [NSLayoutConstraint] {
     let leading = NSLayoutConstraint(

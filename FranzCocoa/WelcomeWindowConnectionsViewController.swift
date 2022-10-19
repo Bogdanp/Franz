@@ -46,7 +46,7 @@ class WelcomeWindowConnectionsViewController: NSViewController {
   @objc func didRequestSelectConnection(_ sender: NSTableView) {
     assert(Thread.isMainThread)
     let conn = connections[sender.selectedRow]
-    let _ = Backend.shared.touchConnection(conn)
+    _ = Backend.shared.touchConnection(conn)
     guard let passwordId = conn.passwordId else {
       WindowManager.shared.launchWorkspace(withConn: conn, andPassword: nil)
       WindowManager.shared.closeWelcomeWindow()
@@ -71,7 +71,7 @@ class WelcomeWindowConnectionsViewController: NSViewController {
     let conn = connections[connectionsTable.clickedRow]
     let formController = ConnectionDetailsFormViewController()
     formController.configure(actionLabel: "Save", details: conn, { changedConn in
-      let _ = try! Backend.shared.updateConnection(changedConn).wait()
+      _ = try! Backend.shared.updateConnection(changedConn).wait()
       self.reload()
     })
     presentAsSheet(formController)
@@ -96,7 +96,7 @@ class WelcomeWindowConnectionsViewController: NSViewController {
   }
 }
 
-// MARK: -ConnectionsTableView
+// MARK: - ConnectionsTableView
 class ConnectionsTableView: NSTableView {
   var deleteAction: Selector?
 
@@ -104,11 +104,11 @@ class ConnectionsTableView: NSTableView {
     if event.characters?.count == 1 {
       switch event.keyCode {
       case 36: // RET
-        let _ = target?.perform(doubleAction, with: self)
+        _ = target?.perform(doubleAction, with: self)
         return
       case 51: // BKSPC
         if event.modifierFlags.contains(.command) {
-          let _ = target?.perform(deleteAction, with: self)
+          _ = target?.perform(deleteAction, with: self)
           return
         }
       default:
@@ -119,7 +119,7 @@ class ConnectionsTableView: NSTableView {
   }
 }
 
-// MARK: -NSTableViewDataSource
+// MARK: - NSTableViewDataSource
 extension WelcomeWindowConnectionsViewController: NSTableViewDataSource {
   func numberOfRows(in tableView: NSTableView) -> Int {
     return connections.count
@@ -130,7 +130,7 @@ extension WelcomeWindowConnectionsViewController: NSTableViewDataSource {
   }
 }
 
-// MARK: -NSTableViewDelegate
+// MARK: - NSTableViewDelegate
 extension WelcomeWindowConnectionsViewController: NSTableViewDelegate {
   func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
     let view = tableView.makeView(withIdentifier: .connectionColumn, owner: self)
@@ -147,7 +147,7 @@ extension WelcomeWindowConnectionsViewController: NSTableViewDelegate {
   }
 }
 
-// MARK: -NSUserInterfaceItemIdentifier
+// MARK: - NSUserInterfaceItemIdentifier
 fileprivate extension NSUserInterfaceItemIdentifier {
   static let connectionColumn = NSUserInterfaceItemIdentifier("Connection")
 }

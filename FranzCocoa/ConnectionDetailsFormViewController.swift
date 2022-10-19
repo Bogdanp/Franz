@@ -52,7 +52,9 @@ class ConnectionDetailsFormViewController: NSViewController {
     view.window?.styleMask.update(with: .fullSizeContentView)
   }
 
-  func configure(actionLabel label: String, details: ConnectionDetails? = nil, _ proc: @escaping (ConnectionDetails) -> Void) {
+  func configure(actionLabel label: String,
+                 details: ConnectionDetails? = nil,
+                 _ proc: @escaping (ConnectionDetails) -> Void) {
     self.actionLabel = label
     self.actionProc = proc
     self.details = details
@@ -64,6 +66,15 @@ class ConnectionDetailsFormViewController: NSViewController {
 
   @IBAction func didPushActionButton(_ sender: Any) {
     self.dismiss(self)
+    var passwordId: String?
+    if !passwordField.stringValue.isEmpty {
+      do {
+        passwordId = try Backend.shared.generatePasswordId().wait()
+      } catch {
+        logger.error("failed to generate password id: \(error.localizedDescription)")
+        return
+      }
+    }
     actionProc(ConnectionDetails(
       id: details?.id,
       name: nameField.stringValue == "" ? "Unnamed Connection" : nameField.stringValue,
@@ -71,7 +82,7 @@ class ConnectionDetailsFormViewController: NSViewController {
       bootstrapPort: bootstrapPortField.stringValue == "" ? 9092 : 9092,
       username: usernameField.stringValue == "" ? nil : usernameField.stringValue,
       password: passwordField.stringValue == "" ? nil : passwordField.stringValue,
-      passwordId: passwordField.stringValue == "" ? nil : try! Backend.shared.generatePasswordId().wait(),
+      passwordId: passwordField.stringValue == "" ? nil : passwordId,
       useSsl: enableSSLCheckbox.state == .on
     ))
   }
