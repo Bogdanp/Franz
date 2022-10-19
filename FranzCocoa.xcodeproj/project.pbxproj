@@ -50,6 +50,7 @@
 		43D03DD828FB03940049D44D /* Identifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D03DD728FB03940049D44D /* Identifiers.swift */; };
 		43D03DDA28FB05000049D44D /* MainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D03DD928FB05000049D44D /* MainMenu.swift */; };
 		43D3AEA628FFD8D100D52E92 /* Pasteboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D3AEA528FFD8D100D52E92 /* Pasteboard.swift */; };
+		43D3AEA828FFD96500D52E92 /* Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D3AEA728FFD96500D52E92 /* Defaults.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -96,6 +97,7 @@
 		43D03DD728FB03940049D44D /* Identifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Identifiers.swift; sourceTree = "<group>"; };
 		43D03DD928FB05000049D44D /* MainMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenu.swift; sourceTree = "<group>"; };
 		43D3AEA528FFD8D100D52E92 /* Pasteboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pasteboard.swift; sourceTree = "<group>"; };
+		43D3AEA728FFD96500D52E92 /* Defaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Defaults.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -141,6 +143,7 @@
 				43CD624728CE3B5D00095144 /* ConnectionDetailsFormViewController.xib */,
 				43804AB628D1A014002880FE /* ConnectionTableCellView.swift */,
 				43804AB828D1A026002880FE /* ConnectionTableCellView.xib */,
+				43D3AEA728FFD96500D52E92 /* Defaults.swift */,
 				43CD621F28CE24B100095144 /* FranzCocoa.entitlements */,
 				4395503628FD45B000CC0050 /* GroupOffsetsOutlineViewController.swift */,
 				4395503728FD45B000CC0050 /* GroupOffsetsOutlineViewController.xib */,
@@ -304,6 +307,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				43196F8C28F1DB94003C793B /* WorkspaceGroupDetailView.swift in Sources */,
+				43D3AEA828FFD96500D52E92 /* Defaults.swift in Sources */,
 				43CD622F28CE258100095144 /* Backend.swift in Sources */,
 				431C697F28F2C1A70082986A /* StringExtensions.swift in Sources */,
 				436E720228D759F400ECBF49 /* WorkspaceSidebarViewController.swift in Sources */,

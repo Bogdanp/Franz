@@ -22,8 +22,11 @@ struct WorkspaceGroupDetailView: View {
     }
   }
 
-  // TODO: Make this a setting.
-  let timer = Timer.publish(every: 15, on: .main, in: .common).autoconnect()
+  let timer = Timer.publish(
+    every: Double(Defaults.shared.groupOffsetReloadIntervalMs)/1000.0,
+    on: .main,
+    in: .common
+  ).autoconnect()
 
   var body: some View {
     VStack(alignment: .leading) {
