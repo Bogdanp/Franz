@@ -53,24 +53,28 @@ fileprivate class PreferencesTabViewController: NSTabViewController {
 
 // MARK: -GeneralView
 fileprivate struct GeneralView: View {
-  @State var offsetRefreshIvl = Defaults.shared.reloadIntervalMs
-  @State var offsetRefreshIvlFormatter: NumberFormatter = {
-    let fmt = NumberFormatter()
-    fmt.allowsFloats = false
-    fmt.minimum = 1000
-    return fmt
-  }()
+  @State var reloadIvl = Double(Defaults.shared.reloadIntervalMs)/1000.0
 
   var body: some View {
     Form {
-      TextField(
-        value: $offsetRefreshIvl,
-        formatter: offsetRefreshIvlFormatter) {
-          Text("Reload Interval (ms):")
-        }.onSubmit {
-          Defaults.shared.reloadIntervalMs = offsetRefreshIvl
-        }
+      Slider(
+        value: $reloadIvl,
+        in: 1...10,
+        step: 1
+      ) {
+        Text("Reload Interval:")
+      } minimumValueLabel: {
+        Text("")
+          .font(.caption2)
+      } maximumValueLabel: {
+        Text("10 seconds")
+          .font(.caption2)
+      } onEditingChanged: { _ in
+        Defaults.shared.reloadIntervalMs = Int(reloadIvl)*1000
+      }
+      Spacer()
     }
+    .frame(width: 400)
     .padding()
   }
 }
