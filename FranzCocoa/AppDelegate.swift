@@ -39,4 +39,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     WindowManager.shared.showWelcomeWindow()
     NotificationCenter.default.post(name: .NewConnectionRequested, object: nil)
   }
+
+  @IBAction func didPushPreferencesButton(_ sender: Any) {
+    WindowManager.shared.showPreferencesWindow()
+  }
 }

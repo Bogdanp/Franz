@@ -23,7 +23,7 @@ struct WorkspaceGroupDetailView: View {
   }
 
   let timer = Timer.publish(
-    every: Double(Defaults.shared.groupOffsetReloadIntervalMs)/1000.0,
+    every: Double(Defaults.shared.reloadIntervalMs)/1000.0,
     on: .main,
     in: .common
   ).autoconnect()

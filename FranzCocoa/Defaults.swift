@@ -4,7 +4,7 @@ import Foundation
 class Defaults {
   static var shared = Defaults()
 
-  @IntDefault(key: "groupOffsetReloadIntervalMs") var groupOffsetReloadIntervalMs: Int = 15000
+  @IntDefault(key: "reloadIntervalMs") var reloadIntervalMs: Int = 15000
 
   @propertyWrapper struct IntDefault {
     var key: String

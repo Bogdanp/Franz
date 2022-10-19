@@ -51,6 +51,8 @@
 		43D03DDA28FB05000049D44D /* MainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D03DD928FB05000049D44D /* MainMenu.swift */; };
 		43D3AEA628FFD8D100D52E92 /* Pasteboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D3AEA528FFD8D100D52E92 /* Pasteboard.swift */; };
 		43D3AEA828FFD96500D52E92 /* Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D3AEA728FFD96500D52E92 /* Defaults.swift */; };
+		43D3AEAB28FFDF3500D52E92 /* PreferencesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D3AEA928FFDF3500D52E92 /* PreferencesWindowController.swift */; };
+		43D3AEAC28FFDF3500D52E92 /* PreferencesWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D3AEAA28FFDF3500D52E92 /* PreferencesWindowController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -98,6 +100,8 @@
 		43D03DD928FB05000049D44D /* MainMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenu.swift; sourceTree = "<group>"; };
 		43D3AEA528FFD8D100D52E92 /* Pasteboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pasteboard.swift; sourceTree = "<group>"; };
 		43D3AEA728FFD96500D52E92 /* Defaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Defaults.swift; sourceTree = "<group>"; };
+		43D3AEA928FFDF3500D52E92 /* PreferencesWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesWindowController.swift; sourceTree = "<group>"; };
+		43D3AEAA28FFDF3500D52E92 /* PreferencesWindowController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PreferencesWindowController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -155,6 +159,8 @@
 				431C698128F2E0C60082986A /* NewTopicFormViewController.xib */,
 				43D03DD528FAFE3B0049D44D /* Notifications.swift */,
 				43D3AEA528FFD8D100D52E92 /* Pasteboard.swift */,
+				43D3AEA928FFDF3500D52E92 /* PreferencesWindowController.swift */,
+				43D3AEAA28FFDF3500D52E92 /* PreferencesWindowController.xib */,
 				43CD623228CE25F300095144 /* resources */,
 				436E720C28D760BF00ECBF49 /* SidebarEntryCellView.swift */,
 				436E720E28D760D400ECBF49 /* SidebarEntryCellView.xib */,
@@ -274,6 +280,7 @@
 				43CD623328CE25F300095144 /* resources in Resources */,
 				43CD621E28CE24B100095144 /* MainMenu.xib in Resources */,
 				43804AB928D1A026002880FE /* ConnectionTableCellView.xib in Resources */,
+				43D3AEAC28FFDF3500D52E92 /* PreferencesWindowController.xib in Resources */,
 				436E720328D759F400ECBF49 /* WorkspaceSidebarViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -321,6 +328,7 @@
 				43D03DD828FB03940049D44D /* Identifiers.swift in Sources */,
 				43CD623B28CE27DB00095144 /* WelcomeWindowController.swift in Sources */,
 				43D03DDA28FB05000049D44D /* MainMenu.swift in Sources */,
+				43D3AEAB28FFDF3500D52E92 /* PreferencesWindowController.swift in Sources */,
 				43CD623728CE27B200095144 /* WindowManager.swift in Sources */,
 				43CD621928CE24B000095144 /* AppDelegate.swift in Sources */,
 				43804AB428D19ACD002880FE /* WelcomeWindowConnectionsViewController.swift in Sources */,

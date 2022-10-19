@@ -5,6 +5,7 @@ class WindowManager {
   static var shared = WindowManager()
 
   private var welcomeWindowController: WelcomeWindowController?
+  private var preferencesWindowController: PreferencesWindowController?
   private var workspaces = [UInt64: WorkspaceWindowController]()
 
   func launchWorkspace(withConn conn: ConnectionDetails, andPassword password: String?) {
@@ -53,5 +54,14 @@ class WindowManager {
     assert(Thread.isMainThread)
     welcomeWindowController?.close()
     welcomeWindowController = nil
+  }
+
+  func showPreferencesWindow() {
+    assert(Thread.isMainThread)
+    if preferencesWindowController == nil {
+      preferencesWindowController = PreferencesWindowController()
+    }
+    preferencesWindowController?.window?.center()
+    preferencesWindowController?.showWindow(self)
   }
 }
