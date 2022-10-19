@@ -223,8 +223,7 @@ extension GroupOffsetsOutlineViewController: NSMenuDelegate {
 
   @objc func didPressCopyTopicNameItem(_ sender: Any) {
     guard let row = outlineView?.clickedRow, row >= 0 else { return }
-    NSPasteboard.general.clearContents()
-    NSPasteboard.general.setString(itemsSeq[row].label, forType: .string)
+    Pasteboard.put(itemsSeq[row].label)
   }
 
   @objc func didPressResetTopicOffsetsItem(_ sender: Any) {
@@ -249,20 +248,17 @@ extension GroupOffsetsOutlineViewController: NSMenuDelegate {
 
   @objc func didPressCopyPartitionOffsetItem(_ sender: Any) {
     guard let row = outlineView?.clickedRow, row >= 0 else { return }
-    NSPasteboard.general.clearContents()
-    NSPasteboard.general.setString(itemsSeq[row].offset, forType: .string)
+    Pasteboard.put(itemsSeq[row].offset)
   }
 
   @objc func didPressCopyPartitionMemberIDItem(_ sender: Any) {
     guard let row = outlineView?.clickedRow, row >= 0 else { return }
-    NSPasteboard.general.clearContents()
-    NSPasteboard.general.setString(itemsSeq[row].memberId, forType: .string)
+    Pasteboard.put(itemsSeq[row].memberId)
   }
 
   @objc func didPressCopyPartitionClientIDItem(_ sender: Any) {
     guard let row = outlineView?.clickedRow, row >= 0 else { return }
-    NSPasteboard.general.clearContents()
-    NSPasteboard.general.setString(itemsSeq[row].clientId, forType: .string)
+    Pasteboard.put(itemsSeq[row].clientId)
   }
 }
 

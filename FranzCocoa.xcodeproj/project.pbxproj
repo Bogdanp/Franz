@@ -49,6 +49,7 @@
 		43D03DD628FAFE3B0049D44D /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D03DD528FAFE3B0049D44D /* Notifications.swift */; };
 		43D03DD828FB03940049D44D /* Identifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D03DD728FB03940049D44D /* Identifiers.swift */; };
 		43D03DDA28FB05000049D44D /* MainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D03DD928FB05000049D44D /* MainMenu.swift */; };
+		43D3AEA628FFD8D100D52E92 /* Pasteboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D3AEA528FFD8D100D52E92 /* Pasteboard.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -94,6 +95,7 @@
 		43D03DD528FAFE3B0049D44D /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
 		43D03DD728FB03940049D44D /* Identifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Identifiers.swift; sourceTree = "<group>"; };
 		43D03DD928FB05000049D44D /* MainMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenu.swift; sourceTree = "<group>"; };
+		43D3AEA528FFD8D100D52E92 /* Pasteboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pasteboard.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -149,6 +151,7 @@
 				431C698028F2E0C60082986A /* NewTopicFormViewController.swift */,
 				431C698128F2E0C60082986A /* NewTopicFormViewController.xib */,
 				43D03DD528FAFE3B0049D44D /* Notifications.swift */,
+				43D3AEA528FFD8D100D52E92 /* Pasteboard.swift */,
 				43CD623228CE25F300095144 /* resources */,
 				436E720C28D760BF00ECBF49 /* SidebarEntryCellView.swift */,
 				436E720E28D760D400ECBF49 /* SidebarEntryCellView.xib */,
@@ -322,6 +325,7 @@
 				43CD623E28CE282400095144 /* WelcomeWindowContentViewController.swift in Sources */,
 				4314EDF828D85E0E00431770 /* SidebarGroupCellView.swift in Sources */,
 				436E71FA28D7511400ECBF49 /* WorkspaceWindowController.swift in Sources */,
+				43D3AEA628FFD8D100D52E92 /* Pasteboard.swift in Sources */,
 				437887F628E9FE5900D0B263 /* WorkspaceBrokerDetailView.swift in Sources */,
 				436E720D28D760BF00ECBF49 /* SidebarEntryCellView.swift in Sources */,
 			);
