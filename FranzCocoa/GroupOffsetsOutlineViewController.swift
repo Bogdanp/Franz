@@ -2,40 +2,12 @@ import Cocoa
 import NoiseSerde
 import SwiftUI
 
-enum GroupOffsetsItemKind {
-  case topic
-  case partition
-}
-
-class GroupOffsetsItem: NSObject {
-  var id: String
-  var kind: GroupOffsetsItemKind
-  var label: String
-  var offset: String = ""
-  var lag: String = ""
-  var memberId: String = ""
-  var clientId: String = ""
-  var clientHost: String = ""
-  var children: [GroupOffsetsItem]? = nil
-
-  init(id: String, kind: GroupOffsetsItemKind, label: String, children: [GroupOffsetsItem]? = nil) {
-    self.id = id
-    self.kind = kind
-    self.label = label
-    self.children = children
-  }
-
-  override func isEqual(to object: Any?) -> Bool {
-    guard let other = object as? GroupOffsetsItem else { return false }
-    return id == other.id
-  }
-}
-
 class GroupOffsetsOutlineViewController: NSViewController {
   private var id: UVarint!
   private var offsets: GroupOffsets!
   private var items = [GroupOffsetsItem]()
   private var itemsSeq = [GroupOffsetsItem]()
+  private var reloadAction: (() -> Void)!
 
   private var contextMenu = NSMenu()
 
@@ -52,9 +24,10 @@ class GroupOffsetsOutlineViewController: NSViewController {
     outlineView?.expandItem(nil, expandChildren: true)
   }
 
-  func configure(withId id: UVarint, andOffsets offsets: GroupOffsets) {
+  func configure(withId id: UVarint, andOffsets offsets: GroupOffsets, andReloadAction reloadAction: @escaping () -> Void) {
     self.id = id
     self.offsets = offsets
+    self.reloadAction = reloadAction
 
     var itemsById = [String: GroupOffsetsItem]()
     for item in itemsSeq {
@@ -118,6 +91,76 @@ class GroupOffsetsOutlineViewController: NSViewController {
         }
       }
     }
+  }
+}
+
+// MARK: -GroupOffsetsItem
+fileprivate class GroupOffsetsItem: NSObject {
+  var id: String
+  var kind: GroupOffsetsItemKind
+  var label: String
+  var offset: String = ""
+  var lag: String = ""
+  var memberId: String = ""
+  var clientId: String = ""
+  var clientHost: String = ""
+  var children: [GroupOffsetsItem]? = nil
+
+  init(id: String, kind: GroupOffsetsItemKind, label: String, children: [GroupOffsetsItem]? = nil) {
+    self.id = id
+    self.kind = kind
+    self.label = label
+    self.children = children
+  }
+
+  override func isEqual(to object: Any?) -> Bool {
+    guard let other = object as? GroupOffsetsItem else { return false }
+    return id == other.id
+  }
+}
+
+fileprivate enum GroupOffsetsItemKind {
+  case topic
+  case partition
+}
+
+// MARK: -GroupOffsetsTable
+struct GroupOffsetsTable: NSViewControllerRepresentable {
+  typealias NSViewController = GroupOffsetsOutlineViewController
+
+  var id: UVarint
+  @Binding var offsets: GroupOffsets?
+  var reloadAction: () -> Void = {}
+
+  func makeNSViewController(context: Context) -> some NSViewController {
+    let ctl = GroupOffsetsOutlineViewController()
+    if let offsets {
+      ctl.configure(withId: id, andOffsets: offsets, andReloadAction: reloadAction)
+    }
+    return ctl
+  }
+
+  func updateNSViewController(_ nsViewController: NSViewControllerType, context: Context) {
+    guard let offsets else { return }
+    nsViewController.configure(withId: id, andOffsets: offsets, andReloadAction: reloadAction)
+  }
+}
+
+// MARK: -NSOutlineViewDataSource
+extension GroupOffsetsOutlineViewController: NSOutlineViewDataSource {
+  func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: Any?) -> Int {
+    guard let item = item as? GroupOffsetsItem else { return items.count }
+    return item.children?.count ?? 0
+  }
+
+  func outlineView(_ outlineView: NSOutlineView, child index: Int, ofItem item: Any?) -> Any {
+    guard let item = item as? GroupOffsetsItem else { return items[index] }
+    return item.children![index]
+  }
+
+  func outlineView(_ outlineView: NSOutlineView, isItemExpandable item: Any) -> Bool {
+    guard let item = item as? GroupOffsetsItem else { return false }
+    return item.children != nil
   }
 }
 
@@ -198,7 +241,7 @@ extension GroupOffsetsOutlineViewController: NSMenuDelegate {
         andTarget: target,
         inWorkspace: id
       ).onComplete { _ in
-
+        self.reloadAction()
       }
     })
     presentAsSheet(ctl)
@@ -220,45 +263,6 @@ extension GroupOffsetsOutlineViewController: NSMenuDelegate {
     guard let row = outlineView?.clickedRow, row >= 0 else { return }
     NSPasteboard.general.clearContents()
     NSPasteboard.general.setString(itemsSeq[row].clientId, forType: .string)
-  }
-}
-
-// MARK: -NSOutlineViewDataSource
-extension GroupOffsetsOutlineViewController: NSOutlineViewDataSource {
-  func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: Any?) -> Int {
-    guard let item = item as? GroupOffsetsItem else { return items.count }
-    return item.children?.count ?? 0
-  }
-
-  func outlineView(_ outlineView: NSOutlineView, child index: Int, ofItem item: Any?) -> Any {
-    guard let item = item as? GroupOffsetsItem else { return items[index] }
-    return item.children![index]
-  }
-
-  func outlineView(_ outlineView: NSOutlineView, isItemExpandable item: Any) -> Bool {
-    guard let item = item as? GroupOffsetsItem else { return false }
-    return item.children != nil
-  }
-}
-
-// MARK: -GroupOffsetsTable
-struct GroupOffsetsTable: NSViewControllerRepresentable {
-  typealias NSViewController = GroupOffsetsOutlineViewController
-
-  var id: UVarint
-  @Binding var offsets: GroupOffsets?
-
-  func makeNSViewController(context: Context) -> some NSViewController {
-    let ctl = GroupOffsetsOutlineViewController()
-    if let offsets {
-      ctl.configure(withId: id, andOffsets: offsets)
-    }
-    return ctl
-  }
-
-  func updateNSViewController(_ nsViewController: NSViewControllerType, context: Context) {
-    guard let offsets else { return }
-    nsViewController.configure(withId: id, andOffsets: offsets)
   }
 }
 

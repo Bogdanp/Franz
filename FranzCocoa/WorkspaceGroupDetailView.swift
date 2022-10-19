@@ -55,7 +55,9 @@ struct WorkspaceGroupDetailView: View {
 
           Spacer().frame(height: 15)
           Text("Topics").font(.headline)
-          GroupOffsetsTable(id: id, offsets: $offsets)
+          GroupOffsetsTable(id: id, offsets: $offsets) {
+            fetchOffsets()
+          }
           Spacer()
         }
         Spacer()
