@@ -26,13 +26,25 @@ class PreferencesWindowController: NSWindowController {
     tabController.addTabViewItem(licenseItem)
 
     window?.contentViewController = tabController
+    window?.setContentSize(.init(width: 600, height: 150))
+    window?.center()
   }
 }
 
 // MARK: -PreferencesTabViewDelegate
 extension PreferencesWindowController: PreferencesTabViewDelegate {
   func preferencesTabView(didSelectItem item: NSTabViewItem) {
-    window?.title = item.label
+    guard let window else { return }
+    window.title = item.label
+    // FIXME: There must be a better approach.
+    switch item.label {
+    case "General":
+      window.setContentSize(.init(width: 600, height: 170))
+    case "License":
+      window.setContentSize(.init(width: 600, height: 130))
+    default:
+      ()
+    }
   }
 }
 
@@ -57,24 +69,20 @@ fileprivate struct GeneralView: View {
 
   var body: some View {
     Form {
-      Slider(
-        value: $reloadIvl,
-        in: 1...10,
-        step: 1
-      ) {
-        Text("Reload Interval:")
-      } minimumValueLabel: {
-        Text("")
-          .font(.caption2)
-      } maximumValueLabel: {
-        Text("10 seconds")
-          .font(.caption2)
-      } onEditingChanged: { _ in
-        Defaults.shared.reloadIntervalMs = Int(reloadIvl)*1000
+      VStack {
+        Slider(
+          value: $reloadIvl,
+          in: 1...30,
+          step: 1
+        ) {
+          Text("Reload Interval:")
+        } onEditingChanged: { _ in
+          Defaults.shared.reloadIntervalMs = Int(reloadIvl)*1000
+        }
+        Text(reloadIvl > 1 ? "Every \(Int(reloadIvl)) seconds." : "Every second.")
       }
       Spacer()
     }
-    .frame(width: 400)
     .padding()
   }
 }
