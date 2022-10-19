@@ -209,7 +209,8 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 43CD622228CE24B100095144 /* Build configuration list for PBXNativeTarget "Franz" */;
 			buildPhases = (
-				43CD623528CE264A00095144 /* ShellScript */,
+				43CD623528CE264A00095144 /* Build Core */,
+				43DF4FA929000BFE00E7BB98 /* Run Linter */,
 				43CD621128CE24B000095144 /* Sources */,
 				43CD621228CE24B000095144 /* Frameworks */,
 				43CD621328CE24B000095144 /* Resources */,
@@ -288,7 +289,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		43CD623528CE264A00095144 /* ShellScript */ = {
+		43CD623528CE264A00095144 /* Build Core */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -298,6 +299,7 @@
 			);
 			inputPaths = (
 			);
+			name = "Build Core";
 			outputFileListPaths = (
 			);
 			outputPaths = (
@@ -305,6 +307,25 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "make\nBin/sign-dylibs\n";
+		};
+		43DF4FA929000BFE00E7BB98 /* Run Linter */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Run Linter";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if which swiftlint >/dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
