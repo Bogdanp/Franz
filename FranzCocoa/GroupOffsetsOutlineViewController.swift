@@ -45,38 +45,34 @@ class GroupOffsetsOutlineViewController: NSViewController {
     itemsSeq.removeAll(keepingCapacity: true)
     for t in offsets.topics {
       var item: GroupOffsetsItem!
-      let topicId = "topic-\(t.name)"
-      if let it = itemsById[topicId] {
+      if let it = itemsById[GroupOffsetsItem.id(forTopic: t.name)] {
         item = it
         item.children?.removeAll(keepingCapacity: true)
       } else {
         item = GroupOffsetsItem(
-          id: topicId,
-          kind: .topic,
-          label: t.name,
+          topic: t.name,
           children: [])
       }
       var lag = Varint(0)
       for p in t.partitions {
-        let partitionId = "\(topicId)-\(p.partitionId)"
+        let partitionId = Int(p.partitionId)
         var partitionItem: GroupOffsetsItem!
-        if let it = itemsById[partitionId] {
+        if let it = itemsById[GroupOffsetsItem.id(forPartition: partitionId, onTopic: t.name)] {
           partitionItem = it
         } else {
           partitionItem = GroupOffsetsItem(
-            id: partitionId,
-            kind: .partition,
-            label: "Partition \(p.partitionId)")
+            topic: t.name,
+            partitionId: partitionId)
         }
-        partitionItem.offset = String(p.offset)
-        partitionItem.lag = String(p.lag)
-        partitionItem.memberId = p.memberId ?? ""
-        partitionItem.clientId = p.clientId ?? ""
-        partitionItem.clientHost = p.clientHost ?? ""
+        partitionItem.offset = p.offset
+        partitionItem.lag = p.lag
+        partitionItem.memberId = p.memberId
+        partitionItem.clientId = p.clientId
+        partitionItem.clientHost = p.clientHost
         item.children?.append(partitionItem)
         lag += p.lag
       }
-      item.lag = String(lag)
+      item.lag = lag
       items.append(item)
       itemsSeq.append(item)
       itemsSeq.append(contentsOf: item.children!)
@@ -96,26 +92,56 @@ class GroupOffsetsOutlineViewController: NSViewController {
 
 // MARK: - GroupOffsetsItem
 fileprivate class GroupOffsetsItem: NSObject {
-  var id: String
-  var kind: GroupOffsetsItemKind
-  var label: String
-  var offset: String = ""
-  var lag: String = ""
-  var memberId: String = ""
-  var clientId: String = ""
-  var clientHost: String = ""
+  var topic: String
+  var partitionId: Int?
+
+  var id: String {
+    if let partitionId {
+      return Self.id(forPartition: partitionId, onTopic: topic)
+    }
+    return Self.id(forTopic: topic)
+  }
+
+  var kind: GroupOffsetsItemKind {
+    if partitionId != nil {
+      return .partition
+    }
+    return .topic
+  }
+
+  var label: String {
+    if let partitionId {
+      return "Partition \(partitionId)"
+    }
+    return topic
+  }
+
+  var offset: Int64?
+  var lag: Int64?
+  var memberId: String?
+  var clientId: String?
+  var clientHost: String?
   var children: [GroupOffsetsItem]?
 
-  init(id: String, kind: GroupOffsetsItemKind, label: String, children: [GroupOffsetsItem]? = nil) {
-    self.id = id
-    self.kind = kind
-    self.label = label
+  init(topic: String,
+       partitionId: Int? = nil,
+       children: [GroupOffsetsItem]? = nil) {
+    self.topic = topic
+    self.partitionId = partitionId
     self.children = children
   }
 
   override func isEqual(to object: Any?) -> Bool {
     guard let other = object as? GroupOffsetsItem else { return false }
     return id == other.id
+  }
+
+  static func id(forTopic name: String) -> String {
+    return "topic:\(name)"
+  }
+
+  static func id(forPartition pid: Int, onTopic topic: String) -> String {
+    return "\(id(forTopic: topic)), pid:\(pid)"
   }
 }
 
@@ -179,23 +205,30 @@ extension GroupOffsetsOutlineViewController: NSOutlineViewDelegate {
       if id == .GroupOffsetsTopic {
         text = item.label
       } else if id == .GroupOffsetsLag {
-        text = item.lag
+        if let lag = item.lag {
+          text = String(lag)
+          textField.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
+        }
       }
     case .partition:
       if id == .GroupOffsetsTopic {
         text = item.label
       } else if id == .GroupOffsetsOffset {
-        text = item.offset
-        textField.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
+        if let offset = item.offset {
+          text = String(offset)
+          textField.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
+        }
       } else if id == .GroupOffsetsLag {
-        text = item.lag
-        textField.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
+        if let lag = item.lag {
+          text = String(lag)
+          textField.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
+        }
       } else if id == .GroupOffsetsConsumerId {
-        text = item.memberId
+        text = item.memberId ?? ""
       } else if id == .GroupOffsetsHost {
-        text = item.clientHost
+        text = item.clientHost ?? ""
       } else if id == .GroupOffsetsClientId {
-        text = item.clientId
+        text = item.clientId ?? ""
       }
     }
     textField.stringValue = text
@@ -233,6 +266,11 @@ extension GroupOffsetsOutlineViewController: NSMenuDelegate {
         title: "Copy Client ID",
         action: #selector(didPressCopyPartitionClientIDItem(_:)),
         keyEquivalent: ""))
+      menu.addItem(.separator())
+      menu.addItem(.init(
+        title: "Reset Offset...",
+        action: #selector(didPressResetPartitionOffsetItem(_:)),
+        keyEquivalent: .backspaceKeyEquivalent))
     }
   }
 
@@ -248,8 +286,28 @@ extension GroupOffsetsOutlineViewController: NSMenuDelegate {
     guard let id else { return }
     guard let groupId = self.offsets?.groupId else { return }
 
-    let ctl = NSHostingController(rootView: ResetOffsetsView(parent: self) { target in
-      Backend.shared.resetOffsets(
+    let ctl = NSHostingController(rootView: ResetTopicOffsets(parent: self) { target in
+      Backend.shared.resetTopicOffsets(
+        forGroupNamed: groupId,
+        andTopic: item.label,
+        andTarget: target,
+        inWorkspace: id
+      ).onComplete { _ in
+        self.reloadAction()
+      }
+    })
+    presentAsSheet(ctl)
+  }
+
+  @objc func didPressResetPartitionOffsetItem(_ sender: Any) {
+    guard let row = outlineView?.clickedRow, row >= 0 else { return }
+    let item = itemsSeq[row]
+    guard item.kind == .partition else { return }
+    guard let id else { return }
+    guard let groupId = self.offsets?.groupId else { return }
+
+    let ctl = NSHostingController(rootView: ResetPartitionOffset(parent: self) { target, _ in
+      Backend.shared.resetTopicOffsets(
         forGroupNamed: groupId,
         andTopic: item.label,
         andTarget: target,
@@ -263,22 +321,25 @@ extension GroupOffsetsOutlineViewController: NSMenuDelegate {
 
   @objc func didPressCopyPartitionOffsetItem(_ sender: Any) {
     guard let row = outlineView?.clickedRow, row >= 0 else { return }
-    Pasteboard.put(itemsSeq[row].offset)
+    guard let offset = itemsSeq[row].offset else { return }
+    Pasteboard.put(String(offset))
   }
 
   @objc func didPressCopyPartitionMemberIDItem(_ sender: Any) {
     guard let row = outlineView?.clickedRow, row >= 0 else { return }
-    Pasteboard.put(itemsSeq[row].memberId)
+    guard let memberId = itemsSeq[row].memberId else { return }
+    Pasteboard.put(memberId)
   }
 
   @objc func didPressCopyPartitionClientIDItem(_ sender: Any) {
     guard let row = outlineView?.clickedRow, row >= 0 else { return }
-    Pasteboard.put(itemsSeq[row].clientId)
+    guard let clientId = itemsSeq[row].clientId else { return }
+    Pasteboard.put(clientId)
   }
 }
 
-// MARK: - ResetOffsetsView
-fileprivate struct ResetOffsetsView: View {
+// MARK: - ResetTopicOffsets
+fileprivate struct ResetTopicOffsets: View {
   @State var target = Symbol("earliest")
 
   var parent: NSViewController
@@ -298,6 +359,50 @@ fileprivate struct ResetOffsetsView: View {
         Button("Reset", role: .destructive) {
           dismiss()
           resetAction(target)
+        }
+        .keyboardShortcut(.defaultAction)
+      }
+    }
+    .padding()
+    .frame(minWidth: 240)
+  }
+
+  private func dismiss() {
+    parent.presentedViewControllers?.forEach { ctl in
+      if let ctl = ctl as? NSHostingController<Self> {
+        ctl.dismiss(self)
+      }
+    }
+  }
+}
+
+// MARK: - ResetPartitionOffset
+fileprivate struct ResetPartitionOffset: View {
+  @State var target = Symbol("offset")
+  @State var offset: Int?
+
+  var parent: NSViewController
+  var resetAction: (Symbol, Int?) -> Void
+
+  var body: some View {
+    Form {
+      Picker("Reset to:", selection: $target) {
+        Text("Earliest").tag(Symbol("earliest"))
+        Text("Offset").tag(Symbol("offset"))
+        Text("Latest").tag(Symbol("latest"))
+      }
+
+      TextField("Offset:", value: $offset, format: .number)
+        .disabled(target != "offset")
+
+      HStack {
+        Button("Cancel", role: .cancel) {
+          dismiss()
+        }
+        .keyboardShortcut(.cancelAction)
+        Button("Reset", role: .destructive) {
+          dismiss()
+          resetAction(target, offset)
         }
         .keyboardShortcut(.defaultAction)
       }

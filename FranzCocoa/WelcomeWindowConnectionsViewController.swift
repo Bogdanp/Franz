@@ -1,7 +1,6 @@
 import Cocoa
 
 class WelcomeWindowConnectionsViewController: NSViewController {
-
   @IBOutlet weak var recentConnectionsLabel: NSTextField!
   @IBOutlet weak var connectionsTable: ConnectionsTableView!
 
@@ -79,7 +78,10 @@ class WelcomeWindowConnectionsViewController: NSViewController {
 
   @objc func didRequestDeleteConnection(_ sender: NSMenuItem) {
     assert(Thread.isMainThread)
-    let conn = connections[connectionsTable.clickedRow < 0 ? connectionsTable.selectedRow : connectionsTable.clickedRow]
+    let conn = connections[
+      connectionsTable.clickedRow < 0
+      ? connectionsTable.selectedRow
+      : connectionsTable.clickedRow]
     let alert = NSAlert()
     alert.alertStyle = .warning
     alert.messageText = "Delete \(conn.name)?"
