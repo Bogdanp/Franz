@@ -515,7 +515,7 @@ public class Backend {
     )
   }
 
-  public func resetOffsets(forGroupNamed groupId: String, andTopic topic: String, andTarget target: Symbol, inWorkspace id: UVarint) -> Future<String, Void> {
+  public func resetTopicOffsets(forGroupNamed groupId: String, andTopic topic: String, andTarget target: Symbol, inWorkspace id: UVarint) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x000d).write(to: out)

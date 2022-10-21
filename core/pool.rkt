@@ -21,7 +21,7 @@
  pool-delete-topic
  pool-delete-group
  pool-fetch-offsets
- pool-reset-offsets
+ pool-reset-topic-offsets
  pool-shutdown)
 
 (struct pool (ch thd))
@@ -188,7 +188,7 @@
                                   #:key GroupTopic-name string<?))))
                     (state-add-req s (req offsets res-ch nack))]
 
-                   [`(reset-offsets ,res-ch ,nack ,id ,group-id ,topic ,target)
+                   [`(reset-topic-offsets ,res-ch ,nack ,id ,group-id ,topic ,target)
                     (define result
                       (delay/thread
                        (define c (state-ref-client s id))
@@ -251,8 +251,8 @@
 (define (pool-fetch-offsets id group-id [p (current-pool)])
   (force (sync (pool-send p fetch-offsets id group-id))))
 
-(define (pool-reset-offsets id group-id topic target [p (current-pool)])
-  (force (sync (pool-send p reset-offsets id group-id topic target))))
+(define (pool-reset-topic-offsets id group-id topic target [p (current-pool)])
+  (force (sync (pool-send p reset-topic-offsets id group-id topic target))))
 
 (define (pool-shutdown [p (current-pool)])
  (sync (pool-send p shutdown)))
