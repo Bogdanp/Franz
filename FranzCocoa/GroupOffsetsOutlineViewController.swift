@@ -306,7 +306,10 @@ extension GroupOffsetsOutlineViewController: NSMenuDelegate {
     guard let id else { return }
     guard let groupId = self.offsets?.groupId else { return }
 
-    let ctl = NSHostingController(rootView: ResetPartitionOffset(parent: self) { target, _ in
+    let view = ResetPartitionOffset(
+      offset: item.offset,
+      parent: self
+    ) { target, _ in
       Backend.shared.resetTopicOffsets(
         forGroupNamed: groupId,
         andTopic: item.label,
@@ -315,7 +318,8 @@ extension GroupOffsetsOutlineViewController: NSMenuDelegate {
       ).onComplete { _ in
         self.reloadAction()
       }
-    })
+    }
+    let ctl = NSHostingController(rootView: view)
     presentAsSheet(ctl)
   }
 
@@ -379,10 +383,17 @@ fileprivate struct ResetTopicOffsets: View {
 // MARK: - ResetPartitionOffset
 fileprivate struct ResetPartitionOffset: View {
   @State var target = Symbol("offset")
-  @State var offset: Int?
+  @State var offset: Int64?
 
   var parent: NSViewController
-  var resetAction: (Symbol, Int?) -> Void
+  var resetAction: (Symbol, Int64?) -> Void
+
+  var formatter: NumberFormatter {
+    let fmt = NumberFormatter()
+    fmt.allowsFloats = false
+    fmt.minimum = 0
+    return fmt
+  }
 
   var body: some View {
     Form {
@@ -392,7 +403,7 @@ fileprivate struct ResetPartitionOffset: View {
         Text("Latest").tag(Symbol("latest"))
       }
 
-      TextField("Offset:", value: $offset, format: .number)
+      TextField("Offset:", value: $offset, formatter: formatter)
         .disabled(target != "offset")
 
       HStack {
