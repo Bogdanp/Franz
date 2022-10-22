@@ -3,6 +3,9 @@ import Foundation
 
 extension NSUserInterfaceItemIdentifier {
   static let FileMenuItem = Self("FileMenuItem")
+  static let ConnectionMenuItem = Self("ConnectionMenuItem")
+  static let ReloadMetadataMenuItem = Self("ReloadMetadataMenuItem")
+  static let TopicMenuItem = Self("TopicMenuItem")
   static let NewTopicMenuItem = Self("NewTopicMenuItem")
 
   static let GroupOffsetsTopic = Self("GroupOffsets.Topic")

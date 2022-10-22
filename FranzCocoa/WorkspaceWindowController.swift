@@ -16,6 +16,7 @@ class WorkspaceWindowController: NSWindowController {
   private let sidebarCtl = WorkspaceSidebarViewController()
   private let detailCtl = WorkspaceDetailViewController()
 
+  private weak var reloadMetadataMenuItem: NSMenuItem?
   private weak var newTopicMenuItem: NSMenuItem?
 
   private var statusMu = DispatchSemaphore(value: 1)
@@ -42,7 +43,8 @@ class WorkspaceWindowController: NSWindowController {
     splitCtl.addSplitViewItem(sidebarItem)
     splitCtl.addSplitViewItem(NSSplitViewItem(viewController: detailCtl))
 
-    newTopicMenuItem = MainMenu.shared.find(itemByPath: [.FileMenuItem, .NewTopicMenuItem])
+    reloadMetadataMenuItem = MainMenu.shared.find(itemByPath: [.ConnectionMenuItem, .ReloadMetadataMenuItem])
+    newTopicMenuItem = MainMenu.shared.find(itemByPath: [.TopicMenuItem, .NewTopicMenuItem])
 
     shouldCascadeWindows = false
     window?.delegate = self
@@ -118,19 +120,21 @@ class WorkspaceWindowController: NSWindowController {
 // MARK: NSWindowDelegate
 extension WorkspaceWindowController: NSWindowDelegate {
   func windowDidBecomeKey(_ notification: Notification) {
-    guard let item = newTopicMenuItem else {
-      return
-    }
-    item.target = self
-    item.action = #selector(didPressNewTopicItem(_:))
+    guard let reloadItem = reloadMetadataMenuItem else { return }
+    guard let newTopicItem = newTopicMenuItem else { return }
+    reloadItem.target = self
+    reloadItem.action = #selector(didPressReloadButton(_:))
+    newTopicItem.target = self
+    newTopicItem.action = #selector(didPressNewTopicItem(_:))
   }
 
   func windowDidResignKey(_ notification: Notification) {
-    guard let item = newTopicMenuItem else {
-      return
+    guard let reloadItem = reloadMetadataMenuItem else { return }
+    guard let newTopicItem = newTopicMenuItem else { return }
+    for item in [reloadItem, newTopicItem] {
+      item.target = nil
+      item.action = nil
     }
-    item.target = nil
-    item.action = nil
   }
 
   func windowWillClose(_ notification: Notification) {
