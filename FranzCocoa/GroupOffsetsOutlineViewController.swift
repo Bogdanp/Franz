@@ -391,13 +391,6 @@ fileprivate struct ResetPartitionOffset: View {
   var parent: NSViewController
   var resetAction: (Symbol, Int64?) -> Void
 
-  var formatter: NumberFormatter {
-    let fmt = NumberFormatter()
-    fmt.allowsFloats = false
-    fmt.minimum = 0
-    return fmt
-  }
-
   var body: some View {
     Form {
       Picker("Reset to:", selection: $target) {
@@ -406,8 +399,11 @@ fileprivate struct ResetPartitionOffset: View {
         Text("Latest").tag(Symbol("latest"))
       }
 
-      TextField("Offset:", value: $offset, formatter: formatter)
+      TextField("Offset:", value: $offset, format: .number.grouping(.never))
         .disabled(target != "offset")
+        .onSubmit {
+          submit()
+        }
 
       HStack {
         Button("Cancel", role: .cancel) {
@@ -415,14 +411,20 @@ fileprivate struct ResetPartitionOffset: View {
         }
         .keyboardShortcut(.cancelAction)
         Button("Reset", role: .destructive) {
-          dismiss()
-          resetAction(target, offset)
+          submit()
         }
         .keyboardShortcut(.defaultAction)
+        .disabled(target == "offset" && offset == nil)
       }
     }
     .padding()
     .frame(minWidth: 240)
+  }
+
+  private func submit() {
+    guard let offset, offset >= 0 else { return }
+    dismiss()
+    resetAction(target, offset)
   }
 
   private func dismiss() {
