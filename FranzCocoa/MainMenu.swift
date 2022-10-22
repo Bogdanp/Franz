@@ -15,7 +15,6 @@ class MainMenu {
   top:
     while true {
       for item in items {
-        print("item=\(item.identifier)")
         guard let id = item.identifier else {
           continue
         }
