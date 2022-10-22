@@ -3,6 +3,8 @@
 (require (for-syntax racket/base)
          db
          deta
+         noise/backend
+         noise/serde
          racket/contract
          racket/port
          racket/runtime-path
@@ -137,14 +139,9 @@
 
 ;; license ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(provide
- get-trial-deadline
- get-license
- activate-license!)
-
 (define-schema metadata
   #:table "metadata"
-  ([key string/f #:primary-key]
+  ([key symbol/f #:primary-key]
    [value string/f]
    [(updated-at (current-seconds)) integer/f])
   #:pre-persist-hook
@@ -156,7 +153,7 @@
     (lambda ()
       (define q
         (~> (from metadata #:as m)
-            (where (= m.key ,key))))
+            (where (= m.key ,(symbol->string key)))))
       (cond
         [(lookup conn q) => metadata-value]
         [(procedure? default)
@@ -179,23 +176,22 @@
           (~> (make-metadata #:key key #:value value)
               (insert-one! conn _))])))))
 
-(define/contract (get-trial-deadline)
-  (-> exact-integer?)
+(define-rpc (get-trial-deadline : Varint)
   (string->number
    (get-metadata
-    "trial-deadline"
+    'trial-deadline
     (lambda ()
       (number->string
-       (+ (current-seconds) (* 30 8640)))))))
+       (+ (current-seconds) (* 30 86400)))))))
 
-(define/contract (get-license)
-  (-> (or/c #f string?))
-  (get-metadata "license"))
+(define-rpc (get-license : (Optional String))
+  (and~> (get-metadata 'license)
+         (parse-license)
+         (~license-key)))
 
-(define/contract (activate-license! key)
-  (-> string? boolean?)
+(define-rpc (activate-license [_ key : String] : Bool)
   (and (parse-license key)
-       (put-metadata! "license" key)
+       (put-metadata! 'license key)
        #t))
 
 (module+ test
@@ -216,7 +212,7 @@
       (call-with-test-connection
        (lambda (_)
          (define key (~license-key (generate-random-license)))
-         (check-not-false (activate-license! key))
+         (check-not-false (activate-license key))
          (define the-license (get-license))
          (check-not-false the-license)
          (check-equal? the-license key))))))

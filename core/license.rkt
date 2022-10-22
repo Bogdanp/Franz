@@ -16,7 +16,7 @@
   (string->bytes/utf-8
    "***REMOVED***"))
 
-;; license ::= version issue-date rand checksum
+;; license    ::= version '-' issue-date rand '-' checksum
 ;; version    ::= u8
 ;; issue-date ::= u16be
 ;; rand       ::= u8{8}

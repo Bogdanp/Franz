@@ -15,7 +15,7 @@ class PreferencesWindowController: NSWindowController {
     generalItem.viewController = NSHostingController(rootView: GeneralView())
 
     let licenseItem = NSTabViewItem()
-    licenseItem.image = .init(systemSymbolName: "person.badge.key", accessibilityDescription: nil)
+    licenseItem.image = .init(systemSymbolName: "checkmark.seal", accessibilityDescription: nil)
     licenseItem.label = "License"
     licenseItem.viewController = NSHostingController(rootView: LicenseView())
 
@@ -41,7 +41,7 @@ extension PreferencesWindowController: PreferencesTabViewDelegate {
     case "General":
       window.setContentSize(.init(width: 600, height: 170))
     case "License":
-      window.setContentSize(.init(width: 600, height: 130))
+      window.setContentSize(.init(width: 600, height: 250))
     default:
       ()
     }
@@ -89,7 +89,54 @@ fileprivate struct GeneralView: View {
 
 // MARK: - LicenseView
 fileprivate struct LicenseView: View {
+  @State var activatedLicense = Error.wait(Backend.shared.getLicense()) ?? ""
+  @State var license = ""
+  let trialDeadline = Error.wait(Backend.shared.getTrialDeadline())
+    .map { seconds in
+      let date = Date(timeIntervalSince1970: TimeInterval(Int(seconds)))
+      return DateFormatter.localizedString(
+        from: date,
+        dateStyle: .long,
+        timeStyle: .none
+      )
+    }
+
   var body: some View {
-    Text("License")
+    if activatedLicense != "" {
+      VStack(alignment: .leading) {
+        Text("Full Version Activated")
+          .font(.largeTitle)
+        Text("Thank you for supporting Franz development by purchasing a license.")
+      }
+      .padding()
+    } else if let trialDeadline {
+      VStack(alignment: .leading) {
+        Text("Trial Active")
+          .font(.largeTitle)
+        Text("""
+        Your trial ends on \(trialDeadline). Please purchase a license to \
+        support Franz development and to continue using the software past \
+        that date.
+        """)
+        Form {
+          TextField("License Key:", text: $license)
+            .onSubmit {
+              activate()
+            }
+          Button("Activate License") {
+            activate()
+          }
+          .keyboardShortcut(.return)
+          .disabled(license == "")
+        }
+      }
+      .padding()
+    }
+  }
+
+  private func activate() {
+    if let activated = Error.wait(Backend.shared.activateLicense(license)), activated {
+      activatedLicense = license
+    }
   }
 }

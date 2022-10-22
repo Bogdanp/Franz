@@ -18,6 +18,15 @@ class Error {
     alert.runModal()
   }
 
+  static func wait<Err, Res>(_ fut: Future<Err, Res?>) -> Res? {
+    do {
+      return try fut.wait()
+    } catch {
+      alert(withError: error)
+      return nil
+    }
+  }
+
   static func wait<Err, Res>(_ fut: Future<Err, Res>) -> Res? {
     do {
       return try fut.wait()
