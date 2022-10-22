@@ -68,11 +68,6 @@
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="File" id="bib-Uj-vzu">
                         <items>
-                            <menuItem title="Close" keyEquivalent="w" id="DVo-aG-piG">
-                                <connections>
-                                    <action selector="performClose:" target="-1" id="HmO-Ls-i7Q"/>
-                                </connections>
-                            </menuItem>
                             <menuItem title="Save…" keyEquivalent="s" id="pxx-59-PXV">
                                 <connections>
                                     <action selector="saveDocument:" target="-1" id="teZ-XB-qJY"/>
@@ -334,6 +329,12 @@
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="WHu-8t-f5x"/>
                             <menuItem title="Reload Metadata" keyEquivalent="r" identifier="ReloadMetadataMenuItem" id="2Ay-NU-oLr"/>
+                            <menuItem isSeparatorItem="YES" id="J5V-Oq-5f2"/>
+                            <menuItem title="Close" keyEquivalent="w" id="DVo-aG-piG">
+                                <connections>
+                                    <action selector="performClose:" target="-1" id="HmO-Ls-i7Q"/>
+                                </connections>
+                            </menuItem>
                         </items>
                     </menu>
                 </menuItem>
