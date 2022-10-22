@@ -15,14 +15,14 @@ class WelcomeWindowContentViewController: NSViewController {
   func newConnection() {
     assert(Thread.isMainThread)
     let formController = ConnectionDetailsFormViewController()
-    formController.configure(actionLabel: "Connect", { details in
+    formController.configure(actionLabel: "Connect") { details in
       guard let conn = Error.wait(Backend.shared.saveConnection(details)) else { return }
       if let password = details.password, let id = details.passwordId {
         _ = Keychain.shared.upsert(password: password, withId: id)
       }
       WindowManager.shared.launchWorkspace(withConn: conn, andPassword: details.password)
       WindowManager.shared.closeWelcomeWindow()
-    })
+    }
     presentAsSheet(formController)
   }
 

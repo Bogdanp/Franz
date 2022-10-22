@@ -83,6 +83,10 @@ class WorkspaceWindowController: NSWindowController {
   }
 
   private func loadMetadata(forcingReload reload: Bool = true, andThen proc: @escaping () -> Void = {}) {
+    guard let id else {
+      connect()
+      return
+    }
     self.status("Getting metadata...")
     Backend.shared.getMetadata(forcingReload: reload, inWorkspace: id).onComplete { meta in
       self.sidebarCtl.configure(withId: self.id, andMetadata: meta)
