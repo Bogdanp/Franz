@@ -152,16 +152,19 @@
     (set-metadata-updated-at m (current-seconds))))
 
 (define (get-metadata key [default #f])
-  (cond
-    [(lookup conn (~> (from metadata #:as m)
-                      (where (= m.key ,key))))
-     => metadata-value]
-    [(procedure? default)
-     (define value (default))
-     (begin0 value
-       (put-metadata! key value))]
-    [else
-     #f]))
+  (call-with-transaction conn
+    (lambda ()
+      (define q
+        (~> (from metadata #:as m)
+            (where (= m.key ,key))))
+      (cond
+        [(lookup conn q) => metadata-value]
+        [(procedure? default)
+         (define value (default))
+         (begin0 value
+           (put-metadata! key value))]
+        [else
+         #f]))))
 
 (define (put-metadata! key value)
   (void
