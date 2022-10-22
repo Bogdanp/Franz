@@ -37,7 +37,8 @@ class WelcomeWindowConnectionsViewController: NSViewController {
   }
 
   private func reload() {
-    connections = try! Backend.shared.getConnections().wait()
+    guard let conns = Error.wait(Backend.shared.getConnections()) else { return }
+    connections = conns
     recentConnectionsLabel.isHidden = !connections.isEmpty
     connectionsTable.reloadData()
   }
@@ -70,7 +71,7 @@ class WelcomeWindowConnectionsViewController: NSViewController {
     let conn = connections[connectionsTable.clickedRow]
     let formController = ConnectionDetailsFormViewController()
     formController.configure(actionLabel: "Save", details: conn, { changedConn in
-      _ = try! Backend.shared.updateConnection(changedConn).wait()
+      _ = Error.wait(Backend.shared.updateConnection(changedConn))
       self.reload()
     })
     presentAsSheet(formController)
@@ -90,7 +91,7 @@ class WelcomeWindowConnectionsViewController: NSViewController {
     alert.addButton(withTitle: "Cancel")
     switch alert.runModal() {
     case .alertFirstButtonReturn:
-      try! Backend.shared.deleteConnectionAndSystemResources(conn).wait()
+      Error.wait(Backend.shared.deleteConnectionAndSystemResources(conn))
       reload()
     default:
       ()

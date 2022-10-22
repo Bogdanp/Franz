@@ -16,7 +16,7 @@ class WelcomeWindowContentViewController: NSViewController {
     assert(Thread.isMainThread)
     let formController = ConnectionDetailsFormViewController()
     formController.configure(actionLabel: "Connect", { details in
-      let conn = try! Backend.shared.saveConnection(details).wait()
+      guard let conn = Error.wait(Backend.shared.saveConnection(details)) else { return }
       if let password = details.password, let id = details.passwordId {
         _ = Keychain.shared.upsert(password: password, withId: id)
       }
