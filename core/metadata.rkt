@@ -9,6 +9,7 @@
          racket/sequence
          racket/string
          threading
+         "license.rkt"
          "query.rkt")
 
 (provide
@@ -53,6 +54,9 @@
       (log-metadata-debug "running migration '~a'" filename-str)
       (query-exec conn (call-with-input-file (build-path migrations filename) port->string))
       (query-exec conn track-stmt filename-str (current-seconds)))))
+
+
+;; connection-details ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define-schema connection-details
   #:table "connection_details"
@@ -107,19 +111,17 @@
           (set! conn (sqlite3-connect #:database 'memory)))
         (lambda ()
           (parameterize ([current-connection conn])
+            (migrate!)
             (proc conn)))
         (lambda ()
           (disconnect conn)))))
 
   (test-case "migrate!"
-    (call-with-test-connection
-     (lambda (_)
-       (migrate!))))
+    (call-with-test-connection void))
 
   (test-case "connection crud"
     (call-with-test-connection
      (lambda (_)
-       (migrate!)
        (define c
          (insert-connection!
           (make-connection-details
@@ -131,3 +133,87 @@
        (check-not-false (member c (get-connections)))
        (delete-connection! (connection-details-id c))
        (check-true (null? (get-connections)))))))
+
+
+;; license ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(provide
+ get-trial-deadline
+ get-license
+ activate-license!)
+
+(define-schema metadata
+  #:table "metadata"
+  ([key string/f #:primary-key]
+   [value string/f]
+   [(updated-at (current-seconds)) integer/f])
+  #:pre-persist-hook
+  (lambda (m)
+    (set-metadata-updated-at m (current-seconds))))
+
+(define (get-metadata key [default #f])
+  (cond
+    [(lookup conn (~> (from metadata #:as m)
+                      (where (= m.key ,key))))
+     => metadata-value]
+    [(procedure? default)
+     (define value (default))
+     (begin0 value
+       (put-metadata! key value))]
+    [else
+     #f]))
+
+(define (put-metadata! key value)
+  (void
+   (call-with-transaction conn
+     (lambda ()
+       (cond
+         [(get-metadata key)
+          => (lambda (m)
+               (~> (set-metadata-value m value)
+                   (update-one! conn _)))]
+         [else
+          (~> (make-metadata #:key key #:value value)
+              (insert-one! conn _))])))))
+
+(define/contract (get-trial-deadline)
+  (-> exact-integer?)
+  (string->number
+   (get-metadata
+    "trial-deadline"
+    (lambda ()
+      (number->string
+       (+ (current-seconds) (* 30 8640)))))))
+
+(define/contract (get-license)
+  (-> (or/c #f string?))
+  (get-metadata "license"))
+
+(define/contract (activate-license! key)
+  (-> string? boolean?)
+  (and (parse-license key)
+       (put-metadata! "license" key)
+       #t))
+
+(module+ test
+  (test-case "get-trial-deadline"
+    (call-with-test-connection
+     (lambda (_)
+       (define deadline (get-trial-deadline))
+       (check-true (> deadline (current-seconds)))
+       (check-equal? (get-trial-deadline) deadline))))
+
+  (test-case "get license"
+    (test-case "no licenses"
+      (call-with-test-connection
+       (lambda (_)
+         (check-false (get-license)))))
+
+    (test-case "activated license"
+      (call-with-test-connection
+       (lambda (_)
+         (define key (~license-key (generate-random-license)))
+         (check-not-false (activate-license! key))
+         (define the-license (get-license))
+         (check-not-false the-license)
+         (check-equal? the-license key))))))
