@@ -4,7 +4,7 @@ import SwiftUI
 struct WorkspaceGroupDetailView: View {
   var id: UVarint
   var group: Group
-  var delegate: WorkspaceDetailDelegate?
+  weak var delegate: WorkspaceDetailDelegate?
 
   @State var offsetsLoading = false
   @State var offsets: GroupOffsets?

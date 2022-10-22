@@ -11,7 +11,7 @@ class WorkspaceSidebarViewController: NSViewController {
   @IBOutlet weak var tableView: NSTableView!
   @IBOutlet weak var noTopicsField: NSTextField!
 
-  var delegate: WorkspaceSidebarDelegate?
+  weak var delegate: WorkspaceSidebarDelegate?
 
   override func viewDidLoad() {
     super.viewDidLoad()

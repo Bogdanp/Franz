@@ -5,7 +5,7 @@ import SwiftUI
 class WorkspaceDetailViewController: NSViewController {
   private var id: UVarint!
 
-  var delegate: WorkspaceDetailDelegate?
+  weak var delegate: WorkspaceDetailDelegate?
 
   @IBOutlet weak var selectLabel: NSTextField!
 
