@@ -5,11 +5,13 @@ class WorkspaceSidebarViewController: NSViewController {
   private var id: UVarint!
   private var metadata = Metadata(brokers: [], topics: [], groups: [])
   private var entries = [SidebarEntry]()
+  private var filteredEntries = [SidebarEntry]()
   private var selectedEntry: SidebarEntry?
   private var contextMenu = NSMenu()
 
   @IBOutlet weak var tableView: NSTableView!
   @IBOutlet weak var noTopicsField: NSTextField!
+  @IBOutlet weak var filterField: NSSearchField!
 
   weak var delegate: WorkspaceSidebarDelegate?
 
@@ -24,6 +26,8 @@ class WorkspaceSidebarViewController: NSViewController {
     tableView.delegate = self
     tableView.dataSource = self
     tableView.reloadData()
+
+    filterField.focusRingType = .none
   }
 
   func configure(withId id: UVarint, andMetadata metadata: Metadata) {
@@ -31,11 +35,14 @@ class WorkspaceSidebarViewController: NSViewController {
 
     self.id = id
     self.metadata = metadata
+    self.updateEntries()
+  }
 
+  private func updateEntries() {
     var oldBrokers = [String: SidebarEntry]()
     var oldTopics = [String: SidebarEntry]()
     var oldGroups = [String: SidebarEntry]()
-    for e in self.entries {
+    for e in entries {
       switch e.kind {
       case .broker:
         oldBrokers[e.label] = e
@@ -48,62 +55,76 @@ class WorkspaceSidebarViewController: NSViewController {
       }
     }
 
-    self.entries.removeAll(keepingCapacity: true)
-    self.entries.append(SidebarEntry(withKind: .group, label: "Brokers"))
+    entries.removeAll(keepingCapacity: true)
+    entries.append(SidebarEntry(withKind: .group, label: "Brokers"))
     for b in metadata.brokers {
       if let e = oldBrokers[b.address] {
         e.data = b
-        self.entries.append(e)
+        entries.append(e)
       } else {
         let e = SidebarEntry(withKind: .broker, label: b.address, andData: b)
-        self.entries.append(e)
+        entries.append(e)
       }
     }
 
-    self.entries.append(SidebarEntry(withKind: .group, label: "Topics"))
+    entries.append(SidebarEntry(withKind: .group, label: "Topics"))
     for t in metadata.topics {
       if let e = oldTopics[t.name] {
         e.data = t
         e.count = "\(t.partitions.count)"
-        self.entries.append(e)
+        entries.append(e)
       } else {
         let e = SidebarEntry(withKind: .topic, label: t.name, count: "\(t.partitions.count)", andData: t)
-        self.entries.append(e)
+        entries.append(e)
       }
     }
 
-    self.entries.append(SidebarEntry(withKind: .group, label: "Consumer Groups"))
+    entries.append(SidebarEntry(withKind: .group, label: "Consumer Groups"))
     for g in metadata.groups {
       if let e = oldGroups[g.id] {
         e.data = g
-        self.entries.append(e)
+        entries.append(e)
       } else {
         let e = SidebarEntry(withKind: .consumerGroup, label: g.id, andData: g)
-        self.entries.append(e)
+        entries.append(e)
       }
     }
 
-    var keepSelection = false
-    var selectedRow = tableView.selectedRow
-    for e in self.entries where e == selectedEntry {
-      keepSelection = true
+    filterEntries()
+    updateSelection()
+  }
+
+  private func filterEntries() {
+    filteredEntries = entries
+    if filterField.stringValue != "" {
+      let filter = filterField.stringValue
+      filteredEntries = []
+      for e in entries where e.kind == .group || e.label.localizedCaseInsensitiveContains(filter) {
+        filteredEntries.append(e)
+      }
+    }
+  }
+
+  private func updateSelection() {
+    var selectedRow = -1
+    for (row, e) in filteredEntries.enumerated() where e == selectedEntry {
+      selectedRow = row
       break
     }
-    if !keepSelection {
-      selectedRow = -1
-    }
 
-    self.noTopicsField.isHidden = !(self.metadata.topics.isEmpty && self.metadata.brokers.isEmpty)
-    self.tableView.reloadData()
+    noTopicsField.isHidden = !(metadata.topics.isEmpty && metadata.brokers.isEmpty)
+    tableView.reloadData()
     if selectedRow >= 0 {
-      self.tableView.selectRowIndexes([selectedRow], byExtendingSelection: false)
+      if selectedRow != tableView.selectedRow {
+        tableView.selectRowIndexes([selectedRow], byExtendingSelection: false)
+      }
     } else {
       delegate?.sidebar(didDeselectEntry: selectedEntry)
     }
   }
 
   func selectEntry(withKind kind: SidebarEntryKind, andLabel label: String) {
-    for (i, e) in entries.enumerated() {
+    for (i, e) in filteredEntries.enumerated() {
       if e.kind == kind && e.label == label {
         tableView.selectRowIndexes([i], byExtendingSelection: false)
         return
@@ -116,6 +137,11 @@ class WorkspaceSidebarViewController: NSViewController {
     ctl.delegate = self
     ctl.configure(withId: id)
     presentAsSheet(ctl)
+  }
+
+  @IBAction func didFilterSidebarItems(_ sender: NSSearchField) {
+    filterEntries()
+    updateSelection()
   }
 }
 
@@ -143,7 +169,7 @@ extension WorkspaceSidebarViewController: NSMenuDelegate {
   func menuNeedsUpdate(_ menu: NSMenu) {
     menu.removeAllItems()
     if tableView.clickedRow >= 0 {
-      let entry = entries[tableView.clickedRow]
+      let entry = filteredEntries[tableView.clickedRow]
       switch entry.kind {
       case .topic:
         menu.addItem(.init(
@@ -165,7 +191,7 @@ extension WorkspaceSidebarViewController: NSMenuDelegate {
 
   @objc func didPressDeleteTopic(_ sender: NSMenuItem) {
     assert(tableView.clickedRow >= 0)
-    guard let topic = entries[tableView.clickedRow].data as? Topic else {
+    guard let topic = filteredEntries[tableView.clickedRow].data as? Topic else {
       return
     }
     let alert = NSAlert()
@@ -184,7 +210,7 @@ extension WorkspaceSidebarViewController: NSMenuDelegate {
 
   @objc func didPressDeleteConsumerGroup(_ sender: NSMenuItem) {
     assert(tableView.clickedRow >= 0)
-    guard let group = entries[tableView.clickedRow].data as? Group else {
+    guard let group = filteredEntries[tableView.clickedRow].data as? Group else {
       return
     }
     let alert = NSAlert()
@@ -205,7 +231,7 @@ extension WorkspaceSidebarViewController: NSMenuDelegate {
 // MARK: - NSTableViewDelegate
 extension WorkspaceSidebarViewController: NSTableViewDelegate {
   func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
-    let entry = entries[row]
+    let entry = filteredEntries[row]
     switch entry.kind {
     case .broker, .topic, .consumerGroup:
       guard let view = tableView.makeView(withIdentifier: .entry, owner: nil) as? SidebarEntryCellView else {
@@ -242,28 +268,30 @@ extension WorkspaceSidebarViewController: NSTableViewDelegate {
   }
 
   func tableView(_ tableView: NSTableView, isGroupRow row: Int) -> Bool {
-    return entries[row].kind == .group
+    return filteredEntries[row].kind == .group
   }
 
   func tableView(_ tableView: NSTableView, shouldSelectRow row: Int) -> Bool {
-    return entries[row].kind != .group
+    return filteredEntries[row].kind != .group
   }
 
   func tableViewSelectionDidChange(_ notification: Notification) {
-    let e = entries[tableView.selectedRow]
+    let e = filteredEntries[tableView.selectedRow]
+    guard e.kind != .group else { return }
+    guard let data = e.data else { return }
     selectedEntry = e
-    delegate?.sidebar(didSelectEntry: e.data!, withKind: e.kind)
+    delegate?.sidebar(didSelectEntry: data, withKind: e.kind)
   }
 }
 
 // MARK: - NSTableViewDataSource
 extension WorkspaceSidebarViewController: NSTableViewDataSource {
   func numberOfRows(in tableView: NSTableView) -> Int {
-    return entries.count
+    return filteredEntries.count
   }
 
   func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any? {
-    return entries[row]
+    return filteredEntries[row]
   }
 }
 

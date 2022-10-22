@@ -8,6 +8,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="WorkspaceSidebarViewController" customModule="Franz" customModuleProvider="target">
             <connections>
+                <outlet property="filterField" destination="9qP-8o-phh" id="RLF-IY-l1f"/>
                 <outlet property="noTopicsField" destination="7fa-sM-Yl7" id="oo1-JA-vre"/>
                 <outlet property="tableView" destination="N3m-ts-FJj" id="Xf9-mH-mqO"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
@@ -80,6 +81,18 @@
                         <action selector="didPressNewTopicButton:" target="-2" id="Ttz-yY-Oll"/>
                     </connections>
                 </button>
+                <searchField wantsLayer="YES" verticalHuggingPriority="750" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9qP-8o-phh">
+                    <rect key="frame" x="28" y="7" width="244" height="22"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                    <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="Filter" usesSingleLineMode="YES" bezelStyle="round" id="gZJ-hE-Cxz">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </searchFieldCell>
+                    <connections>
+                        <action selector="didFilterSidebarItems:" target="-2" id="lur-yL-MP1"/>
+                    </connections>
+                </searchField>
             </subviews>
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="YOb-sb-RUl" secondAttribute="trailing" id="2J2-Md-Rk5"/>
