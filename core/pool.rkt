@@ -179,7 +179,7 @@
                                                      (define o (hash-ref topic-offsets t&p #f))
                                                      (make-GroupPartitionOffset
                                                       #:partition-id pid
-                                                      #:high-watermark (and o (k:PartitionOffset-offset o))
+                                                      #:high-watermark (or (and o (k:PartitionOffset-offset o)) 0)
                                                       #:offset (k:GroupPartitionOffset-offset part)
                                                       #:member-id (and m (k:GroupMember-id m))
                                                       #:client-id (and m (k:GroupMember-client-id m))
