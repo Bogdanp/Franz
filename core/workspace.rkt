@@ -62,5 +62,16 @@
     (unless (zero? err)
       (kerr:raise-server-error err))))
 
+(define-rpc (reset-partition-offset [for-group-named group-id : String]
+                                    [and-topic topic : String]
+                                    [and-partition-id pid : UVarint]
+                                    [and-target target : Symbol]
+                                    [and-offset offset : (Optional UVarint)]
+                                    [in-workspace id : UVarint])
+  (for ([(_ res) (in-hash (pool-reset-partition-offset id group-id topic pid target offset))])
+    (define err (k:CommitPartitionResult-error-code res))
+    (unless (zero? err)
+      (kerr:raise-server-error err))))
+
 (define-rpc (close-all-workspaces)
   (void (pool-shutdown)))

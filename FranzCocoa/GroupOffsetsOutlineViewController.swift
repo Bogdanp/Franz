@@ -305,15 +305,18 @@ extension GroupOffsetsOutlineViewController: NSMenuDelegate {
     guard item.kind == .partition else { return }
     guard let id else { return }
     guard let groupId = self.offsets?.groupId else { return }
+    guard let partitionId = item.partitionId else { return }
 
     let view = ResetPartitionOffset(
       offset: item.offset,
       parent: self
-    ) { target, _ in
-      Backend.shared.resetTopicOffsets(
+    ) { target, offset in
+      Backend.shared.resetPartitionOffset(
         forGroupNamed: groupId,
-        andTopic: item.label,
+        andTopic: item.topic,
+        andPartitionId: UVarint(partitionId),
         andTarget: target,
+        andOffset: offset.map { UVarint($0) },
         inWorkspace: id
       ).onComplete { _ in
         self.reloadAction()

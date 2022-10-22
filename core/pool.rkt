@@ -22,6 +22,7 @@
  pool-delete-group
  pool-fetch-offsets
  pool-reset-topic-offsets
+ pool-reset-partition-offset
  pool-shutdown)
 
 (struct pool (ch thd))
@@ -192,16 +193,32 @@
                     (define result
                       (delay/thread
                        (define c (state-ref-client s id))
-                       (define t
-                         (for/first ([t (in-list (k:Metadata-topics (k:client-metadata c)))]
-                                     #:when (equal? (k:TopicMetadata-name t) topic))
-                           t))
+                       (define t (find-topic c topic))
                        (define offsets
                          (k:list-offsets c (for/hash ([p (in-list (k:TopicMetadata-partitions t))])
                                              (define t&p (cons topic (k:PartitionMetadata-id p)))
                                              (values t&p target))))
                        (k:reset-offsets c group-id (for/hash ([(t&p o) (in-hash offsets)])
                                                      (values t&p (k:PartitionOffset-offset o))))))
+                    (state-add-req s (req result res-ch nack))]
+
+                   [`(reset-partition-offset ,res-ch ,nack ,id ,group-id ,topic ,pid ,target ,offset)
+                    (define result
+                      (delay/thread
+                       (define c (state-ref-client s id))
+                       (define offsets
+                         (case target
+                           [(earliest latest)
+                            (for/hash ([(t&p o) (in-hash (k:list-offsets c (hash (cons topic pid) target)))])
+                              (values t&p (k:PartitionOffset-offset o)))]
+                           [(offset)
+                            (unless offset
+                              (raise-argument-error 'reset-partition-offset "exact-integer?" offset))
+                            (hash (cons topic pid) offset)]
+                           [else
+                            (raise-argument-error 'reset-partition-offset "(or/c 'earliest 'latest 'offset)" target)]))
+                       (k:reset-offsets c group-id offsets)))
+
                     (state-add-req s (req result res-ch nack))]
 
                    [`(shutdown ,res-ch ,nack)
@@ -254,8 +271,11 @@
 (define (pool-reset-topic-offsets id group-id topic target [p (current-pool)])
   (force (sync (pool-send p reset-topic-offsets id group-id topic target))))
 
+(define (pool-reset-partition-offset id group-id topic pid target offset [p (current-pool)])
+  (force (sync (pool-send p reset-partition-offset id group-id topic pid target offset))))
+
 (define (pool-shutdown [p (current-pool)])
- (sync (pool-send p shutdown)))
+  (sync (pool-send p shutdown)))
 
 (define-syntax-rule (pool-send p command . args)
   (make-pool-evt p 'command . args))
@@ -309,3 +329,11 @@
 
 (define (state-clear-clients s)
   (struct-copy state s [clients (hasheqv)]))
+
+
+;; help ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define (find-topic c name)
+  (findf
+   (λ (t) (string=? (k:TopicMetadata-name t) name))
+   (k:Metadata-topics (k:client-metadata c))))
