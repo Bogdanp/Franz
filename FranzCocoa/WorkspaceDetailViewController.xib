@@ -18,6 +18,10 @@
             <rect key="frame" x="0.0" y="0.0" width="760" height="600"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
+                <visualEffectView fixedFrame="YES" blendingMode="behindWindow" material="contentBackground" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="fcW-yp-QTo">
+                    <rect key="frame" x="0.0" y="0.0" width="760" height="600"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                </visualEffectView>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="vJf-1Q-sYE">
                     <rect key="frame" x="251" y="292" width="258" height="16"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="Select a Broker, Topic or Consumer Group" id="ipv-Rr-dWX">

@@ -31,6 +31,8 @@ class WorkspaceWindowController: NSWindowController {
   override func windowDidLoad() {
     super.windowDidLoad()
 
+    toolbar.showsBaselineSeparator = true
+
     sidebarCtl.delegate = self
     detailCtl.delegate = self
 
