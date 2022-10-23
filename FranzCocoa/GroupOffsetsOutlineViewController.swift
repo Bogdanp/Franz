@@ -9,6 +9,7 @@ class GroupOffsetsOutlineViewController: NSViewController {
   private var itemsSeq = [GroupOffsetsItem]()
   private var reloadAction: (() -> Void)!
   private var openAction: ((String) -> Void)!
+  private var firstLoad = true
 
   private var contextMenu = NSMenu()
 
@@ -82,7 +83,10 @@ class GroupOffsetsOutlineViewController: NSViewController {
     }
 
     outlineView?.reloadData()
-    outlineView?.expandItem(nil, expandChildren: true)
+    if firstLoad && !itemsSeq.isEmpty {
+      outlineView?.expandItem(nil, expandChildren: true)
+      firstLoad = false
+    }
 
     if let selection {
       for (i, item) in itemsSeq.enumerated() where item == selection {
