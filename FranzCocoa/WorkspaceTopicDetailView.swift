@@ -6,7 +6,7 @@ struct WorkspaceTopicDetailView: View {
   var topic: Topic
 
   @State private var configs = [ResourceConfig]()
-  @State private var currentTab: Tab? = Tab.info
+  @State private var currentTab = Tab.info
 
   var body: some View {
     VStack(alignment: .leading) {
@@ -15,26 +15,27 @@ struct WorkspaceTopicDetailView: View {
           Text(topic.name).font(.title)
           Text("Topic").font(.subheadline).foregroundColor(.secondary)
 
-          Infos {
-            Info(label: "Partitions", description: String(topic.partitions.count))
-            Info(label: "Internal", description: topic.isInternal ? "yes" : "no", divider: false)
-          }
-
           Tabs(
-            tabs: [
+            items: [
               TabItem(label: .info, symbol: "info.circle.fill"),
-              TabItem(label: .messages, symbol: "doc.fill"),
+              TabItem(label: .messages, symbol: "archivebox.fill"),
               TabItem(label: .groups, symbol: "circle.grid.3x3.fill"),
+              TabItem(label: .config, symbol: "gearshape.fill"),
             ],
             selection: $currentTab
           ) { item in
             switch item.label {
             case .info:
-              ResourceConfigTable(configs: $configs)
+              Infos {
+                Info(label: "Partitions", description: String(topic.partitions.count))
+                Info(label: "Internal", description: topic.isInternal ? "yes" : "no", divider: false)
+              }
             case .messages:
               Text("messages")
             case .groups:
               Text("groups")
+            case .config:
+              ResourceConfigTable(configs: $configs)
             }
           }
         }
@@ -59,4 +60,5 @@ fileprivate enum Tab {
   case info
   case messages
   case groups
+  case config
 }

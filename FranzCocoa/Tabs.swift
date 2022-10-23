@@ -2,14 +2,14 @@ import Foundation
 import SwiftUI
 
 struct Tabs<Content: View, Label>: View where Label: Hashable {
-  var tabs: [TabItem<Label>]
-  @Binding var selection: Label?
+  var items: [TabItem<Label>]
+  @Binding var selection: Label
   @ViewBuilder var content: (TabItem<Label>) -> Content
 
   var body: some View {
     VStack {
       HStack {
-        ForEach(tabs, id: \.label) { item in
+        ForEach(items, id: \.label) { item in
           Button {
             selection = item.label
           } label: {
@@ -20,7 +20,7 @@ struct Tabs<Content: View, Label>: View where Label: Hashable {
         }
       }
       Divider()
-      if let selection, let item = tabs.first(where: { $0.label == selection }) {
+      if let item = items.first(where: { $0.label == selection }) {
         content(item)
       }
     }
