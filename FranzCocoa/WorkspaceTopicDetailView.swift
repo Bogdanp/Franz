@@ -14,11 +14,10 @@ struct WorkspaceTopicDetailView: View {
           Text(topic.name).font(.title)
           Text("Topic").font(.subheadline).foregroundColor(.secondary)
 
-          Spacer().frame(height: 15)
-          Text("Information").font(.headline)
-          Spacer().frame(height: 10)
-          Info(label: "Partitions", description: String(topic.partitions.count))
-          Info(label: "Internal", description: topic.isInternal ? "yes" : "no", divider: false)
+          Infos {
+            Info(label: "Partitions", description: String(topic.partitions.count))
+            Info(label: "Internal", description: topic.isInternal ? "yes" : "no", divider: false)
+          }
 
           ResourceConfigTable(configs: configs)
         }

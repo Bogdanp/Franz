@@ -15,14 +15,13 @@ struct WorkspaceBrokerDetailView: View {
           Text(broker.host).font(.title)
           Text("Broker").font(.subheadline).foregroundColor(.secondary)
 
-          Spacer().frame(height: 15)
-          Text("Information").font(.headline)
-          Spacer().frame(height: 10)
-          Info(label: "Address", description: broker.address)
-          Info(label: "Node ID", description: "\(broker.id)")
-          Info(label: "Controller", description: broker.isController ? "yes" : "no", divider: broker.rack != nil)
-          if let rack = broker.rack {
-            Info(label: "Rack", description: "\(rack)", divider: false)
+          Infos {
+            Info(label: "Address", description: broker.address)
+            Info(label: "Node ID", description: "\(broker.id)")
+            Info(label: "Controller", description: broker.isController ? "yes" : "no", divider: broker.rack != nil)
+            if let rack = broker.rack {
+              Info(label: "Rack", description: "\(rack)", divider: false)
+            }
           }
 
           Table(configs, selection: $selectedConfigs) {
@@ -47,20 +46,38 @@ struct WorkspaceBrokerDetailView: View {
   }
 }
 
+// MARK: - Infos
+struct Infos<Entries: View>: View {
+  @ViewBuilder var content: () -> Entries
+
+  var body: some View {
+    VStack(alignment: .leading) {
+      Spacer().frame(height: 15)
+      Text("Information").font(.headline)
+      Spacer().frame(height: 10)
+      VStack(alignment: .leading, spacing: 3) {
+        content()
+      }
+    }
+  }
+}
+
+// MARK: - Info
 struct Info: View {
   var label: String
   var description: String
   var divider = true
 
   var body: some View {
-    VStack(alignment: .leading) {
+    VStack(alignment: .leading, spacing: 3) {
       HStack(alignment: .lastTextBaseline) {
         Text(label)
-          .font(.system(size: 11, weight: .semibold))
+          .font(.system(size: 11, weight: .regular))
           .foregroundColor(.secondary)
-          .frame(width: 65, alignment: .leading)
+          .frame(width: 90, alignment: .leading)
         Text(description)
-          .fontWeight(.semibold)
+          .font(.system(size: 11, weight: .semibold))
+          .textSelection(.enabled)
       }
       if divider {
         Divider()
