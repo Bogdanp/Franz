@@ -6,7 +6,6 @@ struct WorkspaceBrokerDetailView: View {
   var broker: Broker
 
   @State private var configs = [ResourceConfig]()
-  @State private var selectedConfigs = Set<String>()
 
   var body: some View {
     VStack(alignment: .leading) {
@@ -24,10 +23,7 @@ struct WorkspaceBrokerDetailView: View {
             }
           }
 
-          Table(configs, selection: $selectedConfigs) {
-            TableColumn("Config", value: \.name)
-            TableColumn("Value", value: \.nonnullValue)
-          }
+          ResourceConfigTable(configs: $configs)
         }
         Spacer()
       }

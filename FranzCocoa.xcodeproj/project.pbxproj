@@ -30,6 +30,8 @@
 		43804AB928D1A026002880FE /* ConnectionTableCellView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43804AB828D1A026002880FE /* ConnectionTableCellView.xib */; };
 		4395503828FD45B000CC0050 /* GroupOffsetsOutlineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4395503628FD45B000CC0050 /* GroupOffsetsOutlineViewController.swift */; };
 		4395503928FD45B000CC0050 /* GroupOffsetsOutlineViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4395503728FD45B000CC0050 /* GroupOffsetsOutlineViewController.xib */; };
+		4396EADA290576A300A15D25 /* ResourceConfigTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4396EAD8290576A300A15D25 /* ResourceConfigTableViewController.swift */; };
+		4396EADB290576A300A15D25 /* ResourceConfigTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4396EAD9290576A300A15D25 /* ResourceConfigTableViewController.xib */; };
 		43CD621928CE24B000095144 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CD621828CE24B000095144 /* AppDelegate.swift */; };
 		43CD621B28CE24B100095144 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 43CD621A28CE24B100095144 /* Assets.xcassets */; };
 		43CD621E28CE24B100095144 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43CD621C28CE24B100095144 /* MainMenu.xib */; };
@@ -80,6 +82,8 @@
 		43804AB828D1A026002880FE /* ConnectionTableCellView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ConnectionTableCellView.xib; sourceTree = "<group>"; };
 		4395503628FD45B000CC0050 /* GroupOffsetsOutlineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupOffsetsOutlineViewController.swift; sourceTree = "<group>"; };
 		4395503728FD45B000CC0050 /* GroupOffsetsOutlineViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GroupOffsetsOutlineViewController.xib; sourceTree = "<group>"; };
+		4396EAD8290576A300A15D25 /* ResourceConfigTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceConfigTableViewController.swift; sourceTree = "<group>"; };
+		4396EAD9290576A300A15D25 /* ResourceConfigTableViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ResourceConfigTableViewController.xib; sourceTree = "<group>"; };
 		43CD621528CE24B000095144 /* Franz.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Franz.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		43CD621828CE24B000095144 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		43CD621A28CE24B100095144 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -164,6 +168,8 @@
 				43D3AEA528FFD8D100D52E92 /* Pasteboard.swift */,
 				43D3AEA928FFDF3500D52E92 /* PreferencesWindowController.swift */,
 				43D3AEAA28FFDF3500D52E92 /* PreferencesWindowController.xib */,
+				4396EAD8290576A300A15D25 /* ResourceConfigTableViewController.swift */,
+				4396EAD9290576A300A15D25 /* ResourceConfigTableViewController.xib */,
 				43CD623228CE25F300095144 /* resources */,
 				436E720C28D760BF00ECBF49 /* SidebarEntryCellView.swift */,
 				436E720E28D760D400ECBF49 /* SidebarEntryCellView.xib */,
@@ -276,6 +282,7 @@
 				436E71FB28D7511400ECBF49 /* WorkspaceWindowController.xib in Resources */,
 				431C698328F2E0C60082986A /* NewTopicFormViewController.xib in Resources */,
 				43804AB528D19ACD002880FE /* WelcomeWindowConnectionsViewController.xib in Resources */,
+				4396EADB290576A300A15D25 /* ResourceConfigTableViewController.xib in Resources */,
 				43CD624928CE3B5D00095144 /* ConnectionDetailsFormViewController.xib in Resources */,
 				436E720728D75B0500ECBF49 /* WorkspaceDetailViewController.xib in Resources */,
 				43CD623F28CE289F00095144 /* WelcomeWindowContentViewController.xib in Resources */,
@@ -344,6 +351,7 @@
 				436E720228D759F400ECBF49 /* WorkspaceSidebarViewController.swift in Sources */,
 				43804AB728D1A014002880FE /* ConnectionTableCellView.swift in Sources */,
 				436E720628D75B0500ECBF49 /* WorkspaceDetailViewController.swift in Sources */,
+				4396EADA290576A300A15D25 /* ResourceConfigTableViewController.swift in Sources */,
 				431C698228F2E0C60082986A /* NewTopicFormViewController.swift in Sources */,
 				43CD624828CE3B5D00095144 /* ConnectionDetailsFormViewController.swift in Sources */,
 				4395503828FD45B000CC0050 /* GroupOffsetsOutlineViewController.swift in Sources */,

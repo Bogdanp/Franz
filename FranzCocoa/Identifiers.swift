@@ -14,4 +14,7 @@ extension NSUserInterfaceItemIdentifier {
   static let GroupOffsetsConsumerId = Self("GroupOffsets.ConsumerId")
   static let GroupOffsetsHost = Self("GroupOffsets.Host")
   static let GroupOffsetsClientId = Self("GroupOffsets.ClientId")
+
+  static let ResourceConfigConfig = Self("ResourceConfig.Config")
+  static let ResourceConfigValue = Self("ResourceConfig.Value")
 }

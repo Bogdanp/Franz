@@ -19,7 +19,7 @@ struct WorkspaceTopicDetailView: View {
             Info(label: "Internal", description: topic.isInternal ? "yes" : "no", divider: false)
           }
 
-          ResourceConfigTable(configs: configs)
+          ResourceConfigTable(configs: $configs)
         }
         Spacer()
       }
@@ -34,19 +34,6 @@ struct WorkspaceTopicDetailView: View {
       ).onComplete { configs in
         self.configs = configs
       }
-    }
-  }
-}
-
-struct ResourceConfigTable: View {
-  var configs: [ResourceConfig]
-
-  @State private var selected = Set<String>()
-
-  var body: some View {
-    Table(configs, selection: $selected) {
-      TableColumn("Config", value: \.name)
-      TableColumn("Value", value: \.nonnullValue)
     }
   }
 }
