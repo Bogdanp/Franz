@@ -22,20 +22,17 @@ struct WorkspaceTopicDetailView: View {
 
           Tabs(
             tabs: [
-              TabItem(
-                label: .info,
-                symbol: "info.circle.fill"
-              ),
-              TabItem(
-                label: .groups,
-                symbol: "circle.grid.3x3.fill"
-              ),
+              TabItem(label: .info, symbol: "info.circle.fill"),
+              TabItem(label: .messages, symbol: "doc.fill"),
+              TabItem(label: .groups, symbol: "circle.grid.3x3.fill"),
             ],
             selection: $currentTab
           ) { item in
             switch item.label {
             case .info:
               ResourceConfigTable(configs: $configs)
+            case .messages:
+              Text("messages")
             case .groups:
               Text("groups")
             }
@@ -60,5 +57,6 @@ struct WorkspaceTopicDetailView: View {
 
 fileprivate enum Tab {
   case info
+  case messages
   case groups
 }
