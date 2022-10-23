@@ -8,6 +8,7 @@ class GroupOffsetsOutlineViewController: NSViewController {
   private var items = [GroupOffsetsItem]()
   private var itemsSeq = [GroupOffsetsItem]()
   private var reloadAction: (() -> Void)!
+  private var openAction: ((String) -> Void)!
 
   private var contextMenu = NSMenu()
 
@@ -26,10 +27,12 @@ class GroupOffsetsOutlineViewController: NSViewController {
 
   func configure(withId id: UVarint,
                  andOffsets offsets: GroupOffsets,
-                 andReloadAction reloadAction: @escaping () -> Void) {
+                 andReloadAction reloadAction: @escaping () -> Void,
+                 andOpenAction openAction: @escaping (String) -> Void) {
     self.id = id
     self.offsets = offsets
     self.reloadAction = reloadAction
+    self.openAction = openAction
 
     var itemsById = [String: GroupOffsetsItem]()
     for item in itemsSeq {
@@ -157,18 +160,27 @@ struct GroupOffsetsTable: NSViewControllerRepresentable {
   var id: UVarint
   @Binding var offsets: GroupOffsets?
   var reloadAction: () -> Void = {}
+  var openAction: (String) -> Void = { _ in }
 
   func makeNSViewController(context: Context) -> some NSViewController {
     let ctl = GroupOffsetsOutlineViewController()
     if let offsets {
-      ctl.configure(withId: id, andOffsets: offsets, andReloadAction: reloadAction)
+      ctl.configure(
+        withId: id,
+        andOffsets: offsets,
+        andReloadAction: reloadAction,
+        andOpenAction: openAction)
     }
     return ctl
   }
 
   func updateNSViewController(_ nsViewController: NSViewControllerType, context: Context) {
     guard let offsets else { return }
-    nsViewController.configure(withId: id, andOffsets: offsets, andReloadAction: reloadAction)
+    nsViewController.configure(
+      withId: id,
+      andOffsets: offsets,
+      andReloadAction: reloadAction,
+      andOpenAction: openAction)
   }
 }
 
@@ -245,6 +257,11 @@ extension GroupOffsetsOutlineViewController: NSMenuDelegate {
     switch item.kind {
     case .topic:
       menu.addItem(.init(
+        title: "Open",
+        action: #selector(didPressOpenTopicItem(_:)),
+        keyEquivalent: "o"))
+      menu.addItem(.separator())
+      menu.addItem(.init(
         title: "Copy Name",
         action: #selector(didPressCopyTopicNameItem(_:)),
         keyEquivalent: "c"))
@@ -272,6 +289,11 @@ extension GroupOffsetsOutlineViewController: NSMenuDelegate {
         action: #selector(didPressResetPartitionOffsetItem(_:)),
         keyEquivalent: .backspaceKeyEquivalent))
     }
+  }
+
+  @objc func didPressOpenTopicItem(_ sender: Any) {
+    guard let row = outlineView?.clickedRow, row >= 0 else { return }
+    openAction(itemsSeq[row].topic)
   }
 
   @objc func didPressCopyTopicNameItem(_ sender: Any) {

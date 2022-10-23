@@ -58,6 +58,8 @@ struct WorkspaceGroupDetailView: View {
           Text("Topics").font(.headline)
           GroupOffsetsTable(id: id, offsets: $offsets) {
             fetchOffsets()
+          } openAction: { topic in
+            delegate?.request(topicNamed: topic)
           }
           Spacer()
         }

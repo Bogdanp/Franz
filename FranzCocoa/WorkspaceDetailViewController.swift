@@ -76,6 +76,7 @@ class WorkspaceDetailViewController: NSViewController {
 protocol WorkspaceDetailDelegate: AnyObject {
   func makeStatusCookie() -> Int
   func request(status: String, withCookie cookie: Int)
+  func request(topicNamed topic: String)
 }
 
 // MARK: - NSViewController

@@ -231,6 +231,10 @@ extension WorkspaceWindowController: WorkspaceDetailDelegate {
     statusMu.signal()
     status(message)
   }
+
+  func request(topicNamed name: String) {
+    loadMetadata(andSelectTopic: name)
+  }
 }
 
 // MARK: - WorkspaceSidebarDelegate
