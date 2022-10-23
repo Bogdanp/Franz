@@ -44,6 +44,7 @@ class WorkspaceWindowController: NSWindowController {
 
     splitCtl.addSplitViewItem(sidebarItem)
     splitCtl.addSplitViewItem(NSSplitViewItem(viewController: detailCtl))
+    splitCtl.splitView.dividerStyle = .thin
 
     reloadMetadataMenuItem = MainMenu.shared.find(itemByPath: [.ConnectionMenuItem, .ReloadMetadataMenuItem])
     newTopicMenuItem = MainMenu.shared.find(itemByPath: [.TopicMenuItem, .NewTopicMenuItem])
