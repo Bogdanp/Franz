@@ -135,7 +135,10 @@ extension ResourceConfigTableViewController: NSTableViewDataSource {
 extension ResourceConfigTableViewController: NSTableViewDelegate {
   func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
     guard let identifier = tableColumn?.identifier else { return nil }
-    guard let view = tableView.makeView(withIdentifier: identifier, owner: self) as? NSTableCellView else { return nil }
+    guard let view = tableView.makeView(
+      withIdentifier: identifier,
+      owner: self
+    ) as? NSTableCellView else { return nil }
     let entry = entries[row]
     var font = NSFont.systemFont(ofSize: 12)
     if identifier == .ResourceConfigConfig {

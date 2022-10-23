@@ -32,6 +32,7 @@
 		4395503928FD45B000CC0050 /* GroupOffsetsOutlineViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4395503728FD45B000CC0050 /* GroupOffsetsOutlineViewController.xib */; };
 		4396EADA290576A300A15D25 /* ResourceConfigTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4396EAD8290576A300A15D25 /* ResourceConfigTableViewController.swift */; };
 		4396EADB290576A300A15D25 /* ResourceConfigTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4396EAD9290576A300A15D25 /* ResourceConfigTableViewController.xib */; };
+		4396EAE12905B0D200A15D25 /* Tabs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4396EAE02905B0D200A15D25 /* Tabs.swift */; };
 		43CD621928CE24B000095144 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CD621828CE24B000095144 /* AppDelegate.swift */; };
 		43CD621B28CE24B100095144 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 43CD621A28CE24B100095144 /* Assets.xcassets */; };
 		43CD621E28CE24B100095144 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43CD621C28CE24B100095144 /* MainMenu.xib */; };
@@ -84,6 +85,7 @@
 		4395503728FD45B000CC0050 /* GroupOffsetsOutlineViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GroupOffsetsOutlineViewController.xib; sourceTree = "<group>"; };
 		4396EAD8290576A300A15D25 /* ResourceConfigTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceConfigTableViewController.swift; sourceTree = "<group>"; };
 		4396EAD9290576A300A15D25 /* ResourceConfigTableViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ResourceConfigTableViewController.xib; sourceTree = "<group>"; };
+		4396EAE02905B0D200A15D25 /* Tabs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tabs.swift; sourceTree = "<group>"; };
 		43CD621528CE24B000095144 /* Franz.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Franz.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		43CD621828CE24B000095144 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		43CD621A28CE24B100095144 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -176,6 +178,7 @@
 				4314EDF728D85E0E00431770 /* SidebarGroupCellView.swift */,
 				4314EDF528D85DD800431770 /* SidebarGroupCellView.xib */,
 				431C697E28F2C1A70082986A /* StringExtensions.swift */,
+				4396EAE02905B0D200A15D25 /* Tabs.swift */,
 				43804AB228D19ACD002880FE /* WelcomeWindowConnectionsViewController.swift */,
 				43804AB328D19ACD002880FE /* WelcomeWindowConnectionsViewController.xib */,
 				43CD623D28CE282400095144 /* WelcomeWindowContentViewController.swift */,
@@ -367,6 +370,7 @@
 				43804AB428D19ACD002880FE /* WelcomeWindowConnectionsViewController.swift in Sources */,
 				43CD623128CE258F00095144 /* BackendExtensions.swift in Sources */,
 				43D03DD628FAFE3B0049D44D /* Notifications.swift in Sources */,
+				4396EAE12905B0D200A15D25 /* Tabs.swift in Sources */,
 				43CD623E28CE282400095144 /* WelcomeWindowContentViewController.swift in Sources */,
 				4314EDF828D85E0E00431770 /* SidebarGroupCellView.swift in Sources */,
 				436E71FA28D7511400ECBF49 /* WorkspaceWindowController.swift in Sources */,
