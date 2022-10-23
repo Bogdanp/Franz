@@ -35,6 +35,7 @@ class ResourceConfigTableViewController: NSViewController {
         let e = ResourceConfigEntry(
           name: item.name,
           value: item.nonnullValue,
+          isDefault: item.isDefault,
           isSensitive: item.isSensitive)
         entries.append(e)
       }
@@ -47,6 +48,7 @@ class ResourceConfigTableViewController: NSViewController {
 // MARK: - ResourceConfigEntry
 class ResourceConfigEntry: NSObject {
   var name: String
+  var isDefault = true
   var isSensitive = false
   var isRevealed = false
 
@@ -60,9 +62,14 @@ class ResourceConfigEntry: NSObject {
     }
   }
 
-  init(name: String, value: String, isSensitive: Bool = false, isRevealed: Bool = false) {
+  init(name: String,
+       value: String,
+       isDefault: Bool = false,
+       isSensitive: Bool = false,
+       isRevealed: Bool = false) {
     self.name = name
     self._value = value
+    self.isDefault = isDefault
     self.isSensitive = isSensitive
     self.isRevealed = isRevealed
   }
@@ -129,11 +136,17 @@ extension ResourceConfigTableViewController: NSTableViewDelegate {
   func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
     guard let identifier = tableColumn?.identifier else { return nil }
     guard let view = tableView.makeView(withIdentifier: identifier, owner: self) as? NSTableCellView else { return nil }
+    let entry = entries[row]
+    var font = NSFont.systemFont(ofSize: 12)
     if identifier == .ResourceConfigConfig {
-      view.textField?.stringValue = entries[row].name
+      view.textField?.stringValue = entry.name
     } else if identifier == .ResourceConfigValue {
-      view.textField?.stringValue = entries[row].value
+      view.textField?.stringValue = entry.value
+      if (entry.isSensitive && !entry.isRevealed) || !entry.isDefault {
+        font = .systemFont(ofSize: 12, weight: .semibold)
+      }
     }
+    view.textField?.font = font
     return view
   }
 }
