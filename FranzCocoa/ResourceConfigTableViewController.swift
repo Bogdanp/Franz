@@ -55,7 +55,7 @@ class ResourceConfigEntry: NSObject {
   var _value: String
   var value: String {
     get {
-      !isSensitive || isRevealed ? _value : "********"
+      !isSensitive || isRevealed ? _value : "••••••••"
     }
     set {
       _value = newValue
