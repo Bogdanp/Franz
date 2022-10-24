@@ -9,7 +9,7 @@
  (record-out Topic)
  (record-out Group)
  (record-out Metadata)
- (record-out TopicOption)  ;; TODO: replace with ResourceConfig?
+ (record-out TopicOption)
  (record-out ResourceConfig))
 
 (define-record Broker
