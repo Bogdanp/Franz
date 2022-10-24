@@ -1,33 +1,33 @@
 import Foundation
 import SwiftUI
 
-struct Tabs<Content: View, Label>: View where Label: Hashable {
-  var items: [TabItem<Label>]
-  @Binding var selection: Label
-  @ViewBuilder var content: (TabItem<Label>) -> Content
+struct Tabs<Content: View, ID: Hashable>: View {
+  var items: [TabItem<ID>]
+  @Binding var selection: ID
+  @ViewBuilder var content: (TabItem<ID>) -> Content
 
   var body: some View {
     VStack {
       HStack {
-        ForEach(items, id: \.label) { item in
+        ForEach(items, id: \.id) { item in
           Button {
-            selection = item.label
+            selection = item.id
           } label: {
             Image(nsImage: .init(systemSymbolName: item.symbol, accessibilityDescription: nil)!)
           }
           .buttonStyle(.borderless)
-          .tint(selection == item.label ? .accentColor : nil)
+          .tint(selection == item.id ? .accentColor : nil)
         }
       }
       Divider()
-      if let item = items.first(where: { $0.label == selection }) {
+      if let item = items.first(where: { $0.id == selection }) {
         content(item)
       }
     }
   }
 }
 
-struct TabItem<Label: Hashable> {
-  let label: Label
+struct TabItem<ID: Hashable> {
+  let id: ID
   let symbol: String
 }

@@ -17,14 +17,14 @@ struct WorkspaceTopicDetailView: View {
 
           Tabs(
             items: [
-              TabItem(label: .info, symbol: "info.circle.fill"),
-              TabItem(label: .messages, symbol: "archivebox.fill"),
-              TabItem(label: .groups, symbol: "circle.grid.3x3.fill"),
-              TabItem(label: .config, symbol: "gearshape.fill"),
+              .init(id: .info, symbol: "info.circle.fill"),
+              .init(id: .messages, symbol: "archivebox.fill"),
+              .init(id: .groups, symbol: "circle.grid.3x3.fill"),
+              .init(id: .config, symbol: "gearshape.fill"),
             ],
             selection: $currentTab
           ) { item in
-            switch item.label {
+            switch item.id {
             case .info:
               Infos {
                 Info(label: "Partitions", description: String(topic.partitions.count))
