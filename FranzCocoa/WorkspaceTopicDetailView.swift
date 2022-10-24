@@ -7,7 +7,7 @@ struct WorkspaceTopicDetailView: View {
   weak var delegate: WorkspaceDetailDelegate?
 
   @State private var configs = [ResourceConfig]()
-  @State private var currentTab = Tab.info
+  @State private var currentTab = TabState.shared.get(.topicDetail) as? Tab ?? Tab.info
 
   var body: some View {
     VStack(alignment: .leading) {
@@ -17,6 +17,7 @@ struct WorkspaceTopicDetailView: View {
           Text("Topic").font(.subheadline).foregroundColor(.secondary)
 
           Tabs(
+            autosaveId: .topicDetail,
             items: [
               .init(id: .info, symbol: "info.circle.fill", shortcut: .init("1")),
               .init(id: .messages, symbol: "archivebox.fill", shortcut: .init("2")),

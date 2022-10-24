@@ -7,7 +7,7 @@ struct WorkspaceBrokerDetailView: View {
   weak var delegate: WorkspaceDetailDelegate?
 
   @State private var configs = [ResourceConfig]()
-  @State private var currentTab = Tab.info
+  @State private var currentTab = TabState.shared.get(.brokerDetail) as? Tab ?? Tab.info
 
   var body: some View {
     VStack(alignment: .leading) {
@@ -17,6 +17,7 @@ struct WorkspaceBrokerDetailView: View {
           Text("Broker").font(.subheadline).foregroundColor(.secondary)
 
           Tabs(
+            autosaveId: .brokerDetail,
             items: [
               .init(id: .info, symbol: "info.circle.fill", shortcut: .init("1")),
               .init(id: .config, symbol: "gearshape.fill", shortcut: .init("2")),

@@ -2,6 +2,7 @@ import Foundation
 import SwiftUI
 
 struct Tabs<Content: View, ID: Hashable>: View {
+  var autosaveId: TabAutosaveId? = nil
   var items: [TabItem<ID>]
   @Binding var selection: ID
   @ViewBuilder var content: (TabItem<ID>) -> Content
@@ -12,6 +13,9 @@ struct Tabs<Content: View, ID: Hashable>: View {
         ForEach(items, id: \.id) { item in
           Button {
             selection = item.id
+            if let autosaveId {
+              TabState.shared.put(autosaveId, state: item.id)
+            }
           } label: {
             Image(nsImage: .init(systemSymbolName: item.symbol, accessibilityDescription: nil)!)
           }
@@ -28,6 +32,7 @@ struct Tabs<Content: View, ID: Hashable>: View {
   }
 }
 
+// MARK: - TabItem
 struct TabItem<ID: Hashable> {
   let id: ID
   let symbol: String
@@ -39,3 +44,27 @@ struct TabItem<ID: Hashable> {
     self.shortcut = shortcut
   }
 }
+
+// MARK: - TabState
+class TabState {
+  static var shared = TabState()
+
+  private var lastState = [TabAutosaveId: Any]()
+
+  func get(_ id: TabAutosaveId) -> Any? {
+    assert(Thread.isMainThread)
+    return lastState[id]
+  }
+
+  func put(_ id: TabAutosaveId, state: Any) {
+    assert(Thread.isMainThread)
+    lastState[id] = state
+  }
+}
+
+// MARK: - TabAutosaveId
+enum TabAutosaveId {
+  case brokerDetail
+  case topicDetail
+}
+
