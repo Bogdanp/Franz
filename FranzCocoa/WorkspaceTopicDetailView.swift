@@ -4,6 +4,7 @@ import SwiftUI
 struct WorkspaceTopicDetailView: View {
   var id: UVarint
   var topic: Topic
+  weak var delegate: WorkspaceDetailDelegate?
 
   @State private var configs = [ResourceConfig]()
   @State private var currentTab = Tab.info
@@ -36,6 +37,9 @@ struct WorkspaceTopicDetailView: View {
               Text("groups")
             case .config:
               ResourceConfigTable(configs: $configs)
+                .onAppear {
+                  fetchConfigs()
+                }
             }
           }
         }
@@ -44,14 +48,19 @@ struct WorkspaceTopicDetailView: View {
       Spacer()
     }
     .padding()
-    .onAppear {
-      Backend.shared.getResourceConfigs(
-        forResourceNamed: topic.name,
-        resourceType: "topic",
-        inWorkspace: id
-      ).onComplete { configs in
-        self.configs = configs
-      }
+  }
+
+  private func fetchConfigs() {
+    guard let delegate else { return }
+    let cookie = delegate.makeStatusCookie()
+    delegate.request(status: "Fetching configs...", withCookie: cookie)
+    Backend.shared.getResourceConfigs(
+      forResourceNamed: topic.name,
+      resourceType: "topic",
+      inWorkspace: id
+    ).onComplete { configs in
+      self.configs = configs
+      delegate.request(status: "Ready", withCookie: cookie)
     }
   }
 }

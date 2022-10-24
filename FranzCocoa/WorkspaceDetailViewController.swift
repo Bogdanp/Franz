@@ -34,7 +34,8 @@ class WorkspaceDetailViewController: NSViewController {
       let hostingCtl = NSHostingController(
         rootView: WorkspaceTopicDetailView(
           id: id,
-          topic: topic))
+          topic: topic,
+          delegate: delegate))
       display(controller: hostingCtl)
     case .consumerGroup:
       guard let group = entry as? Group else { return }
