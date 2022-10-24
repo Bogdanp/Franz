@@ -50,15 +50,15 @@ struct WorkspaceBrokerDetailView: View {
 
   private func fetchConfig() {
     guard let delegate else { return }
-    let cookie = delegate.makeStatusCookie()
-    delegate.request(status: "Fetching configs...", withCookie: cookie)
+    let status = delegate.makeStatusProc()
+    status("Fetching configs...")
     Backend.shared.getResourceConfigs(
       forResourceNamed: String(broker.id),
       resourceType: "broker",
       inWorkspace: id
     ).onComplete { configs in
       self.configs = configs
-      delegate.request(status: "Ready", withCookie: cookie)
+      status("Ready")
     }
   }
 }

@@ -80,12 +80,12 @@ struct WorkspaceGroupDetailView: View {
     guard let delegate else { return }
     guard !offsetsLoading else { return }
     offsetsLoading = true
-    let cookie = delegate.makeStatusCookie()
-    delegate.request(status: "Fetching offsets...", withCookie: cookie)
+    let status = delegate.makeStatusProc()
+    status("Fetching offsets...")
     Backend.shared.fetchOffsets(forGroupNamed: group.id, inWorkspace: id).onComplete { offsets in
-      delegate.request(status: "Ready", withCookie: cookie)
       self.offsets = offsets
       self.offsetsLoading = false
+      status("Ready")
     }
   }
 }

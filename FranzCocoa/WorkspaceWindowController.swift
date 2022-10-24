@@ -217,7 +217,14 @@ extension WorkspaceWindowController: NewTopicFormDelegate {
 
 // MARK: - WorkspaceDetailDelegate
 extension WorkspaceWindowController: WorkspaceDetailDelegate {
-  func makeStatusCookie() -> Int {
+  func makeStatusProc() -> ((String) -> Void) {
+    let cookie = makeStatusCookie()
+    return { message in
+      self.status(message, withCookie: cookie)
+    }
+  }
+
+  private func makeStatusCookie() -> Int {
     statusMu.wait()
     statusCookie += 1
     let cookie = statusCookie
@@ -225,7 +232,7 @@ extension WorkspaceWindowController: WorkspaceDetailDelegate {
     return cookie
   }
 
-  func request(status message: String, withCookie cookie: Int) {
+  private func status(_ message: String, withCookie cookie: Int) {
     statusMu.wait()
     guard cookie == statusCookie else {
       statusMu.signal()
