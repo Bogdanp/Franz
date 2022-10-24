@@ -18,10 +18,10 @@ struct WorkspaceTopicDetailView: View {
 
           Tabs(
             items: [
-              .init(id: .info, symbol: "info.circle.fill"),
-              .init(id: .messages, symbol: "archivebox.fill"),
-              .init(id: .groups, symbol: "circle.grid.3x3.fill"),
-              .init(id: .config, symbol: "gearshape.fill"),
+              .init(id: .info, symbol: "info.circle.fill", shortcut: .init("1")),
+              .init(id: .messages, symbol: "archivebox.fill", shortcut: .init("2")),
+              .init(id: .groups, symbol: "circle.grid.3x3.fill", shortcut: .init("3")),
+              .init(id: .config, symbol: "gearshape.fill", shortcut: .init("4")),
             ],
             selection: $currentTab
           ) { item in
