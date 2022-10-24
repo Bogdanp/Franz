@@ -7,6 +7,7 @@ class NewTopicFormViewController: NSViewController {
 
   @IBOutlet weak var nameField: NSTextField!
   @IBOutlet weak var partitionsField: NSTextField!
+  @IBOutlet weak var replicationFactorField: NSTextField!
   @IBOutlet weak var optionsTable: TopicOptionsTableView!
 
   @IBOutlet weak var cancelButton: NSButton!
@@ -30,6 +31,11 @@ class NewTopicFormViewController: NSViewController {
     partitionsFormatter.allowsFloats = false
     partitionsFormatter.minimum = 1
     partitionsField.formatter = partitionsFormatter
+
+    let replicationFactorFormatter = NumberFormatter()
+    replicationFactorFormatter.allowsFloats = false
+    replicationFactorFormatter.minimum = 1
+    replicationFactorField.formatter = replicationFactorFormatter
   }
 
   override func viewDidAppear() {
@@ -85,6 +91,7 @@ class NewTopicFormViewController: NSViewController {
     }
     let name = nameField.stringValue
     let partitions = partitionsField.integerValue
+    let replicationFactor = replicationFactorField.stringValue == "" ? 1 : replicationFactorField.integerValue
     let options = self.options.map { TopicOption(key: $0.key, value: $0.value) }
 
     cancelButton.isEnabled = false
@@ -92,6 +99,7 @@ class NewTopicFormViewController: NSViewController {
     Backend.shared.createTopic(
       named: name,
       withPartitions: UVarint(partitions),
+      andReplicationFactor: UVarint(replicationFactor),
       andOptions: options,
       inWorkspace: id
     ).sink(

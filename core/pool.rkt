@@ -122,7 +122,7 @@
                         #:key ResourceConfig-name string<?)))
                     (state-add-req s (req described-resource res-ch nack))]
 
-                   [`(create-topic ,res-ch ,nack ,id ,topic-name ,partitions ,options)
+                   [`(create-topic ,res-ch ,nack ,id ,topic-name ,partitions ,replication-factor ,options)
                     (define created-topic
                       (delay/thread
                        (car
@@ -132,6 +132,7 @@
                           (k:make-CreateTopic
                            #:name topic-name
                            #:partitions partitions
+                           #:replication-factor replication-factor
                            #:configs options))))))
                     (state-add-req s (req created-topic res-ch nack))]
 
@@ -256,8 +257,8 @@
 (define (pool-get-resource-configs id type name [p (current-pool)])
   (force (sync (pool-send p get-resource-configs id type name))))
 
-(define (pool-create-topic id name partitions options [p (current-pool)])
-  (force (sync (pool-send p create-topic id name partitions options))))
+(define (pool-create-topic id name partitions replication-factor options [p (current-pool)])
+  (force (sync (pool-send p create-topic id name partitions replication-factor options))))
 
 (define (pool-delete-topic id name [p (current-pool)])
   (force (sync (pool-send p delete-topic id name))))

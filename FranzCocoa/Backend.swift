@@ -396,12 +396,13 @@ public class Backend {
     )
   }
 
-  public func createTopic(named name: String, withPartitions partitions: UVarint, andOptions options: [TopicOption], inWorkspace id: UVarint) -> Future<String, Void> {
+  public func createTopic(named name: String, withPartitions partitions: UVarint, andReplicationFactor replicationFactor: UVarint, andOptions options: [TopicOption], inWorkspace id: UVarint) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0003).write(to: out)
         name.write(to: out)
         partitions.write(to: out)
+        replicationFactor.write(to: out)
         options.write(to: out)
         id.write(to: out)
       },

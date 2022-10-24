@@ -27,6 +27,7 @@
 
 (define-rpc (create-topic [named name : String]
                           [with-partitions partitions : UVarint]
+                          [and-replication-factor replication-factor : UVarint]
                           [and-options options : (Listof TopicOption)]
                           [in-workspace id : UVarint])
   (define options*
@@ -35,7 +36,7 @@
        (TopicOption-key opt)
        (TopicOption-value opt))))
   (define created-topic
-    (pool-create-topic id name partitions options*))
+    (pool-create-topic id name partitions replication-factor options*))
   (define maybe-error-message
     (k:CreatedTopic-error-message created-topic))
   (when maybe-error-message
