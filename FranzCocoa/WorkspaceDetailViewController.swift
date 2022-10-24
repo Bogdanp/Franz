@@ -27,7 +27,8 @@ class WorkspaceDetailViewController: NSViewController {
       let hostingCtl = NSHostingController(
         rootView: WorkspaceBrokerDetailView(
           id: id,
-          broker: broker))
+          broker: broker,
+          delegate: delegate))
       display(controller: hostingCtl)
     case .topic:
       guard let topic = entry as? Topic else { return }

@@ -15,6 +15,7 @@
 		431C698228F2E0C60082986A /* NewTopicFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431C698028F2E0C60082986A /* NewTopicFormViewController.swift */; };
 		431C698328F2E0C60082986A /* NewTopicFormViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 431C698128F2E0C60082986A /* NewTopicFormViewController.xib */; };
 		432C24632903F03B00C6F336 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432C24622903F03B00C6F336 /* Error.swift */; };
+		433C5E8B29066310005F4C4B /* Infos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 433C5E8A29066310005F4C4B /* Infos.swift */; };
 		436E71FA28D7511400ECBF49 /* WorkspaceWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436E71F828D7511400ECBF49 /* WorkspaceWindowController.swift */; };
 		436E71FB28D7511400ECBF49 /* WorkspaceWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 436E71F928D7511400ECBF49 /* WorkspaceWindowController.xib */; };
 		436E720228D759F400ECBF49 /* WorkspaceSidebarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436E720028D759F400ECBF49 /* WorkspaceSidebarViewController.swift */; };
@@ -68,6 +69,7 @@
 		431C698028F2E0C60082986A /* NewTopicFormViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTopicFormViewController.swift; sourceTree = "<group>"; };
 		431C698128F2E0C60082986A /* NewTopicFormViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NewTopicFormViewController.xib; sourceTree = "<group>"; };
 		432C24622903F03B00C6F336 /* Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
+		433C5E8A29066310005F4C4B /* Infos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Infos.swift; sourceTree = "<group>"; };
 		436E71F828D7511400ECBF49 /* WorkspaceWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceWindowController.swift; sourceTree = "<group>"; };
 		436E71F928D7511400ECBF49 /* WorkspaceWindowController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WorkspaceWindowController.xib; sourceTree = "<group>"; };
 		436E720028D759F400ECBF49 /* WorkspaceSidebarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceSidebarViewController.swift; sourceTree = "<group>"; };
@@ -161,6 +163,7 @@
 				4395503628FD45B000CC0050 /* GroupOffsetsOutlineViewController.swift */,
 				4395503728FD45B000CC0050 /* GroupOffsetsOutlineViewController.xib */,
 				43D03DD728FB03940049D44D /* Identifiers.swift */,
+				433C5E8A29066310005F4C4B /* Infos.swift */,
 				43D03DD328FAC6030049D44D /* Keychain.swift */,
 				43D03DD928FB05000049D44D /* MainMenu.swift */,
 				43CD621C28CE24B100095144 /* MainMenu.xib */,
@@ -375,6 +378,7 @@
 				4314EDF828D85E0E00431770 /* SidebarGroupCellView.swift in Sources */,
 				436E71FA28D7511400ECBF49 /* WorkspaceWindowController.swift in Sources */,
 				43D3AEA628FFD8D100D52E92 /* Pasteboard.swift in Sources */,
+				433C5E8B29066310005F4C4B /* Infos.swift in Sources */,
 				437887F628E9FE5900D0B263 /* WorkspaceBrokerDetailView.swift in Sources */,
 				436E720D28D760BF00ECBF49 /* SidebarEntryCellView.swift in Sources */,
 			);
