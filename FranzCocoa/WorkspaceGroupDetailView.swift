@@ -35,6 +35,7 @@ struct WorkspaceGroupDetailView: View {
               Text(group.id)
                 .font(.title)
                 .truncationMode(.tail)
+                .textSelection(.enabled)
               Text("Group")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
@@ -55,7 +56,6 @@ struct WorkspaceGroupDetailView: View {
           }
 
           Spacer().frame(height: 15)
-          Text("Topics").font(.headline)
           GroupOffsetsTable(id: id, offsets: $offsets) {
             fetchOffsets()
           } openAction: { topic in
