@@ -25,8 +25,7 @@ struct WorkspaceTopicDetailView: View {
             items: [
               .init(id: .info, symbol: "info.circle.fill", shortcut: .init("1")),
               .init(id: .messages, symbol: "archivebox.fill", shortcut: .init("2")),
-              .init(id: .groups, symbol: "circle.grid.3x3.fill", shortcut: .init("3")),
-              .init(id: .config, symbol: "gearshape.fill", shortcut: .init("4")),
+              .init(id: .config, symbol: "gearshape.fill", shortcut: .init("3")),
             ],
             selection: $currentTab
           ) { item in
@@ -38,8 +37,6 @@ struct WorkspaceTopicDetailView: View {
               }
             case .messages:
               Text("messages")
-            case .groups:
-              Text("groups")
             case .config:
               ResourceConfigTable(configs: $configs)
                 .onAppear {
@@ -73,6 +70,5 @@ struct WorkspaceTopicDetailView: View {
 fileprivate enum Tab {
   case info
   case messages
-  case groups
   case config
 }
