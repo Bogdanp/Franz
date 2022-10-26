@@ -13,8 +13,12 @@ struct WorkspaceBrokerDetailView: View {
     VStack(alignment: .leading) {
       HStack(alignment: .top) {
         VStack(alignment: .leading) {
-          Text(broker.host).font(.title)
-          Text("Broker").font(.subheadline).foregroundColor(.secondary)
+          Text(broker.host)
+            .font(.title)
+            .textSelection(.enabled)
+          Text("Broker")
+            .font(.subheadline)
+            .foregroundColor(.secondary)
 
           Tabs(
             autosaveId: .brokerDetail,

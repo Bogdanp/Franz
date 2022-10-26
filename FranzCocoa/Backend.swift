@@ -121,25 +121,30 @@ public struct Group: Readable, Writable {
 public struct GroupOffsets: Readable, Writable {
   public let groupId: String
   public let topics: [GroupTopic]
+  public let state: Symbol
 
   public init(
     groupId: String,
-    topics: [GroupTopic]
+    topics: [GroupTopic],
+    state: Symbol
   ) {
     self.groupId = groupId
     self.topics = topics
+    self.state = state
   }
 
   public static func read(from inp: InputPort, using buf: inout Data) -> GroupOffsets {
     return GroupOffsets(
       groupId: String.read(from: inp, using: &buf),
-      topics: [GroupTopic].read(from: inp, using: &buf)
+      topics: [GroupTopic].read(from: inp, using: &buf),
+      state: Symbol.read(from: inp, using: &buf)
     )
   }
 
   public func write(to out: OutputPort) {
     groupId.write(to: out)
     topics.write(to: out)
+    state.write(to: out)
   }
 }
 

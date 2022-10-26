@@ -21,4 +21,5 @@
 
 (define-record GroupOffsets
   [group-id : String]
-  [topics : (Listof GroupTopic)])
+  [topics : (Listof GroupTopic)]
+  [state : Symbol])

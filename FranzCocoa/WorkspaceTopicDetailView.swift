@@ -13,8 +13,12 @@ struct WorkspaceTopicDetailView: View {
     VStack(alignment: .leading) {
       HStack(alignment: .top) {
         VStack(alignment: .leading) {
-          Text(topic.name).font(.title)
-          Text("Topic").font(.subheadline).foregroundColor(.secondary)
+          Text(topic.name)
+            .font(.title)
+            .textSelection(.enabled)
+          Text("Topic")
+            .font(.subheadline)
+            .foregroundColor(.secondary)
 
           Tabs(
             autosaveId: .topicDetail,

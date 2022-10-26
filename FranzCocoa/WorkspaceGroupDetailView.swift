@@ -39,6 +39,7 @@ struct WorkspaceGroupDetailView: View {
               Text("Group")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
+              OffsetStatePill(state: offsets?.state ?? "loading")
             }
 
             if let totalLag {
@@ -87,5 +88,32 @@ struct WorkspaceGroupDetailView: View {
       self.offsetsLoading = false
       status("Ready")
     }
+  }
+}
+
+fileprivate struct OffsetStatePill: View {
+  let state: Symbol
+
+  var foregroundColor: Color {
+    Color.white
+  }
+
+  var accentColor: Color {
+    if state == "stable" {
+      return Color.green
+    } else if state == "dead" {
+      return Color.red
+    }
+    return Color.secondary
+  }
+
+  var body: some View {
+    Text("\(state.uppercased())")
+      .font(.system(size: 9, weight: .regular))
+      .foregroundColor(foregroundColor)
+      .padding([.leading, .trailing], 5)
+      .padding([.top, .bottom], 2)
+      .background(accentColor)
+      .clipShape(RoundedRectangle(cornerRadius: 5))
   }
 }

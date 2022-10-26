@@ -169,6 +169,12 @@
                                              (values t&p 'latest))))
                        (make-GroupOffsets
                         #:group-id group-id
+                        #:state (case (k:Group-state group)
+                                  [(#f "Dead") 'dead]
+                                  [("Empty") 'empty]
+                                  [("PreparingRebalance" "CompletingRebalance") 'rebalancing]
+                                  [("Stable") 'stable]
+                                  [else 'unknown])
                         #:topics (sort
                                   (for/list ([(topic parts) (in-hash topics)])
                                     (make-GroupTopic
