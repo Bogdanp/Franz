@@ -56,6 +56,11 @@
             value = "error debug@noise debug@kafka"
             isEnabled = "YES">
          </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "FRANZ_DEBUG"
+            value = "yes"
+            isEnabled = "YES">
+         </EnvironmentVariable>
       </EnvironmentVariables>
    </LaunchAction>
    <ProfileAction

@@ -1,6 +1,7 @@
 #lang racket/base
 
 (require (only-in db sqlite3-connect)
+         (prefix-in dbg: debugging/server)
          noise/backend
          noise/serde
 
@@ -20,6 +21,10 @@
 (define (main in-fd out-fd)
   (module-cache-clear!)
   (collect-garbage)
+  (define stop-debugging
+    (if (getenv "FRANZ_DEBUG")
+        (dbg:serve)
+        void))
   (define database-path
     (build-application-path "metadata.sqlite3"))
   (define stop
@@ -30,5 +35,7 @@
                      #:mode 'create)])
       (migrate!)
       (serve in-fd out-fd)))
-  (with-handlers ([exn:break? (λ (_) (stop))])
-    (sync never-evt)))
+  (with-handlers ([exn:break? void])
+    (sync never-evt))
+  (stop)
+  (stop-debugging))
