@@ -68,7 +68,7 @@
                        (define c (state-ref-client s id))
                        (define meta
                          (if reload?
-                             (k:get-metadata c)
+                             (k:reload-metadata c)
                              (k:client-metadata c)))
                        (define controller-id
                          (k:Metadata-controller-id meta))
