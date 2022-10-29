@@ -94,8 +94,10 @@ extension TopicRecordsTableViewController: NSTableViewDelegate {
     textField.textColor = tableView.selectedRow == row ? .selectedControlTextColor : .controlTextColor
     if id == .TopicRecordsPartitionId {
       textField.stringValue = "\(record.partitionId)"
+      textField.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
     } else if id == .TopicRecordsOffset {
       textField.stringValue = "\(record.offset)"
+      textField.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
     } else if id == .TopicRecordsKey {
       setTextFieldData(textField, data: record.key)
     } else if id == .TopicRecordsValue {
