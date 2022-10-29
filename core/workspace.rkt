@@ -1,6 +1,7 @@
 #lang racket/base
 
 (require (prefix-in k: kafka)
+         (prefix-in k: kafka/iterator)
          (prefix-in kerr: kafka/private/error) ;; FIXME
          noise/backend
          noise/serde
@@ -73,6 +74,21 @@
     (define err (k:CommitPartitionResult-error-code res))
     (unless (zero? err)
       (kerr:raise-server-error err))))
+
+(define-rpc (open-iterator [for-topic topic : String]
+                           [and-offset offset : Symbol]
+                           [in-workspace id : UVarint] : UVarint)
+  (pool-open-iterator id topic offset))
+
+(define-rpc (iterator-fetch [_ id : UVarint])
+  (for ([r (in-vector (pool-iterator-fetch id))])
+    (println `(record
+               ,(k:record-offset r)
+               ,(k:record-key r)
+               ,(k:record-value r)))))
+
+(define-rpc (close-iterator [with-id id : UVarint])
+  (pool-close-iterator id))
 
 (define-rpc (close-all-workspaces)
   (void (pool-shutdown)))

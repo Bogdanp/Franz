@@ -1,6 +1,7 @@
 #lang racket/base
 
 (require (prefix-in k: kafka)
+         (prefix-in k: kafka/iterator)
          racket/match
          racket/promise
          threading
@@ -23,6 +24,9 @@
  pool-fetch-offsets
  pool-reset-topic-offsets
  pool-reset-partition-offset
+ pool-open-iterator
+ pool-iterator-fetch
+ pool-close-iterator
  pool-shutdown)
 
 (struct pool (ch thd))
@@ -228,10 +232,34 @@
 
                     (state-add-req s (req result res-ch nack))]
 
+                   [`(open-iterator ,res-ch ,nack ,id ,topic ,offset)
+                    (with-handlers ([exn:fail? (λ (e) (state-add-req s (req e res-ch nack)))])
+                      (define c (state-ref-client s id))
+                      (define it (k:make-topic-iterator c topic #:offset offset #:max-bytes (* 1 1024)))
+                      (define-values (iterator-id next-state)
+                        (state-add-iterator s it))
+                      (state-add-req next-state (req iterator-id res-ch nack)))]
+
+                   [`(iterator-fetch ,res-ch ,nack ,id)
+                    (define records
+                      (delay/thread
+                       (sync (state-ref-iterator s id))))
+                    (state-add-req s (req records res-ch nack))]
+
+                   [`(close-iterator ,res-ch ,nack ,id)
+                    (define iterator (state-ref-iterator s id))
+                    (when iterator
+                      (k:stop-topic-iterator iterator))
+                    (~> (state-remove-iterator s id)
+                        (state-add-req _ (req #t res-ch nack)))]
+
                    [`(shutdown ,res-ch ,nack)
+                    (for ([it (in-hash-values (state-iterators s))])
+                      (k:stop-topic-iterator it))
                     (for ([c (in-hash-values (state-clients s))])
                       (k:disconnect-all c))
-                    (~> (state-clear-clients s)
+                    (~> (state-clear-iterators s)
+                        (state-clear-clients _)
                         (state-add-req _ (req #t res-ch nack)))])))
               (append
                (for/list ([r (in-list (state-reqs s))])
@@ -281,6 +309,15 @@
 (define (pool-reset-partition-offset id group-id topic pid target offset [p (current-pool)])
   (force (sync (pool-send p reset-partition-offset id group-id topic pid target offset))))
 
+(define (pool-open-iterator id topic offset [p (current-pool)])
+  (sync (pool-send p open-iterator id topic offset)))
+
+(define (pool-iterator-fetch id [p (current-pool)])
+  (force (sync (pool-send p iterator-fetch id))))
+
+(define (pool-close-iterator id [p (current-pool)])
+  (sync (pool-send p close-iterator id)))
+
 (define (pool-shutdown [p (current-pool)])
   (sync (pool-send p shutdown)))
 
@@ -311,10 +348,12 @@
 (struct state
   (reqs
    clients
-   clients-seq))
+   clients-seq
+   iterators
+   iterators-seq))
 
 (define (make-state)
-  (state null (hasheqv) 0))
+  (state null (hasheqv) 0 (hasheqv) 0))
 
 (define (state-add-req s r)
   (struct-copy state s [reqs (cons r (state-reqs s))]))
@@ -336,6 +375,21 @@
 
 (define (state-clear-clients s)
   (struct-copy state s [clients (hasheqv)]))
+
+(define (state-add-iterator s it)
+  (define id (state-iterators-seq s))
+  (values id (struct-copy state s
+                          [iterators (hash-set (state-iterators s) id it)]
+                          [iterators-seq (add1 id)])))
+
+(define (state-ref-iterator s id)
+  (hash-ref (state-iterators s) id #f))
+
+(define (state-remove-iterator s id)
+  (struct-copy state s [iterators (hash-remove (state-iterators s) id)]))
+
+(define (state-clear-iterators s)
+  (struct-copy state s [iterators (hasheqv)]))
 
 
 ;; help ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
