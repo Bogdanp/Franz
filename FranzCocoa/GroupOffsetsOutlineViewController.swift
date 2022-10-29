@@ -373,7 +373,7 @@ extension GroupOffsetsOutlineViewController: NSMenuDelegate {
 
 // MARK: - ResetTopicOffsets
 fileprivate struct ResetTopicOffsets: View {
-  @State var target = Symbol("earliest")
+  @State var target = Symbol("latest")
 
   var parent: NSViewController
   var resetAction: (Symbol) -> Void
