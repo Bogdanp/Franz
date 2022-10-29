@@ -109,7 +109,7 @@ fileprivate struct OffsetStatePill: View {
 
   var body: some View {
     Text("\(state.uppercased())")
-      .font(.system(size: 9, weight: .regular))
+      .font(.system(size: 9, weight: .semibold))
       .foregroundColor(foregroundColor)
       .padding([.leading, .trailing], 5)
       .padding([.top, .bottom], 2)
