@@ -31,7 +31,7 @@ class TopicRecordsTableViewController: NSViewController {
     self.getRecords()
   }
 
-  private func getRecords(_ proc: @escaping () -> Void = {}) {
+  private func getRecords(_ proc: @escaping ([IteratorRecord]) -> Void = { _ in }) {
     guard let delegate else { return }
     guard let iteratorId else { return }
 
@@ -43,17 +43,36 @@ class TopicRecordsTableViewController: NSViewController {
       }
       self.tableView.reloadData()
       status("Ready")
-      proc()
+      proc(records)
     }
   }
 
   @objc func didPressSegmentedControl(_ sender: NSSegmentedControl) {
     if sender.selectedSegment == 1 {
       sender.isEnabled = false
-      getRecords {
+      getRecords { records in
+        if records.isEmpty {
+          let bounds = sender.relativeBounds(forSegment: 1)
+          let popover = NSPopover()
+          popover.behavior = .transient
+          popover.contentSize = NSSize(width: 200, height: 50)
+          popover.contentViewController = NSHostingController(rootView: Text("No more records.").padding())
+          popover.show(relativeTo: bounds, of: sender, preferredEdge: .minY)
+        }
         sender.isEnabled = true
       }
     }
+  }
+}
+
+// MARK: - NSSegmentedControl
+extension NSSegmentedControl {
+  func relativeBounds(forSegment index: Int) -> NSRect {
+    let w = bounds.width / CGFloat(segmentCount)
+    var r = bounds
+    r.size.width = w
+    r.origin.x += w * CGFloat(index)
+    return r
   }
 }
 
@@ -71,28 +90,32 @@ extension TopicRecordsTableViewController: NSTableViewDelegate {
     guard let view = tableView.makeView(withIdentifier: id, owner: self) as? NSTableCellView else { return nil }
     guard let textField = view.textField else { return nil }
     let record = records[row]
+    textField.font = .monospacedSystemFont(ofSize: 12, weight: .regular)
+    textField.textColor = tableView.selectedRow == row ? .selectedControlTextColor : .controlTextColor
     if id == .TopicRecordsPartitionId {
       textField.stringValue = "\(record.partitionId)"
-      textField.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
     } else if id == .TopicRecordsOffset {
       textField.stringValue = "\(record.offset)"
-      textField.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
     } else if id == .TopicRecordsKey {
-      if let data = record.key {
-        textField.stringValue = String(data: data, encoding: .utf8) ?? data.base64EncodedString()
-      } else {
-        textField.stringValue = ""
-      }
-      textField.font = .systemFont(ofSize: 12)
+      setTextFieldData(textField, data: record.key)
     } else if id == .TopicRecordsValue {
-      if let data = record.value {
-        textField.stringValue = String(data: data, encoding: .utf8) ?? data.base64EncodedString()
-      } else {
-        textField.stringValue = ""
-      }
-      textField.font = .systemFont(ofSize: 12)
+      setTextFieldData(textField, data: record.value)
     }
     return view
+  }
+
+  private func setTextFieldData(_ textField: NSTextField, data: Data?) {
+    if let data {
+      if let string = String(data: data, encoding: .utf8) {
+        textField.stringValue = string
+        return
+      }
+      textField.stringValue = "BINARY DATA"
+      textField.textColor = .secondaryLabelColor
+    } else {
+      textField.stringValue = "NULL"
+      textField.textColor = .secondaryLabelColor
+    }
   }
 }
 

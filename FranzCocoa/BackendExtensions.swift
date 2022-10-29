@@ -55,7 +55,7 @@ extension ResourceConfig: Identifiable {
     name
   }
 
-  public var nonnullValue: String {
+  var nonnullValue: String {
     value ?? ""
   }
 }
