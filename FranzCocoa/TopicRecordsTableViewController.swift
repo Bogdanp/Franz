@@ -2,6 +2,7 @@ import Cocoa
 import Dispatch
 import NoiseSerde
 import SwiftUI
+import UniformTypeIdentifiers
 
 class TopicRecordsTableViewController: NSViewController {
   @IBOutlet weak var tableView: NSTableView!
@@ -21,6 +22,7 @@ class TopicRecordsTableViewController: NSViewController {
 
     tableView.dataSource = self
     tableView.delegate = self
+    tableView.setDraggingSourceOperationMask(.copy, forLocal: false)
 
     segmentedControl.target = self
     segmentedControl.action = #selector(didPressSegmentedControl(_:))
@@ -179,6 +181,45 @@ extension TopicRecordsTableViewController: NSTableViewDelegate {
     } else {
       textField.stringValue = "NULL"
       textField.textColor = .secondaryLabelColor
+    }
+  }
+
+  func tableView(_ tableView: NSTableView, pasteboardWriterForRow row: Int) -> NSPasteboardWriting? {
+    let provider = NSFilePromiseProvider(fileType: UTType.data.identifier, delegate: self)
+    provider.userInfo = row
+    return provider
+  }
+}
+
+// MARK: - NSFilePromiseProviderDelegate
+extension TopicRecordsTableViewController: NSFilePromiseProviderDelegate {
+  func filePromiseProvider(_ filePromiseProvider: NSFilePromiseProvider,
+                           fileNameForType fileType: String) -> String {
+    guard let topic, let row = filePromiseProvider.userInfo as? Int else {
+      preconditionFailure()
+    }
+    let record = records[row]
+    return "\(topic)@\(record.partitionId)-\(record.offset)"
+  }
+
+  func filePromiseProvider(_ filePromiseProvider: NSFilePromiseProvider,
+                           writePromiseTo url: URL,
+                           completionHandler: @escaping (Error?) -> Void) {
+    guard let row = filePromiseProvider.userInfo as? Int,
+          let data = records[row].value else {
+      completionHandler(nil)
+      return
+    }
+    FileManager.default.createFile(atPath: url.path, contents: data)
+    completionHandler(nil)
+  }
+
+  func filePromiseProvider(_ filePromiseProvider: NSFilePromiseProvider,
+                           writePromiseTo url: URL) async throws {
+    await withUnsafeContinuation { k in
+      self.filePromiseProvider(filePromiseProvider, writePromiseTo: url) { _ in
+        k.resume()
+      }
     }
   }
 }
