@@ -25,7 +25,7 @@ class WorkspaceDetailViewController: NSViewController {
     case .broker:
       guard let broker = entry as? Broker else { return }
       let hostingCtl = NSHostingController(
-        rootView: WorkspaceBrokerDetailView(
+        rootView: BrokerDetailView(
           id: id,
           broker: broker,
           delegate: delegate))
@@ -33,7 +33,7 @@ class WorkspaceDetailViewController: NSViewController {
     case .topic:
       guard let topic = entry as? Topic else { return }
       let hostingCtl = NSHostingController(
-        rootView: WorkspaceTopicDetailView(
+        rootView: TopicDetailView(
           id: id,
           topic: topic,
           delegate: delegate))
@@ -41,7 +41,7 @@ class WorkspaceDetailViewController: NSViewController {
     case .consumerGroup:
       guard let group = entry as? Group else { return }
       let hostingCtl = NSHostingController(
-        rootView: WorkspaceGroupDetailView(
+        rootView: GroupDetailView(
           id: id,
           group: group,
           delegate: delegate))

@@ -9,8 +9,8 @@
 /* Begin PBXBuildFile section */
 		4314EDF628D85DD800431770 /* SidebarGroupCellView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4314EDF528D85DD800431770 /* SidebarGroupCellView.xib */; };
 		4314EDF828D85E0E00431770 /* SidebarGroupCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4314EDF728D85E0E00431770 /* SidebarGroupCellView.swift */; };
-		43196F8A28F1DAB2003C793B /* WorkspaceTopicDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43196F8928F1DAB2003C793B /* WorkspaceTopicDetailView.swift */; };
-		43196F8C28F1DB94003C793B /* WorkspaceGroupDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43196F8B28F1DB94003C793B /* WorkspaceGroupDetailView.swift */; };
+		43196F8A28F1DAB2003C793B /* TopicDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43196F8928F1DAB2003C793B /* TopicDetailView.swift */; };
+		43196F8C28F1DB94003C793B /* GroupDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43196F8B28F1DB94003C793B /* GroupDetailView.swift */; };
 		431C697F28F2C1A70082986A /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431C697E28F2C1A70082986A /* StringExtensions.swift */; };
 		431C698228F2E0C60082986A /* NewTopicFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431C698028F2E0C60082986A /* NewTopicFormViewController.swift */; };
 		431C698328F2E0C60082986A /* NewTopicFormViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 431C698128F2E0C60082986A /* NewTopicFormViewController.xib */; };
@@ -24,7 +24,9 @@
 		436E720728D75B0500ECBF49 /* WorkspaceDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 436E720528D75B0500ECBF49 /* WorkspaceDetailViewController.xib */; };
 		436E720D28D760BF00ECBF49 /* SidebarEntryCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436E720C28D760BF00ECBF49 /* SidebarEntryCellView.swift */; };
 		436E720F28D760D400ECBF49 /* SidebarEntryCellView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 436E720E28D760D400ECBF49 /* SidebarEntryCellView.xib */; };
-		437887F628E9FE5900D0B263 /* WorkspaceBrokerDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 437887F528E9FE5900D0B263 /* WorkspaceBrokerDetailView.swift */; };
+		437887F628E9FE5900D0B263 /* BrokerDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 437887F528E9FE5900D0B263 /* BrokerDetailView.swift */; };
+		437A77DF290D5AA1001965B0 /* TopicRecordsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 437A77DD290D5AA1001965B0 /* TopicRecordsTableViewController.swift */; };
+		437A77E0290D5AA1001965B0 /* TopicRecordsTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 437A77DE290D5AA1001965B0 /* TopicRecordsTableViewController.xib */; };
 		43804AB428D19ACD002880FE /* WelcomeWindowConnectionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43804AB228D19ACD002880FE /* WelcomeWindowConnectionsViewController.swift */; };
 		43804AB528D19ACD002880FE /* WelcomeWindowConnectionsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43804AB328D19ACD002880FE /* WelcomeWindowConnectionsViewController.xib */; };
 		43804AB728D1A014002880FE /* ConnectionTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43804AB628D1A014002880FE /* ConnectionTableCellView.swift */; };
@@ -63,8 +65,8 @@
 /* Begin PBXFileReference section */
 		4314EDF528D85DD800431770 /* SidebarGroupCellView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SidebarGroupCellView.xib; sourceTree = "<group>"; };
 		4314EDF728D85E0E00431770 /* SidebarGroupCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarGroupCellView.swift; sourceTree = "<group>"; };
-		43196F8928F1DAB2003C793B /* WorkspaceTopicDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceTopicDetailView.swift; sourceTree = "<group>"; };
-		43196F8B28F1DB94003C793B /* WorkspaceGroupDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceGroupDetailView.swift; sourceTree = "<group>"; };
+		43196F8928F1DAB2003C793B /* TopicDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopicDetailView.swift; sourceTree = "<group>"; };
+		43196F8B28F1DB94003C793B /* GroupDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailView.swift; sourceTree = "<group>"; };
 		431C697E28F2C1A70082986A /* StringExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtensions.swift; sourceTree = "<group>"; };
 		431C698028F2E0C60082986A /* NewTopicFormViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTopicFormViewController.swift; sourceTree = "<group>"; };
 		431C698128F2E0C60082986A /* NewTopicFormViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NewTopicFormViewController.xib; sourceTree = "<group>"; };
@@ -78,7 +80,9 @@
 		436E720528D75B0500ECBF49 /* WorkspaceDetailViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WorkspaceDetailViewController.xib; sourceTree = "<group>"; };
 		436E720C28D760BF00ECBF49 /* SidebarEntryCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarEntryCellView.swift; sourceTree = "<group>"; };
 		436E720E28D760D400ECBF49 /* SidebarEntryCellView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SidebarEntryCellView.xib; sourceTree = "<group>"; };
-		437887F528E9FE5900D0B263 /* WorkspaceBrokerDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceBrokerDetailView.swift; sourceTree = "<group>"; };
+		437887F528E9FE5900D0B263 /* BrokerDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrokerDetailView.swift; sourceTree = "<group>"; };
+		437A77DD290D5AA1001965B0 /* TopicRecordsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopicRecordsTableViewController.swift; sourceTree = "<group>"; };
+		437A77DE290D5AA1001965B0 /* TopicRecordsTableViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TopicRecordsTableViewController.xib; sourceTree = "<group>"; };
 		43804AB228D19ACD002880FE /* WelcomeWindowConnectionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeWindowConnectionsViewController.swift; sourceTree = "<group>"; };
 		43804AB328D19ACD002880FE /* WelcomeWindowConnectionsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WelcomeWindowConnectionsViewController.xib; sourceTree = "<group>"; };
 		43804AB628D1A014002880FE /* ConnectionTableCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionTableCellView.swift; sourceTree = "<group>"; };
@@ -153,6 +157,7 @@
 				43CD621A28CE24B100095144 /* Assets.xcassets */,
 				43CD622E28CE258100095144 /* Backend.swift */,
 				43CD623028CE258F00095144 /* BackendExtensions.swift */,
+				437887F528E9FE5900D0B263 /* BrokerDetailView.swift */,
 				43CD624628CE3B5D00095144 /* ConnectionDetailsFormViewController.swift */,
 				43CD624728CE3B5D00095144 /* ConnectionDetailsFormViewController.xib */,
 				43804AB628D1A014002880FE /* ConnectionTableCellView.swift */,
@@ -160,6 +165,7 @@
 				43D3AEA728FFD96500D52E92 /* Defaults.swift */,
 				432C24622903F03B00C6F336 /* Error.swift */,
 				43CD621F28CE24B100095144 /* FranzCocoa.entitlements */,
+				43196F8B28F1DB94003C793B /* GroupDetailView.swift */,
 				4395503628FD45B000CC0050 /* GroupOffsetsOutlineViewController.swift */,
 				4395503728FD45B000CC0050 /* GroupOffsetsOutlineViewController.xib */,
 				43D03DD728FB03940049D44D /* Identifiers.swift */,
@@ -182,6 +188,9 @@
 				4314EDF528D85DD800431770 /* SidebarGroupCellView.xib */,
 				431C697E28F2C1A70082986A /* StringExtensions.swift */,
 				4396EAE02905B0D200A15D25 /* Tabs.swift */,
+				43196F8928F1DAB2003C793B /* TopicDetailView.swift */,
+				437A77DD290D5AA1001965B0 /* TopicRecordsTableViewController.swift */,
+				437A77DE290D5AA1001965B0 /* TopicRecordsTableViewController.xib */,
 				43804AB228D19ACD002880FE /* WelcomeWindowConnectionsViewController.swift */,
 				43804AB328D19ACD002880FE /* WelcomeWindowConnectionsViewController.xib */,
 				43CD623D28CE282400095144 /* WelcomeWindowContentViewController.swift */,
@@ -189,13 +198,10 @@
 				43CD623928CE27DB00095144 /* WelcomeWindowController.swift */,
 				43CD623828CE27DB00095144 /* WelcomeWindowController.xib */,
 				43CD623628CE27B200095144 /* WindowManager.swift */,
-				437887F528E9FE5900D0B263 /* WorkspaceBrokerDetailView.swift */,
 				436E720428D75B0500ECBF49 /* WorkspaceDetailViewController.swift */,
 				436E720528D75B0500ECBF49 /* WorkspaceDetailViewController.xib */,
-				43196F8B28F1DB94003C793B /* WorkspaceGroupDetailView.swift */,
 				436E720028D759F400ECBF49 /* WorkspaceSidebarViewController.swift */,
 				436E720128D759F400ECBF49 /* WorkspaceSidebarViewController.xib */,
-				43196F8928F1DAB2003C793B /* WorkspaceTopicDetailView.swift */,
 				436E71F828D7511400ECBF49 /* WorkspaceWindowController.swift */,
 				436E71F928D7511400ECBF49 /* WorkspaceWindowController.xib */,
 			);
@@ -298,6 +304,7 @@
 				43CD621E28CE24B100095144 /* MainMenu.xib in Resources */,
 				43804AB928D1A026002880FE /* ConnectionTableCellView.xib in Resources */,
 				43D3AEAC28FFDF3500D52E92 /* PreferencesWindowController.xib in Resources */,
+				437A77E0290D5AA1001965B0 /* TopicRecordsTableViewController.xib in Resources */,
 				436E720328D759F400ECBF49 /* WorkspaceSidebarViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -350,7 +357,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				43196F8C28F1DB94003C793B /* WorkspaceGroupDetailView.swift in Sources */,
+				43196F8C28F1DB94003C793B /* GroupDetailView.swift in Sources */,
 				43D3AEA828FFD96500D52E92 /* Defaults.swift in Sources */,
 				43CD622F28CE258100095144 /* Backend.swift in Sources */,
 				431C697F28F2C1A70082986A /* StringExtensions.swift in Sources */,
@@ -361,7 +368,7 @@
 				431C698228F2E0C60082986A /* NewTopicFormViewController.swift in Sources */,
 				43CD624828CE3B5D00095144 /* ConnectionDetailsFormViewController.swift in Sources */,
 				4395503828FD45B000CC0050 /* GroupOffsetsOutlineViewController.swift in Sources */,
-				43196F8A28F1DAB2003C793B /* WorkspaceTopicDetailView.swift in Sources */,
+				43196F8A28F1DAB2003C793B /* TopicDetailView.swift in Sources */,
 				43D03DD428FAC6030049D44D /* Keychain.swift in Sources */,
 				432C24632903F03B00C6F336 /* Error.swift in Sources */,
 				43D03DD828FB03940049D44D /* Identifiers.swift in Sources */,
@@ -374,12 +381,13 @@
 				43CD623128CE258F00095144 /* BackendExtensions.swift in Sources */,
 				43D03DD628FAFE3B0049D44D /* Notifications.swift in Sources */,
 				4396EAE12905B0D200A15D25 /* Tabs.swift in Sources */,
+				437A77DF290D5AA1001965B0 /* TopicRecordsTableViewController.swift in Sources */,
 				43CD623E28CE282400095144 /* WelcomeWindowContentViewController.swift in Sources */,
 				4314EDF828D85E0E00431770 /* SidebarGroupCellView.swift in Sources */,
 				436E71FA28D7511400ECBF49 /* WorkspaceWindowController.swift in Sources */,
 				43D3AEA628FFD8D100D52E92 /* Pasteboard.swift in Sources */,
 				433C5E8B29066310005F4C4B /* Infos.swift in Sources */,
-				437887F628E9FE5900D0B263 /* WorkspaceBrokerDetailView.swift in Sources */,
+				437887F628E9FE5900D0B263 /* BrokerDetailView.swift in Sources */,
 				436E720D28D760BF00ECBF49 /* SidebarEntryCellView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

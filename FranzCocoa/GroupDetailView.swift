@@ -1,7 +1,7 @@
 import NoiseSerde
 import SwiftUI
 
-struct WorkspaceGroupDetailView: View {
+struct GroupDetailView: View {
   var id: UVarint
   var group: Group
   weak var delegate: WorkspaceDetailDelegate?

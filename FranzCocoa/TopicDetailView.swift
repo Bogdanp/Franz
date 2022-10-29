@@ -1,47 +1,46 @@
 import NoiseSerde
 import SwiftUI
 
-struct WorkspaceBrokerDetailView: View {
+struct TopicDetailView: View {
   var id: UVarint
-  var broker: Broker
+  var topic: Topic
   weak var delegate: WorkspaceDetailDelegate?
 
   @State private var configs = [ResourceConfig]()
-  @State private var currentTab = TabState.shared.get(.brokerDetail) as? Tab ?? Tab.info
+  @State private var currentTab = TabState.shared.get(.topicDetail) as? Tab ?? Tab.info
 
   var body: some View {
     VStack(alignment: .leading) {
       HStack(alignment: .top) {
         VStack(alignment: .leading) {
-          Text(broker.host)
+          Text(topic.name)
             .font(.title)
             .textSelection(.enabled)
-          Text("Broker")
+          Text("Topic")
             .font(.subheadline)
             .foregroundColor(.secondary)
 
           Tabs(
-            autosaveId: .brokerDetail,
+            autosaveId: .topicDetail,
             items: [
               .init(id: .info, symbol: "info.circle.fill", shortcut: .init("1")),
-              .init(id: .config, symbol: "gearshape.fill", shortcut: .init("2")),
+              .init(id: .messages, symbol: "archivebox.fill", shortcut: .init("2")),
+              .init(id: .config, symbol: "gearshape.fill", shortcut: .init("3")),
             ],
             selection: $currentTab
           ) { item in
             switch item.id {
             case .info:
               Infos {
-                Info(label: "Address", description: broker.address)
-                Info(label: "Node ID", description: "\(broker.id)")
-                Info(label: "Controller", description: broker.isController ? "yes" : "no", divider: broker.rack != nil)
-                if let rack = broker.rack {
-                  Info(label: "Rack", description: "\(rack)", divider: false)
-                }
+                Info(label: "Partitions", description: String(topic.partitions.count))
+                Info(label: "Internal", description: topic.isInternal ? "yes" : "no", divider: false)
               }
+            case .messages:
+              Text("messages")
             case .config:
               ResourceConfigTable(configs: $configs)
                 .onAppear {
-                  fetchConfig()
+                  fetchConfigs()
                 }
             }
           }
@@ -53,13 +52,13 @@ struct WorkspaceBrokerDetailView: View {
     .padding()
   }
 
-  private func fetchConfig() {
+  private func fetchConfigs() {
     guard let delegate else { return }
     let status = delegate.makeStatusProc()
     status("Fetching configs...")
     Backend.shared.getResourceConfigs(
-      forResourceNamed: String(broker.id),
-      resourceType: "broker",
+      forResourceNamed: topic.name,
+      resourceType: "topic",
       inWorkspace: id
     ).onComplete { configs in
       self.configs = configs
@@ -70,5 +69,6 @@ struct WorkspaceBrokerDetailView: View {
 
 fileprivate enum Tab {
   case info
+  case messages
   case config
 }
