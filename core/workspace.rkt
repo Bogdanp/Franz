@@ -8,6 +8,7 @@
          "broker.rkt"
          "connection-details.rkt"
          "group.rkt"
+         "iterator.rkt"
          "pool.rkt")
 
 (define-rpc (open-workspace [with-conn conn : ConnectionDetails]
@@ -76,16 +77,23 @@
       (kerr:raise-server-error err))))
 
 (define-rpc (open-iterator [for-topic topic : String]
-                           [and-offset offset : Symbol]
+                           [and-offset offset : IteratorOffset]
                            [in-workspace id : UVarint] : UVarint)
-  (pool-open-iterator id topic offset))
+  (pool-open-iterator id topic (cond
+                                 [(IteratorOffset.earliest? offset) 'earliest]
+                                 [(IteratorOffset.latest? offset) 'latest]
+                                 [(IteratorOffset.exact? offset)
+                                  (IteratorOffset.exact-offset offset)]
+                                 [else
+                                  (raise-argument-error 'open-iterator "IteratorOffset?" offset)])))
 
-(define-rpc (iterator-fetch [_ id : UVarint])
-  (for ([r (in-vector (pool-iterator-fetch id))])
-    (println `(record
-               ,(k:record-offset r)
-               ,(k:record-key r)
-               ,(k:record-value r)))))
+(define-rpc (iterator-fetch [_ id : UVarint] : (Listof IteratorRecord))
+  (for/list ([r (in-vector (pool-iterator-fetch id))])
+    (make-IteratorRecord
+     #:partition-id (k:record-partition-id r)
+     #:offset (k:record-offset r)
+     #:key (k:record-key r)
+     #:value (k:record-value r))))
 
 (define-rpc (close-iterator [with-id id : UVarint])
   (pool-close-iterator id))

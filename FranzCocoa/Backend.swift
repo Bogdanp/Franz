@@ -3,6 +3,40 @@ import Foundation
 import NoiseBackend
 import NoiseSerde
 
+public enum IteratorOffset: Readable, Writable {
+  case earliest
+  case latest
+  case exact(UVarint)
+
+  public static func read(from inp: InputPort, using buf: inout Data) -> IteratorOffset {
+    let tag = UVarint.read(from: inp, using: &buf)
+    switch tag {
+    case 0x0000:
+      return .earliest
+    case 0x0001:
+      return .latest
+    case 0x0002:
+      return .exact(
+        UVarint.read(from: inp, using: &buf)
+      )
+    default:
+      preconditionFailure("IteratorOffset: unexpected tag \(tag)")
+    }
+  }
+
+  public func write(to out: OutputPort) {
+    switch self {
+    case .earliest:
+      UVarint(0x0000).write(to: out)
+    case .latest:
+      UVarint(0x0001).write(to: out)
+    case .exact(let offset):
+      UVarint(0x0002).write(to: out)
+      offset.write(to: out)
+    }
+  }
+}
+
 public struct Broker: Readable, Writable {
   public let id: UVarint
   public let host: String
@@ -215,6 +249,41 @@ public struct GroupTopic: Readable, Writable {
   public func write(to out: OutputPort) {
     name.write(to: out)
     partitions.write(to: out)
+  }
+}
+
+public struct IteratorRecord: Readable, Writable {
+  public let partitionId: UVarint
+  public let offset: UVarint
+  public let key: Data?
+  public let value: Data?
+
+  public init(
+    partitionId: UVarint,
+    offset: UVarint,
+    key: Data?,
+    value: Data?
+  ) {
+    self.partitionId = partitionId
+    self.offset = offset
+    self.key = key
+    self.value = value
+  }
+
+  public static func read(from inp: InputPort, using buf: inout Data) -> IteratorRecord {
+    return IteratorRecord(
+      partitionId: UVarint.read(from: inp, using: &buf),
+      offset: UVarint.read(from: inp, using: &buf),
+      key: Data?.read(from: inp, using: &buf),
+      value: Data?.read(from: inp, using: &buf)
+    )
+  }
+
+  public func write(to out: OutputPort) {
+    partitionId.write(to: out)
+    offset.write(to: out)
+    key.write(to: out)
+    value.write(to: out)
   }
 }
 
@@ -541,17 +610,19 @@ public class Backend {
     )
   }
 
-  public func iteratorFetch(_ id: UVarint) -> Future<String, Void> {
+  public func iteratorFetch(_ id: UVarint) -> Future<String, [IteratorRecord]> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x000f).write(to: out)
         id.write(to: out)
       },
-      readProc: { (inp: InputPort, buf: inout Data) -> Void in }
+      readProc: { (inp: InputPort, buf: inout Data) -> [IteratorRecord] in
+        return [IteratorRecord].read(from: inp, using: &buf)
+      }
     )
   }
 
-  public func openIterator(forTopic topic: String, andOffset offset: Symbol, inWorkspace id: UVarint) -> Future<String, UVarint> {
+  public func openIterator(forTopic topic: String, andOffset offset: IteratorOffset, inWorkspace id: UVarint) -> Future<String, UVarint> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0010).write(to: out)
