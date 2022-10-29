@@ -25,7 +25,8 @@
  pool-reset-topic-offsets
  pool-reset-partition-offset
  pool-open-iterator
- pool-iterator-fetch
+ pool-get-records
+ pool-reset-iterator
  pool-close-iterator
  pool-shutdown)
 
@@ -235,27 +236,32 @@
                    [`(open-iterator ,res-ch ,nack ,id ,topic ,offset)
                     (with-handlers ([exn:fail? (λ (e) (state-add-req s (req e res-ch nack)))])
                       (define c (state-ref-client s id))
-                      (define it (k:make-topic-iterator c topic #:offset offset #:max-bytes (* 1 1024)))
+                      (define it (k:make-topic-iterator c topic offset))
                       (define-values (iterator-id next-state)
                         (state-add-iterator s it))
                       (state-add-req next-state (req iterator-id res-ch nack)))]
 
-                   [`(iterator-fetch ,res-ch ,nack ,id)
+                   [`(get-records ,res-ch ,nack ,id)
                     (define records
                       (delay/thread
-                       (sync (state-ref-iterator s id))))
+                       (k:get-records
+                        #:max-bytes (* 1 1024 1024)
+                        (state-ref-iterator s id))))
                     (state-add-req s (req records res-ch nack))]
 
+                   [`(reset-iterator ,res-ch ,nack ,id ,offset)
+                    (define result
+                      (delay/thread
+                       (k:reset-topic-iterator!
+                        (state-ref-iterator s id)
+                        offset)))
+                    (state-add-req s (req result res-ch nack))]
+
                    [`(close-iterator ,res-ch ,nack ,id)
-                    (define iterator (state-ref-iterator s id))
-                    (when iterator
-                      (k:stop-topic-iterator iterator))
                     (~> (state-remove-iterator s id)
                         (state-add-req _ (req #t res-ch nack)))]
 
                    [`(shutdown ,res-ch ,nack)
-                    (for ([it (in-hash-values (state-iterators s))])
-                      (k:stop-topic-iterator it))
                     (for ([c (in-hash-values (state-clients s))])
                       (k:disconnect-all c))
                     (~> (state-clear-iterators s)
@@ -312,8 +318,11 @@
 (define (pool-open-iterator id topic offset [p (current-pool)])
   (sync (pool-send p open-iterator id topic offset)))
 
-(define (pool-iterator-fetch id [p (current-pool)])
-  (force (sync (pool-send p iterator-fetch id))))
+(define (pool-get-records id [p (current-pool)])
+  (force (sync (pool-send p get-records id))))
+
+(define (pool-reset-iterator id offset [p (current-pool)])
+  (force (sync (pool-send p reset-iterator id offset))))
 
 (define (pool-close-iterator id [p (current-pool)])
   (sync (pool-send p close-iterator id)))

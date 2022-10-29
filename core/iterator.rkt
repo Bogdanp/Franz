@@ -3,6 +3,7 @@
 (require noise/serde)
 
 (provide
+ IteratorOffset->
  (enum-out IteratorOffset)
  (record-out IteratorRecord))
 
@@ -16,3 +17,12 @@
   [offset : UVarint]
   [key : (Optional Bytes)]
   [value : (Optional Bytes)])
+
+(define (IteratorOffset-> io)
+  (cond
+    [(IteratorOffset.earliest? io) 'earliest]
+    [(IteratorOffset.latest? io) 'latest]
+    [(IteratorOffset.exact? io)
+     (IteratorOffset.exact-offset io)]
+    [else
+     (raise-argument-error 'IteratorOffset-> "IteratorOffset?" io)]))

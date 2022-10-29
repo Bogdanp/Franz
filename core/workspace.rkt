@@ -79,21 +79,19 @@
 (define-rpc (open-iterator [for-topic topic : String]
                            [and-offset offset : IteratorOffset]
                            [in-workspace id : UVarint] : UVarint)
-  (pool-open-iterator id topic (cond
-                                 [(IteratorOffset.earliest? offset) 'earliest]
-                                 [(IteratorOffset.latest? offset) 'latest]
-                                 [(IteratorOffset.exact? offset)
-                                  (IteratorOffset.exact-offset offset)]
-                                 [else
-                                  (raise-argument-error 'open-iterator "IteratorOffset?" offset)])))
+  (pool-open-iterator id topic (IteratorOffset-> offset)))
 
-(define-rpc (iterator-fetch [_ id : UVarint] : (Listof IteratorRecord))
-  (for/list ([r (in-vector (pool-iterator-fetch id))])
+(define-rpc (get-records [_ id : UVarint] : (Listof IteratorRecord))
+  (for/list ([r (in-vector (pool-get-records id))])
     (make-IteratorRecord
      #:partition-id (k:record-partition-id r)
      #:offset (k:record-offset r)
      #:key (k:record-key r)
      #:value (k:record-value r))))
+
+(define-rpc (reset-iterator [with-id id : UVarint]
+                            [to-offset offset : IteratorOffset])
+  (pool-reset-iterator id (IteratorOffset-> offset)))
 
 (define-rpc (close-iterator [with-id id : UVarint])
   (pool-close-iterator id))
