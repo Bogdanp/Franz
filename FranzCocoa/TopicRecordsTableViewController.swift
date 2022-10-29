@@ -1,4 +1,5 @@
 import Cocoa
+import Dispatch
 import NoiseSerde
 import SwiftUI
 
@@ -11,8 +12,9 @@ class TopicRecordsTableViewController: NSViewController {
   private var id: UVarint!
   private var topic: String!
   private var iteratorId: UVarint?
-
   private var records = [IteratorRecord]()
+  private var liveModeOn = false
+  private var liveModeCookie = 0
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -31,28 +33,85 @@ class TopicRecordsTableViewController: NSViewController {
     self.getRecords()
   }
 
-  private func getRecords(_ proc: @escaping ([IteratorRecord]) -> Void = { _ in }) {
+  func teardown() {
+    assert(Thread.isMainThread)
+    liveModeCookie += 1
+  }
+
+  private func getRecords(_ proc: @escaping ([IteratorRecord]) -> Bool = { _ in true }) {
     guard let delegate else { return }
     guard let iteratorId else { return }
 
     let status = delegate.makeStatusProc()
     status("Fetching records...")
     Backend.shared.getRecords(iteratorId).onComplete { records in
+      status("Ready")
+      if !proc(records) {
+        return
+      }
+
       if !records.isEmpty {
         self.records = records
       }
       self.tableView.reloadData()
-      status("Ready")
-      proc(records)
+    }
+  }
+
+  private func getRecords(withCookie cookie: Int, _ proc: @escaping ([IteratorRecord]) -> Bool) {
+    getRecords { records in
+      guard self.liveModeCookie == cookie else { return false }
+      return proc(records)
+    }
+  }
+
+  private func scheduleFetch(withCookie cookie: Int) {
+    getRecords(withCookie: cookie) { records in
+      var deadline = DispatchTime.now()
+      if records.isEmpty {
+        deadline = deadline.advanced(by: .seconds(1))
+      }
+      weak var ctl = self
+      DispatchQueue.main.asyncAfter(deadline: deadline) {
+        ctl?.scheduleFetch(withCookie: cookie)
+      }
+      return true
+    }
+  }
+
+  private func toggleLiveMode() {
+    assert(Thread.isMainThread)
+    guard let delegate else { return }
+    guard let iteratorId else { return }
+
+    if liveModeOn {
+      liveModeCookie += 1
+      liveModeOn = false
+      segmentedControl.setSelected(false, forSegment: 0)
+      return
+    }
+
+    let status = delegate.makeStatusProc()
+    let cookie = liveModeCookie
+    liveModeOn = true
+    status("Resetting iterator...")
+    Backend.shared.resetIterator(withId: iteratorId, toOffset: .latest).onComplete {
+      self.scheduleFetch(withCookie: cookie)
     }
   }
 
   @objc func didPressSegmentedControl(_ sender: NSSegmentedControl) {
-    if sender.selectedSegment == 1 {
+    let segment = sender.selectedSegment
+    switch segment {
+    case 0: // play/pause
+      toggleLiveMode()
+    case 1: // settings
+      sender.setSelected(false, forSegment: segment)
+    case 2: // more
+      sender.setSelected(false, forSegment: segment)
       sender.isEnabled = false
       getRecords { records in
         if records.isEmpty {
-          let bounds = sender.relativeBounds(forSegment: 1)
+          let bounds = sender.relativeBounds(forSegment: segment)
           let popover = NSPopover()
           popover.behavior = .transient
           popover.contentSize = NSSize(width: 200, height: 50)
@@ -60,7 +119,10 @@ class TopicRecordsTableViewController: NSViewController {
           popover.show(relativeTo: bounds, of: sender, preferredEdge: .minY)
         }
         sender.isEnabled = true
+        return true
       }
+    default:
+      ()
     }
   }
 }

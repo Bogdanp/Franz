@@ -3,6 +3,7 @@
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21225"/>
+        <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -189,12 +190,15 @@
                     <rect key="frame" x="0.0" y="0.0" width="606" height="30"/>
                     <subviews>
                         <segmentedControl verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="LNC-cy-bib">
-                            <rect key="frame" x="527" y="3" width="75" height="23"/>
-                            <segmentedCell key="cell" borderStyle="border" alignment="left" style="texturedRounded" trackingMode="momentary" id="0q3-bz-FKY">
+                            <rect key="frame" x="500" y="3" width="104" height="24"/>
+                            <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="selectAny" id="0q3-bz-FKY">
                                 <font key="font" metaFont="system"/>
                                 <segments>
-                                    <segment image="gearshape" catalog="system" width="32"/>
-                                    <segment image="chevron.right" catalog="system" width="32" tag="1"/>
+                                    <segment toolTip="Live Mode" image="playpause" catalog="system" width="32"/>
+                                    <segment width="32" tag="1">
+                                        <imageReference key="image" image="gearshape" catalog="system" symbolScale="default" variableValue="5.5511151231257827e-17"/>
+                                    </segment>
+                                    <segment toolTip="Load More Records..." image="chevron.right" catalog="system" width="32"/>
                                 </segments>
                             </segmentedCell>
                         </segmentedControl>
@@ -244,5 +248,6 @@
     <resources>
         <image name="chevron.right" catalog="system" width="10" height="14"/>
         <image name="gearshape" catalog="system" width="16" height="16"/>
+        <image name="playpause" catalog="system" width="20" height="13"/>
     </resources>
 </document>
