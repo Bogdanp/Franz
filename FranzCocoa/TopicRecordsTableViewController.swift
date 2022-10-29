@@ -89,12 +89,14 @@ class TopicRecordsTableViewController: NSViewController {
       liveModeCookie += 1
       liveModeOn = false
       segmentedControl.setSelected(false, forSegment: 0)
+      segmentedControl.setEnabled(true, forSegment: 2)
       return
     }
 
     let status = delegate.makeStatusProc()
     let cookie = liveModeCookie
     liveModeOn = true
+    segmentedControl.setEnabled(false, forSegment: 2)
     status("Resetting iterator...")
     Backend.shared.resetIterator(withId: iteratorId, toOffset: .latest).onComplete {
       self.scheduleFetch(withCookie: cookie)
