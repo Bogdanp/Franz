@@ -36,7 +36,11 @@ struct TopicDetailView: View {
                 Info(label: "Internal", description: topic.isInternal ? "yes" : "no", divider: false)
               }
             case .messages:
-              Text("messages")
+              TopicRecordsTable(
+                id: id,
+                topic: topic.name,
+                delegate: delegate
+              )
             case .config:
               ResourceConfigTable(configs: $configs)
                 .onAppear {

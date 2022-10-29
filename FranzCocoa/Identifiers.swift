@@ -17,4 +17,9 @@ extension NSUserInterfaceItemIdentifier {
 
   static let ResourceConfigConfig = Self("ResourceConfig.Config")
   static let ResourceConfigValue = Self("ResourceConfig.Value")
+
+  static let TopicRecordsPartitionId = Self("TopicRecords.PartitionId")
+  static let TopicRecordsOffset = Self("TopicRecords.Offset")
+  static let TopicRecordsKey = Self("TopicRecords.Key")
+  static let TopicRecordsValue = Self("TopicRecords.Value")
 }

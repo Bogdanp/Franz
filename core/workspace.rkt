@@ -83,11 +83,11 @@
 
 (define-rpc (get-records [_ id : UVarint] : (Listof IteratorRecord))
   (for/list ([r (in-vector (pool-get-records id))])
-    (make-IteratorRecord
-     #:partition-id (k:record-partition-id r)
-     #:offset (k:record-offset r)
-     #:key (k:record-key r)
-     #:value (k:record-value r))))
+    (IteratorRecord
+     (k:record-partition-id r)
+     (k:record-offset r)
+     (k:record-key r)
+     (k:record-value r))))
 
 (define-rpc (reset-iterator [with-id id : UVarint]
                             [to-offset offset : IteratorOffset])
