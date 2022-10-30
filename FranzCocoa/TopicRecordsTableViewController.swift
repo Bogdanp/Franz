@@ -17,6 +17,7 @@ class TopicRecordsTableViewController: NSViewController {
   private var items = [Item]()
   private var liveModeOn = false
   private var liveModeCookie = 0
+  private var sortDirection = SortDirection.asc
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -62,6 +63,15 @@ class TopicRecordsTableViewController: NSViewController {
         it = item
       }
       self.items.append(it)
+    }
+
+    self.items.sort { a, b in
+      switch sortDirection {
+      case .desc:
+        return a.id > b.id
+      case .asc:
+        return a.id < b.id
+      }
     }
 
     self.tableView.reloadData()
@@ -126,6 +136,7 @@ class TopicRecordsTableViewController: NSViewController {
     let status = delegate.makeStatusProc()
     let cookie = liveModeCookie
     setRecords([], byAppending: false)
+    sortDirection = .desc
     liveModeOn = true
     segmentedControl.setEnabled(false, forSegment: 2)
     status("Resetting iterator...")
@@ -162,11 +173,21 @@ class TopicRecordsTableViewController: NSViewController {
   }
 }
 
+// MARK: - SortDirection
+fileprivate enum SortDirection {
+  case asc
+  case desc
+}
+
 // MARK: - Item
 fileprivate class Item: NSObject {
-  struct Ident: Hashable, Equatable {
+  struct Ident: Hashable, Equatable, Comparable {
     let pid: UVarint
     let offset: UVarint
+
+    static func < (lhs: Item.Ident, rhs: Item.Ident) -> Bool {
+      return lhs.pid == rhs.pid ? lhs.offset < rhs.offset : lhs.pid < rhs.pid
+    }
   }
 
   var record: IteratorRecord
