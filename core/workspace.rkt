@@ -86,6 +86,7 @@
     (IteratorRecord
      (k:record-partition-id r)
      (k:record-offset r)
+     (k:record-timestamp r)
      (k:record-key r)
      (k:record-value r))))
 

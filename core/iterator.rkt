@@ -15,6 +15,7 @@
 (define-record IteratorRecord
   [partition-id : UVarint]
   [offset : UVarint]
+  [timestamp : UVarint]
   [key : (Optional Bytes)]
   [value : (Optional Bytes)])
 

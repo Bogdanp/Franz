@@ -255,17 +255,20 @@ public struct GroupTopic: Readable, Writable {
 public struct IteratorRecord: Readable, Writable {
   public let partitionId: UVarint
   public let offset: UVarint
+  public let timestamp: UVarint
   public let key: Data?
   public let value: Data?
 
   public init(
     partitionId: UVarint,
     offset: UVarint,
+    timestamp: UVarint,
     key: Data?,
     value: Data?
   ) {
     self.partitionId = partitionId
     self.offset = offset
+    self.timestamp = timestamp
     self.key = key
     self.value = value
   }
@@ -274,6 +277,7 @@ public struct IteratorRecord: Readable, Writable {
     return IteratorRecord(
       partitionId: UVarint.read(from: inp, using: &buf),
       offset: UVarint.read(from: inp, using: &buf),
+      timestamp: UVarint.read(from: inp, using: &buf),
       key: Data?.read(from: inp, using: &buf),
       value: Data?.read(from: inp, using: &buf)
     )
@@ -282,6 +286,7 @@ public struct IteratorRecord: Readable, Writable {
   public func write(to out: OutputPort) {
     partitionId.write(to: out)
     offset.write(to: out)
+    timestamp.write(to: out)
     key.write(to: out)
     value.write(to: out)
   }
