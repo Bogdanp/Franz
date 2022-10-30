@@ -93,10 +93,11 @@ class TopicRecordsTableViewController: NSViewController {
     }
 
     var totalBytes = UVarint(0)
+    var keepBytes = self.options.keepBytes
     for (row, it) in self.items.enumerated() {
       totalBytes += UVarint(it.record.key?.count ?? 0)
       totalBytes += UVarint(it.record.value?.count ?? 0)
-      if totalBytes > self.options.keepBytes {
+      if totalBytes/1024/1024 > keepBytes {
         self.items.removeLast(self.items.count-row)
         break
       }
@@ -197,7 +198,7 @@ class TopicRecordsTableViewController: NSViewController {
         popover.close()
       }
       popover.behavior = .semitransient
-      popover.contentSize = NSSize(width: 250, height: 200)
+      popover.contentSize = NSSize(width: 250, height: 260)
       popover.contentViewController = NSHostingController(
         rootView: form.frame(
           width: popover.contentSize.width,
@@ -410,15 +411,23 @@ fileprivate final class TopicRecordsOptions: ObservableObject, Codable {
   @Published var keyFormat = ContentType.binary
   @Published var valueFormat = ContentType.binary
   @Published var sortDirection = SortDirection.asc
-  @Published var maxBytes = UVarint(1 * 1024 * 1024)
-  @Published var keepBytes = UVarint(10 * 1024 * 1024)
+  @Published var maxMBScaled = 0.0
+  @Published var keepMBScaled = 1.0
+
+  var maxBytes: UVarint {
+    Self.descale(maxMBScaled)*1024*1024
+  }
+
+  var keepBytes: UVarint {
+    Self.descale(maxMBScaled)*1024*1024
+  }
 
   struct Data: Codable {
     let keyFormat: ContentType
     let valueFormat: ContentType
     let sortDirection: SortDirection
-    let maxBytes: UVarint
-    let keepBytes: UVarint
+    let maxMBScaled: Double
+    let keepMBScaled: Double
   }
 
   init() {
@@ -430,8 +439,8 @@ fileprivate final class TopicRecordsOptions: ObservableObject, Codable {
     self.keyFormat = data.keyFormat
     self.valueFormat = data.valueFormat
     self.sortDirection = data.sortDirection
-    self.maxBytes = data.maxBytes
-    self.keepBytes = data.keepBytes
+    self.maxMBScaled = data.maxMBScaled
+    self.keepMBScaled = data.keepMBScaled
   }
 
   func encode(to encoder: Encoder) throws {
@@ -439,10 +448,14 @@ fileprivate final class TopicRecordsOptions: ObservableObject, Codable {
       keyFormat: keyFormat,
       valueFormat: valueFormat,
       sortDirection: sortDirection,
-      maxBytes: maxBytes,
-      keepBytes: keepBytes
+      maxMBScaled: maxMBScaled,
+      keepMBScaled: keepMBScaled
     )
     try data.encode(to: encoder)
+  }
+
+  static func descale(_ mbScaled: Double) -> UVarint {
+    return UVarint(pow(2, mbScaled))
   }
 }
 
@@ -451,12 +464,12 @@ fileprivate struct TopicRecordsOptionsForm: View {
 
   let save: () -> Void
 
-  var bytesFormatter: NumberFormatter = {
-    let fmt = NumberFormatter()
-    fmt.allowsFloats = false
-    fmt.minimum = 1
-    return fmt
-  }()
+  var formattedMaxMB: String {
+    "\(String(describing: UVarint(TopicRecordsOptions.descale(model.maxMBScaled))))MB"
+  }
+  var formattedKeepMB: String {
+    "\(String(describing: UVarint(TopicRecordsOptions.descale(model.keepMBScaled))))MB"
+  }
 
   var body: some View {
     Form {
@@ -474,12 +487,27 @@ fileprivate struct TopicRecordsOptionsForm: View {
         Text("Ascending").tag(SortDirection.asc)
         Text("Descending").tag(SortDirection.desc)
       }
-      TextField("Max Bytes:", value: $model.maxBytes, formatter: bytesFormatter)
-      TextField("Keep Bytes:", value: $model.keepBytes, formatter: bytesFormatter)
+      VStack(alignment: .trailing, spacing: 0) {
+        Slider(value: $model.maxMBScaled, in: 0...7, step: 1) {
+          Text("Max MB:")
+        }
+        Text(formattedMaxMB)
+          .font(.system(size: 10).monospacedDigit())
+          .foregroundColor(.secondary)
+      }
+      VStack(alignment: .trailing, spacing: 0) {
+        Slider(value: $model.keepMBScaled, in: 0...10, step: 1) {
+          Text("Keep MB:")
+        }
+        Text(formattedKeepMB)
+          .font(.system(size: 10).monospacedDigit())
+          .foregroundColor(.secondary)
+      }
       Button("Save") {
         save()
       }
       .buttonStyle(.borderedProminent)
+      .keyboardShortcut(.defaultAction)
     }
     .padding()
   }
