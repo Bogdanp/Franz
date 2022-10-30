@@ -252,7 +252,7 @@
                         </box>
                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="5m5-1S-yET">
                             <rect key="frame" x="4" y="9" width="31" height="13"/>
-                            <textFieldCell key="cell" lineBreakMode="clipping" title="Label" id="68p-Q1-zac">
+                            <textFieldCell key="cell" lineBreakMode="truncatingTail" title="Label" id="68p-Q1-zac">
                                 <font key="font" metaFont="system" size="10"/>
                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>

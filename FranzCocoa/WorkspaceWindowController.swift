@@ -42,8 +42,11 @@ class WorkspaceWindowController: NSWindowController {
     let sidebarItem = NSSplitViewItem(sidebarWithViewController: sidebarCtl)
     sidebarItem.minimumThickness = 200
 
+    let detailItem = NSSplitViewItem(viewController: detailCtl)
+    detailItem.minimumThickness = 400
+
     splitCtl.addSplitViewItem(sidebarItem)
-    splitCtl.addSplitViewItem(NSSplitViewItem(viewController: detailCtl))
+    splitCtl.addSplitViewItem(detailItem)
     splitCtl.splitView.dividerStyle = .thin
 
     reloadMetadataMenuItem = MainMenu.shared.find(itemByPath: [.ConnectionMenuItem, .ReloadMetadataMenuItem])
