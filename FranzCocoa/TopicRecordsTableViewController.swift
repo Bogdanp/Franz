@@ -172,8 +172,11 @@ class TopicRecordsTableViewController: NSViewController {
         popover.close()
       }
       popover.behavior = .semitransient
-      popover.contentSize = NSSize(width: 250, height: 175)
-      popover.contentViewController = NSHostingController(rootView: form.frame(width: 250, height: 175))
+      popover.contentSize = NSSize(width: 250, height: 200)
+      popover.contentViewController = NSHostingController(
+        rootView: form.frame(
+          width: popover.contentSize.width,
+          height: popover.contentSize.height))
       popover.show(relativeTo: bounds, of: sender, preferredEdge: .minY)
     case 2: // more
       sender.setSelected(false, forSegment: segment)
@@ -290,7 +293,7 @@ extension TopicRecordsTableViewController: NSTableViewDelegate {
   }
 
   func tableView(_ tableView: NSTableView, pasteboardWriterForRow row: Int) -> NSPasteboardWriting? {
-    let provider = NSFilePromiseProvider(fileType: UTType.data.identifier, delegate: self)
+    let provider = NSFilePromiseProvider(fileType: options.valueFormat.utType.identifier, delegate: self)
     provider.userInfo = row
     return provider
   }
@@ -303,8 +306,13 @@ extension TopicRecordsTableViewController: NSFilePromiseProviderDelegate {
     guard let topic, let row = filePromiseProvider.userInfo as? Int else {
       preconditionFailure()
     }
+    let ext = UTType(fileType)?.preferredFilenameExtension
     let record = items[row].record
-    return "\(topic)@\(record.partitionId)-\(record.offset)"
+    let filename = "\(topic)@\(record.partitionId)-\(record.offset)"
+    if let ext, ext != "" {
+      return "\(filename).\(ext)"
+    }
+    return filename
   }
 
   func filePromiseProvider(_ filePromiseProvider: NSFilePromiseProvider,
@@ -349,10 +357,29 @@ struct TopicRecordsTable: NSViewControllerRepresentable {
 }
 
 // MARK: - TopicRecordsOptions+Form
+fileprivate enum ContentType {
+  case binary
+  case json
+  case text
+
+  var utType: UTType {
+    switch self {
+    case .binary:
+      return .data
+    case .json:
+      return .json
+    case .text:
+      return .plainText
+    }
+  }
+}
+
 fileprivate class TopicRecordsOptions: ObservableObject {
   @Published var sortDirection = SortDirection.asc
   @Published var maxBytes = UVarint(1 * 1024 * 1024)
   @Published var keepBytes = UVarint(10 * 1024 * 1024)
+  @Published var keyFormat = ContentType.binary
+  @Published var valueFormat = ContentType.binary
 }
 
 fileprivate struct TopicRecordsOptionsForm: View {
@@ -369,6 +396,16 @@ fileprivate struct TopicRecordsOptionsForm: View {
 
   var body: some View {
     Form {
+      Picker("Key Format:", selection: $model.keyFormat) {
+        Text("Binary").tag(ContentType.binary)
+        Text("JSON").tag(ContentType.json)
+        Text("Text").tag(ContentType.text)
+      }
+      Picker("Value Format:", selection: $model.valueFormat) {
+        Text("Binary").tag(ContentType.binary)
+        Text("JSON").tag(ContentType.json)
+        Text("Text").tag(ContentType.text)
+      }
       Picker("Sort:", selection: $model.sortDirection) {
         Text("Ascending").tag(SortDirection.asc)
         Text("Descending").tag(SortDirection.desc)
