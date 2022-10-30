@@ -287,7 +287,7 @@ extension TopicRecordsTableViewController: NSTableViewDelegate {
         dateStyle: .short,
         timeStyle: .medium
       )
-      textField.font = .systemFont(ofSize: 12)
+      textField.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
     } else if id == .TopicRecordsOffset {
       textField.stringValue = "\(record.offset)"
       textField.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
@@ -301,7 +301,7 @@ extension TopicRecordsTableViewController: NSTableViewDelegate {
 
   private func setTextFieldData(_ textField: NSTextField, data: Data?) {
     if let data {
-      if let string = String(data: data, encoding: .utf8) {
+      if let string = String.utf8(from: data, withMaxLength: 150) {
         textField.stringValue = string
         return
       }
