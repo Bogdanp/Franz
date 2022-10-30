@@ -14,16 +14,19 @@ extension String {
         }
       }
     }
-    if let str = string, !str.hasControlCharacters() {
-      return str
+    if let str = string, str.hasControlCharacters() {
+      return nil
     }
-    return nil
+    return string
   }
 
   private func hasControlCharacters() -> Bool {
     return unicodeScalars.first { scalar in
       let cat = scalar.properties.generalCategory
-      return cat == .control || cat == .privateUse
+      return ((cat == .control || cat == .privateUse) &&
+              scalar != "\n" &&
+              scalar != "\r" &&
+              scalar != "\t")
     } != nil
   }
 
