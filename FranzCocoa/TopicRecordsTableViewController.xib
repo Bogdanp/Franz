@@ -194,8 +194,8 @@
                             <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="selectAny" id="0q3-bz-FKY">
                                 <font key="font" metaFont="system"/>
                                 <segments>
-                                    <segment toolTip="Live Mode" image="playpause" catalog="system" width="32"/>
-                                    <segment width="32" tag="1">
+                                    <segment toolTip="Toggle Live Mode" image="playpause" catalog="system" width="32"/>
+                                    <segment toolTip="Options..." width="32" tag="1">
                                         <imageReference key="image" image="gearshape" catalog="system" symbolScale="default" variableValue="5.5511151231257827e-17"/>
                                     </segment>
                                     <segment toolTip="Load More Records..." image="chevron.right" catalog="system" width="32"/>
