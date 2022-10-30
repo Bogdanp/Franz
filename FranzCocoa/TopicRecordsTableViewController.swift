@@ -8,6 +8,7 @@ import UniformTypeIdentifiers
 class TopicRecordsTableViewController: NSViewController {
   @IBOutlet weak var tableView: NSTableView!
   @IBOutlet weak var segmentedControl: NSSegmentedControl!
+  @IBOutlet weak var statsLabel: NSTextField!
 
   weak var delegate: WorkspaceDetailDelegate?
 
@@ -34,6 +35,10 @@ class TopicRecordsTableViewController: NSViewController {
 
     segmentedControl.target = self
     segmentedControl.action = #selector(didPressSegmentedControl(_:))
+
+    statsLabel.font = .monospacedDigitSystemFont(ofSize: 10, weight: .regular)
+    statsLabel.textColor = .secondaryLabelColor
+    statsLabel.stringValue = ""
   }
 
   func configure(withId id: UVarint, andTopic topic: String) {
@@ -93,11 +98,11 @@ class TopicRecordsTableViewController: NSViewController {
     }
 
     var totalBytes = UVarint(0)
-    var keepBytes = self.options.keepBytes
+    let keepBytes = self.options.keepBytes
     for (row, it) in self.items.enumerated() {
       totalBytes += UVarint(it.record.key?.count ?? 0)
       totalBytes += UVarint(it.record.value?.count ?? 0)
-      if totalBytes/1024/1024 > keepBytes {
+      if totalBytes > keepBytes {
         self.items.removeLast(self.items.count-row)
         break
       }
@@ -107,6 +112,9 @@ class TopicRecordsTableViewController: NSViewController {
     if let selectedItem, let selectedRow = self.items.firstIndex(of: selectedItem) {
       self.tableView.selectRowIndexes([selectedRow], byExtendingSelection: false)
     }
+
+    let totalBytesStr = ByteCountFormatter().string(fromByteCount: Int64(totalBytes))
+    self.statsLabel.stringValue = "Records: \(self.items.count) (\(totalBytesStr))"
   }
 
   private func loadRecords(byAppending: Bool = true,
@@ -448,7 +456,7 @@ fileprivate final class TopicRecordsOptions: ObservableObject, Codable {
   }
 
   var keepBytes: UVarint {
-    Self.descale(maxMBScaled)*1024*1024
+    Self.descale(keepMBScaled)*1024*1024
   }
 
   struct Data: Codable {
