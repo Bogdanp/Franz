@@ -2,7 +2,7 @@ import Foundation
 import SwiftUI
 
 struct Tabs<Content: View, ID: Hashable>: View {
-  var autosaveId: TabAutosaveId? = nil
+  var autosaveId: TabAutosaveId?
   var items: [TabItem<ID>]
   @Binding var selection: ID
   @ViewBuilder var content: (TabItem<ID>) -> Content
@@ -67,4 +67,3 @@ enum TabAutosaveId {
   case brokerDetail
   case topicDetail
 }
-

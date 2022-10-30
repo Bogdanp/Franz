@@ -61,6 +61,7 @@ class TopicRecordsTableViewController: NSViewController {
     liveModeCookie += 1
   }
 
+  // TODO: This can be slow when there are many records so we may have to move it off the main thread.
   private func setRecords(_ records: [IteratorRecord], byAppending appending: Bool = true) {
     var known = [Item.Ident: Item]()
     for item in self.items {
@@ -84,13 +85,11 @@ class TopicRecordsTableViewController: NSViewController {
       self.items.append(it)
     }
 
-    self.items.sort { a, b in
-      switch self.options.sortDirection {
-      case .desc:
-        return a.id > b.id
-      case .asc:
-        return a.id < b.id
-      }
+    switch self.options.sortDirection {
+    case .desc:
+      self.items.sort { $0.id > $1.id }
+    case .asc:
+      self.items.sort { $0.id < $1.id }
     }
 
     var totalBytes = UVarint(0)
@@ -191,7 +190,7 @@ class TopicRecordsTableViewController: NSViewController {
             try Defaults.shared.set(codable: self.options, forKey: key)
           } catch { }
         }
-        self.loadRecords()
+        self.setRecords(self.items.map(\.record))
         popover.close()
       }
       popover.behavior = .semitransient
