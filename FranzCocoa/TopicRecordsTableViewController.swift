@@ -1,5 +1,6 @@
 import Cocoa
 import Dispatch
+import Foundation
 import NoiseSerde
 import SwiftUI
 import UniformTypeIdentifiers
@@ -13,7 +14,7 @@ class TopicRecordsTableViewController: NSViewController {
   private var id: UVarint!
   private var topic: String!
   private var iteratorId: UVarint?
-  private var records = [IteratorRecord]()
+  private var items = [Item]()
   private var liveModeOn = false
   private var liveModeCookie = 0
 
@@ -32,7 +33,7 @@ class TopicRecordsTableViewController: NSViewController {
     self.id = id
     self.topic = topic
     self.iteratorId = Error.wait(Backend.shared.openIterator(forTopic: topic, andOffset: .earliest, inWorkspace: id))
-    self.getRecords()
+    self.loadRecords()
   }
 
   func teardown() {
@@ -40,7 +41,37 @@ class TopicRecordsTableViewController: NSViewController {
     liveModeCookie += 1
   }
 
-  private func getRecords(_ proc: @escaping ([IteratorRecord]) -> Bool = { _ in true }) {
+  private func setRecords(_ records: [IteratorRecord], byAppending appending: Bool = true) {
+    var known = [Item.Ident: Item]()
+    for item in self.items {
+      known[item.id] = item
+    }
+
+    var selectedItem: Item?
+    if self.tableView.selectedRow >= 0 {
+      selectedItem = self.items[self.tableView.selectedRow]
+    }
+
+    if !appending {
+      self.items.removeAll(keepingCapacity: true)
+    }
+    for r in records {
+      var it = Item(record: r)
+      if let item = known[it.id] {
+        item.record = r
+        it = item
+      }
+      self.items.append(it)
+    }
+
+    self.tableView.reloadData()
+    if let selectedItem, let selectedRow = self.items.firstIndex(of: selectedItem) {
+      self.tableView.selectRowIndexes([selectedRow], byExtendingSelection: false)
+    }
+  }
+
+  private func loadRecords(byAppending: Bool = true,
+                           completionHandler: @escaping ([IteratorRecord]) -> Bool = { _ in true }) {
     guard let delegate else { return }
     guard let iteratorId else { return }
 
@@ -48,19 +79,18 @@ class TopicRecordsTableViewController: NSViewController {
     status("Fetching records...")
     Backend.shared.getRecords(iteratorId).onComplete { records in
       status("Ready")
-      if !proc(records) {
+      if !completionHandler(records) {
         return
       }
 
       if !records.isEmpty {
-        self.records = records
+        self.setRecords(records, byAppending: byAppending)
       }
-      self.tableView.reloadData()
     }
   }
 
   private func getRecords(withCookie cookie: Int, _ proc: @escaping ([IteratorRecord]) -> Bool) {
-    getRecords { records in
+    loadRecords { records in
       guard self.liveModeCookie == cookie else { return false }
       return proc(records)
     }
@@ -95,6 +125,7 @@ class TopicRecordsTableViewController: NSViewController {
 
     let status = delegate.makeStatusProc()
     let cookie = liveModeCookie
+    setRecords([], byAppending: false)
     liveModeOn = true
     segmentedControl.setEnabled(false, forSegment: 2)
     status("Resetting iterator...")
@@ -113,7 +144,7 @@ class TopicRecordsTableViewController: NSViewController {
     case 2: // more
       sender.setSelected(false, forSegment: segment)
       sender.isEnabled = false
-      getRecords { records in
+      loadRecords(byAppending: false) { records in
         if records.isEmpty {
           let bounds = sender.relativeBounds(forSegment: segment)
           let popover = NSPopover()
@@ -131,6 +162,28 @@ class TopicRecordsTableViewController: NSViewController {
   }
 }
 
+// MARK: - Item
+fileprivate class Item: NSObject {
+  struct Ident: Hashable, Equatable {
+    let pid: UVarint
+    let offset: UVarint
+  }
+
+  var record: IteratorRecord
+  var id: Ident {
+    Ident(pid: record.partitionId, offset: record.offset)
+  }
+
+  init(record: IteratorRecord) {
+    self.record = record
+  }
+
+  override func isEqual(to object: Any?) -> Bool {
+    guard let other = object as? Item else { return false }
+    return id == other.id
+  }
+}
+
 // MARK: - NSSegmentedControl
 extension NSSegmentedControl {
   func relativeBounds(forSegment index: Int) -> NSRect {
@@ -145,7 +198,7 @@ extension NSSegmentedControl {
 // MARK: - NSTableViewDataSource
 extension TopicRecordsTableViewController: NSTableViewDataSource {
   func numberOfRows(in tableView: NSTableView) -> Int {
-    return records.count
+    return items.count
   }
 }
 
@@ -155,7 +208,7 @@ extension TopicRecordsTableViewController: NSTableViewDelegate {
     guard let id = tableColumn?.identifier else { return nil }
     guard let view = tableView.makeView(withIdentifier: id, owner: self) as? NSTableCellView else { return nil }
     guard let textField = view.textField else { return nil }
-    let record = records[row]
+    let record = items[row].record
     textField.font = .monospacedSystemFont(ofSize: 12, weight: .regular)
     textField.textColor = tableView.selectedRow == row ? .selectedControlTextColor : .controlTextColor
     if id == .TopicRecordsPartitionId {
@@ -200,7 +253,7 @@ extension TopicRecordsTableViewController: NSFilePromiseProviderDelegate {
     guard let topic, let row = filePromiseProvider.userInfo as? Int else {
       preconditionFailure()
     }
-    let record = records[row]
+    let record = items[row].record
     return "\(topic)@\(record.partitionId)-\(record.offset)"
   }
 
@@ -208,7 +261,7 @@ extension TopicRecordsTableViewController: NSFilePromiseProviderDelegate {
                            writePromiseTo url: URL,
                            completionHandler: @escaping (Error?) -> Void) {
     guard let row = filePromiseProvider.userInfo as? Int,
-          let data = records[row].value else {
+          let data = items[row].record.value else {
       completionHandler(nil)
       return
     }
