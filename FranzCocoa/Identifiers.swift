@@ -20,6 +20,7 @@ extension NSUserInterfaceItemIdentifier {
 
   static let TopicRecordsPartitionId = Self("TopicRecords.PartitionId")
   static let TopicRecordsOffset = Self("TopicRecords.Offset")
+  static let TopicRecordsTimestamp = Self("TopicRecords.Timestamp")
   static let TopicRecordsKey = Self("TopicRecords.Key")
   static let TopicRecordsValue = Self("TopicRecords.Value")
 }

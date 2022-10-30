@@ -281,6 +281,13 @@ extension TopicRecordsTableViewController: NSTableViewDelegate {
     if id == .TopicRecordsPartitionId {
       textField.stringValue = "\(record.partitionId)"
       textField.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
+    } else if id == .TopicRecordsTimestamp {
+      textField.stringValue = DateFormatter.localizedString(
+        from: .init(timeIntervalSince1970: Double(record.timestamp)/1000.0),
+        dateStyle: .short,
+        timeStyle: .medium
+      )
+      textField.font = .systemFont(ofSize: 12)
     } else if id == .TopicRecordsOffset {
       textField.stringValue = "\(record.offset)"
       textField.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
