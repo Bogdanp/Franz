@@ -76,6 +76,7 @@ class WorkspaceDetailViewController: NSViewController {
 
 // MARK: - WorkspaceDetailDelegate
 protocol WorkspaceDetailDelegate: AnyObject {
+  func getConnectionName() -> String
   func makeStatusProc() -> ((String) -> Void)
   func request(topicNamed topic: String)
 }

@@ -217,6 +217,10 @@ extension WorkspaceWindowController: NewTopicFormDelegate {
 
 // MARK: - WorkspaceDetailDelegate
 extension WorkspaceWindowController: WorkspaceDetailDelegate {
+  func getConnectionName() -> String {
+    return conn.name
+  }
+
   func makeStatusProc() -> ((String) -> Void) {
     let cookie = makeStatusCookie()
     return { message in

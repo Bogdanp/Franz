@@ -18,6 +18,7 @@ class TopicRecordsTableViewController: NSViewController {
   private var liveModeOn = false
   private var liveModeCookie = 0
 
+  private var optionsDefaultsKey: String?
   private var options = TopicRecordsOptions()
 
   override func viewDidLoad() {
@@ -26,6 +27,10 @@ class TopicRecordsTableViewController: NSViewController {
     tableView.dataSource = self
     tableView.delegate = self
     tableView.setDraggingSourceOperationMask(.copy, forLocal: false)
+    if let connection = delegate?.getConnectionName(), let topic {
+      tableView.autosaveName = "Franz:\(connection):TopicRecords:\(topic)"
+      tableView.autosaveTableColumns = true
+    }
 
     segmentedControl.target = self
     segmentedControl.action = #selector(didPressSegmentedControl(_:))
@@ -35,6 +40,10 @@ class TopicRecordsTableViewController: NSViewController {
     self.id = id
     self.topic = topic
     self.iteratorId = Error.wait(Backend.shared.openIterator(forTopic: topic, andOffset: .earliest, inWorkspace: id))
+    if let connection = delegate?.getConnectionName() {
+      self.optionsDefaultsKey = "Franz:\(connection):TopicRecordsOptions:\(topic)"
+      self.options = Defaults.shared.get(codable: self.optionsDefaultsKey!) ?? TopicRecordsOptions()
+    }
     self.loadRecords()
   }
 
@@ -168,6 +177,11 @@ class TopicRecordsTableViewController: NSViewController {
       let bounds = sender.relativeBounds(forSegment: segment)
       let popover = NSPopover()
       let form = TopicRecordsOptionsForm(model: self.options) {
+        if let key = self.optionsDefaultsKey {
+          do {
+            try Defaults.shared.set(codable: self.options, forKey: key)
+          } catch { }
+        }
         self.loadRecords()
         popover.close()
       }
@@ -206,7 +220,7 @@ class TopicRecordsTableViewController: NSViewController {
 }
 
 // MARK: - SortDirection
-fileprivate enum SortDirection {
+fileprivate enum SortDirection: Codable {
   case asc
   case desc
 }
@@ -327,6 +341,7 @@ extension TopicRecordsTableViewController: NSFilePromiseProviderDelegate {
     completionHandler(nil)
   }
 
+  // ??? Shouldn't this shit be automatic?
   func filePromiseProvider(_ filePromiseProvider: NSFilePromiseProvider,
                            writePromiseTo url: URL) async throws {
     await withUnsafeContinuation { k in
@@ -357,7 +372,7 @@ struct TopicRecordsTable: NSViewControllerRepresentable {
 }
 
 // MARK: - TopicRecordsOptions+Form
-fileprivate enum ContentType {
+fileprivate enum ContentType: Codable {
   case binary
   case json
   case text
@@ -374,18 +389,50 @@ fileprivate enum ContentType {
   }
 }
 
-fileprivate class TopicRecordsOptions: ObservableObject {
+fileprivate final class TopicRecordsOptions: ObservableObject, Codable {
+  @Published var keyFormat = ContentType.binary
+  @Published var valueFormat = ContentType.binary
   @Published var sortDirection = SortDirection.asc
   @Published var maxBytes = UVarint(1 * 1024 * 1024)
   @Published var keepBytes = UVarint(10 * 1024 * 1024)
-  @Published var keyFormat = ContentType.binary
-  @Published var valueFormat = ContentType.binary
+
+  struct Data: Codable {
+    let keyFormat: ContentType
+    let valueFormat: ContentType
+    let sortDirection: SortDirection
+    let maxBytes: UVarint
+    let keepBytes: UVarint
+  }
+
+  init() {
+
+  }
+
+  init(from decoder: Decoder) throws {
+    let data = try Data(from: decoder)
+    self.keyFormat = data.keyFormat
+    self.valueFormat = data.valueFormat
+    self.sortDirection = data.sortDirection
+    self.maxBytes = data.maxBytes
+    self.keepBytes = data.keepBytes
+  }
+
+  func encode(to encoder: Encoder) throws {
+    let data = Data(
+      keyFormat: keyFormat,
+      valueFormat: valueFormat,
+      sortDirection: sortDirection,
+      maxBytes: maxBytes,
+      keepBytes: keepBytes
+    )
+    try data.encode(to: encoder)
+  }
 }
 
 fileprivate struct TopicRecordsOptionsForm: View {
   @StateObject var model: TopicRecordsOptions
 
-  let applyProc: () -> Void
+  let save: () -> Void
 
   var bytesFormatter: NumberFormatter = {
     let fmt = NumberFormatter()
@@ -412,8 +459,8 @@ fileprivate struct TopicRecordsOptionsForm: View {
       }
       TextField("Max Bytes:", value: $model.maxBytes, formatter: bytesFormatter)
       TextField("Keep Bytes:", value: $model.keepBytes, formatter: bytesFormatter)
-      Button("Apply") {
-        applyProc()
+      Button("Save") {
+        save()
       }
       .buttonStyle(.borderedProminent)
     }
