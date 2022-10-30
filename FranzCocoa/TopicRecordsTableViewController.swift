@@ -37,14 +37,23 @@ class TopicRecordsTableViewController: NSViewController {
   }
 
   func configure(withId id: UVarint, andTopic topic: String) {
+    guard let delegate else { return }
+
     self.id = id
     self.topic = topic
-    self.iteratorId = Error.wait(Backend.shared.openIterator(forTopic: topic, andOffset: .earliest, inWorkspace: id))
-    if let connection = delegate?.getConnectionName() {
-      self.optionsDefaultsKey = "Franz:\(connection):TopicRecordsOptions:\(topic)"
-      self.options = Defaults.shared.get(codable: self.optionsDefaultsKey!) ?? TopicRecordsOptions()
+    self.optionsDefaultsKey = "Franz:\(delegate.getConnectionName()):TopicRecordsOptions:\(topic)"
+    self.options = Defaults.shared.get(codable: self.optionsDefaultsKey!) ?? TopicRecordsOptions()
+
+    let status = delegate.makeStatusProc()
+    status("Opening Iterator...")
+    Backend.shared.openIterator(
+      forTopic: topic,
+      andOffset: .earliest,
+      inWorkspace: id
+    ).onComplete { iteratorId in
+      self.iteratorId = iteratorId
+      self.loadRecords()
     }
-    self.loadRecords()
   }
 
   func teardown() {
