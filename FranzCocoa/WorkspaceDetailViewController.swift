@@ -21,6 +21,7 @@ class WorkspaceDetailViewController: NSViewController {
   }
 
   func show(entry: Any, withKind kind: SidebarEntryKind) {
+    delegate?.clearStatusCookie()
     switch kind {
     case .broker:
       guard let broker = entry as? Broker else { return }
@@ -77,6 +78,7 @@ class WorkspaceDetailViewController: NSViewController {
 // MARK: - WorkspaceDetailDelegate
 protocol WorkspaceDetailDelegate: AnyObject {
   func getConnectionName() -> String
+  func clearStatusCookie()
   func makeStatusProc() -> ((String) -> Void)
   func request(topicNamed topic: String)
 }

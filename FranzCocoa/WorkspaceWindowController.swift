@@ -221,6 +221,10 @@ extension WorkspaceWindowController: WorkspaceDetailDelegate {
     return conn.name
   }
 
+  func clearStatusCookie() {
+    _ = makeStatusCookie()
+  }
+
   func makeStatusProc() -> ((String) -> Void) {
     let cookie = makeStatusCookie()
     return { message in
