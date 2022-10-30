@@ -226,7 +226,7 @@
                             <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="selectAny" id="0q3-bz-FKY">
                                 <font key="font" metaFont="system"/>
                                 <segments>
-                                    <segment toolTip="Toggle Live Mode" image="playpause" catalog="system" width="32"/>
+                                    <segment toolTip="Toggle Live Mode" image="play" catalog="system" width="32"/>
                                     <segment toolTip="Options..." width="32" tag="1">
                                         <imageReference key="image" image="gearshape" catalog="system" symbolScale="default" variableValue="5.5511151231257827e-17"/>
                                     </segment>
@@ -280,6 +280,6 @@
     <resources>
         <image name="chevron.right" catalog="system" width="10" height="14"/>
         <image name="gearshape" catalog="system" width="16" height="16"/>
-        <image name="playpause" catalog="system" width="20" height="13"/>
+        <image name="play" catalog="system" width="12" height="13"/>
     </resources>
 </document>

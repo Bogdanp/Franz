@@ -227,12 +227,6 @@ class TopicRecordsTableViewController: NSViewController {
   }
 }
 
-// MARK: - SortDirection
-fileprivate enum SortDirection: Codable {
-  case asc
-  case desc
-}
-
 // MARK: - Item
 fileprivate class Item: NSObject {
   struct Ident: Hashable, Equatable, Comparable {
@@ -402,6 +396,11 @@ fileprivate enum ContentType: Codable {
       return .plainText
     }
   }
+}
+
+fileprivate enum SortDirection: Codable {
+  case asc
+  case desc
 }
 
 fileprivate final class TopicRecordsOptions: ObservableObject, Codable {
