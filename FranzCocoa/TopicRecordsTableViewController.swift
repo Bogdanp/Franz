@@ -238,7 +238,7 @@ fileprivate class Item: NSObject {
     let offset: UVarint
 
     static func < (lhs: Item.Ident, rhs: Item.Ident) -> Bool {
-      return lhs.pid == rhs.pid ? lhs.offset < rhs.offset : lhs.pid < rhs.pid
+      return lhs.offset == rhs.offset ? lhs.pid < rhs.pid : lhs.offset < rhs.offset
     }
   }
 
