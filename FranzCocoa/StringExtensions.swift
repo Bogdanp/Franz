@@ -1,17 +1,30 @@
 import AppKit
 
 extension String {
-  static func utf8(from data: Data, withMaxLength maxLength: Int) -> String? {
+  static func text(from data: Data, withMaxLength maxLength: Int) -> String? {
+    var string: String?
     if data.count < maxLength {
-      return String(data: data, encoding: .utf8)
-    }
-    for i in (0..<3) {
-      if var string = String(data: data[..<(maxLength + i)], encoding: .utf8) {
-        string += "…"
-        return string
+      string = String(data: data, encoding: .utf8)
+    } else {
+      for i in (0..<3) {
+        string = String(data: data[..<(maxLength + i)], encoding: .utf8)
+        if var str = string {
+          str += "…"
+          break
+        }
       }
     }
+    if let str = string, !str.hasControlCharacters() {
+      return str
+    }
     return nil
+  }
+
+  private func hasControlCharacters() -> Bool {
+    return unicodeScalars.first { scalar in
+      let cat = scalar.properties.generalCategory
+      return cat == .control || cat == .privateUse
+    } != nil
   }
 
   static var backspaceKeyEquivalent: String {
