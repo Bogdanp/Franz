@@ -241,11 +241,11 @@
                         (state-add-iterator s it))
                       (state-add-req next-state (req iterator-id res-ch nack)))]
 
-                   [`(get-records ,res-ch ,nack ,id)
+                   [`(get-records ,res-ch ,nack ,id ,max-bytes)
                     (define records
                       (delay/thread
                        (k:get-records
-                        #:max-bytes (* 1 1024 1024)
+                        #:max-bytes max-bytes
                         (state-ref-iterator s id))))
                     (state-add-req s (req records res-ch nack))]
 
@@ -318,8 +318,8 @@
 (define (pool-open-iterator id topic offset [p (current-pool)])
   (sync (pool-send p open-iterator id topic offset)))
 
-(define (pool-get-records id [p (current-pool)])
-  (force (sync (pool-send p get-records id))))
+(define (pool-get-records id max-bytes [p (current-pool)])
+  (force (sync (pool-send p get-records id max-bytes))))
 
 (define (pool-reset-iterator id offset [p (current-pool)])
   (force (sync (pool-send p reset-iterator id offset))))

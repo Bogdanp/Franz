@@ -81,8 +81,9 @@
                            [in-workspace id : UVarint] : UVarint)
   (pool-open-iterator id topic (IteratorOffset-> offset)))
 
-(define-rpc (get-records [_ id : UVarint] : (Listof IteratorRecord))
-  (for/list ([r (in-vector (pool-get-records id))])
+(define-rpc (get-records [_ id : UVarint]
+                         [with-max-bytes max-bytes : UVarint] : (Listof IteratorRecord))
+  (for/list ([r (in-vector (pool-get-records id max-bytes))])
     (IteratorRecord
      (k:record-partition-id r)
      (k:record-offset r)

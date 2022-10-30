@@ -590,11 +590,12 @@ public class Backend {
     )
   }
 
-  public func getRecords(_ id: UVarint) -> Future<String, [IteratorRecord]> {
+  public func getRecords(_ id: UVarint, withMaxBytes maxBytes: UVarint) -> Future<String, [IteratorRecord]> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x000d).write(to: out)
         id.write(to: out)
+        maxBytes.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> [IteratorRecord] in
         return [IteratorRecord].read(from: inp, using: &buf)

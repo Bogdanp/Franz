@@ -116,7 +116,10 @@ class TopicRecordsTableViewController: NSViewController {
     weak var ctl = self
     let status = delegate.makeStatusProc()
     status("Fetching records...")
-    Backend.shared.getRecords(iteratorId).onComplete { records in
+    Backend.shared.getRecords(
+      iteratorId,
+      withMaxBytes: options.maxBytes
+    ).onComplete { records in
       guard let ctl else { return }
       status("Ready")
       if !completionHandler(records) {
