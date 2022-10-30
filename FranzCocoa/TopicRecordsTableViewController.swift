@@ -17,6 +17,8 @@ class TopicRecordsTableViewController: NSViewController {
   private var items = [Item]()
   private var liveModeOn = false
   private var liveModeCookie = 0
+  private var maxBytes = UVarint(1*1024*1024)
+  private var keepBytes = UVarint(10*1024*1024)
   private var sortDirection = SortDirection.asc
 
   override func viewDidLoad() {
@@ -74,6 +76,16 @@ class TopicRecordsTableViewController: NSViewController {
       }
     }
 
+    var totalBytes = UVarint(0)
+    for (row, it) in self.items.enumerated() {
+      totalBytes += UVarint(it.record.key?.count ?? 0)
+      totalBytes += UVarint(it.record.value?.count ?? 0)
+      if totalBytes > keepBytes {
+        self.items.removeLast(self.items.count-row)
+        break
+      }
+    }
+
     self.tableView.reloadData()
     if let selectedItem, let selectedRow = self.items.firstIndex(of: selectedItem) {
       self.tableView.selectRowIndexes([selectedRow], byExtendingSelection: false)
@@ -85,36 +97,36 @@ class TopicRecordsTableViewController: NSViewController {
     guard let delegate else { return }
     guard let iteratorId else { return }
 
+    weak var ctl = self
     let status = delegate.makeStatusProc()
     status("Fetching records...")
     Backend.shared.getRecords(iteratorId).onComplete { records in
+      guard let ctl else { return }
       status("Ready")
       if !completionHandler(records) {
         return
       }
 
-      if !records.isEmpty {
-        self.setRecords(records, byAppending: byAppending)
-      }
+      ctl.setRecords(records, byAppending: byAppending)
     }
   }
 
-  private func getRecords(withCookie cookie: Int, _ proc: @escaping ([IteratorRecord]) -> Bool) {
+  private func loadRecords(withCookie cookie: Int, _ proc: @escaping ([IteratorRecord]) -> Bool) {
     loadRecords { records in
       guard self.liveModeCookie == cookie else { return false }
       return proc(records)
     }
   }
 
-  private func scheduleFetch(withCookie cookie: Int) {
-    getRecords(withCookie: cookie) { records in
+  private func scheduleLoad(withCookie cookie: Int) {
+    loadRecords(withCookie: cookie) { records in
       var deadline = DispatchTime.now()
       if records.isEmpty {
         deadline = deadline.advanced(by: .seconds(1))
       }
       weak var ctl = self
       DispatchQueue.main.asyncAfter(deadline: deadline) {
-        ctl?.scheduleFetch(withCookie: cookie)
+        ctl?.scheduleLoad(withCookie: cookie)
       }
       return true
     }
@@ -129,6 +141,7 @@ class TopicRecordsTableViewController: NSViewController {
       liveModeCookie += 1
       liveModeOn = false
       segmentedControl.setSelected(false, forSegment: 0)
+      segmentedControl.setEnabled(true, forSegment: 1)
       segmentedControl.setEnabled(true, forSegment: 2)
       return
     }
@@ -138,10 +151,11 @@ class TopicRecordsTableViewController: NSViewController {
     setRecords([], byAppending: false)
     sortDirection = .desc
     liveModeOn = true
+    segmentedControl.setEnabled(false, forSegment: 1)
     segmentedControl.setEnabled(false, forSegment: 2)
     status("Resetting iterator...")
     Backend.shared.resetIterator(withId: iteratorId, toOffset: .latest).onComplete {
-      self.scheduleFetch(withCookie: cookie)
+      self.scheduleLoad(withCookie: cookie)
     }
   }
 
@@ -152,10 +166,27 @@ class TopicRecordsTableViewController: NSViewController {
       toggleLiveMode()
     case 1: // settings
       sender.setSelected(false, forSegment: segment)
+      let bounds = sender.relativeBounds(forSegment: segment)
+      let popover = NSPopover()
+      let form = TopicRecordsOptionsForm(
+        sortDirection: sortDirection,
+        maxBytes: maxBytes,
+        keepBytes: keepBytes
+      ) { options in
+        self.sortDirection = options.sortDirection
+        self.maxBytes = options.maxBytes
+        self.keepBytes = options.keepBytes
+        self.loadRecords()
+        popover.close()
+      }
+      popover.behavior = .semitransient
+      popover.contentSize = NSSize(width: 250, height: 175)
+      popover.contentViewController = NSHostingController(rootView: form.frame(width: 250, height: 175))
+      popover.show(relativeTo: bounds, of: sender, preferredEdge: .minY)
     case 2: // more
       sender.setSelected(false, forSegment: segment)
       sender.isEnabled = false
-      loadRecords(byAppending: false) { records in
+      loadRecords { records in
         if records.isEmpty {
           let bounds = sender.relativeBounds(forSegment: segment)
           let popover = NSPopover()
@@ -163,6 +194,12 @@ class TopicRecordsTableViewController: NSViewController {
           popover.contentSize = NSSize(width: 200, height: 50)
           popover.contentViewController = NSHostingController(rootView: Text("No more records.").padding())
           popover.show(relativeTo: bounds, of: sender, preferredEdge: .minY)
+        }
+        switch self.sortDirection {
+        case .asc:
+          self.tableView.scrollToEndOfDocument(self)
+        case .desc:
+          self.tableView.scrollToBeginningOfDocument(self)
         }
         sender.isEnabled = true
         return true
@@ -316,5 +353,47 @@ struct TopicRecordsTable: NSViewControllerRepresentable {
   }
 
   func updateNSViewController(_ nsViewController: TopicRecordsTableViewController, context: Context) {
+  }
+}
+
+// MARK: - TopicRecordsOptionsForm
+fileprivate struct TopicRecordsOptions {
+  let sortDirection: SortDirection
+  let maxBytes: UVarint
+  let keepBytes: UVarint
+}
+
+fileprivate struct TopicRecordsOptionsForm: View {
+  @State var sortDirection: SortDirection
+  @State var maxBytes: UVarint
+  @State var keepBytes: UVarint
+
+  let applyProc: (TopicRecordsOptions) -> Void
+
+  var bytesFormatter: NumberFormatter = {
+    let fmt = NumberFormatter()
+    fmt.allowsFloats = false
+    fmt.minimum = 1
+    return fmt
+  }()
+
+  var body: some View {
+    Form {
+      Picker("Sort:", selection: $sortDirection) {
+        Text("Ascending").tag(SortDirection.asc)
+        Text("Descending").tag(SortDirection.desc)
+      }
+      TextField("Max Bytes:", value: $maxBytes, formatter: bytesFormatter)
+      TextField("Keep Bytes:", value: $keepBytes, formatter: bytesFormatter)
+      Button("Apply") {
+        applyProc(TopicRecordsOptions(
+          sortDirection: sortDirection,
+          maxBytes: maxBytes,
+          keepBytes: keepBytes
+        ))
+      }
+      .buttonStyle(.borderedProminent)
+    }
+    .padding()
   }
 }
