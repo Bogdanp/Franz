@@ -17,9 +17,8 @@ class TopicRecordsTableViewController: NSViewController {
   private var items = [Item]()
   private var liveModeOn = false
   private var liveModeCookie = 0
-  private var maxBytes = UVarint(1*1024*1024)
-  private var keepBytes = UVarint(10*1024*1024)
-  private var sortDirection = SortDirection.asc
+
+  private var options = TopicRecordsOptions()
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -68,7 +67,7 @@ class TopicRecordsTableViewController: NSViewController {
     }
 
     self.items.sort { a, b in
-      switch sortDirection {
+      switch self.options.sortDirection {
       case .desc:
         return a.id > b.id
       case .asc:
@@ -80,7 +79,7 @@ class TopicRecordsTableViewController: NSViewController {
     for (row, it) in self.items.enumerated() {
       totalBytes += UVarint(it.record.key?.count ?? 0)
       totalBytes += UVarint(it.record.value?.count ?? 0)
-      if totalBytes > keepBytes {
+      if totalBytes > self.options.keepBytes {
         self.items.removeLast(self.items.count-row)
         break
       }
@@ -149,7 +148,7 @@ class TopicRecordsTableViewController: NSViewController {
     let status = delegate.makeStatusProc()
     let cookie = liveModeCookie
     setRecords([], byAppending: false)
-    sortDirection = .desc
+    options.sortDirection = .desc
     liveModeOn = true
     segmentedControl.setEnabled(false, forSegment: 1)
     segmentedControl.setEnabled(false, forSegment: 2)
@@ -168,14 +167,7 @@ class TopicRecordsTableViewController: NSViewController {
       sender.setSelected(false, forSegment: segment)
       let bounds = sender.relativeBounds(forSegment: segment)
       let popover = NSPopover()
-      let form = TopicRecordsOptionsForm(
-        sortDirection: sortDirection,
-        maxBytes: maxBytes,
-        keepBytes: keepBytes
-      ) { options in
-        self.sortDirection = options.sortDirection
-        self.maxBytes = options.maxBytes
-        self.keepBytes = options.keepBytes
+      let form = TopicRecordsOptionsForm(model: self.options) {
         self.loadRecords()
         popover.close()
       }
@@ -195,7 +187,7 @@ class TopicRecordsTableViewController: NSViewController {
           popover.contentViewController = NSHostingController(rootView: Text("No more records.").padding())
           popover.show(relativeTo: bounds, of: sender, preferredEdge: .minY)
         }
-        switch self.sortDirection {
+        switch self.options.sortDirection {
         case .asc:
           self.tableView.scrollToEndOfDocument(self)
         case .desc:
@@ -356,19 +348,17 @@ struct TopicRecordsTable: NSViewControllerRepresentable {
   }
 }
 
-// MARK: - TopicRecordsOptionsForm
-fileprivate struct TopicRecordsOptions {
-  let sortDirection: SortDirection
-  let maxBytes: UVarint
-  let keepBytes: UVarint
+// MARK: - TopicRecordsOptions+Form
+fileprivate class TopicRecordsOptions: ObservableObject {
+  @Published var sortDirection = SortDirection.asc
+  @Published var maxBytes = UVarint(1 * 1024 * 1024)
+  @Published var keepBytes = UVarint(10 * 1024 * 1024)
 }
 
 fileprivate struct TopicRecordsOptionsForm: View {
-  @State var sortDirection: SortDirection
-  @State var maxBytes: UVarint
-  @State var keepBytes: UVarint
+  @StateObject var model: TopicRecordsOptions
 
-  let applyProc: (TopicRecordsOptions) -> Void
+  let applyProc: () -> Void
 
   var bytesFormatter: NumberFormatter = {
     let fmt = NumberFormatter()
@@ -379,18 +369,14 @@ fileprivate struct TopicRecordsOptionsForm: View {
 
   var body: some View {
     Form {
-      Picker("Sort:", selection: $sortDirection) {
+      Picker("Sort:", selection: $model.sortDirection) {
         Text("Ascending").tag(SortDirection.asc)
         Text("Descending").tag(SortDirection.desc)
       }
-      TextField("Max Bytes:", value: $maxBytes, formatter: bytesFormatter)
-      TextField("Keep Bytes:", value: $keepBytes, formatter: bytesFormatter)
+      TextField("Max Bytes:", value: $model.maxBytes, formatter: bytesFormatter)
+      TextField("Keep Bytes:", value: $model.keepBytes, formatter: bytesFormatter)
       Button("Apply") {
-        applyProc(TopicRecordsOptions(
-          sortDirection: sortDirection,
-          maxBytes: maxBytes,
-          keepBytes: keepBytes
-        ))
+        applyProc()
       }
       .buttonStyle(.borderedProminent)
     }
