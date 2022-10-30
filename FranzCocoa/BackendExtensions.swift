@@ -49,6 +49,33 @@ extension GroupPartitionOffset {
   }
 }
 
+// MARK: - IteratorOffset
+extension IteratorOffset: Hashable {
+  public func hash(into hasher: inout Hasher) {
+    switch self {
+    case .earliest:
+      hasher.combine(-2)
+    case .latest:
+      hasher.combine(-1)
+    case .exact(let offset):
+      hasher.combine(offset)
+    }
+  }
+
+  public static func == (lhs: IteratorOffset, rhs: IteratorOffset) -> Bool {
+    switch (lhs, rhs) {
+    case (.earliest, .earliest):
+      return true
+    case (.latest, .latest):
+      return true
+    case (.exact(let lhsOffset), .exact(let rhsOffset)):
+      return lhsOffset == rhsOffset
+    default:
+      return false
+    }
+  }
+}
+
 // MARK: - ResourceConfig
 extension ResourceConfig: Identifiable {
   public var id: String {

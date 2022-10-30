@@ -154,9 +154,6 @@ class TopicRecordsTableViewController: NSViewController {
 
   private func toggleLiveMode() {
     assert(Thread.isMainThread)
-    guard let delegate else { return }
-    guard let iteratorId else { return }
-
     if liveModeOn {
       liveModeCookie += 1
       liveModeOn = false
@@ -166,16 +163,27 @@ class TopicRecordsTableViewController: NSViewController {
       return
     }
 
-    let status = delegate.makeStatusProc()
     let cookie = liveModeCookie
     setRecords([], byAppending: false)
     options.sortDirection = .desc
     liveModeOn = true
     segmentedControl.setEnabled(false, forSegment: 1)
     segmentedControl.setEnabled(false, forSegment: 2)
-    status("Resetting iterator...")
-    Backend.shared.resetIterator(withId: iteratorId, toOffset: .latest).onComplete {
+    reset(offset: .latest) {
       self.scheduleLoad(withCookie: cookie)
+    }
+  }
+
+  private func reset(offset: IteratorOffset, _ completionHandler: @escaping () -> Void = {}) {
+    assert(Thread.isMainThread)
+    guard let delegate else { return }
+    guard let iteratorId else { return }
+
+    let status = delegate.makeStatusProc()
+    status("Resetting Iterator...")
+    Backend.shared.resetIterator(withId: iteratorId, toOffset: offset).onComplete {
+      status("Ready")
+      completionHandler()
     }
   }
 
@@ -194,8 +202,24 @@ class TopicRecordsTableViewController: NSViewController {
             try Defaults.shared.set(codable: self.options, forKey: key)
           } catch { }
         }
-        self.setRecords(self.items.map(\.record))
+        self.setRecords(self.items.map(\.record), byAppending: false)
         popover.close()
+      } resetAction: {
+        let resetForm = IteratorResetForm { offset in
+          self.reset(offset: offset) {
+            self.loadRecords(byAppending: false)
+          }
+          popover.close()
+        }
+        popover.animates = false
+        popover.close()
+        popover.contentSize = NSSize(width: 250, height: 100)
+        popover.contentViewController = NSHostingController(
+          rootView: resetForm.frame(
+            width: popover.contentSize.width,
+            height: popover.contentSize.height))
+        popover.show(relativeTo: bounds, of: sender, preferredEdge: .minY)
+        popover.animates = true
       }
       popover.behavior = .semitransient
       popover.contentSize = NSSize(width: 250, height: 260)
@@ -213,7 +237,12 @@ class TopicRecordsTableViewController: NSViewController {
           let popover = NSPopover()
           popover.behavior = .transient
           popover.contentSize = NSSize(width: 200, height: 50)
-          popover.contentViewController = NSHostingController(rootView: Text("No more records.").padding())
+          popover.contentViewController = NSHostingController(
+            rootView: Text("No more records.")
+              .padding()
+              .frame(
+                width: popover.contentSize.width,
+                height: popover.contentSize.height))
           popover.show(relativeTo: bounds, of: sender, preferredEdge: .minY)
         }
         switch self.options.sortDirection {
@@ -462,7 +491,8 @@ fileprivate final class TopicRecordsOptions: ObservableObject, Codable {
 fileprivate struct TopicRecordsOptionsForm: View {
   @StateObject var model: TopicRecordsOptions
 
-  let save: () -> Void
+  let saveAction: () -> Void
+  let resetAction: () -> Void
 
   var formattedMaxMB: String {
     "\(String(describing: UVarint(TopicRecordsOptions.descale(model.maxMBScaled))))MB"
@@ -503,11 +533,67 @@ fileprivate struct TopicRecordsOptionsForm: View {
           .font(.system(size: 10).monospacedDigit())
           .foregroundColor(.secondary)
       }
-      Button("Save") {
-        save()
+      HStack {
+        Button("Save") {
+          saveAction()
+        }
+        .buttonStyle(.borderedProminent)
+        .keyboardShortcut(.defaultAction)
+
+        Button("Reset...", role: .destructive) {
+          resetAction()
+        }
       }
-      .buttonStyle(.borderedProminent)
-      .keyboardShortcut(.defaultAction)
+    }
+    .padding()
+  }
+}
+
+// MARK: - IteratorResetForm
+fileprivate struct IteratorResetForm: View {
+  enum Offset {
+    case earliest
+    case offset
+    case latest
+  }
+
+  @State var target = Offset.latest
+  @State var offset = UVarint(0)
+
+  var resetAction: (IteratorOffset) -> Void
+
+  var offsetFormatter: NumberFormatter = {
+    let fmt = NumberFormatter()
+    fmt.allowsFloats = false
+    fmt.minimum = 0
+    return fmt
+  }()
+
+  var body: some View {
+    Form {
+      Picker("Target:", selection: $target) {
+        Text("Earliest").tag(Offset.earliest)
+        Text("Offset").tag(Offset.offset)
+        Text("Latest").tag(Offset.latest)
+      }
+      if target == .offset {
+        TextField("Offset:", value: $offset, formatter: offsetFormatter)
+          .onSubmit {
+            resetAction(.exact(offset))
+          }
+      }
+      Button("Reset") {
+        switch target {
+        case .earliest:
+          resetAction(.earliest)
+        case .offset:
+          resetAction(.exact(offset))
+        case .latest:
+          resetAction(.latest)
+        }
+      }
+        .buttonStyle(.borderedProminent)
+        .keyboardShortcut(.defaultAction)
     }
     .padding()
   }

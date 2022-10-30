@@ -137,7 +137,7 @@
                                             </tableCellView>
                                         </prototypeCellViews>
                                     </tableColumn>
-                                    <tableColumn identifier="TopicRecords.Key" width="150" minWidth="150" maxWidth="10000" id="jCe-PS-pQY">
+                                    <tableColumn identifier="TopicRecords.Key" width="150" minWidth="50" maxWidth="10000" id="jCe-PS-pQY">
                                         <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Key">
                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -169,7 +169,7 @@
                                             </tableCellView>
                                         </prototypeCellViews>
                                     </tableColumn>
-                                    <tableColumn identifier="TopicRecords.Value" width="300" minWidth="100" maxWidth="10000" id="C2q-gq-h7z">
+                                    <tableColumn identifier="TopicRecords.Value" width="300" minWidth="50" maxWidth="10000" id="C2q-gq-h7z">
                                         <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Value">
                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
