@@ -365,6 +365,7 @@ extension TopicRecordsTableViewController: NSTableViewDelegate {
   }
 
   func tableView(_ tableView: NSTableView, pasteboardWriterForRow row: Int) -> NSPasteboardWriting? {
+    guard !liveModeOn else { return nil }
     guard let event = NSApplication.shared.currentEvent, event.type == .leftMouseDragged else { return nil }
     guard let origin = tableView.superview?.convert(tableView.frame.origin, to: nil) else { return nil }
     let relativeLocation = NSPoint(
