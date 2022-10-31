@@ -22,6 +22,12 @@ class TopicRecordsTableViewController: NSViewController {
   private var optionsDefaultsKey: String?
   private var options = TopicRecordsOptions()
 
+  private var bytesFmt: ByteCountFormatter = {
+    let fmt = ByteCountFormatter()
+    fmt.countStyle = .memory
+    return fmt
+  }()
+
   override func viewDidLoad() {
     super.viewDidLoad()
 
@@ -109,8 +115,7 @@ class TopicRecordsTableViewController: NSViewController {
       self.tableView.selectRowIndexes([selectedRow], byExtendingSelection: false)
     }
 
-    let totalBytesStr = ByteCountFormatter().string(fromByteCount: Int64(totalBytes))
-    self.statsLabel.stringValue = "Records: \(self.items.count) (\(totalBytesStr))"
+    self.statsLabel.stringValue = "Records: \(self.items.count) (\(bytesFmt.string(fromByteCount: Int64(totalBytes))))"
   }
 
   private func loadRecords(byAppending: Bool = true,
@@ -370,11 +375,11 @@ extension TopicRecordsTableViewController: NSTableViewDelegate {
     let column = tableView.tableColumns[columnIdx]
     if column.identifier == .TopicRecordsKey {
       let provider = NSFilePromiseProvider(fileType: options.keyFormat.utType.identifier, delegate: self)
-      provider.userInfo = DnDInfo(row: row, target: .key)
+      provider.userInfo = DragInfo(row: row, target: .key)
       return provider
     } else if column.identifier == .TopicRecordsValue {
       let provider = NSFilePromiseProvider(fileType: options.valueFormat.utType.identifier, delegate: self)
-      provider.userInfo = DnDInfo(row: row, target: .value)
+      provider.userInfo = DragInfo(row: row, target: .value)
       return provider
     }
     return nil
@@ -382,7 +387,7 @@ extension TopicRecordsTableViewController: NSTableViewDelegate {
 }
 
 // MARK: - NSFilePromiseProviderDelegate
-fileprivate struct DnDInfo {
+fileprivate struct DragInfo {
   enum Target {
     case key
     case value
@@ -411,24 +416,24 @@ fileprivate struct DnDInfo {
 }
 
 extension TopicRecordsTableViewController: NSFilePromiseProviderDelegate {
-  func filePromiseProvider(_ filePromiseProvider: NSFilePromiseProvider,
+  func filePromiseProvider(_ provider: NSFilePromiseProvider,
                            fileNameForType fileType: String) -> String {
-    guard let topic, let info = filePromiseProvider.userInfo as? DnDInfo else {
+    guard let topic, let info = provider.userInfo as? DragInfo else {
       preconditionFailure()
     }
-    let ext = UTType(fileType)?.preferredFilenameExtension
+    let ext = UTType(fileType)?.preferredFilenameExtension ?? ""
     let record = items[info.row].record
     let filename = "\(topic)@\(record.partitionId)-\(record.offset)-\(info.suffix)"
-    if let ext, ext != "" {
-      return "\(filename).\(ext)"
+    if ext.isEmpty {
+      return filename
     }
-    return filename
+    return "\(filename).\(ext)"
   }
 
-  func filePromiseProvider(_ filePromiseProvider: NSFilePromiseProvider,
+  func filePromiseProvider(_ provider: NSFilePromiseProvider,
                            writePromiseTo url: URL,
                            completionHandler: @escaping (Error?) -> Void) {
-    guard let info = filePromiseProvider.userInfo as? DnDInfo,
+    guard let info = provider.userInfo as? DragInfo,
           let data = info.data(fromItem: items[info.row]) else {
       completionHandler(nil)
       return
@@ -438,10 +443,10 @@ extension TopicRecordsTableViewController: NSFilePromiseProviderDelegate {
   }
 
   // ??? Shouldn't this shit be automatic?
-  func filePromiseProvider(_ filePromiseProvider: NSFilePromiseProvider,
+  func filePromiseProvider(_ provider: NSFilePromiseProvider,
                            writePromiseTo url: URL) async throws {
     await withUnsafeContinuation { k in
-      self.filePromiseProvider(filePromiseProvider, writePromiseTo: url) { _ in
+      self.filePromiseProvider(provider, writePromiseTo: url) { _ in
         k.resume()
       }
     }
