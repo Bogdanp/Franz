@@ -120,7 +120,7 @@ class TopicRecordsTableViewController: NSViewController {
 
     weak var ctl = self
     let status = delegate.makeStatusProc()
-    status("Fetching records...")
+    status("Fetching Records...")
     Backend.shared.getRecords(
       iteratorId,
       withMaxBytes: options.maxBytes
