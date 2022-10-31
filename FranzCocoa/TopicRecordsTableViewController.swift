@@ -57,13 +57,10 @@ class TopicRecordsTableViewController: NSViewController {
       inWorkspace: id
     ).onComplete { iteratorId in
       self.iteratorId = iteratorId
-      self.loadRecords()
+      self.loadRecords(withCookie: self.liveModeCookie) { _ in
+        return true
+      }
     }
-  }
-
-  func teardown() {
-    assert(Thread.isMainThread)
-    liveModeCookie += 1
   }
 
   private func setRecords(_ records: [IteratorRecord], byAppending appending: Bool = true) {
@@ -170,6 +167,7 @@ class TopicRecordsTableViewController: NSViewController {
       return
     }
 
+    liveModeCookie += 1
     let cookie = liveModeCookie
     setRecords([], byAppending: false)
     options.sortDirection = .desc
