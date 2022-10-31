@@ -98,5 +98,15 @@
 (define-rpc (close-iterator [with-id id : UVarint])
   (pool-close-iterator id))
 
+(define-rpc (publish-record [to-topic topic : String]
+                            [and-partition pid : UVarint]
+                            [with-key key : String]
+                            [and-value value : String]
+                            [in-workspace id : UVarint])
+  (define res (pool-publish-record id topic pid key value))
+  (define err (k:ProduceResponsePartition-error-code (k:RecordResult-partition res)))
+  (unless (zero? err)
+    (kerr:raise-server-error err)))
+
 (define-rpc (close-all-workspaces)
   (void (pool-shutdown)))

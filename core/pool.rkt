@@ -2,6 +2,7 @@
 
 (require (prefix-in k: kafka)
          (prefix-in k: kafka/iterator)
+         (prefix-in k: kafka/producer)
          racket/match
          racket/promise
          threading
@@ -28,6 +29,7 @@
  pool-get-records
  pool-reset-iterator
  pool-close-iterator
+ pool-publish-record
  pool-shutdown)
 
 (struct pool (ch thd))
@@ -261,6 +263,19 @@
                     (~> (state-remove-iterator s id)
                         (state-add-req _ (req #t res-ch nack)))]
 
+                   [`(publish-record ,res-ch ,nack ,id ,topic ,pid ,key ,value)
+                    (define result
+                      (delay/thread
+                       (define c (state-ref-client s id))
+                       (define p (k:make-producer c))
+                       (define evt
+                         (k:produce p topic #:partition pid
+                                    (string->bytes/utf-8 key)
+                                    (string->bytes/utf-8 value)))
+                       (k:producer-stop p)
+                       (sync evt)))
+                    (state-add-req s (req result res-ch nack))]
+
                    [`(shutdown ,res-ch ,nack)
                     (for ([c (in-hash-values (state-clients s))])
                       (k:disconnect-all c))
@@ -326,6 +341,9 @@
 
 (define (pool-close-iterator id [p (current-pool)])
   (sync (pool-send p close-iterator id)))
+
+(define (pool-publish-record id topic pid key value [p (current-pool)])
+  (force (sync (pool-send p publish-record id topic pid key value))))
 
 (define (pool-shutdown [p (current-pool)])
   (sync (pool-send p shutdown)))
