@@ -36,6 +36,8 @@
 		4396EADA290576A300A15D25 /* ResourceConfigTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4396EAD8290576A300A15D25 /* ResourceConfigTableViewController.swift */; };
 		4396EADB290576A300A15D25 /* ResourceConfigTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4396EAD9290576A300A15D25 /* ResourceConfigTableViewController.xib */; };
 		4396EAE12905B0D200A15D25 /* Tabs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4396EAE02905B0D200A15D25 /* Tabs.swift */; };
+		43CBADD4290FB8D70066C7CE /* PublishRecordFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CBADD2290FB8D70066C7CE /* PublishRecordFormViewController.swift */; };
+		43CBADD5290FB8D70066C7CE /* PublishRecordFormViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43CBADD3290FB8D70066C7CE /* PublishRecordFormViewController.xib */; };
 		43CD621928CE24B000095144 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CD621828CE24B000095144 /* AppDelegate.swift */; };
 		43CD621B28CE24B100095144 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 43CD621A28CE24B100095144 /* Assets.xcassets */; };
 		43CD621E28CE24B100095144 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43CD621C28CE24B100095144 /* MainMenu.xib */; };
@@ -92,6 +94,8 @@
 		4396EAD8290576A300A15D25 /* ResourceConfigTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceConfigTableViewController.swift; sourceTree = "<group>"; };
 		4396EAD9290576A300A15D25 /* ResourceConfigTableViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ResourceConfigTableViewController.xib; sourceTree = "<group>"; };
 		4396EAE02905B0D200A15D25 /* Tabs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tabs.swift; sourceTree = "<group>"; };
+		43CBADD2290FB8D70066C7CE /* PublishRecordFormViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublishRecordFormViewController.swift; sourceTree = "<group>"; };
+		43CBADD3290FB8D70066C7CE /* PublishRecordFormViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PublishRecordFormViewController.xib; sourceTree = "<group>"; };
 		43CD621528CE24B000095144 /* Franz.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Franz.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		43CD621828CE24B000095144 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		43CD621A28CE24B100095144 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -179,6 +183,8 @@
 				43D3AEA528FFD8D100D52E92 /* Pasteboard.swift */,
 				43D3AEA928FFDF3500D52E92 /* PreferencesWindowController.swift */,
 				43D3AEAA28FFDF3500D52E92 /* PreferencesWindowController.xib */,
+				43CBADD2290FB8D70066C7CE /* PublishRecordFormViewController.swift */,
+				43CBADD3290FB8D70066C7CE /* PublishRecordFormViewController.xib */,
 				4396EAD8290576A300A15D25 /* ResourceConfigTableViewController.swift */,
 				4396EAD9290576A300A15D25 /* ResourceConfigTableViewController.xib */,
 				43CD623228CE25F300095144 /* resources */,
@@ -288,6 +294,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				43CBADD5290FB8D70066C7CE /* PublishRecordFormViewController.xib in Resources */,
 				4395503928FD45B000CC0050 /* GroupOffsetsOutlineViewController.xib in Resources */,
 				43CD623A28CE27DB00095144 /* WelcomeWindowController.xib in Resources */,
 				436E720F28D760D400ECBF49 /* SidebarEntryCellView.xib in Resources */,
@@ -378,6 +385,7 @@
 				43CD623728CE27B200095144 /* WindowManager.swift in Sources */,
 				43CD621928CE24B000095144 /* AppDelegate.swift in Sources */,
 				43804AB428D19ACD002880FE /* WelcomeWindowConnectionsViewController.swift in Sources */,
+				43CBADD4290FB8D70066C7CE /* PublishRecordFormViewController.swift in Sources */,
 				43CD623128CE258F00095144 /* BackendExtensions.swift in Sources */,
 				43D03DD628FAFE3B0049D44D /* Notifications.swift in Sources */,
 				4396EAE12905B0D200A15D25 /* Tabs.swift in Sources */,

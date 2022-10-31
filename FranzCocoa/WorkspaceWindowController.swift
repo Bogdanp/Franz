@@ -1,11 +1,15 @@
 import Cocoa
 import NoiseBackend
 import NoiseSerde
+import SwiftUI
 
 class WorkspaceWindowController: NSWindowController {
   private var conn: ConnectionDetails!
   private var pass: String?
   private var id: UVarint!
+
+  private var metadata: Metadata?
+  private var topic: String?
 
   @IBOutlet weak var toolbar: NSToolbar!
   @IBOutlet weak var statusBarView: NSView!
@@ -99,6 +103,7 @@ class WorkspaceWindowController: NSWindowController {
     }
     self.status("Getting metadata...")
     Backend.shared.getMetadata(forcingReload: reload, inWorkspace: id).onComplete { meta in
+      self.metadata = meta
       self.sidebarCtl.configure(withId: self.id, andMetadata: meta)
       self.detailCtl.configure(withId: self.id)
       self.status("Ready")
@@ -213,7 +218,11 @@ extension WorkspaceWindowController: NSToolbarDelegate {
   }
 
   @objc func didPressPublishButton(_ sender: Any) {
-
+    guard let metadata else { return }
+    let ctl = PublishRecordFormViewController()
+    ctl.delegate = self
+    ctl.configure(withMetadata: metadata, andTopic: metadata.topics.first(where: { $0.name == topic }))
+    contentViewController?.presentAsSheet(ctl)
   }
 }
 
@@ -232,6 +241,19 @@ extension WorkspaceWindowController: NewTopicFormDelegate {
 
   func didCreateNewTopic(named name: String) {
     loadMetadata(andSelectTopic: name)
+  }
+}
+
+// MARK: - PublishRecordFormDelegate
+extension WorkspaceWindowController: PublishRecordFormDelegate {
+  func didCancelPublishRecordForm(_ sender: PublishRecordFormViewController) {
+    contentViewController?.dismiss(sender)
+  }
+
+  func didSubmitPublishRecordForm(
+    _ sender: PublishRecordFormViewController,
+    withTopic topic: Topic, partitionId pid: UVarint, key: String, andValue value: String) {
+    contentViewController?.dismiss(sender)
   }
 }
 
@@ -278,6 +300,11 @@ extension WorkspaceWindowController: WorkspaceDetailDelegate {
 // MARK: - WorkspaceSidebarDelegate
 extension WorkspaceWindowController: WorkspaceSidebarDelegate {
   func sidebar(didSelectEntry entry: Any, withKind kind: SidebarEntryKind) {
+    if kind == .topic, let t = entry as? Topic {
+      topic = t.name
+    } else {
+      topic = nil
+    }
     detailCtl.show(entry: entry, withKind: kind)
   }
 
