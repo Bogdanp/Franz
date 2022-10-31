@@ -26,6 +26,9 @@ class PublishRecordFormViewController: NSViewController {
     partitionButton.action = #selector(didSelectPartition(_:))
     partitionButton.removeAllItems()
 
+    keyField.font = .monospacedSystemFont(ofSize: 12, weight: .regular)
+    valueField.font = .monospacedSystemFont(ofSize: 12, weight: .regular)
+
     self.reset()
   }
 
