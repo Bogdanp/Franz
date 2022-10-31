@@ -18,6 +18,7 @@ class WorkspaceWindowController: NSWindowController {
 
   private weak var reloadMetadataMenuItem: NSMenuItem?
   private weak var newTopicMenuItem: NSMenuItem?
+  private weak var publishMenuItem: NSMenuItem?
 
   private var statusMu = DispatchSemaphore(value: 1)
   private var statusCookie = 0
@@ -51,6 +52,7 @@ class WorkspaceWindowController: NSWindowController {
 
     reloadMetadataMenuItem = MainMenu.shared.find(itemByPath: [.ConnectionMenuItem, .ReloadMetadataMenuItem])
     newTopicMenuItem = MainMenu.shared.find(itemByPath: [.TopicMenuItem, .NewTopicMenuItem])
+    publishMenuItem = MainMenu.shared.find(itemByPath: [.TopicMenuItem, .PublishMenuItem])
 
     shouldCascadeWindows = false
     window?.delegate = self
@@ -126,18 +128,21 @@ class WorkspaceWindowController: NSWindowController {
 // MARK: NSWindowDelegate
 extension WorkspaceWindowController: NSWindowDelegate {
   func windowDidBecomeKey(_ notification: Notification) {
-    guard let reloadItem = reloadMetadataMenuItem else { return }
-    guard let newTopicItem = newTopicMenuItem else { return }
-    reloadItem.target = self
-    reloadItem.action = #selector(didPressReloadButton(_:))
-    newTopicItem.target = self
-    newTopicItem.action = #selector(didPressNewTopicItem(_:))
+    let items = [
+      reloadMetadataMenuItem: #selector(didPressReloadButton(_:)),
+      newTopicMenuItem: #selector(didPressNewTopicItem(_:)),
+      publishMenuItem: #selector(didPressPublishButton(_:)),
+    ]
+    for (item, selector) in items {
+      guard let item else { continue }
+      item.target = self
+      item.action = selector
+    }
   }
 
   func windowDidResignKey(_ notification: Notification) {
-    guard let reloadItem = reloadMetadataMenuItem else { return }
-    guard let newTopicItem = newTopicMenuItem else { return }
-    for item in [reloadItem, newTopicItem] {
+    for item in [reloadMetadataMenuItem, newTopicMenuItem, publishMenuItem] {
+      guard let item else { continue }
       item.target = nil
       item.action = nil
     }
@@ -162,7 +167,7 @@ extension WorkspaceWindowController: NSToolbarDelegate {
       case .toggleSidebar:
         let item = NSToolbarItem(itemIdentifier: itemIdentifier)
         item.image = NSImage(systemSymbolName: "sidebar.left", accessibilityDescription: "Toggle Sidebar")?
-          .withSymbolConfiguration(.init(pointSize: 18, weight: .light))
+          .withSymbolConfiguration(.init(pointSize: 18, weight: .regular))
         item.label = "Toggle Sidebar"
         item.action = #selector(didPressToggleSidebarButton(_:))
         return item
@@ -175,9 +180,16 @@ extension WorkspaceWindowController: NSToolbarDelegate {
       case .reloadButton:
         let item = NSToolbarItem(itemIdentifier: itemIdentifier)
         item.image = NSImage(systemSymbolName: "arrow.clockwise", accessibilityDescription: "Reload")?
-          .withSymbolConfiguration(.init(pointSize: 18, weight: .light))
-        item.label = "Reload Metadata"
+          .withSymbolConfiguration(.init(pointSize: 16, weight: .regular))
+        item.label = "Reload"
         item.action = #selector(didPressReloadButton(_:))
+        return item
+      case .publishButton:
+        let item = NSToolbarItem(itemIdentifier: itemIdentifier)
+        item.image = NSImage(systemSymbolName: "plus", accessibilityDescription: "Publish")?
+          .withSymbolConfiguration(.init(pointSize: 18, weight: .regular))
+        item.label = "Publish Record..."
+        item.action = #selector(didPressPublishButton(_:))
         return item
       default:
         return nil
@@ -185,11 +197,11 @@ extension WorkspaceWindowController: NSToolbarDelegate {
   }
 
   func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-    return [.toggleSidebar, .statusBar, .reloadButton]
+    return [.toggleSidebar, .statusBar, .reloadButton, .publishButton]
   }
 
   func toolbarAllowedItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-    return [.toggleSidebar, .statusBar, .reloadButton, .flexibleSpace]
+    return [.toggleSidebar, .statusBar, .reloadButton, .publishButton]
   }
 
   @objc func didPressToggleSidebarButton(_ sender: Any) {
@@ -199,12 +211,17 @@ extension WorkspaceWindowController: NSToolbarDelegate {
   @objc func didPressReloadButton(_ sender: Any) {
     loadMetadata()
   }
+
+  @objc func didPressPublishButton(_ sender: Any) {
+
+  }
 }
 
 // MARK: - NSToolbarItem.Identifier
 extension NSToolbarItem.Identifier {
   static let toggleSidebar = NSToolbarItem.Identifier("toggleSidebar")
   static let statusBar = NSToolbarItem.Identifier("statusBar")
+  static let publishButton = NSToolbarItem.Identifier("publishButton")
   static let reloadButton = NSToolbarItem.Identifier("reloadButton")
 }
 

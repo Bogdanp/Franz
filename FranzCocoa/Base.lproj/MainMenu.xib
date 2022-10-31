@@ -328,7 +328,7 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="WHu-8t-f5x"/>
-                            <menuItem title="Reload Metadata" keyEquivalent="r" identifier="ReloadMetadataMenuItem" id="2Ay-NU-oLr"/>
+                            <menuItem title="Reload" keyEquivalent="r" identifier="ReloadMetadataMenuItem" id="2Ay-NU-oLr"/>
                             <menuItem isSeparatorItem="YES" id="J5V-Oq-5f2"/>
                             <menuItem title="Close" keyEquivalent="w" id="DVo-aG-piG">
                                 <connections>
@@ -343,6 +343,9 @@
                     <menu key="submenu" title="Topic" id="d2I-bY-21o">
                         <items>
                             <menuItem title="New Topic..." keyEquivalent="n" identifier="NewTopicMenuItem" id="vL1-Yu-Qa2"/>
+                            <menuItem title="Publish..." identifier="PublishMenuItem" id="fTi-r8-5Vz">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                            </menuItem>
                         </items>
                     </menu>
                 </menuItem>

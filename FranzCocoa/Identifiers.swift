@@ -7,6 +7,7 @@ extension NSUserInterfaceItemIdentifier {
   static let ReloadMetadataMenuItem = Self("ReloadMetadataMenuItem")
   static let TopicMenuItem = Self("TopicMenuItem")
   static let NewTopicMenuItem = Self("NewTopicMenuItem")
+  static let PublishMenuItem = Self("PublishMenuItem")
 
   static let GroupOffsetsTopic = Self("GroupOffsets.Topic")
   static let GroupOffsetsOffset = Self("GroupOffsets.Offset")
