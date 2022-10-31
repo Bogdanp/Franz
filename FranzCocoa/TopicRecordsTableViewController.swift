@@ -66,7 +66,6 @@ class TopicRecordsTableViewController: NSViewController {
     liveModeCookie += 1
   }
 
-  // TODO: This can be slow when there are many records so we may have to move it off the main thread.
   private func setRecords(_ records: [IteratorRecord], byAppending appending: Bool = true) {
     var known = [Item.Ident: Item]()
     for item in self.items {
@@ -197,18 +196,18 @@ class TopicRecordsTableViewController: NSViewController {
 
   @objc func didPressSegmentedControl(_ sender: NSSegmentedControl) {
     let segment = sender.selectedSegment
-    switch segment {
-    case 0: // play/pause
+    guard let tag = ControlTag(rawValue: sender.tag(forSegment: segment)) else { return }
+    switch tag {
+    case .play:
       toggleLiveMode()
-    case 1: // settings
+
+    case .options:
       sender.setSelected(false, forSegment: segment)
       let bounds = sender.relativeBounds(forSegment: segment)
       let popover = NSPopover()
       let form = TopicRecordsOptionsForm(model: self.options) {
         if let key = self.optionsDefaultsKey {
-          do {
-            try Defaults.shared.set(codable: self.options, forKey: key)
-          } catch { }
+          try? Defaults.shared.set(codable: self.options, forKey: key)
         }
         self.setRecords(self.items.map(\.record), byAppending: false)
         popover.close()
@@ -236,7 +235,8 @@ class TopicRecordsTableViewController: NSViewController {
           width: popover.contentSize.width,
           height: popover.contentSize.height))
       popover.show(relativeTo: bounds, of: sender, preferredEdge: .minY)
-    case 2: // more
+
+    case .more:
       sender.setSelected(false, forSegment: segment)
       sender.isEnabled = false
       loadRecords { records in
@@ -262,10 +262,15 @@ class TopicRecordsTableViewController: NSViewController {
         sender.isEnabled = true
         return true
       }
-    default:
-      ()
     }
   }
+}
+
+// MARK: - ControlTag
+fileprivate enum ControlTag: Int {
+  case play = 0
+  case options
+  case more
 }
 
 // MARK: - Item

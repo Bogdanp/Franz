@@ -21,8 +21,10 @@
 
 (define (IteratorOffset-> io)
   (cond
-    [(IteratorOffset.earliest? io) 'earliest]
-    [(IteratorOffset.latest? io) 'latest]
+    [(IteratorOffset.earliest? io)
+     'earliest]
+    [(IteratorOffset.latest? io)
+     'latest]
     [(IteratorOffset.exact? io)
      (IteratorOffset.exact-offset io)]
     [else
