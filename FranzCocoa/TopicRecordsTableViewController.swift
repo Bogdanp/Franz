@@ -360,22 +360,65 @@ extension TopicRecordsTableViewController: NSTableViewDelegate {
   }
 
   func tableView(_ tableView: NSTableView, pasteboardWriterForRow row: Int) -> NSPasteboardWriting? {
-    let provider = NSFilePromiseProvider(fileType: options.valueFormat.utType.identifier, delegate: self)
-    provider.userInfo = row
-    return provider
+    guard let event = NSApplication.shared.currentEvent, event.type == .leftMouseDragged else { return nil }
+    guard let origin = tableView.superview?.convert(tableView.frame.origin, to: nil) else { return nil }
+    let relativeLocation = NSPoint(
+      x: event.locationInWindow.x - origin.x,
+      y: event.locationInWindow.y + origin.y)
+    let columnIdx = tableView.column(at: relativeLocation)
+    guard columnIdx >= 0 else { return nil }
+    let column = tableView.tableColumns[columnIdx]
+    if column.identifier == .TopicRecordsKey {
+      let provider = NSFilePromiseProvider(fileType: options.keyFormat.utType.identifier, delegate: self)
+      provider.userInfo = DnDInfo(row: row, target: .key)
+      return provider
+    } else if column.identifier == .TopicRecordsValue {
+      let provider = NSFilePromiseProvider(fileType: options.valueFormat.utType.identifier, delegate: self)
+      provider.userInfo = DnDInfo(row: row, target: .value)
+      return provider
+    }
+    return nil
   }
 }
 
 // MARK: - NSFilePromiseProviderDelegate
+fileprivate struct DnDInfo {
+  enum Target {
+    case key
+    case value
+  }
+
+  let row: Int
+  let target: Target
+
+  var suffix: String {
+    switch target {
+    case .key:
+      return "key"
+    case .value:
+      return "value"
+    }
+  }
+
+  func data(fromItem item: Item) -> Data? {
+    switch target {
+    case .key:
+      return item.record.key
+    case .value:
+      return item.record.value
+    }
+  }
+}
+
 extension TopicRecordsTableViewController: NSFilePromiseProviderDelegate {
   func filePromiseProvider(_ filePromiseProvider: NSFilePromiseProvider,
                            fileNameForType fileType: String) -> String {
-    guard let topic, let row = filePromiseProvider.userInfo as? Int else {
+    guard let topic, let info = filePromiseProvider.userInfo as? DnDInfo else {
       preconditionFailure()
     }
     let ext = UTType(fileType)?.preferredFilenameExtension
-    let record = items[row].record
-    let filename = "\(topic)@\(record.partitionId)-\(record.offset)"
+    let record = items[info.row].record
+    let filename = "\(topic)@\(record.partitionId)-\(record.offset)-\(info.suffix)"
     if let ext, ext != "" {
       return "\(filename).\(ext)"
     }
@@ -385,8 +428,8 @@ extension TopicRecordsTableViewController: NSFilePromiseProviderDelegate {
   func filePromiseProvider(_ filePromiseProvider: NSFilePromiseProvider,
                            writePromiseTo url: URL,
                            completionHandler: @escaping (Error?) -> Void) {
-    guard let row = filePromiseProvider.userInfo as? Int,
-          let data = items[row].record.value else {
+    guard let info = filePromiseProvider.userInfo as? DnDInfo,
+          let data = info.data(fromItem: items[info.row]) else {
       completionHandler(nil)
       return
     }
