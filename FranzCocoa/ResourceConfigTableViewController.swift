@@ -48,18 +48,13 @@ class ResourceConfigTableViewController: NSViewController {
 // MARK: - ResourceConfigEntry
 class ResourceConfigEntry: NSObject {
   var name: String
+  var value: String
   var isDefault = true
   var isSensitive = false
   var isRevealed = false
 
-  var _value: String
-  var value: String {
-    get {
-      !isSensitive || isRevealed ? _value : "••••••••"
-    }
-    set {
-      _value = newValue
-    }
+  var safeValue: String {
+    !isSensitive || isRevealed ? value : "••••••••"
   }
 
   init(name: String,
@@ -68,13 +63,13 @@ class ResourceConfigEntry: NSObject {
        isSensitive: Bool = false,
        isRevealed: Bool = false) {
     self.name = name
-    self._value = value
+    self.value = value
     self.isDefault = isDefault
     self.isSensitive = isSensitive
     self.isRevealed = isRevealed
   }
 
-  override  func isEqual(to object: Any?) -> Bool {
+  override func isEqual(to object: Any?) -> Bool {
     guard let other = object as? ResourceConfigEntry else { return false }
     return other.name == name
   }
@@ -144,7 +139,7 @@ extension ResourceConfigTableViewController: NSTableViewDelegate {
     if identifier == .ResourceConfigConfig {
       view.textField?.stringValue = entry.name
     } else if identifier == .ResourceConfigValue {
-      view.textField?.stringValue = entry.value
+      view.textField?.stringValue = entry.safeValue
       if (entry.isSensitive && !entry.isRevealed) || !entry.isDefault {
         font = .systemFont(ofSize: 12, weight: .semibold)
       }
