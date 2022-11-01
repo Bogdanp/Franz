@@ -9,7 +9,9 @@ class PublishRecordFormViewController: NSViewController {
   @IBOutlet weak var topicButton: NSPopUpButton!
   @IBOutlet weak var partitionButton: NSPopUpButton!
   @IBOutlet weak var keyField: NSTextField!
+  @IBOutlet weak var nullKeyButton: NSButton!
   @IBOutlet weak var valueField: NSTextField!
+  @IBOutlet weak var nullValueButton: NSButton!
   @IBOutlet weak var cancelButton: NSButton!
   @IBOutlet weak var publishButton: NSButton!
 
@@ -86,6 +88,24 @@ class PublishRecordFormViewController: NSViewController {
     partition = pid
   }
 
+  @IBAction func didToggleNullKeyButton(_ sender: NSButton) {
+    switch sender.state {
+    case .on:
+      keyField.isEnabled = false
+    default:
+      keyField.isEnabled = true
+    }
+  }
+
+  @IBAction func didToggleNullValueButton(_ sender: NSButton) {
+    switch sender.state {
+    case .on:
+      valueField.isEnabled = false
+    default:
+      valueField.isEnabled = true
+    }
+  }
+
   @IBAction func didPressCancelButton(_ sender: Any) {
     delegate?.didCancelPublishRecordForm(self)
   }
@@ -103,8 +123,8 @@ class PublishRecordFormViewController: NSViewController {
       self,
       withTopic: topic,
       partitionId: partition,
-      key: keyField.stringValue,
-      andValue: valueField.stringValue)
+      key: nullKeyButton.state == .on ? nil : keyField.stringValue,
+      andValue: nullValueButton.state == .on ? nil : valueField.stringValue)
   }
 }
 
@@ -113,5 +133,8 @@ protocol PublishRecordFormDelegate: AnyObject {
   func didCancelPublishRecordForm(_ sender: PublishRecordFormViewController)
   func didSubmitPublishRecordForm(
     _ sender: PublishRecordFormViewController,
-    withTopic topic: Topic, partitionId pid: UVarint, key: String, andValue value: String)
+    withTopic topic: Topic,
+    partitionId pid: UVarint,
+    key: String?,
+    andValue value: String?)
 }

@@ -666,7 +666,7 @@ public class Backend {
     )
   }
 
-  public func publishRecord(toTopic topic: String, andPartition pid: UVarint, withKey key: String, andValue value: String, inWorkspace id: UVarint) -> Future<String, Void> {
+  public func publishRecord(toTopic topic: String, andPartition pid: UVarint, withKey key: String?, andValue value: String?, inWorkspace id: UVarint) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0013).write(to: out)

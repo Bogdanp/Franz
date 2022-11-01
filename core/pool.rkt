@@ -270,8 +270,8 @@
                        (define p (k:make-producer c))
                        (define evt
                          (k:produce p topic #:partition pid
-                                    (string->bytes/utf-8 key)
-                                    (string->bytes/utf-8 value)))
+                                    (and key (string->bytes/utf-8 key))
+                                    (and value (string->bytes/utf-8 value))))
                        (k:producer-stop p)
                        (sync evt)))
                     (state-add-req s (req result res-ch nack))]

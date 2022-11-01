@@ -252,7 +252,10 @@ extension WorkspaceWindowController: PublishRecordFormDelegate {
 
   func didSubmitPublishRecordForm(
     _ sender: PublishRecordFormViewController,
-    withTopic topic: Topic, partitionId pid: UVarint, key: String, andValue value: String) {
+    withTopic topic: Topic,
+    partitionId pid: UVarint,
+    key: String?,
+    andValue value: String?) {
 
       let status = makeStatusProc()
       status("Publishing Record...")
