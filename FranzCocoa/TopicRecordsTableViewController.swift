@@ -56,7 +56,7 @@ class TopicRecordsTableViewController: NSViewController {
     self.options = Defaults.shared.get(codable: self.optionsDefaultsKey!) ?? TopicRecordsOptions()
 
     let status = delegate.makeStatusProc()
-    status("Opening Iterator...")
+    status("Opening Iterator")
     Backend.shared.openIterator(
       forTopic: topic,
       andOffset: .earliest,
@@ -125,7 +125,7 @@ class TopicRecordsTableViewController: NSViewController {
 
     weak var ctl = self
     let status = delegate.makeStatusProc()
-    status("Fetching Records...")
+    status("Fetching Records")
     Backend.shared.getRecords(
       iteratorId,
       withMaxBytes: options.maxBytes
@@ -190,7 +190,7 @@ class TopicRecordsTableViewController: NSViewController {
     guard let iteratorId else { return }
 
     let status = delegate.makeStatusProc()
-    status("Resetting Iterator...")
+    status("Resetting Iterator")
     Backend.shared.resetIterator(withId: iteratorId, toOffset: offset).onComplete {
       status("Ready")
       completionHandler()

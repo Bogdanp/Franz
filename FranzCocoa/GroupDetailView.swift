@@ -82,7 +82,7 @@ struct GroupDetailView: View {
     guard !offsetsLoading else { return }
     offsetsLoading = true
     let status = delegate.makeStatusProc()
-    status("Fetching offsets...")
+    status("Fetching Offsets")
     Backend.shared.fetchOffsets(forGroupNamed: group.id, inWorkspace: id).onComplete { offsets in
       self.offsets = offsets
       self.offsetsLoading = false

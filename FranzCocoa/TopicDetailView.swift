@@ -59,7 +59,7 @@ struct TopicDetailView: View {
   private func fetchConfigs() {
     guard let delegate else { return }
     let status = delegate.makeStatusProc()
-    status("Fetching configs...")
+    status("Fetching Configs")
     Backend.shared.getResourceConfigs(
       forResourceNamed: topic.name,
       resourceType: "topic",

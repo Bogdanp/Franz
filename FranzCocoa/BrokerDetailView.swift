@@ -56,7 +56,7 @@ struct BrokerDetailView: View {
   private func fetchConfig() {
     guard let delegate else { return }
     let status = delegate.makeStatusProc()
-    status("Fetching configs...")
+    status("Fetching Configs")
     Backend.shared.getResourceConfigs(
       forResourceNamed: String(broker.id),
       resourceType: "broker",

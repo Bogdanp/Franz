@@ -70,7 +70,7 @@ class WorkspaceWindowController: NSWindowController {
   }
 
   private func connect() {
-    status("Connecting...")
+    status("Connecting")
     Backend.shared.openWorkspace(withConn: conn, andPassword: pass).sink(
       onError: { err in
         self.status("Connection Failed")
@@ -101,7 +101,7 @@ class WorkspaceWindowController: NSWindowController {
       connect()
       return
     }
-    self.status("Getting metadata...")
+    self.status("Fetching Metadata")
     Backend.shared.getMetadata(forcingReload: reload, inWorkspace: id).onComplete { meta in
       self.metadata = meta
       self.sidebarCtl.configure(withId: self.id, andMetadata: meta)
@@ -258,7 +258,7 @@ extension WorkspaceWindowController: PublishRecordFormDelegate {
     andValue value: String?) {
 
       let status = makeStatusProc()
-      status("Publishing Record...")
+      status("Publishing Record")
       Backend.shared.publishRecord(
         toTopic: topic.name,
         andPartition: pid,
@@ -328,14 +328,14 @@ extension WorkspaceWindowController: WorkspaceSidebarDelegate {
   }
 
   func sidebar(didDeleteTopic topic: Topic) {
-    status("Deleting topic \(topic.name)...")
+    status("Deleting Topic \(topic.name)")
     Backend.shared.deleteTopic(named: topic.name, inWorkspace: id).onComplete { _ in
       self.loadMetadata()
     }
   }
 
   func sidebar(didDeleteConsumerGroup group: Group) {
-    status("Deleting consumer group \(group.id)...")
+    status("Deleting Group \(group.id)")
     Backend.shared.deleteGroup(named: group.id, inWorkspace: id).onComplete { _ in
       self.loadMetadata()
     }
