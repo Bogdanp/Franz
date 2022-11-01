@@ -10,6 +10,8 @@ class TopicRecordsTableViewController: NSViewController {
   @IBOutlet weak var segmentedControl: NSSegmentedControl!
   @IBOutlet weak var statsLabel: NSTextField!
 
+  private var contextMenu = NSMenu()
+
   weak var delegate: WorkspaceDetailDelegate?
 
   private var id: UVarint!
@@ -31,6 +33,9 @@ class TopicRecordsTableViewController: NSViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
+    contextMenu.delegate = self
+
+    tableView.menu = contextMenu
     tableView.dataSource = self
     tableView.delegate = self
     tableView.setDraggingSourceOperationMask(.copy, forLocal: false)
@@ -265,6 +270,54 @@ class TopicRecordsTableViewController: NSViewController {
         sender.isEnabled = true
         return true
       }
+    }
+  }
+}
+
+// MARK: - NSMenuDelegate
+extension TopicRecordsTableViewController: NSMenuDelegate {
+  func menuNeedsUpdate(_ menu: NSMenu) {
+    menu.removeAllItems()
+    guard !liveModeOn else { return }
+    guard tableView.clickedRow >= 0 else { return }
+    let record = items[tableView.clickedRow].record
+    if record.key != nil {
+      menu.addItem(.init(
+        title: "Publish Tombstone...",
+        action: #selector(didPressPublishTombstoneItem(_:)),
+        keyEquivalent: ""))
+    }
+  }
+
+  @objc func didPressPublishTombstoneItem(_ sender: NSMenu) {
+    guard !liveModeOn else { return }
+    guard let delegate else { return }
+    guard tableView.clickedRow >= 0 else { return }
+    let record = items[tableView.clickedRow].record
+    guard let key = record.key else { return }
+
+    let alert = NSAlert()
+    alert.alertStyle = .informational
+    alert.messageText = "Really publish tombstone?"
+    alert.informativeText = "This action cannot be undone."
+    alert.addButton(withTitle: "Publish")
+    alert.addButton(withTitle: "Cancel")
+    switch alert.runModal() {
+    case .alertFirstButtonReturn:
+      let status = delegate.makeStatusProc()
+      status("Publishing Tombstone")
+      Backend.shared.publishRecord(
+        toTopic: topic,
+        andPartition: record.partitionId,
+        withKey: key,
+        andValue: nil,
+        inWorkspace: id
+      ).onComplete { record in
+        status("Ready")
+        self.setRecords([record], byAppending: true)
+      }
+    default:
+      ()
     }
   }
 }

@@ -269,9 +269,7 @@
                        (define c (state-ref-client s id))
                        (define p (k:make-producer c))
                        (define evt
-                         (k:produce p topic #:partition pid
-                                    (and key (string->bytes/utf-8 key))
-                                    (and value (string->bytes/utf-8 value))))
+                         (k:produce p topic key value #:partition pid))
                        (k:producer-stop p)
                        (sync evt)))
                     (state-add-req s (req result res-ch nack))]

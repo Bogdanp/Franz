@@ -98,15 +98,24 @@
 (define-rpc (close-iterator [with-id id : UVarint])
   (pool-close-iterator id))
 
+;; XXX: Should probably just rename IteratorRecord to Record.
 (define-rpc (publish-record [to-topic topic : String]
                             [and-partition pid : UVarint]
-                            [with-key key : (Optional String)]
-                            [and-value value : (Optional String)]
-                            [in-workspace id : UVarint])
+                            [with-key key : (Optional Bytes)]
+                            [and-value value : (Optional Bytes)]
+                            [in-workspace id : UVarint] : IteratorRecord)
+  (define timestamp (current-milliseconds))
   (define res (pool-publish-record id topic pid key value))
-  (define err (k:ProduceResponsePartition-error-code (k:RecordResult-partition res)))
+  (define part (k:RecordResult-partition res))
+  (define err (k:ProduceResponsePartition-error-code part))
   (unless (zero? err)
-    (kerr:raise-server-error err)))
+    (kerr:raise-server-error err))
+  (make-IteratorRecord
+   #:partition-id (k:ProduceResponsePartition-id part)
+   #:offset (k:ProduceResponsePartition-offset part)
+   #:timestamp timestamp
+   #:key key
+   #:value value))
 
 (define-rpc (close-all-workspaces)
   (void (pool-shutdown)))

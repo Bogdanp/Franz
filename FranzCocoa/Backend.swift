@@ -666,7 +666,7 @@ public class Backend {
     )
   }
 
-  public func publishRecord(toTopic topic: String, andPartition pid: UVarint, withKey key: String?, andValue value: String?, inWorkspace id: UVarint) -> Future<String, Void> {
+  public func publishRecord(toTopic topic: String, andPartition pid: UVarint, withKey key: Data?, andValue value: Data?, inWorkspace id: UVarint) -> Future<String, IteratorRecord> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0013).write(to: out)
@@ -676,7 +676,9 @@ public class Backend {
         value.write(to: out)
         id.write(to: out)
       },
-      readProc: { (inp: InputPort, buf: inout Data) -> Void in }
+      readProc: { (inp: InputPort, buf: inout Data) -> IteratorRecord in
+        return IteratorRecord.read(from: inp, using: &buf)
+      }
     )
   }
 

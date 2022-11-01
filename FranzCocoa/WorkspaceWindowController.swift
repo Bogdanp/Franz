@@ -262,12 +262,13 @@ extension WorkspaceWindowController: PublishRecordFormDelegate {
       Backend.shared.publishRecord(
         toTopic: topic.name,
         andPartition: pid,
-        withKey: key,
-        andValue: value,
+        withKey: key.flatMap { $0.data(using: .utf8) },
+        andValue: value.flatMap { $0.data(using: .utf8) },
         inWorkspace: id
-      ).onComplete {
+      ).onComplete { _ in
         status("Ready")
         self.contentViewController?.dismiss(sender)
+        // TODO: Notify the topic's records table to show the record if it's currently being displayed.
       }
   }
 }
