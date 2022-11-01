@@ -2,13 +2,18 @@ disabled_rules:
   - cyclomatic_complexity
   - file_length
   - function_body_length
-  - identifier_name
   - private_over_fileprivate
 
 excluded:
   - FranzCocoa/Backend.swift
 
+identifier_name:
+  min_length: 1
+
 trailing_comma:
   mandatory_comma: true
+
+type_name:
+  min_length: 1
 
 reporter: "xcode"
