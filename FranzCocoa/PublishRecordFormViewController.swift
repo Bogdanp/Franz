@@ -34,12 +34,20 @@ class PublishRecordFormViewController: NSViewController {
     self.reset()
   }
 
+  override func viewDidAppear() {
+    view.window?.setFrame(NSRect(x: 0, y: 0, width: 460, height: 292), display: true)
+    view.window?.styleMask.remove(.resizable)
+    view.window?.styleMask.update(with: .fullSizeContentView)
+  }
+
   func configure(withMetadata meta: Metadata, andTopic topic: Topic?) {
     self.metadata = meta
-    self.topic = topic
     if let topic {
-      self.partition = topic.partitions[0].id
+      self.topic = topic
+    } else if meta.topics.count > 0 {
+      self.topic = meta.topics[0]
     }
+    self.partition = self.topic?.partitions[0].id
   }
 
   private func reset() {
@@ -51,11 +59,10 @@ class PublishRecordFormViewController: NSViewController {
 
     guard let metadata else { return }
     topicButton.removeAllItems()
-    topicButton.addItem(withTitle: "")
     for (i, t) in metadata.topics.enumerated() {
       topicButton.addItem(withTitle: t.name)
       if t.name == topic?.name {
-        topicButton.selectItem(at: i+1)
+        topicButton.selectItem(at: i)
       }
     }
     topicButton.isEnabled = true
@@ -70,8 +77,8 @@ class PublishRecordFormViewController: NSViewController {
     }
     partitionButton.isEnabled = true
 
-    keyField.isEnabled = true
-    valueField.isEnabled = true
+    keyField.isEnabled = nullKeyButton.state == .on
+    valueField.isEnabled = nullValueButton.state == .on
     publishButton.isEnabled = true
   }
 
@@ -89,20 +96,16 @@ class PublishRecordFormViewController: NSViewController {
   }
 
   @IBAction func didToggleNullKeyButton(_ sender: NSButton) {
-    switch sender.state {
-    case .on:
-      keyField.isEnabled = false
-    default:
-      keyField.isEnabled = true
+    reset()
+    if sender.state == .on {
+      keyField.becomeFirstResponder()
     }
   }
 
   @IBAction func didToggleNullValueButton(_ sender: NSButton) {
-    switch sender.state {
-    case .on:
-      valueField.isEnabled = false
-    default:
-      valueField.isEnabled = true
+    reset()
+    if sender.state == .on {
+      valueField.becomeFirstResponder()
     }
   }
 
@@ -123,8 +126,8 @@ class PublishRecordFormViewController: NSViewController {
       self,
       withTopic: topic,
       partitionId: partition,
-      key: nullKeyButton.state == .on ? nil : keyField.stringValue,
-      andValue: nullValueButton.state == .on ? nil : valueField.stringValue)
+      key: nullKeyButton.state == .on ? keyField.stringValue : nil,
+      andValue: nullValueButton.state == .on ? valueField.stringValue : nil)
   }
 }
 
