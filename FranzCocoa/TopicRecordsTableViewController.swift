@@ -70,7 +70,7 @@ class TopicRecordsTableViewController: NSViewController {
   }
 
   private func setRecords(_ records: [IteratorRecord], byAppending appending: Bool = true) {
-    var known = [Item.Ident: Item]()
+    var known = [Item.ID: Item]()
     for item in self.items {
       known[item.id] = item
     }
@@ -278,18 +278,18 @@ fileprivate enum ControlTag: Int {
 
 // MARK: - Item
 fileprivate class Item: NSObject {
-  struct Ident: Hashable, Equatable, Comparable {
+  struct ID: Hashable, Equatable, Comparable {
     let pid: UVarint
     let offset: UVarint
 
-    static func < (lhs: Item.Ident, rhs: Item.Ident) -> Bool {
+    static func < (lhs: Item.ID, rhs: Item.ID) -> Bool {
       return lhs.offset == rhs.offset ? lhs.pid < rhs.pid : lhs.offset < rhs.offset
     }
   }
 
   var record: IteratorRecord
-  var id: Ident {
-    Ident(pid: record.partitionId, offset: record.offset)
+  var id: ID {
+    ID(pid: record.partitionId, offset: record.offset)
   }
 
   init(record: IteratorRecord) {
@@ -554,11 +554,16 @@ fileprivate struct TopicRecordsOptionsForm: View {
   let saveAction: () -> Void
   let resetAction: () -> Void
 
+  var bytesFmt: ByteCountFormatter = {
+    let fmt = ByteCountFormatter()
+    fmt.countStyle = .memory
+    return fmt
+  }()
   var formattedMaxMB: String {
-    "\(String(describing: UVarint(TopicRecordsOptions.descale(model.maxMBScaled))))MB"
+    bytesFmt.string(fromByteCount: Int64(model.maxBytes))
   }
   var formattedKeepMB: String {
-    "\(String(describing: UVarint(TopicRecordsOptions.descale(model.keepMBScaled))))MB"
+    bytesFmt.string(fromByteCount: Int64(model.keepBytes))
   }
 
   var body: some View {
@@ -579,19 +584,31 @@ fileprivate struct TopicRecordsOptionsForm: View {
       }
       VStack(alignment: .trailing, spacing: 0) {
         Slider(value: $model.maxMBScaled, in: 0...7, step: 1) {
-          Text("Max MB:")
+          Text("Request Size:")
         }
-        Text(formattedMaxMB)
-          .font(.system(size: 10).monospacedDigit())
-          .foregroundColor(.secondary)
+        HStack(spacing: 2) {
+          Text(formattedMaxMB)
+            .font(.system(size: 10).monospacedDigit())
+            .foregroundColor(.secondary)
+          Image(systemName: "info.circle")
+            .font(.system(size: 10))
+            .foregroundColor(.secondary)
+            .help("The maximum amount of data that will be retrieved per partition.")
+        }
       }
       VStack(alignment: .trailing, spacing: 0) {
         Slider(value: $model.keepMBScaled, in: 0...10, step: 1) {
-          Text("Keep MB:")
+          Text("Buffer Size:")
         }
-        Text(formattedKeepMB)
-          .font(.system(size: 10).monospacedDigit())
-          .foregroundColor(.secondary)
+        HStack(spacing: 2) {
+          Text(formattedKeepMB)
+            .font(.system(size: 10).monospacedDigit())
+            .foregroundColor(.secondary)
+          Image(systemName: "info.circle")
+            .font(.system(size: 10))
+            .foregroundColor(.secondary)
+            .help("The maximum amount of data that will be buffered in memory.")
+        }
       }
       HStack {
         Button("Save") {
