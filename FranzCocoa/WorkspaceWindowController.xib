@@ -50,7 +50,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" verticalCompressionResistancePriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="T4q-IH-Z6t">
-                                <rect key="frame" x="6" y="4" width="136" height="16"/>
+                                <rect key="frame" x="3" y="4" width="136" height="17"/>
                                 <textFieldCell key="cell" lineBreakMode="clipping" title="Unnamed Connection" id="wxj-Jj-AfM">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -58,19 +58,21 @@
                                 </textFieldCell>
                             </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="iNm-gp-3aO">
-                                <rect key="frame" x="342" y="5" width="75" height="14"/>
+                                <rect key="frame" x="342" y="4" width="75" height="16"/>
                                 <textFieldCell key="cell" lineBreakMode="clipping" title="Connecting..." id="C2q-m3-mBt">
-                                    <font key="font" metaFont="smallSystem"/>
+                                    <font key="font" metaFont="system" size="11"/>
                                     <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
                         </subviews>
                         <constraints>
-                            <constraint firstItem="T4q-IH-Z6t" firstAttribute="leading" secondItem="Srx-n6-Dqq" secondAttribute="leading" constant="8" id="Oh9-9H-LmU"/>
+                            <constraint firstItem="T4q-IH-Z6t" firstAttribute="top" secondItem="Srx-n6-Dqq" secondAttribute="top" constant="3" id="ICJ-Z6-rGe"/>
+                            <constraint firstItem="T4q-IH-Z6t" firstAttribute="leading" secondItem="Srx-n6-Dqq" secondAttribute="leading" constant="5" id="Oh9-9H-LmU"/>
                             <constraint firstAttribute="trailing" secondItem="iNm-gp-3aO" secondAttribute="trailing" constant="5" id="fW0-m6-P1z"/>
-                            <constraint firstItem="iNm-gp-3aO" firstAttribute="centerY" secondItem="Srx-n6-Dqq" secondAttribute="centerY" id="frn-0s-QDY"/>
-                            <constraint firstItem="T4q-IH-Z6t" firstAttribute="centerY" secondItem="Srx-n6-Dqq" secondAttribute="centerY" id="hOI-r9-HOG"/>
+                            <constraint firstAttribute="bottom" secondItem="T4q-IH-Z6t" secondAttribute="bottom" constant="4" id="hfJ-83-jyb"/>
+                            <constraint firstItem="iNm-gp-3aO" firstAttribute="top" secondItem="Srx-n6-Dqq" secondAttribute="top" constant="4" id="jfG-Si-z5K"/>
+                            <constraint firstAttribute="bottom" secondItem="iNm-gp-3aO" secondAttribute="bottom" constant="4" id="vuf-RG-8ix"/>
                         </constraints>
                     </view>
                 </box>
