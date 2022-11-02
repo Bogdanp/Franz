@@ -31,6 +31,8 @@
 		43804AB528D19ACD002880FE /* WelcomeWindowConnectionsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43804AB328D19ACD002880FE /* WelcomeWindowConnectionsViewController.xib */; };
 		43804AB728D1A014002880FE /* ConnectionTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43804AB628D1A014002880FE /* ConnectionTableCellView.swift */; };
 		43804AB928D1A026002880FE /* ConnectionTableCellView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43804AB828D1A026002880FE /* ConnectionTableCellView.xib */; };
+		438241B12911A9EB00BCC6E3 /* FranzCocoaUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 438241B02911A9EB00BCC6E3 /* FranzCocoaUITests.swift */; };
+		438241B32911A9EB00BCC6E3 /* FranzCocoaUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 438241B22911A9EB00BCC6E3 /* FranzCocoaUITestsLaunchTests.swift */; };
 		4395503828FD45B000CC0050 /* GroupOffsetsOutlineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4395503628FD45B000CC0050 /* GroupOffsetsOutlineViewController.swift */; };
 		4395503928FD45B000CC0050 /* GroupOffsetsOutlineViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4395503728FD45B000CC0050 /* GroupOffsetsOutlineViewController.xib */; };
 		4396EADA290576A300A15D25 /* ResourceConfigTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4396EAD8290576A300A15D25 /* ResourceConfigTableViewController.swift */; };
@@ -64,6 +66,16 @@
 		43D3AEAC28FFDF3500D52E92 /* PreferencesWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D3AEAA28FFDF3500D52E92 /* PreferencesWindowController.xib */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		438241B42911A9EB00BCC6E3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 43CD620D28CE24B000095144 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 43CD621428CE24B000095144;
+			remoteInfo = Franz;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		4314EDF528D85DD800431770 /* SidebarGroupCellView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SidebarGroupCellView.xib; sourceTree = "<group>"; };
 		4314EDF728D85E0E00431770 /* SidebarGroupCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarGroupCellView.swift; sourceTree = "<group>"; };
@@ -89,6 +101,9 @@
 		43804AB328D19ACD002880FE /* WelcomeWindowConnectionsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WelcomeWindowConnectionsViewController.xib; sourceTree = "<group>"; };
 		43804AB628D1A014002880FE /* ConnectionTableCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionTableCellView.swift; sourceTree = "<group>"; };
 		43804AB828D1A026002880FE /* ConnectionTableCellView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ConnectionTableCellView.xib; sourceTree = "<group>"; };
+		438241AE2911A9EB00BCC6E3 /* FranzCocoaUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FranzCocoaUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		438241B02911A9EB00BCC6E3 /* FranzCocoaUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FranzCocoaUITests.swift; sourceTree = "<group>"; };
+		438241B22911A9EB00BCC6E3 /* FranzCocoaUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FranzCocoaUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		4395503628FD45B000CC0050 /* GroupOffsetsOutlineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupOffsetsOutlineViewController.swift; sourceTree = "<group>"; };
 		4395503728FD45B000CC0050 /* GroupOffsetsOutlineViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GroupOffsetsOutlineViewController.xib; sourceTree = "<group>"; };
 		4396EAD8290576A300A15D25 /* ResourceConfigTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceConfigTableViewController.swift; sourceTree = "<group>"; };
@@ -123,6 +138,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		438241AB2911A9EB00BCC6E3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		43CD621228CE24B000095144 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -136,11 +158,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		438241AF2911A9EB00BCC6E3 /* FranzCocoaUITests */ = {
+			isa = PBXGroup;
+			children = (
+				438241B02911A9EB00BCC6E3 /* FranzCocoaUITests.swift */,
+				438241B22911A9EB00BCC6E3 /* FranzCocoaUITestsLaunchTests.swift */,
+			);
+			path = FranzCocoaUITests;
+			sourceTree = "<group>";
+		};
 		43CD620C28CE24B000095144 = {
 			isa = PBXGroup;
 			children = (
 				43CD622528CE251600095144 /* Packages */,
 				43CD621728CE24B000095144 /* FranzCocoa */,
+				438241AF2911A9EB00BCC6E3 /* FranzCocoaUITests */,
 				43CD621628CE24B000095144 /* Products */,
 				43CD622728CE251F00095144 /* Frameworks */,
 			);
@@ -150,6 +182,7 @@
 			isa = PBXGroup;
 			children = (
 				43CD621528CE24B000095144 /* Franz.app */,
+				438241AE2911A9EB00BCC6E3 /* FranzCocoaUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -232,6 +265,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		438241AD2911A9EB00BCC6E3 /* FranzCocoaUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 438241B82911A9EB00BCC6E3 /* Build configuration list for PBXNativeTarget "FranzCocoaUITests" */;
+			buildPhases = (
+				438241AA2911A9EB00BCC6E3 /* Sources */,
+				438241AB2911A9EB00BCC6E3 /* Frameworks */,
+				438241AC2911A9EB00BCC6E3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				438241B52911A9EB00BCC6E3 /* PBXTargetDependency */,
+			);
+			name = FranzCocoaUITests;
+			productName = FranzCocoaUITests;
+			productReference = 438241AE2911A9EB00BCC6E3 /* FranzCocoaUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		43CD621428CE24B000095144 /* Franz */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 43CD622228CE24B100095144 /* Build configuration list for PBXNativeTarget "Franz" */;
@@ -263,9 +314,13 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1340;
+				LastSwiftUpdateCheck = 1400;
 				LastUpgradeCheck = 1340;
 				TargetAttributes = {
+					438241AD2911A9EB00BCC6E3 = {
+						CreatedOnToolsVersion = 14.0;
+						TestTargetID = 43CD621428CE24B000095144;
+					};
 					43CD621428CE24B000095144 = {
 						CreatedOnToolsVersion = 13.4.1;
 					};
@@ -285,11 +340,19 @@
 			projectRoot = "";
 			targets = (
 				43CD621428CE24B000095144 /* Franz */,
+				438241AD2911A9EB00BCC6E3 /* FranzCocoaUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		438241AC2911A9EB00BCC6E3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		43CD621328CE24B000095144 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -360,6 +423,15 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		438241AA2911A9EB00BCC6E3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				438241B32911A9EB00BCC6E3 /* FranzCocoaUITestsLaunchTests.swift in Sources */,
+				438241B12911A9EB00BCC6E3 /* FranzCocoaUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		43CD621128CE24B000095144 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -402,6 +474,14 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		438241B52911A9EB00BCC6E3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 43CD621428CE24B000095144 /* Franz */;
+			targetProxy = 438241B42911A9EB00BCC6E3 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin PBXVariantGroup section */
 		43CD621C28CE24B100095144 /* MainMenu.xib */ = {
 			isa = PBXVariantGroup;
@@ -414,6 +494,40 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		438241B62911A9EB00BCC6E3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = H3YE679B58;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.defn.FranzCocoaUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = Franz;
+			};
+			name = Debug;
+		};
+		438241B72911A9EB00BCC6E3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = H3YE679B58;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.defn.FranzCocoaUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = Franz;
+			};
+			name = Release;
+		};
 		43CD622028CE24B100095144 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -586,6 +700,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		438241B82911A9EB00BCC6E3 /* Build configuration list for PBXNativeTarget "FranzCocoaUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				438241B62911A9EB00BCC6E3 /* Debug */,
+				438241B72911A9EB00BCC6E3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		43CD621028CE24B000095144 /* Build configuration list for PBXProject "FranzCocoa" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
