@@ -75,11 +75,13 @@ class TopicRecordsTableViewController: NSViewController {
     }
   }
 
+  // Invariant: completionHandler is always called on the main thread.
+  // Invariant: backpressureSema must always be released before
+  // syncing on the main thread.
   private func setRecords(_ records: [IteratorRecord],
                           byAppending appending: Bool = true,
                           completionHandler: @escaping () -> Void = { }) {
     assert(Thread.isMainThread)
-    weak var ctl = self
 
     let selectedRow = self.tableView.selectedRow
     var selectedItem: Item?
@@ -90,14 +92,18 @@ class TopicRecordsTableViewController: NSViewController {
     let sortDirection = self.options.sortDirection
     let keepBytes = self.options.keepBytes
 
-    self.backpressureSema.wait()
-    DispatchQueue.uiBackground.async {
-      guard let ctl else {
-        completionHandler()
+    backpressureSema.wait()
+    DispatchQueue.uiBackground.async { [backpressureSema, weak self] in
+      guard let self else {
+        // https://lists.apple.com/archives/cocoa-dev/2014/Apr/msg00484.html
+        backpressureSema.signal()
+        DispatchQueue.main.sync {
+          completionHandler()
+        }
         return
       }
 
-      var items = ctl.items
+      var items = self.items
       var known: [Item.ID: Item] = Dictionary(minimumCapacity: items.count)
       for item in items {
         known[item.id] = item
@@ -132,16 +138,17 @@ class TopicRecordsTableViewController: NSViewController {
         }
       }
 
-      ctl.backpressureSema.signal()
-      DispatchQueue.main.sync {
-        ctl.items = items
-        ctl.tableView.reloadData()
+      backpressureSema.signal()
+      DispatchQueue.main.sync { [weak self] in
+        guard let self else { return }
+        self.items = items
+        self.tableView.reloadData()
         if let selectedItem, let selectedRow = items.firstIndex(of: selectedItem) {
-          ctl.tableView.selectRowIndexes([selectedRow], byExtendingSelection: false)
+          self.tableView.selectRowIndexes([selectedRow], byExtendingSelection: false)
         }
 
-        let bytesStr = ctl.bytesFmt.string(fromByteCount: Int64(totalBytes))
-        ctl.statsLabel.stringValue = "Records: \(items.count) (\(bytesStr))"
+        let bytesStr = self.bytesFmt.string(fromByteCount: Int64(totalBytes))
+        self.statsLabel.stringValue = "Records: \(items.count) (\(bytesStr))"
         completionHandler()
       }
     }
@@ -152,14 +159,12 @@ class TopicRecordsTableViewController: NSViewController {
     guard let delegate else { return }
     guard let iteratorId else { return }
 
-    weak var ctl = self
     let status = delegate.makeStatusProc()
     status("Fetching Records")
     Backend.shared.getRecords(
       iteratorId,
       withMaxBytes: options.maxBytes
-    ).onComplete { records in
-      guard let ctl else { return }
+    ).onComplete { [weak self] records in
       if !completionHandler(records) {
         status("Ready")
         return
@@ -171,7 +176,7 @@ class TopicRecordsTableViewController: NSViewController {
       }
 
       status("Processing Records")
-      ctl.setRecords(records, byAppending: appending) {
+      self?.setRecords(records, byAppending: appending) {
         status("Ready")
       }
     }
@@ -179,9 +184,8 @@ class TopicRecordsTableViewController: NSViewController {
 
   private func loadRecords(withCookie cookie: Int,
                            completionHandler: @escaping ([IteratorRecord]) -> Bool) {
-    weak var ctl = self
-    loadRecords { records in
-      guard let ctl, ctl.liveModeCookie == cookie else { return false }
+    loadRecords { [weak self] records in
+      guard self?.liveModeCookie == cookie else { return false }
       return completionHandler(records)
     }
   }
@@ -192,9 +196,8 @@ class TopicRecordsTableViewController: NSViewController {
       if records.isEmpty {
         deadline = deadline.advanced(by: .seconds(1))
       }
-      weak var ctl = self
-      DispatchQueue.main.asyncAfter(deadline: deadline) {
-        ctl?.scheduleLoad(withCookie: cookie)
+      DispatchQueue.main.asyncAfter(deadline: deadline) { [weak self] in
+        self?.scheduleLoad(withCookie: cookie)
       }
       return true
     }
