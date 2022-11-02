@@ -428,10 +428,12 @@ extension TopicRecordsTableViewController: NSTableViewDelegate {
     guard columnIdx >= 0 else { return nil }
     let column = tableView.tableColumns[columnIdx]
     if column.identifier == .TopicRecordsKey {
+      guard items[row].record.key != nil else { return nil }
       let provider = NSFilePromiseProvider(fileType: options.keyFormat.utType.identifier, delegate: self)
       provider.userInfo = DragInfo(row: row, target: .key)
       return provider
     } else if column.identifier == .TopicRecordsValue {
+      guard items[row].record.value != nil else { return nil }
       let provider = NSFilePromiseProvider(fileType: options.valueFormat.utType.identifier, delegate: self)
       provider.userInfo = DragInfo(row: row, target: .value)
       return provider
