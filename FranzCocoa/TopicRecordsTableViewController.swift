@@ -98,15 +98,15 @@ class TopicRecordsTableViewController: NSViewController {
       }
 
       var items = ctl.items
-      var known = [Item.ID: Item]()
+      var known: [Item.ID: Item] = Dictionary(minimumCapacity: items.count)
       for item in items {
         known[item.id] = item
       }
 
       if !appending {
-        items.removeAll(keepingCapacity: true)
+        items.removeAll()
       }
-      for r in records {
+      for r in sortDirection == .asc ? records : records.reversed() {
         var it = Item(record: r)
         if let item = known[it.id] {
           item.record = r
@@ -169,6 +169,8 @@ class TopicRecordsTableViewController: NSViewController {
         status("Ready")
         return
       }
+
+      status("Processing Records")
       ctl.setRecords(records, byAppending: appending) {
         status("Ready")
       }
@@ -372,12 +374,11 @@ fileprivate class Item: NSObject {
     }
   }
 
+  var id: ID
   var record: IteratorRecord
-  var id: ID {
-    ID(pid: record.partitionId, offset: record.offset)
-  }
 
   init(record: IteratorRecord) {
+    self.id = ID(pid: record.partitionId, offset: record.offset)
     self.record = record
   }
 
