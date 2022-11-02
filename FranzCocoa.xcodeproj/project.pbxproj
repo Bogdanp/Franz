@@ -64,6 +64,7 @@
 		43D3AEA828FFD96500D52E92 /* Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D3AEA728FFD96500D52E92 /* Defaults.swift */; };
 		43D3AEAB28FFDF3500D52E92 /* PreferencesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D3AEA928FFDF3500D52E92 /* PreferencesWindowController.swift */; };
 		43D3AEAC28FFDF3500D52E92 /* PreferencesWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D3AEAA28FFDF3500D52E92 /* PreferencesWindowController.xib */; };
+		43E5AE8C291245E000C74966 /* DispatchQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43E5AE8B291245E000C74966 /* DispatchQueue.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -135,6 +136,7 @@
 		43D3AEA728FFD96500D52E92 /* Defaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Defaults.swift; sourceTree = "<group>"; };
 		43D3AEA928FFDF3500D52E92 /* PreferencesWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesWindowController.swift; sourceTree = "<group>"; };
 		43D3AEAA28FFDF3500D52E92 /* PreferencesWindowController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PreferencesWindowController.xib; sourceTree = "<group>"; };
+		43E5AE8B291245E000C74966 /* DispatchQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DispatchQueue.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -200,6 +202,7 @@
 				43804AB628D1A014002880FE /* ConnectionTableCellView.swift */,
 				43804AB828D1A026002880FE /* ConnectionTableCellView.xib */,
 				43D3AEA728FFD96500D52E92 /* Defaults.swift */,
+				43E5AE8B291245E000C74966 /* DispatchQueue.swift */,
 				432C24622903F03B00C6F336 /* Error.swift */,
 				43CD621F28CE24B100095144 /* FranzCocoa.entitlements */,
 				43196F8B28F1DB94003C793B /* GroupDetailView.swift */,
@@ -445,6 +448,7 @@
 				436E720628D75B0500ECBF49 /* WorkspaceDetailViewController.swift in Sources */,
 				4396EADA290576A300A15D25 /* ResourceConfigTableViewController.swift in Sources */,
 				431C698228F2E0C60082986A /* NewTopicFormViewController.swift in Sources */,
+				43E5AE8C291245E000C74966 /* DispatchQueue.swift in Sources */,
 				43CD624828CE3B5D00095144 /* ConnectionDetailsFormViewController.swift in Sources */,
 				4395503828FD45B000CC0050 /* GroupOffsetsOutlineViewController.swift in Sources */,
 				43196F8A28F1DAB2003C793B /* TopicDetailView.swift in Sources */,

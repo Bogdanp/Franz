@@ -20,6 +20,7 @@ class TopicRecordsTableViewController: NSViewController {
   private var items = [Item]()
   private var liveModeOn = false
   private var liveModeCookie = 0
+  private var backpressureSema = DispatchSemaphore(value: 1)
 
   private var optionsDefaultsKey: String?
   private var options = TopicRecordsOptions()
@@ -74,56 +75,79 @@ class TopicRecordsTableViewController: NSViewController {
     }
   }
 
-  private func setRecords(_ records: [IteratorRecord], byAppending appending: Bool = true) {
-    var known = [Item.ID: Item]()
-    for item in self.items {
-      known[item.id] = item
-    }
+  private func setRecords(_ records: [IteratorRecord],
+                          byAppending appending: Bool = true,
+                          completionHandler: @escaping () -> Void = { }) {
+    assert(Thread.isMainThread)
+    weak var ctl = self
 
+    let selectedRow = self.tableView.selectedRow
     var selectedItem: Item?
-    if self.tableView.selectedRow >= 0 {
-      selectedItem = self.items[self.tableView.selectedRow]
+    if selectedRow >= 0 {
+      selectedItem = items[selectedRow]
     }
 
-    if !appending {
-      self.items.removeAll(keepingCapacity: true)
-    }
-    for r in records {
-      var it = Item(record: r)
-      if let item = known[it.id] {
-        item.record = r
-        it = item
-      }
-      self.items.append(it)
-    }
-
-    switch self.options.sortDirection {
-    case .desc:
-      self.items.sort { $0.id > $1.id }
-    case .asc:
-      self.items.sort { $0.id < $1.id }
-    }
-
-    var totalBytes = UVarint(0)
+    let sortDirection = self.options.sortDirection
     let keepBytes = self.options.keepBytes
-    for (row, it) in self.items.enumerated() {
-      totalBytes += UVarint(it.record.key?.count ?? 0)
-      totalBytes += UVarint(it.record.value?.count ?? 0)
-      if totalBytes > keepBytes {
-        self.items.removeLast(self.items.count-row)
-        break
+
+    self.backpressureSema.wait()
+    DispatchQueue.uiBackground.async {
+      guard let ctl else {
+        completionHandler()
+        return
+      }
+
+      var items = ctl.items
+      var known = [Item.ID: Item]()
+      for item in items {
+        known[item.id] = item
+      }
+
+      if !appending {
+        items.removeAll(keepingCapacity: true)
+      }
+      for r in records {
+        var it = Item(record: r)
+        if let item = known[it.id] {
+          item.record = r
+          it = item
+        }
+        items.append(it)
+      }
+
+      switch sortDirection {
+      case .desc:
+        items.sort { $0.id > $1.id }
+      case .asc:
+        items.sort { $0.id < $1.id }
+      }
+
+      var totalBytes = UVarint(0)
+      for (row, it) in items.enumerated() {
+        totalBytes += UVarint(it.record.key?.count ?? 0)
+        totalBytes += UVarint(it.record.value?.count ?? 0)
+        if totalBytes > keepBytes {
+          items.removeLast(items.count-row)
+          break
+        }
+      }
+
+      ctl.backpressureSema.signal()
+      DispatchQueue.main.sync {
+        ctl.items = items
+        ctl.tableView.reloadData()
+        if let selectedItem, let selectedRow = items.firstIndex(of: selectedItem) {
+          ctl.tableView.selectRowIndexes([selectedRow], byExtendingSelection: false)
+        }
+
+        let bytesStr = ctl.bytesFmt.string(fromByteCount: Int64(totalBytes))
+        ctl.statsLabel.stringValue = "Records: \(items.count) (\(bytesStr))"
+        completionHandler()
       }
     }
-
-    self.tableView.reloadData()
-    if let selectedItem, let selectedRow = self.items.firstIndex(of: selectedItem) {
-      self.tableView.selectRowIndexes([selectedRow], byExtendingSelection: false)
-    }
-
-    self.statsLabel.stringValue = "Records: \(self.items.count) (\(bytesFmt.string(fromByteCount: Int64(totalBytes))))"
   }
 
-  private func loadRecords(byAppending: Bool = true,
+  private func loadRecords(byAppending appending: Bool = true,
                            completionHandler: @escaping ([IteratorRecord]) -> Bool = { _ in true }) {
     guard let delegate else { return }
     guard let iteratorId else { return }
@@ -136,19 +160,27 @@ class TopicRecordsTableViewController: NSViewController {
       withMaxBytes: options.maxBytes
     ).onComplete { records in
       guard let ctl else { return }
-      status("Ready")
       if !completionHandler(records) {
+        status("Ready")
         return
       }
 
-      ctl.setRecords(records, byAppending: byAppending)
+      if records.isEmpty && appending {
+        status("Ready")
+        return
+      }
+      ctl.setRecords(records, byAppending: appending) {
+        status("Ready")
+      }
     }
   }
 
-  private func loadRecords(withCookie cookie: Int, _ proc: @escaping ([IteratorRecord]) -> Bool) {
+  private func loadRecords(withCookie cookie: Int,
+                           completionHandler: @escaping ([IteratorRecord]) -> Bool) {
+    weak var ctl = self
     loadRecords { records in
-      guard self.liveModeCookie == cookie else { return false }
-      return proc(records)
+      guard let ctl, ctl.liveModeCookie == cookie else { return false }
+      return completionHandler(records)
     }
   }
 
@@ -184,8 +216,8 @@ class TopicRecordsTableViewController: NSViewController {
     liveModeOn = true
     segmentedControl.setEnabled(false, forSegment: 1)
     segmentedControl.setEnabled(false, forSegment: 2)
-    reset(offset: .latest) {
-      self.scheduleLoad(withCookie: cookie)
+    reset(offset: .latest) { [weak self] in
+      self?.scheduleLoad(withCookie: cookie)
     }
   }
 
