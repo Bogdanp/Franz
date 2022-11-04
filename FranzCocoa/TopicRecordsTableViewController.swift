@@ -262,7 +262,6 @@ class TopicRecordsTableViewController: NSViewController {
     cookie += 1
     let cookie = cookie
     setRecords([], byAppending: false)
-    options.sortDirection = .desc
     liveModeOn = true
     segmentedControl.setEnabled(false, forSegment: 1)
     segmentedControl.setEnabled(false, forSegment: 2)
