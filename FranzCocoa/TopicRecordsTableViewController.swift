@@ -18,8 +18,8 @@ class TopicRecordsTableViewController: NSViewController {
   private var topic: String!
   private var iteratorId: UVarint?
   private var items = [Item]()
+  private var cookie = 0
   private var liveModeOn = false
-  private var liveModeCookie = 0
   private var backpressureSema = DispatchSemaphore(value: 1)
 
   private var optionsDefaultsKey: String?
@@ -30,6 +30,11 @@ class TopicRecordsTableViewController: NSViewController {
     fmt.countStyle = .memory
     return fmt
   }()
+
+  deinit {
+    guard let iteratorId else { return }
+    _ = Backend.shared.closeIterator(withId: iteratorId)
+  }
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -67,11 +72,43 @@ class TopicRecordsTableViewController: NSViewController {
       forTopic: topic,
       andOffset: .earliest,
       inWorkspace: id
-    ).onComplete { iteratorId in
+    ).onComplete { [weak self] iteratorId in
+      guard let self else { return }
       self.iteratorId = iteratorId
-      self.loadRecords(withCookie: self.liveModeCookie) { _ in
-        return true
+      self.loadRecords(byAppending: false)
+    }
+  }
+
+  private func loadRecords(byAppending appending: Bool = true) {
+    assert(Thread.isMainThread)
+    guard let delegate else { return }
+    let status = delegate.makeStatusProc()
+    status("Fetching Records")
+    loadRecords { [weak self] records in
+      guard let records else {
+        status("Ready")
+        return
       }
+      status("Processing Records")
+      self?.setRecords(records, byAppending: appending) {
+        status("Ready")
+      }
+    }
+  }
+
+  private func loadRecords(completionHandler: @escaping ([IteratorRecord]?) -> Void) {
+    assert(Thread.isMainThread)
+    guard let iteratorId else { return }
+    let cookie = self.cookie
+    Backend.shared.getRecords(
+      iteratorId,
+      withMaxBytes: options.maxBytes
+    ).onComplete { [weak self] records in
+      guard self?.cookie == cookie else {
+        completionHandler(nil)
+        return
+      }
+      completionHandler(records)
     }
   }
 
@@ -82,6 +119,11 @@ class TopicRecordsTableViewController: NSViewController {
                           byAppending appending: Bool = true,
                           completionHandler: @escaping () -> Void = { }) {
     assert(Thread.isMainThread)
+
+    if records.isEmpty && appending {
+      completionHandler()
+      return
+    }
 
     let selectedRow = self.tableView.selectedRow
     var selectedItem: Item?
@@ -103,29 +145,42 @@ class TopicRecordsTableViewController: NSViewController {
         return
       }
 
-      var items = self.items
-      var known: [Item.ID: Item] = Dictionary(minimumCapacity: items.count)
-      for item in items {
-        known[item.id] = item
-      }
+      var items = [Item]()
+      if appending {
+        Timed.block(named: "setRecords.dedupe") {
+          var index = [Item.ID: Item]()
+          items = self.items
+          items.reserveCapacity(items.count + records.count)
+          index.reserveCapacity(items.count)
+          for item in items {
+            index[item.id] = item
+          }
 
-      if !appending {
-        items.removeAll()
-      }
-      for r in sortDirection == .asc ? records : records.reversed() {
-        var it = Item(record: r)
-        if let item = known[it.id] {
-          item.record = r
-          it = item
+          for r in records {
+            var it = Item(record: r)
+            if let item = index[it.id] {
+              item.record = r
+              it = item
+            }
+            items.append(it)
+          }
         }
-        items.append(it)
+      } else {
+        Timed.block(named: "setRecords.fill") {
+          items.reserveCapacity(records.count)
+          for r in records {
+            items.append(Item(record: r))
+          }
+        }
       }
 
-      switch sortDirection {
-      case .desc:
-        items.sort { $0.id > $1.id }
-      case .asc:
-        items.sort { $0.id < $1.id }
+      Timed.block(named: "setRecords.sort") {
+        switch sortDirection {
+        case .desc:
+          items.sort { $0.id > $1.id }
+        case .asc:
+          items.sort { $0.id < $1.id }
+        }
       }
 
       var totalBytes = UVarint(0)
@@ -154,59 +209,35 @@ class TopicRecordsTableViewController: NSViewController {
     }
   }
 
-  private func loadRecords(byAppending appending: Bool = true,
-                           completionHandler: @escaping ([IteratorRecord]) -> Bool = { _ in true }) {
+  private func scheduleLoad(withCookie cookie: Int) {
+    assert(Thread.isMainThread)
     guard let delegate else { return }
-    guard let iteratorId else { return }
-
     let status = delegate.makeStatusProc()
     status("Fetching Records")
-    Backend.shared.getRecords(
-      iteratorId,
-      withMaxBytes: options.maxBytes
-    ).onComplete { [weak self] records in
-      if !completionHandler(records) {
-        status("Ready")
-        return
-      }
-
-      if records.isEmpty && appending {
-        status("Ready")
-        return
-      }
-
-      status("Processing Records")
-      self?.setRecords(records, byAppending: appending) {
-        status("Ready")
-      }
-    }
-  }
-
-  private func loadRecords(withCookie cookie: Int,
-                           completionHandler: @escaping ([IteratorRecord]) -> Bool) {
     loadRecords { [weak self] records in
-      guard self?.liveModeCookie == cookie else { return false }
-      return completionHandler(records)
-    }
-  }
-
-  private func scheduleLoad(withCookie cookie: Int) {
-    loadRecords(withCookie: cookie) { records in
-      var deadline = DispatchTime.now()
-      if records.isEmpty {
-        deadline = deadline.advanced(by: .seconds(1))
+      guard let records else {
+        status("Ready")
+        return
       }
-      DispatchQueue.main.asyncAfter(deadline: deadline) { [weak self] in
-        self?.scheduleLoad(withCookie: cookie)
+      status("Processing Records")
+      self?.setRecords(records) { [weak self] in
+        status("Ready")
+        var deadline = DispatchTime.now()
+        if records.isEmpty {
+          deadline = deadline.advanced(by: .seconds(1))
+        }
+        DispatchQueue.main.asyncAfter(deadline: deadline) { [weak self] in
+          guard self?.cookie == cookie else { return }
+          self?.scheduleLoad(withCookie: cookie)
+        }
       }
-      return true
     }
   }
 
   private func toggleLiveMode() {
     assert(Thread.isMainThread)
     if liveModeOn {
-      liveModeCookie += 1
+      cookie += 1
       liveModeOn = false
       segmentedControl.setSelected(false, forSegment: 0)
       segmentedControl.setEnabled(true, forSegment: 1)
@@ -214,8 +245,8 @@ class TopicRecordsTableViewController: NSViewController {
       return
     }
 
-    liveModeCookie += 1
-    let cookie = liveModeCookie
+    cookie += 1
+    let cookie = cookie
     setRecords([], byAppending: false)
     options.sortDirection = .desc
     liveModeOn = true
@@ -240,6 +271,7 @@ class TopicRecordsTableViewController: NSViewController {
   }
 
   @objc func didPressSegmentedControl(_ sender: NSSegmentedControl) {
+    guard let delegate else { return }
     let segment = sender.selectedSegment
     guard let tag = ControlTag(rawValue: sender.tag(forSegment: segment)) else { return }
     switch tag {
@@ -258,8 +290,8 @@ class TopicRecordsTableViewController: NSViewController {
         popover.close()
       } resetAction: {
         let resetForm = IteratorResetForm { offset in
-          self.reset(offset: offset) {
-            self.loadRecords(byAppending: false)
+          self.reset(offset: offset) { [weak self] in
+            self?.loadRecords(byAppending: false)
           }
           popover.close()
         }
@@ -284,7 +316,14 @@ class TopicRecordsTableViewController: NSViewController {
     case .more:
       sender.setSelected(false, forSegment: segment)
       sender.isEnabled = false
-      loadRecords { records in
+
+      let status = delegate.makeStatusProc()
+      status("Fetching Records")
+      loadRecords { [weak self] records in
+        guard let self, let records else {
+          status("Ready")
+          return
+        }
         if records.isEmpty {
           let bounds = sender.relativeBounds(forSegment: segment)
           let popover = NSPopover()
@@ -297,15 +336,23 @@ class TopicRecordsTableViewController: NSViewController {
                 width: popover.contentSize.width,
                 height: popover.contentSize.height))
           popover.show(relativeTo: bounds, of: sender, preferredEdge: .minY)
+          sender.isEnabled = true
+          status("Ready")
+          return
         }
-        switch self.options.sortDirection {
-        case .asc:
-          self.tableView.scrollToEndOfDocument(self)
-        case .desc:
-          self.tableView.scrollToBeginningOfDocument(self)
+
+        status("Processing Records")
+        self.setRecords(records) { [weak self] in
+          guard let self else { return }
+          switch self.options.sortDirection {
+          case .asc:
+            self.tableView.scrollToEndOfDocument(self)
+          case .desc:
+            self.tableView.scrollToBeginningOfDocument(self)
+          }
+          sender.isEnabled = true
+          status("Ready")
         }
-        sender.isEnabled = true
-        return true
       }
     }
   }
@@ -349,9 +396,11 @@ extension TopicRecordsTableViewController: NSMenuDelegate {
         withKey: key,
         andValue: nil,
         inWorkspace: id
-      ).onComplete { record in
-        status("Ready")
-        self.setRecords([record], byAppending: true)
+      ).onComplete { [weak self] record in
+        status("Processing Records")
+        self?.setRecords([record], byAppending: true) {
+          status("Ready")
+        }
       }
     default:
       ()
@@ -535,6 +584,7 @@ extension TopicRecordsTableViewController: NSFilePromiseProviderDelegate {
   }
 
   // ??? Shouldn't this shit be automatic?
+  @MainActor
   func filePromiseProvider(_ provider: NSFilePromiseProvider,
                            writePromiseTo url: URL) async throws {
     await withUnsafeContinuation { k in
