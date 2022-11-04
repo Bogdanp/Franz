@@ -4,6 +4,12 @@ import Foundation
 import NoiseSerde
 import SwiftUI
 import UniformTypeIdentifiers
+import os
+
+fileprivate let logger = Logger(
+  subsystem: Bundle.main.bundleIdentifier!,
+  category: "TopicRecordsTable"
+)
 
 class TopicRecordsTableViewController: NSViewController {
   @IBOutlet weak var tableView: NSTableView!
@@ -104,7 +110,8 @@ class TopicRecordsTableViewController: NSViewController {
       iteratorId,
       withMaxBytes: options.maxBytes
     ).onComplete { [weak self] records in
-      guard self?.cookie == cookie else {
+      guard cookie == self?.cookie else {
+        logger.debug("loadRecords: cookie expired")
         completionHandler(nil)
         return
       }
@@ -212,6 +219,10 @@ class TopicRecordsTableViewController: NSViewController {
   private func scheduleLoad(withCookie cookie: Int) {
     assert(Thread.isMainThread)
     guard let delegate else { return }
+    guard cookie == self.cookie else {
+      logger.debug("scheduleLoad: cookie expired")
+      return
+    }
     let status = delegate.makeStatusProc()
     status("Fetching Records")
     loadRecords { [weak self] records in
@@ -227,7 +238,6 @@ class TopicRecordsTableViewController: NSViewController {
           deadline = deadline.advanced(by: .seconds(1))
         }
         DispatchQueue.main.asyncAfter(deadline: deadline) { [weak self] in
-          guard self?.cookie == cookie else { return }
           self?.scheduleLoad(withCookie: cookie)
         }
       }

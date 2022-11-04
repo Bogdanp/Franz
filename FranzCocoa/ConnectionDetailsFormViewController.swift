@@ -1,4 +1,10 @@
 import Cocoa
+import os
+
+fileprivate let logger = Logger(
+  subsystem: Bundle.main.bundleIdentifier!,
+  category: "ConnectionDetailsForm"
+)
 
 class ConnectionDetailsFormViewController: NSViewController {
   @IBOutlet weak var nameField: NSTextField!
