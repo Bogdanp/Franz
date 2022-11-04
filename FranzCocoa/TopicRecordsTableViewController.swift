@@ -79,7 +79,11 @@ class TopicRecordsTableViewController: NSViewController {
       andOffset: .earliest,
       inWorkspace: id
     ).onComplete { [weak self] iteratorId in
-      guard let self else { return }
+      guard let self else {
+        status("Ready")
+        _ = Backend.shared.closeIterator(withId: iteratorId)
+        return
+      }
       self.iteratorId = iteratorId
       self.loadRecords(byAppending: false)
     }
