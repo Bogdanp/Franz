@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21225" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21507" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21225"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21507"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="TopicRecordsTableViewController" customModule="Franz" customModuleProvider="target">
             <connections>
+                <outlet property="clipView" destination="7xG-xy-Lom" id="vdb-tr-CE7"/>
+                <outlet property="scrollView" destination="E6X-jn-Xf2" id="6sS-B7-F0c"/>
                 <outlet property="segmentedControl" destination="LNC-cy-bib" id="Q2x-Eb-R7A"/>
                 <outlet property="statsLabel" destination="5m5-1S-yET" id="QWg-wz-KGm"/>
                 <outlet property="tableView" destination="S3O-oj-yMS" id="LzF-uv-AKs"/>

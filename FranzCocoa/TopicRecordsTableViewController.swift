@@ -12,6 +12,8 @@ fileprivate let logger = Logger(
 )
 
 class TopicRecordsTableViewController: NSViewController {
+  @IBOutlet weak var scrollView: NSScrollView!
+  @IBOutlet weak var clipView: NSClipView!
   @IBOutlet weak var tableView: NSTableView!
   @IBOutlet weak var segmentedControl: NSSegmentedControl!
   @IBOutlet weak var statsLabel: NSTextField!
@@ -207,10 +209,22 @@ class TopicRecordsTableViewController: NSViewController {
       backpressureSema.signal()
       DispatchQueue.main.sync { [weak self] in
         guard let self else { return }
+        var scrollToBottom = false
+        if let documentView = self.scrollView.documentView {
+          scrollToBottom = (
+            sortDirection == .asc &&
+            self.scrollView.hasVerticalScroller &&
+            self.clipView.bounds.origin.y + self.clipView.bounds.height == documentView.bounds.height
+          )
+        }
+
         self.items = items
         self.tableView.reloadData()
         if let selectedItem, let selectedRow = items.firstIndex(of: selectedItem) {
           self.tableView.selectRowIndexes([selectedRow], byExtendingSelection: false)
+        }
+        if scrollToBottom {
+          self.tableView.scrollToEndOfDocument(self)
         }
 
         let bytesStr = self.bytesFmt.string(fromByteCount: Int64(totalBytes))
