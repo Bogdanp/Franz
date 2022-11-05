@@ -2,9 +2,9 @@ import Cocoa
 import Dispatch
 import Foundation
 import NoiseSerde
+import OSLog
 import SwiftUI
 import UniformTypeIdentifiers
-import os
 
 fileprivate let logger = Logger(
   subsystem: Bundle.main.bundleIdentifier!,
@@ -58,6 +58,7 @@ class TopicRecordsTableViewController: NSViewController {
       tableView.autosaveTableColumns = true
     }
 
+    segmentedControl.isEnabled = false
     segmentedControl.target = self
     segmentedControl.action = #selector(didPressSegmentedControl(_:))
 
@@ -78,7 +79,7 @@ class TopicRecordsTableViewController: NSViewController {
     status("Opening Iterator")
     Backend.shared.openIterator(
       forTopic: topic,
-      andOffset: .earliest,
+      andOffset: .latest,
       inWorkspace: id
     ).onComplete { [weak self] iteratorId in
       guard let self else {
@@ -87,7 +88,8 @@ class TopicRecordsTableViewController: NSViewController {
         return
       }
       self.iteratorId = iteratorId
-      self.loadRecords(byAppending: false)
+      self.segmentedControl?.isEnabled = true
+      self.toggleLiveMode(resettingIterator: false)
     }
   }
 
@@ -271,7 +273,7 @@ class TopicRecordsTableViewController: NSViewController {
     }
   }
 
-  private func toggleLiveMode() {
+  private func toggleLiveMode(resettingIterator resetIterator: Bool = true) {
     assert(Thread.isMainThread)
     if liveModeOn {
       cookie += 1
@@ -286,10 +288,15 @@ class TopicRecordsTableViewController: NSViewController {
     let cookie = cookie
     setRecords([], byAppending: false)
     liveModeOn = true
+    segmentedControl.setSelected(true, forSegment: 0)
     segmentedControl.setEnabled(false, forSegment: 1)
     segmentedControl.setEnabled(false, forSegment: 2)
-    reset(offset: .latest) { [weak self] in
-      self?.scheduleLoad(withCookie: cookie)
+    if resetIterator {
+      reset(offset: .latest) { [weak self] in
+        self?.scheduleLoad(withCookie: cookie)
+      }
+    } else {
+      self.scheduleLoad(withCookie: cookie)
     }
   }
 
