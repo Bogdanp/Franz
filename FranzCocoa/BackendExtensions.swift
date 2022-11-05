@@ -78,6 +78,11 @@ extension IteratorOffset: Hashable {
 
 // MARK: - IteratorRecord
 extension IteratorRecord: Comparable {
+  var size: UVarint {
+    UVarint(key?.count ?? 0) +
+    UVarint(value?.count ?? 0)
+  }
+
   public static func == (lhs: IteratorRecord, rhs: IteratorRecord) -> Bool {
     return lhs.partitionId == rhs.partitionId && lhs.offset == rhs.offset
   }

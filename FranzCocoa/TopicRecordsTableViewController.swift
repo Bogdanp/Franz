@@ -208,12 +208,28 @@ class TopicRecordsTableViewController: NSViewController {
       }
 
       var totalBytes = UVarint(0)
-      for (row, it) in items.enumerated() {
-        totalBytes += UVarint(it.record.key?.count ?? 0)
-        totalBytes += UVarint(it.record.value?.count ?? 0)
-        if totalBytes > keepBytes {
-          items.removeLast(items.count-row)
-          break
+      switch sortDirection {
+      case .asc:
+        for (row, it) in items.reversed().enumerated() {
+          let size = it.record.size
+          if totalBytes + size > keepBytes {
+            let n = items.count - row
+            logger.debug("setRecords: removing first \(n) items")
+            items.removeFirst(n)
+            break
+          }
+          totalBytes += size
+        }
+      case .desc:
+        for (row, it) in items.enumerated() {
+          let size = it.record.size
+          if totalBytes + size > keepBytes {
+            let n = items.count - row
+            logger.debug("setRecords: removing last \(n) items")
+            items.removeLast(n)
+            break
+          }
+          totalBytes += size
         }
       }
 
