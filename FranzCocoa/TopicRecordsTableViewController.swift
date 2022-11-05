@@ -160,22 +160,31 @@ class TopicRecordsTableViewController: NSViewController {
 
       var items = [Item]()
       if appending {
-        Timed.block(named: "setRecords.dedupe") {
-          var index = [Item.ID: Item]()
-          items = self.items
-          items.reserveCapacity(items.count + records.count)
-          index.reserveCapacity(items.count)
-          for item in items {
-            index[item.id] = item
-          }
+        var added = [Item]()
+        added.reserveCapacity(records.count)
+        for r in records {
+          added.append(Item(record: r))
+        }
 
-          for r in records {
-            var it = Item(record: r)
-            if let item = index[it.id] {
-              item.record = r
-              it = item
-            }
-            items.append(it)
+        Timed.block(named: "setRecords.sort") {
+          switch sortDirection {
+          case .desc:
+            added.sort { $0 > $1 }
+          case .asc:
+            added.sort { $0 < $1 }
+          }
+        }
+
+        Timed.block(named: "setRecords.concat") {
+          switch sortDirection {
+          case .asc:
+            items = self.items
+            items.reserveCapacity(added.count)
+            items.append(contentsOf: added)
+          case .desc:
+            items = added
+            items.reserveCapacity(items.count)
+            items.append(contentsOf: self.items)
           }
         }
       } else {
@@ -185,14 +194,14 @@ class TopicRecordsTableViewController: NSViewController {
             items.append(Item(record: r))
           }
         }
-      }
 
-      Timed.block(named: "setRecords.sort") {
-        switch sortDirection {
-        case .desc:
-          items.sort { $0.id > $1.id }
-        case .asc:
-          items.sort { $0.id < $1.id }
+        Timed.block(named: "setRecords.sort") {
+          switch sortDirection {
+          case .desc:
+            items.sort { $0 > $1 }
+          case .asc:
+            items.sort { $0 < $1 }
+          }
         }
       }
 
@@ -443,14 +452,10 @@ fileprivate enum ControlTag: Int {
 }
 
 // MARK: - Item
-fileprivate class Item: NSObject {
-  struct ID: Hashable, Equatable, Comparable {
+fileprivate class Item: NSObject, Comparable {
+  struct ID: Hashable, Equatable {
     let pid: UVarint
     let offset: UVarint
-
-    static func < (lhs: Item.ID, rhs: Item.ID) -> Bool {
-      return lhs.offset == rhs.offset ? lhs.pid < rhs.pid : lhs.offset < rhs.offset
-    }
   }
 
   var id: ID
@@ -459,6 +464,14 @@ fileprivate class Item: NSObject {
   init(record: IteratorRecord) {
     self.id = ID(pid: record.partitionId, offset: record.offset)
     self.record = record
+  }
+
+  static func > (lhs: Item, rhs: Item) -> Bool {
+    return lhs.record > rhs.record
+  }
+
+  static func < (lhs: Item, rhs: Item) -> Bool {
+    return lhs.record < rhs.record
   }
 
   override func isEqual(to object: Any?) -> Bool {

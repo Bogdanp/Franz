@@ -76,6 +76,33 @@ extension IteratorOffset: Hashable {
   }
 }
 
+// MARK: - IteratorRecord
+extension IteratorRecord: Comparable {
+  public static func == (lhs: IteratorRecord, rhs: IteratorRecord) -> Bool {
+    return lhs.partitionId == rhs.partitionId && lhs.offset == rhs.offset
+  }
+
+  public static func > (lhs: IteratorRecord, rhs: IteratorRecord) -> Bool {
+    if lhs.timestamp == rhs.timestamp {
+      if lhs.offset == rhs.offset {
+        return lhs.partitionId > rhs.partitionId
+      }
+      return lhs.offset > rhs.offset
+    }
+    return lhs.timestamp > rhs.timestamp
+  }
+
+  public static func < (lhs: IteratorRecord, rhs: IteratorRecord) -> Bool {
+    if lhs.timestamp == rhs.timestamp {
+      if lhs.offset == rhs.offset {
+        return lhs.partitionId < rhs.partitionId
+      }
+      return lhs.offset < rhs.offset
+    }
+    return lhs.timestamp < rhs.timestamp
+  }
+}
+
 // MARK: - ResourceConfig
 extension ResourceConfig: Identifiable {
   public var id: String {

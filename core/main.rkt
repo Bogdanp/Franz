@@ -22,9 +22,7 @@
   (module-cache-clear!)
   (collect-garbage)
   (define stop-debugging
-    (if (getenv "FRANZ_DEBUG")
-        (dbg:serve)
-        void))
+    (if (getenv "FRANZ_DEBUG") (dbg:serve) void))
   (define database-path
     (build-application-path "metadata.sqlite3"))
   (define stop
