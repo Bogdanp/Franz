@@ -680,7 +680,7 @@ fileprivate enum SortDirection: Codable {
 fileprivate final class TopicRecordsOptions: ObservableObject, Codable {
   @Published var keyFormat = ContentType.binary
   @Published var valueFormat = ContentType.binary
-  @Published var sortDirection = SortDirection.asc
+  @Published var sortDirection = SortDirection.desc
   @Published var maxMBScaled = 0.0
   @Published var keepMBScaled = 1.0
 
