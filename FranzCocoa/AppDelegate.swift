@@ -1,5 +1,7 @@
 import Cocoa
+import Foundation
 import NoiseBackend
+import SwiftUI
 
 @main
 class AppDelegate: NSObject, NSApplicationDelegate {
@@ -7,6 +9,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     FutureUtil.set(defaultErrorHandler: Error.alert(withError:))
     assert(Error.wait(Backend.shared.ping()) == "pong")
     WindowManager.shared.showWelcomeWindow()
+
+    let codeWindow = NSWindow()
+    codeWindow.contentView = NSHostingView(rootView: CodeEditor())
+    codeWindow.setFrame(NSRect(x: 0, y: 0, width: 800, height: 600), display: true)
+    codeWindow.center()
+    codeWindow.makeKeyAndOrderFront(self)
   }
 
   func applicationWillTerminate(_ aNotification: Notification) {

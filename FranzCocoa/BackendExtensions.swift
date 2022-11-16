@@ -118,3 +118,10 @@ extension ResourceConfig: Identifiable {
     value ?? ""
   }
 }
+
+// MARK: - TokenSpan
+extension TokenSpan {
+  var range: NSRange {
+    NSRange(location: Int(pos), length: Int(len))
+  }
+}

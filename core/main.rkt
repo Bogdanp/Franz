@@ -10,6 +10,7 @@
 
          ;; For RPC:
          "connection-details.rkt"
+         "lang-lua.rkt"
          "workspace.rkt")
 
 (provide

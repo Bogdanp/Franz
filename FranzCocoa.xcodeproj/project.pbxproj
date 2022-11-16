@@ -14,6 +14,7 @@
 		431C697F28F2C1A70082986A /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431C697E28F2C1A70082986A /* StringExtensions.swift */; };
 		431C698228F2E0C60082986A /* NewTopicFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431C698028F2E0C60082986A /* NewTopicFormViewController.swift */; };
 		431C698328F2E0C60082986A /* NewTopicFormViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 431C698128F2E0C60082986A /* NewTopicFormViewController.xib */; };
+		4322BBD92924DED8002358C3 /* CodeEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4322BBD82924DED8002358C3 /* CodeEditor.swift */; };
 		432C24632903F03B00C6F336 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432C24622903F03B00C6F336 /* Error.swift */; };
 		433C5E8B29066310005F4C4B /* Infos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 433C5E8A29066310005F4C4B /* Infos.swift */; };
 		43453F3D291505A6000CE90E /* Timed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43453F3C291505A6000CE90E /* Timed.swift */; };
@@ -86,6 +87,7 @@
 		431C697E28F2C1A70082986A /* StringExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtensions.swift; sourceTree = "<group>"; };
 		431C698028F2E0C60082986A /* NewTopicFormViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTopicFormViewController.swift; sourceTree = "<group>"; };
 		431C698128F2E0C60082986A /* NewTopicFormViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NewTopicFormViewController.xib; sourceTree = "<group>"; };
+		4322BBD82924DED8002358C3 /* CodeEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeEditor.swift; sourceTree = "<group>"; };
 		432C24622903F03B00C6F336 /* Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
 		433C5E8A29066310005F4C4B /* Infos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Infos.swift; sourceTree = "<group>"; };
 		43453F3C291505A6000CE90E /* Timed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timed.swift; sourceTree = "<group>"; };
@@ -199,6 +201,7 @@
 				43CD622E28CE258100095144 /* Backend.swift */,
 				43CD623028CE258F00095144 /* BackendExtensions.swift */,
 				437887F528E9FE5900D0B263 /* BrokerDetailView.swift */,
+				4322BBD82924DED8002358C3 /* CodeEditor.swift */,
 				43CD624628CE3B5D00095144 /* ConnectionDetailsFormViewController.swift */,
 				43CD624728CE3B5D00095144 /* ConnectionDetailsFormViewController.xib */,
 				43804AB628D1A014002880FE /* ConnectionTableCellView.swift */,
@@ -451,6 +454,7 @@
 				436E720628D75B0500ECBF49 /* WorkspaceDetailViewController.swift in Sources */,
 				4396EADA290576A300A15D25 /* ResourceConfigTableViewController.swift in Sources */,
 				431C698228F2E0C60082986A /* NewTopicFormViewController.swift in Sources */,
+				4322BBD92924DED8002358C3 /* CodeEditor.swift in Sources */,
 				43453F3D291505A6000CE90E /* Timed.swift in Sources */,
 				43E5AE8C291245E000C74966 /* DispatchQueue.swift in Sources */,
 				43CD624828CE3B5D00095144 /* ConnectionDetailsFormViewController.swift in Sources */,
