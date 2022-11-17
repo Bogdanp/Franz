@@ -70,7 +70,7 @@ class EditorViewController: NSViewController {
 
   private func scheduleHighlight() {
     timer?.invalidate()
-    timer = Timer.scheduledTimer(withTimeInterval: 0.15, repeats: false) { [weak self] _ in
+    timer = Timer.scheduledTimer(withTimeInterval: 1.0/30, repeats: false) { [weak self] _ in
       DispatchQueue.main.async {
         self?.highlight()
       }
