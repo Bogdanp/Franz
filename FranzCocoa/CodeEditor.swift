@@ -125,8 +125,10 @@ extension EditorViewController: NSTextViewDelegate {
 // MARK: - EditorTextView
 class EditorTextView: NSTextView {
   override func keyDown(with event: NSEvent) {
-    print("keyCode=\(event.keyCode)")
-    if event.keyCode == 48 {
+    if event.keyCode == 36 { // RET
+      newlineAndIndent()
+      return
+    } else if event.keyCode == 48 { // TAB
       if event.modifierFlags.contains(.shift) {
         dedent()
         return
@@ -156,6 +158,7 @@ class EditorTextView: NSTextView {
       return
     }
     super.keyDown(with: event)
+    maybeDedent()
   }
 
   private func attributedString(_ str: String) -> NSAttributedString {
@@ -164,11 +167,77 @@ class EditorTextView: NSTextView {
 
   private func indent() {
     textStorage?.insert(attributedString("  "), at: point)
-    sendChangeNotification()
+    didChangeText()
   }
 
   private func dedent() {
+    guard let textStorage else { return }
+    let bol = saveExcursion { _ in
+      moveToBeginningOfLine(self)
+      return point
+    }
+    if string(at: NSRange(location: bol, length: 2)) == "  " {
+      textStorage.deleteCharacters(in: NSRange(location: bol, length: 2))
+      didChangeText()
+    }
+  }
 
+  private func maybeDedent() {
+    let shouldDedent = saveExcursion { pos in
+      moveToBeginningOfLine(self)
+      let bol = point
+      let range = NSRange(location: bol, length: pos-bol)
+      guard let modifier = match(regexp: "^( *)(elseif|else|end)", in: range) else {
+        return false
+      }
+
+      moveUp(self)
+      moveToBeginningOfLine(self)
+      let pbol = point
+      if pbol == bol {
+        return false
+      }
+      moveToEndOfLine(self)
+      let peol = point
+      let prange = NSRange(location: pbol, length: peol-pbol)
+      guard let pline = match(regexp: "^( *)", in: prange) else {
+        return false
+      }
+
+      return pline.range(at: 1).length <= modifier.range(at: 1).length
+    }
+    if shouldDedent {
+      dedent()
+    }
+  }
+
+  private func newlineAndIndent() {
+    guard let textStorage else { return }
+    let indent = saveExcursion { _ in
+      moveToBeginningOfLine(self)
+      let bol = point
+      moveToEndOfLine(self)
+      let eol = point
+      let range = NSRange(location: bol, length: eol-bol)
+      guard let modifier = match(regexp: "^( *)(do|function|if|elseif|else|end)", in: range) else {
+        guard let sibling = match(regexp: "^( *)", in: range) else { return 0 }
+        return sibling.range(at: 1).length
+      }
+
+      if let range = Range(modifier.range(at: 2), in: textStorage.string),
+         textStorage.string[range] == "end" {
+        return modifier.range(at: 1).length
+      }
+
+      return modifier.range(at: 1).length + 2
+    }
+
+    insertNewline(nil)
+    if indent > 0 {
+      let str = attributedString(String(repeating: " ", count: indent))
+      textStorage.insert(str, at: point)
+    }
+    didChangeText()
   }
 
   private func insertPair(withStartingChar s: Character, andEndingChar e: Character, andCurrentChar c: Character) {
@@ -180,9 +249,12 @@ class EditorTextView: NSTextView {
     }
     textStorage.insert(attributedString(String([s, e])), at: point)
     move(pointTo: point+1)
-    sendChangeNotification()
+    didChangeText()
   }
+}
 
+// MARK: - EditorTextView+Combinators
+extension EditorTextView {
   private var point: Int {
     selectedRange().location
   }
@@ -191,13 +263,37 @@ class EditorTextView: NSTextView {
     setSelectedRange(NSRange(location: loc, length: 0))
   }
 
+  private func saveExcursion<Res>(_ block: (Int) -> Res) -> Res {
+    let point = self.point
+    let dest = block(point)
+    self.move(pointTo: point)
+    return dest
+  }
+
   private func character(atPoint point: Int) -> Character? {
     guard let str = textStorage?.string, point >= 0, point < str.count else { return nil }
     return str[str.index(str.startIndex, offsetBy: point)]
   }
 
-  private func sendChangeNotification() {
-    delegate?.textDidChange?(Notification(name: .EditorTextChanged))
+  private func string(at range: NSRange) -> String? {
+    guard let str = textStorage?.string else { return nil }
+    guard let range = Range(range, in: str) else { return nil }
+    return String(str[range])
+  }
+
+  private func lookingAt(regexp re: String, in range: NSRange) -> Bool {
+    return match(regexp: re, in: range) != nil
+  }
+
+  private func match(regexp re: String, in range: NSRange) -> NSTextCheckingResult? {
+    guard let str = textStorage?.string else { return nil }
+    do {
+      let re = try NSRegularExpression(pattern: re)
+      return re.firstMatch(in: str, range: range)
+    } catch {
+      logger.error("invalid re. during match: \(error)")
+      return nil
+    }
   }
 }
 
