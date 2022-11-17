@@ -222,7 +222,7 @@ class EditorTextView: NSTextView {
       moveToEndOfLine(self)
       let eol = point
       let range = NSRange(location: bol, length: eol-bol)
-      guard let modifier = match(regexp: "^( *)(do|function|if|elseif|else|end)", in: range) else {
+      guard let modifier = match(regexp: "^( *)(do|function|local function|if|elseif|else|end)", in: range) else {
         guard let sibling = match(regexp: "^( *)", in: range) else { return 0 }
         return sibling.range(at: 1).length
       }
