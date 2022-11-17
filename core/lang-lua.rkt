@@ -7,15 +7,19 @@
 
 (define-rpc (lex-lua [code : String] : (Listof Token))
   (define in (open-input-string code))
-  (define lex (lua:make-lexer in #f))
+  (define l (lua:make-lexer #:skip-comments? #f #:partial-strings? #t in))
   (let loop ([tokens null])
     (define t
       (let retry ()
-        (with-handlers* ([exn:fail? (λ (_)
-                                      ;; On error, skip to the next whitespace bit and try again.
-                                      (void (regexp-match #rx"[\r\t\n ]" in))
-                                      (retry))])
-          (lua:lexer-take lex))))
+        ;; On error, skip to the next whitespace bit and try again.
+        ;; The match procedure will skip all the way to EOF if it
+        ;; doesn't find any whitespace, so this should always
+        ;; terminate.
+        (with-handlers* ([exn:fail?
+                          (lambda (_)
+                            (void (regexp-match #rx"[\r\t\n ]" in))
+                            (retry))])
+          (lua:lexer-take l))))
     (case (lua:token-type t)
       [(eof) (reverse tokens)]
       [else (loop (cons (->Token t) tokens))])))
@@ -30,12 +34,13 @@
 (define ->TokenType
   (let ([memo (make-hasheq)])
     (lambda (type)
-      (hash-ref! memo type (λ ()
-                             (case type
-                               [(whitespace) (TokenType.whitespace)]
-                               [(comment) (TokenType.comment)]
-                               [(keyword op) (TokenType.keyword)]
-                               [(number) (TokenType.number)]
-                               [(string) (TokenType.string)]
-                               [(name) (TokenType.name)]
-                               [else (TokenType.punctuation)]))))))
+      (define (default)
+        (case type
+          [(whitespace) (TokenType.whitespace)]
+          [(comment) (TokenType.comment)]
+          [(keyword op) (TokenType.keyword)]
+          [(number) (TokenType.number)]
+          [(string) (TokenType.string)]
+          [(name) (TokenType.name)]
+          [else (TokenType.punctuation)]))
+      (hash-ref! memo type default))))

@@ -11,7 +11,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     WindowManager.shared.showWelcomeWindow()
 
     let codeWindow = NSWindow()
-    codeWindow.contentView = NSHostingView(rootView: CodeEditor())
+    codeWindow.contentView = NSHostingView(rootView: Editor(code: """
+local script = {}
+
+function script.filter(record)
+  return true
+end
+
+function script.map(record)
+  return record
+end
+
+return script
+"""))
     codeWindow.setFrame(NSRect(x: 0, y: 0, width: 800, height: 600), display: true)
     codeWindow.center()
     codeWindow.makeKeyAndOrderFront(self)
