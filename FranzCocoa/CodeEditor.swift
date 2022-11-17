@@ -183,6 +183,9 @@ class EditorTextView: NSTextView {
   }
 
   private func maybeDedent() {
+    if selectedRange().length > 0 {
+      return
+    }
     let shouldDedent = saveExcursion { pos in
       moveToBeginningOfLine(self)
       let bol = point
