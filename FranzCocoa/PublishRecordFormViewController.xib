@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21225" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21507" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21225"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21507"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="PublishRecordFormViewController" customModule="Franz" customModuleProvider="target">
             <connections>
                 <outlet property="cancelButton" destination="CpE-96-5EP" id="8zd-hR-wdu"/>
-                <outlet property="keyField" destination="v22-QP-GC0" id="e8R-Zv-ZRc"/>
+                <outlet property="keyView" destination="B2Y-zy-PYR" id="bdz-Ob-Yck"/>
                 <outlet property="nullKeyButton" destination="oA6-Mc-WM0" id="f4g-ch-8J5"/>
                 <outlet property="nullValueButton" destination="wwp-ag-JTK" id="POM-JE-UeU"/>
                 <outlet property="partitionButton" destination="tXO-GO-7Yj" id="DRz-hu-KNo"/>
                 <outlet property="publishButton" destination="msi-rR-W0l" id="zKz-De-ukJ"/>
                 <outlet property="topicButton" destination="iZT-gk-1Ps" id="une-VZ-s6f"/>
-                <outlet property="valueField" destination="Ffk-bv-u1f" id="y7W-bj-dsB"/>
+                <outlet property="valueView" destination="OyL-fn-EcP" id="SMK-W1-KJV"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>
         </customObject>
@@ -67,15 +67,10 @@
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="v22-QP-GC0">
+                <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="B2Y-zy-PYR">
                     <rect key="frame" x="68" y="174" width="371" height="70"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="V07-pJ-Ha5">
-                        <font key="font" metaFont="system"/>
-                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                </customView>
                 <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="nVk-nw-ZDd">
                     <rect key="frame" x="0.0" y="35" width="460" height="5"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -101,15 +96,6 @@
                     <textFieldCell key="cell" lineBreakMode="clipping" title="Value:" id="5JY-YI-H55">
                         <font key="font" usesAppearanceFont="YES"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
-                <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ffk-bv-u1f">
-                    <rect key="frame" x="68" y="46" width="371" height="120"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="HO0-Gg-Bwa">
-                        <font key="font" metaFont="system"/>
-                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
@@ -163,6 +149,10 @@ Gw
                         <action selector="didPressCancelButton:" target="-2" id="Lsb-IH-zVs"/>
                     </connections>
                 </button>
+                <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="OyL-fn-EcP">
+                    <rect key="frame" x="68" y="49" width="371" height="117"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                </customView>
             </subviews>
             <point key="canvasLocation" x="132" y="157"/>
         </customView>

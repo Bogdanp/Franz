@@ -11,15 +11,32 @@ fileprivate let logger = Logger(
 
 // MARK: EditorViewController
 class EditorViewController: NSViewController {
-  lazy var textStorage = NSTextStorage()
-  lazy var layoutMgr = NSLayoutManager()
-  lazy var textContainer = NSTextContainer()
-  lazy var textView = EditorTextView(frame: .zero, textContainer: textContainer)
-  lazy var scrollView = NSScrollView()
+  private lazy var textStorage = NSTextStorage()
+  private lazy var layoutMgr = NSLayoutManager()
+  private lazy var textContainer = NSTextContainer()
+  private lazy var textView = EditorTextView(frame: .zero, textContainer: textContainer)
+  private lazy var scrollView = NSScrollView()
+  private var border: NSBorderType = .noBorder
 
-  var timer: Timer?
-  var observation: NSKeyValueObservation?
+  var delegate: EditorViewControllerDelegate?
+
+  private var timer: Timer?
+  private var observation: NSKeyValueObservation?
   fileprivate var theme: Theme!
+
+  var language: Language = .lua
+  var code: String {
+    textStorage.string
+  }
+
+  var isEditable: Bool {
+    get {
+      textView.isEditable
+    }
+    set {
+      textView.isEditable = newValue
+    }
+  }
 
   override func loadView() {
     theme = darkModeOn() ? DarkTheme() : LightTheme()
@@ -45,7 +62,9 @@ class EditorViewController: NSViewController {
     textView.maxSize = NSSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
     textView.setFrameSize(contentSize)
 
-    scrollView.borderType = .noBorder
+    scrollView.automaticallyAdjustsContentInsets = false
+    scrollView.borderType = border
+    scrollView.contentInsets = .init(top: 4, left: 0, bottom: 4, right: 0)
     scrollView.hasVerticalScroller = true
     scrollView.documentView = textView
 
@@ -64,8 +83,14 @@ class EditorViewController: NSViewController {
     scheduleHighlight()
   }
 
-  func configure(withCode code: String) {
+  func configure(
+    code: String = "",
+    language: Language = .lua,
+    border: NSBorderType = .noBorder
+  ) {
     textStorage.setAttributedString(NSAttributedString(string: code))
+    self.language = language
+    self.border = border
   }
 
   private func scheduleHighlight() {
@@ -77,11 +102,17 @@ class EditorViewController: NSViewController {
     }
   }
 
-  private func highlight() {
-    let code = textStorage.string
-    guard let tokens = Error.wait(Backend.shared.lexLua(code)) else {
-      return
+  private func lex(_ code: String) -> [Token] {
+    switch language {
+    case .lua:
+      return Error.wait(Backend.shared.lexLua(code)) ?? []
+    default:
+      return []
     }
+  }
+
+  private func highlight() {
+    let tokens = lex(code)
     textView.backgroundColor = theme.background
     textView.textColor = theme.foreground
     textStorage.beginEditing()
@@ -113,12 +144,22 @@ class EditorViewController: NSViewController {
     }
     textStorage.endEditing()
   }
+
+  private func didChangeCode() {
+    delegate?.codeDidChange(self)
+  }
+}
+
+// MARK: - EditorViewControllerDelegate
+protocol EditorViewControllerDelegate: AnyObject {
+  func codeDidChange(_ sender: EditorViewController)
 }
 
 // MARK: - NSTextViewDelegate
 extension EditorViewController: NSTextViewDelegate {
   func textDidChange(_ notification: Notification) {
     scheduleHighlight()
+    didChangeCode()
   }
 }
 
@@ -247,7 +288,7 @@ class EditorTextView: NSTextView {
       moveToEndOfLine(self)
       let eol = point
       let range = NSRange(location: bol, length: eol-bol)
-      if lookingAt(regexp: "[({]", in: NSRange(location: p-1, length: 1)) {
+      if p > 0 && lookingAt(regexp: "[({]", in: NSRange(location: p-1, length: 1)) {
         return self.indent(at: range) + 2
       }
 
@@ -263,7 +304,8 @@ class EditorTextView: NSTextView {
       return modifier.range(at: 1).length + 2
     }
 
-    let indentStr = "\n" + String(repeating: " ", count: indent)
+    insertNewline(self)
+    let indentStr = String(repeating: " ", count: indent)
     if shouldChangeText(in: NSRange(location: point, length: 0), replacementString: indentStr) {
       textStorage.beginEditing()
       textStorage.insert(attributedString(indentStr), at: point)
@@ -339,16 +381,23 @@ extension EditorTextView {
 struct Editor: NSViewControllerRepresentable {
   typealias NSViewControllerType = EditorViewController
 
-  var code: String
+  var code: String = ""
+  var language: Language = .lua
 
   func makeNSViewController(context: Context) -> EditorViewController {
     let ctl = EditorViewController()
-    ctl.configure(withCode: code)
+    ctl.configure(code: code, language: language)
     return ctl
   }
 
   func updateNSViewController(_ nsViewController: EditorViewController, context: Context) {
   }
+}
+
+// MARK: - Language
+enum Language {
+  case json
+  case lua
 }
 
 // MARK: - Theme

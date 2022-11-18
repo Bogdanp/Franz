@@ -8,12 +8,16 @@ class PublishRecordFormViewController: NSViewController {
 
   @IBOutlet weak var topicButton: NSPopUpButton!
   @IBOutlet weak var partitionButton: NSPopUpButton!
-  @IBOutlet weak var keyField: NSTextField!
   @IBOutlet weak var nullKeyButton: NSButton!
-  @IBOutlet weak var valueField: NSTextField!
   @IBOutlet weak var nullValueButton: NSButton!
   @IBOutlet weak var cancelButton: NSButton!
   @IBOutlet weak var publishButton: NSButton!
+
+  private lazy var keyEditorCtl = EditorViewController()
+  @IBOutlet weak var keyView: NSView!
+
+  private lazy var valueEditorCtl = EditorViewController()
+  @IBOutlet weak var valueView: NSView!
 
   weak var delegate: PublishRecordFormDelegate?
 
@@ -28,8 +32,19 @@ class PublishRecordFormViewController: NSViewController {
     partitionButton.action = #selector(didSelectPartition(_:))
     partitionButton.removeAllItems()
 
-    keyField.font = .monospacedSystemFont(ofSize: 12, weight: .regular)
-    valueField.font = .monospacedSystemFont(ofSize: 12, weight: .regular)
+    addChild(keyEditorCtl)
+    keyEditorCtl.configure(code: "{}", border: .lineBorder)
+    keyEditorCtl.view.removeFromSuperview()
+    keyView.addSubview(keyEditorCtl.view)
+    keyEditorCtl.view.setFrameOrigin(.zero)
+    keyEditorCtl.view.setFrameSize(keyView.frame.size)
+
+    addChild(valueEditorCtl)
+    valueEditorCtl.configure(code: "[1, 2, 3]", border: .lineBorder)
+    valueEditorCtl.view.removeFromSuperview()
+    valueView.addSubview(valueEditorCtl.view)
+    valueEditorCtl.view.setFrameOrigin(.zero)
+    valueEditorCtl.view.setFrameSize(valueView.frame.size)
 
     self.reset()
   }
@@ -53,8 +68,8 @@ class PublishRecordFormViewController: NSViewController {
   private func reset() {
     topicButton.isEnabled = false
     partitionButton.isEnabled = false
-    keyField.isEnabled = false
-    valueField.isEnabled = false
+    keyEditorCtl.isEditable = false
+    valueEditorCtl.isEditable = false
     publishButton.isEnabled = false
 
     guard let metadata else { return }
@@ -77,8 +92,8 @@ class PublishRecordFormViewController: NSViewController {
     }
     partitionButton.isEnabled = true
 
-    keyField.isEnabled = nullKeyButton.state == .on
-    valueField.isEnabled = nullValueButton.state == .on
+    keyEditorCtl.isEditable = nullKeyButton.state == .on
+    valueEditorCtl.isEditable = nullValueButton.state == .on
     publishButton.isEnabled = true
   }
 
@@ -98,14 +113,14 @@ class PublishRecordFormViewController: NSViewController {
   @IBAction func didToggleNullKeyButton(_ sender: NSButton) {
     reset()
     if sender.state == .on {
-      keyField.becomeFirstResponder()
+      _ = keyEditorCtl.becomeFirstResponder()
     }
   }
 
   @IBAction func didToggleNullValueButton(_ sender: NSButton) {
     reset()
     if sender.state == .on {
-      valueField.becomeFirstResponder()
+      _ = valueEditorCtl.becomeFirstResponder()
     }
   }
 
@@ -126,8 +141,8 @@ class PublishRecordFormViewController: NSViewController {
       self,
       withTopic: topic,
       partitionId: partition,
-      key: nullKeyButton.state == .on ? keyField.stringValue : nil,
-      andValue: nullValueButton.state == .on ? valueField.stringValue : nil)
+      key: nullKeyButton.state == .on ? keyEditorCtl.code : nil,
+      andValue: nullValueButton.state == .on ? valueEditorCtl.code : nil)
   }
 }
 
