@@ -126,7 +126,7 @@ extension EditorViewController: NSTextViewDelegate {
 class EditorTextView: NSTextView {
   override func keyDown(with event: NSEvent) {
     if event.keyCode == 36 { // RET
-      newlineAndIndent()
+      insertNewlineAndIndent()
       return
     } else if event.keyCode == 48 { // TAB
       if event.modifierFlags.contains(.shift) {
@@ -158,7 +158,9 @@ class EditorTextView: NSTextView {
       return
     }
     super.keyDown(with: event)
-    maybeDedent()
+    if selectedRange().length == 0 {
+      maybeDedent()
+    }
   }
 
   private func attributedString(_ str: String) -> NSAttributedString {
@@ -166,8 +168,15 @@ class EditorTextView: NSTextView {
   }
 
   private func indent() {
-    textStorage?.insert(attributedString("  "), at: point)
-    didChangeText()
+    guard let textStorage else { return }
+
+    let range = NSRange(location: point, length: 0)
+    if shouldChangeText(in: range, replacementString: "  ") {
+      textStorage.beginEditing()
+      textStorage.insert(attributedString("  "), at: range.location)
+      textStorage.endEditing()
+      didChangeText()
+    }
   }
 
   private func dedent() {
@@ -176,16 +185,20 @@ class EditorTextView: NSTextView {
       moveToBeginningOfLine(self)
       return point
     }
-    if string(at: NSRange(location: bol, length: 2)) == "  " {
-      textStorage.deleteCharacters(in: NSRange(location: bol, length: 2))
-      didChangeText()
+
+    let range = NSRange(location: bol, length: 2)
+    if string(at: range) == "  " {
+      if shouldChangeText(in: range, replacementString: "") {
+        breakUndoCoalescing()
+        textStorage.beginEditing()
+        textStorage.deleteCharacters(in: range)
+        textStorage.endEditing()
+        didChangeText()
+      }
     }
   }
 
   private func maybeDedent() {
-    if selectedRange().length > 0 {
-      return
-    }
     let shouldDedent = saveExcursion { pos in
       moveToBeginningOfLine(self)
       let bol = point
@@ -214,7 +227,7 @@ class EditorTextView: NSTextView {
     }
   }
 
-  private func newlineAndIndent() {
+  private func insertNewlineAndIndent() {
     guard let textStorage else { return }
     let indent = saveExcursion { _ in
       moveToBeginningOfLine(self)
@@ -235,12 +248,13 @@ class EditorTextView: NSTextView {
       return modifier.range(at: 1).length + 2
     }
 
-    insertNewline(nil)
-    if indent > 0 {
-      let str = attributedString(String(repeating: " ", count: indent))
-      textStorage.insert(str, at: point)
+    let indentStr = "\n" + String(repeating: " ", count: indent)
+    if shouldChangeText(in: NSRange(location: point, length: 0), replacementString: indentStr) {
+      textStorage.beginEditing()
+      textStorage.insert(attributedString(indentStr), at: point)
+      textStorage.endEditing()
+      didChangeText()
     }
-    didChangeText()
   }
 
   private func insertPair(withStartingChar s: Character, andEndingChar e: Character, andCurrentChar c: Character) {
@@ -250,9 +264,15 @@ class EditorTextView: NSTextView {
       move(pointTo: point+1)
       return
     }
-    textStorage.insert(attributedString(String([s, e])), at: point)
-    move(pointTo: point+1)
-    didChangeText()
+
+    let str = String([s, e])
+    if shouldChangeText(in: NSRange(location: point, length: 0), replacementString: str) {
+      textStorage.beginEditing()
+      textStorage.insert(attributedString(str), at: point)
+      textStorage.endEditing()
+      didChangeText()
+      move(pointTo: point+1)
+    }
   }
 }
 
@@ -333,7 +353,7 @@ fileprivate class LightTheme: Theme {
   var background = rgb(0xFF, 0xFF, 0xFF)
   var foreground = rgb(0x1D, 0x1D, 0x1D)
   var comment    = rgb(0x4A, 0x56, 0x60)
-  var keyword    = rgb(0x6C, 0x37, 0xAA)
+  var keyword    = rgb(0x9B, 0x24, 0x93)
   var string     = rgb(0xC5, 0x1B, 0x17)
   var number     = rgb(0x1C, 0x04, 0xCE)
 }
