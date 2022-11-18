@@ -131,9 +131,9 @@ class EditorTextView: NSTextView {
     } else if event.keyCode == 48 { // TAB
       if event.modifierFlags.contains(.shift) {
         dedent()
-        return
+      } else {
+        indent()
       }
-      indent()
       return
     } else if event.charactersIgnoringModifiers == "\"" {
       insertPair(
@@ -146,6 +146,13 @@ class EditorTextView: NSTextView {
       insertPair(
         withStartingChar: "'",
         andEndingChar: "'",
+        andCurrentChar: event.charactersIgnoringModifiers!.first!
+      )
+      return
+    } else if event.charactersIgnoringModifiers == "(" || event.charactersIgnoringModifiers == ")" {
+      insertPair(
+        withStartingChar: "(",
+        andEndingChar: ")",
         andCurrentChar: event.charactersIgnoringModifiers!.first!
       )
       return
@@ -227,17 +234,25 @@ class EditorTextView: NSTextView {
     }
   }
 
+  private func indent(at range: NSRange) -> Int {
+    guard let m = match(regexp: "^( *)", in: range) else { return 0 }
+    return m.range(at: 1).length
+  }
+
   private func insertNewlineAndIndent() {
     guard let textStorage else { return }
-    let indent = saveExcursion { _ in
+    let indent = saveExcursion { p in
       moveToBeginningOfLine(self)
       let bol = point
       moveToEndOfLine(self)
       let eol = point
       let range = NSRange(location: bol, length: eol-bol)
+      if lookingAt(regexp: "[({]", in: NSRange(location: p-1, length: 1)) {
+        return self.indent(at: range) + 2
+      }
+
       guard let modifier = match(regexp: "^( *)(do|function|local function|if|elseif|else|end)", in: range) else {
-        guard let sibling = match(regexp: "^( *)", in: range) else { return 0 }
-        return sibling.range(at: 1).length
+        return self.indent(at: range)
       }
 
       if let range = Range(modifier.range(at: 2), in: textStorage.string),
