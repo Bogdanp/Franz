@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21225" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21507" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21225"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21507"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -21,6 +21,20 @@
                 <visualEffectView blendingMode="behindWindow" material="headerView" state="followsWindowActiveState" id="L4W-Xl-P75">
                     <rect key="frame" x="0.0" y="0.0" width="460" height="355"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                    <subviews>
+                        <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="poU-xV-48F">
+                            <rect key="frame" x="166" y="207" width="128" height="128"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="128" id="Sue-lj-LXq"/>
+                                <constraint firstAttribute="height" constant="128" id="q8W-v9-u5D"/>
+                            </constraints>
+                            <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSApplicationIcon" id="rQR-Tq-Alh"/>
+                        </imageView>
+                    </subviews>
+                    <constraints>
+                        <constraint firstAttribute="bottom" secondItem="poU-xV-48F" secondAttribute="bottom" constant="207" id="9pe-Kq-bhE"/>
+                        <constraint firstItem="poU-xV-48F" firstAttribute="centerX" secondItem="L4W-Xl-P75" secondAttribute="centerX" id="zsH-eo-ZyB"/>
+                    </constraints>
                 </visualEffectView>
                 <button id="f0k-Md-MNf">
                     <rect key="frame" x="13" y="328.5" width="14.5" height="15"/>
@@ -44,7 +58,7 @@
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="dRy-B7-EOO">
                     <rect key="frame" x="170" y="140" width="120" height="15"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="Version 1 (Build 123)" id="Hm4-VM-rkw">
-                        <font key="font" metaFont="system" size="12"/>
+                        <font key="font" metaFont="cellTitle"/>
                         <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
@@ -74,6 +88,7 @@
         </customView>
     </objects>
     <resources>
+        <image name="NSApplicationIcon" width="32" height="32"/>
         <image name="xmark" catalog="system" width="14" height="13"/>
     </resources>
 </document>
