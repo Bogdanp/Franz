@@ -98,7 +98,6 @@
 (define-rpc (close-iterator [with-id id : UVarint])
   (pool-close-iterator id))
 
-;; XXX: Should probably just rename IteratorRecord to Record.
 (define-rpc (publish-record [to-topic topic : String]
                             [and-partition pid : UVarint]
                             [with-key key : (Optional Bytes)]
