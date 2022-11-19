@@ -324,7 +324,7 @@ class EditorTextView: NSTextView {
       return
     }
 
-    let str = String([s, e])
+    let str = s == e || c == s ? String([s, e]) : String(e)
     if shouldChangeText(in: NSRange(location: point, length: 0), replacementString: str) {
       textStorage.beginEditing()
       textStorage.insert(attributedString(str), at: point)
