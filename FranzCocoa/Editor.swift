@@ -22,7 +22,9 @@ class EditorViewController: NSViewController {
 
   private var timer: Timer?
   private var observation: NSKeyValueObservation?
-  fileprivate var theme: Theme!
+  fileprivate var theme: Theme = {
+    return darkModeOn() ? DarkTheme() as Theme : LightTheme() as Theme
+  }()
 
   var language: Language = .lua
   var code: String {
@@ -39,7 +41,6 @@ class EditorViewController: NSViewController {
   }
 
   override func loadView() {
-    theme = darkModeOn() ? DarkTheme() : LightTheme()
     view = scrollView
 
     let contentSize = scrollView.contentSize
@@ -91,6 +92,7 @@ class EditorViewController: NSViewController {
     textStorage.setAttributedString(NSAttributedString(string: code))
     self.language = language
     self.border = border
+    self.highlight()
   }
 
   private func scheduleHighlight() {
