@@ -260,6 +260,16 @@
                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                             </textFieldCell>
                         </textField>
+                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="e9Q-le-xZQ">
+                            <rect key="frame" x="307" y="8.5" width="21" height="15"/>
+                            <buttonCell key="cell" type="bevel" bezelStyle="regularSquare" image="chevron.left.forwardslash.chevron.right" catalog="system" imagePosition="only" state="on" inset="2" id="5FP-MI-nqF">
+                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="didPressScriptButton:" target="-2" id="gbS-Pf-5CD"/>
+                            </connections>
+                        </button>
                     </subviews>
                     <constraints>
                         <constraint firstItem="5m5-1S-yET" firstAttribute="leading" secondItem="RoJ-Xe-vsH" secondAttribute="trailing" constant="5" id="4bL-OP-4q8"/>
@@ -269,10 +279,12 @@
                         <constraint firstAttribute="bottom" secondItem="gda-pO-K8h" secondAttribute="bottom" id="SE8-9n-HI0"/>
                         <constraint firstItem="RoJ-Xe-vsH" firstAttribute="leading" secondItem="zvF-UQ-lrL" secondAttribute="leading" id="TdM-Ef-bwl"/>
                         <constraint firstAttribute="bottom" secondItem="jsI-LL-yRY" secondAttribute="bottom" id="aTL-Qb-g43"/>
+                        <constraint firstItem="e9Q-le-xZQ" firstAttribute="centerY" secondItem="zvF-UQ-lrL" secondAttribute="centerY" id="b0s-Af-C8z"/>
                         <constraint firstAttribute="bottom" secondItem="RoJ-Xe-vsH" secondAttribute="bottom" id="bmM-bd-rW9"/>
                         <constraint firstAttribute="trailing" secondItem="jsI-LL-yRY" secondAttribute="trailing" id="ju2-VO-04V"/>
                         <constraint firstItem="jsI-LL-yRY" firstAttribute="top" secondItem="5m5-1S-yET" secondAttribute="bottom" constant="8" id="kzD-5k-GO6"/>
                         <constraint firstItem="jsI-LL-yRY" firstAttribute="leading" secondItem="zvF-UQ-lrL" secondAttribute="leading" id="mS7-xy-U1S"/>
+                        <constraint firstItem="e9Q-le-xZQ" firstAttribute="centerX" secondItem="zvF-UQ-lrL" secondAttribute="centerX" id="spi-N5-ZjS"/>
                         <constraint firstAttribute="trailing" secondItem="gda-pO-K8h" secondAttribute="trailing" id="wpx-NZ-Pmh"/>
                     </constraints>
                 </visualEffectView>
@@ -291,6 +303,7 @@
         </customView>
     </objects>
     <resources>
+        <image name="chevron.left.forwardslash.chevron.right" catalog="system" width="21" height="15"/>
         <image name="chevron.right" catalog="system" width="10" height="14"/>
         <image name="gearshape" catalog="system" width="16" height="16"/>
         <image name="play" catalog="system" width="12" height="13"/>

@@ -3,6 +3,7 @@
 (require (prefix-in k: kafka)
          (prefix-in k: kafka/iterator)
          (prefix-in kerr: kafka/private/error) ;; FIXME
+         lua/value
          noise/backend
          noise/serde
          "broker.rkt"
@@ -83,13 +84,19 @@
 
 (define-rpc (get-records [_ id : UVarint]
                          [with-max-bytes max-bytes : UVarint] : (Listof IteratorRecord))
-  (for/list ([r (in-vector (pool-get-records id max-bytes))])
-    (IteratorRecord
-     (k:record-partition-id r)
-     (k:record-offset r)
-     (k:record-timestamp r)
-     (k:record-key r)
-     (k:record-value r))))
+  (define-values (script records)
+    (pool-get-records id max-bytes))
+  (cond
+    [script
+     (define filter-proc (table-ref script filter-proc-key (λ () values)))
+     (define map-proc (table-ref script map-proc-key (λ () values)))
+     (for*/list ([r (in-vector records)]
+                 [t (in-value (record->table r))]
+                 #:when (truthy? (filter-proc t)))
+       (table->IteratorRecord (map-proc t)))]
+    [else
+     (for/list ([r (in-vector records)])
+       (record->IteratorRecord r))]))
 
 (define-rpc (reset-iterator [with-id id : UVarint]
                             [to-offset offset : IteratorOffset])
@@ -118,3 +125,58 @@
 
 (define-rpc (close-all-workspaces)
   (void (pool-shutdown)))
+
+;; help ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define (record->IteratorRecord r)
+  (IteratorRecord
+   (k:record-partition-id r)
+   (k:record-offset r)
+   (k:record-timestamp r)
+   (k:record-key r)
+   (k:record-value r)))
+
+(define-syntax-rule (define-lua-keys [id k] ...)
+  (begin (define id k) ...))
+
+(define-lua-keys
+  [filter-proc-key #"filter"]
+  [map-proc-key #"map"]
+  [partition-id-key #"partition_id"]
+  [offset-key #"offset"]
+  [timestamp-key #"timestamp"]
+  [key-key #"key"]
+  [value-key #"value"])
+
+(define (record->table r)
+  (make-table
+   (cons partition-id-key (k:record-partition-id r))
+   (cons offset-key (k:record-offset r))
+   (cons timestamp-key (k:record-timestamp r))
+   (cons key-key (or (k:record-key r) nil))
+   (cons value-key (or (k:record-value r) nil))))
+
+(define (table->IteratorRecord t)
+  (define pid (table-ref t partition-id-key))
+  (unless (exact-nonnegative-integer? pid)
+    (error 'script "record partition ids must be nonnegative integers"))
+  (define offset (table-ref t offset-key))
+  (unless (exact-nonnegative-integer? offset)
+    (error 'script "record offsets must be nonnegative integers"))
+  (define timestamp (table-ref t timestamp-key))
+  (unless (exact-nonnegative-integer? timestamp)
+    (error 'script "record timestamps must be nonnegative integers"))
+  (define key
+    (let ([k (table-ref t key-key)])
+      (if (nil? k) #f k)))
+  (when (and key (not (bytes? key)))
+    (error 'script "record keys must be either nil or strings"))
+  (define value
+    (let ([v (table-ref t value-key)])
+      (if (nil? v) #f v)))
+  (when (and value (not (bytes? value)))
+    (error 'script "record values must be either nil or strings"))
+  (IteratorRecord pid offset timestamp key value))
+
+(define (truthy? v)
+  (and (not (nil? v)) v))

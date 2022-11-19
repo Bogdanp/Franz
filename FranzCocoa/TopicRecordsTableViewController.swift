@@ -33,6 +33,8 @@ class TopicRecordsTableViewController: NSViewController {
   private var optionsDefaultsKey: String?
   private var options = TopicRecordsOptions()
 
+  private var scriptWindowCtl: ScriptWindowController?
+
   private var bytesFmt: ByteCountFormatter = {
     let fmt = ByteCountFormatter()
     fmt.countStyle = .memory
@@ -414,6 +416,31 @@ class TopicRecordsTableViewController: NSViewController {
         }
       }
     }
+  }
+
+  @IBAction func didPressScriptButton(_ sender: NSButton) {
+    guard let scriptWindowCtl else {
+      scriptWindowCtl = ScriptWindowController(withId: id, andTopic: topic)
+      scriptWindowCtl?.delegate = self
+      scriptWindowCtl?.showWindow(self)
+      return
+    }
+    scriptWindowCtl.showWindow(self)
+  }
+}
+
+// MARK: - ScriptWindowControllerDelegate
+extension TopicRecordsTableViewController: ScriptWindowControllerDelegate {
+  func scriptWindow(willActivate script: String) -> Bool {
+    return Error.wait(Backend.shared.activate(script, forTopic: topic, inWorkspace: id)) != nil
+  }
+
+  func scriptWindowWillDeactivate() {
+    _ = Error.wait(Backend.shared.deactivateScript(forTopic: topic, inWorkspace: id))
+  }
+
+  func scriptWindowWillClose() {
+    _ = Error.wait(Backend.shared.deactivateScript(forTopic: topic, inWorkspace: id))
   }
 }
 

@@ -25,6 +25,8 @@
  pool-fetch-offsets
  pool-reset-topic-offsets
  pool-reset-partition-offset
+ pool-activate-script
+ pool-deactivate-script
  pool-open-iterator
  pool-get-records
  pool-reset-iterator
@@ -235,28 +237,38 @@
 
                     (state-add-req s (req result res-ch nack))]
 
+                   [`(activate-script ,res-ch ,nack ,id ,topic ,script)
+                    (~> (state-add-script s id topic script)
+                        (state-add-req (req #t res-ch nack)))]
+
+                   [`(deactivate-script ,res-ch ,nack ,id ,topic)
+                    (~> (state-remove-script s id topic)
+                        (state-add-req (req #t res-ch nack)))]
+
                    [`(open-iterator ,res-ch ,nack ,id ,topic ,offset)
                     (with-handlers ([exn:fail? (λ (e) (state-add-req s (req e res-ch nack)))])
                       (define c (state-ref-client s id))
-                      (define it (k:make-topic-iterator c topic offset))
+                      (define impl (k:make-topic-iterator c topic offset))
+                      (define iter (iterator id topic impl))
                       (define-values (iterator-id next-state)
-                        (state-add-iterator s it))
+                        (state-add-iterator s iter))
                       (state-add-req next-state (req iterator-id res-ch nack)))]
 
                    [`(get-records ,res-ch ,nack ,id ,max-bytes)
                     (define records
                       (delay/thread
-                       (k:get-records
-                        #:max-bytes max-bytes
-                        (state-ref-iterator s id))))
+                       (match-define (iterator cid topic impl)
+                         (state-ref-iterator s id))
+                       (values
+                        (state-ref-script s cid topic)
+                        (k:get-records impl #:max-bytes max-bytes))))
                     (state-add-req s (req records res-ch nack))]
 
                    [`(reset-iterator ,res-ch ,nack ,id ,offset)
                     (define result
                       (delay/thread
-                       (k:reset-topic-iterator!
-                        (state-ref-iterator s id)
-                        offset)))
+                       (define iter (state-ref-iterator s id))
+                       (k:reset-topic-iterator! (iterator-impl iter) offset)))
                     (state-add-req s (req result res-ch nack))]
 
                    [`(close-iterator ,res-ch ,nack ,id)
@@ -328,6 +340,12 @@
 (define (pool-reset-partition-offset id group-id topic pid target offset [p (current-pool)])
   (force (sync (pool-send p reset-partition-offset id group-id topic pid target offset))))
 
+(define (pool-activate-script id topic script [p (current-pool)])
+  (sync (pool-send p activate-script id topic script)))
+
+(define (pool-deactivate-script id topic [p (current-pool)])
+  (sync (pool-send p deactivate-script id topic)))
+
 (define (pool-open-iterator id topic offset [p (current-pool)])
   (sync (pool-send p open-iterator id topic offset)))
 
@@ -374,11 +392,12 @@
   (reqs
    clients
    clients-seq
+   scripts ;; client-id -> (topic -> table?)
    iterators
    iterators-seq))
 
 (define (make-state)
-  (state null (hasheqv) 0 (hasheqv) 0))
+  (state null (hasheqv) 0 (hasheqv) (hasheqv) 0))
 
 (define (state-add-req s r)
   (struct-copy state s [reqs (cons r (state-reqs s))]))
@@ -396,10 +415,30 @@
   (hash-ref (state-clients s) id #f))
 
 (define (state-remove-client s id)
-  (struct-copy state s [clients (hash-remove (state-clients s) id)]))
+  (struct-copy state s
+               [clients (hash-remove (state-clients s) id)]
+               [scripts (hash-remove (state-scripts s) id)]))
 
 (define (state-clear-clients s)
-  (struct-copy state s [clients (hasheqv)]))
+  (struct-copy state s
+               [clients (hasheqv)]
+               [scripts (hasheqv)]))
+
+(define (state-add-script s id topic script)
+  (define scripts
+    (~> (hash-ref (state-scripts s) id hash)
+        (hash-set topic script)))
+  (struct-copy state s [scripts (hash-set (state-scripts s) id scripts)]))
+
+(define (state-ref-script s id topic)
+  (~> (hash-ref (state-scripts s) id hash)
+      (hash-ref topic #f)))
+
+(define (state-remove-script s id topic)
+  (define scripts
+    (~> (hash-ref (state-scripts s) id hash)
+        (hash-remove topic)))
+  (struct-copy state s [scripts (hash-set (state-scripts s) id scripts)]))
 
 (define (state-add-iterator s it)
   (define id (state-iterators-seq s))
@@ -415,6 +454,11 @@
 
 (define (state-clear-iterators s)
   (struct-copy state s [iterators (hasheqv)]))
+
+
+;; iter ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(struct iterator (client-id topic impl))
 
 
 ;; help ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

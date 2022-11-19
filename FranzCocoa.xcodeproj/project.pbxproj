@@ -67,6 +67,8 @@
 		43D3AEAB28FFDF3500D52E92 /* PreferencesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D3AEA928FFDF3500D52E92 /* PreferencesWindowController.swift */; };
 		43D3AEAC28FFDF3500D52E92 /* PreferencesWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D3AEAA28FFDF3500D52E92 /* PreferencesWindowController.xib */; };
 		43E5AE8C291245E000C74966 /* DispatchQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43E5AE8B291245E000C74966 /* DispatchQueue.swift */; };
+		43E64A082928F2BF00FDBF29 /* ScriptWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43E64A062928F2BF00FDBF29 /* ScriptWindowController.swift */; };
+		43E64A092928F2BF00FDBF29 /* ScriptWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43E64A072928F2BF00FDBF29 /* ScriptWindowController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -141,6 +143,8 @@
 		43D3AEA928FFDF3500D52E92 /* PreferencesWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesWindowController.swift; sourceTree = "<group>"; };
 		43D3AEAA28FFDF3500D52E92 /* PreferencesWindowController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PreferencesWindowController.xib; sourceTree = "<group>"; };
 		43E5AE8B291245E000C74966 /* DispatchQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DispatchQueue.swift; sourceTree = "<group>"; };
+		43E64A062928F2BF00FDBF29 /* ScriptWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptWindowController.swift; sourceTree = "<group>"; };
+		43E64A072928F2BF00FDBF29 /* ScriptWindowController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ScriptWindowController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -229,6 +233,8 @@
 				4396EAD8290576A300A15D25 /* ResourceConfigTableViewController.swift */,
 				4396EAD9290576A300A15D25 /* ResourceConfigTableViewController.xib */,
 				43CD623228CE25F300095144 /* resources */,
+				43E64A062928F2BF00FDBF29 /* ScriptWindowController.swift */,
+				43E64A072928F2BF00FDBF29 /* ScriptWindowController.xib */,
 				436E720C28D760BF00ECBF49 /* SidebarEntryCellView.swift */,
 				436E720E28D760D400ECBF49 /* SidebarEntryCellView.xib */,
 				4314EDF728D85E0E00431770 /* SidebarGroupCellView.swift */,
@@ -366,6 +372,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				43E64A092928F2BF00FDBF29 /* ScriptWindowController.xib in Resources */,
 				43CBADD5290FB8D70066C7CE /* PublishRecordFormViewController.xib in Resources */,
 				4395503928FD45B000CC0050 /* GroupOffsetsOutlineViewController.xib in Resources */,
 				43CD623A28CE27DB00095144 /* WelcomeWindowController.xib in Resources */,
@@ -451,6 +458,7 @@
 				431C697F28F2C1A70082986A /* StringExtensions.swift in Sources */,
 				436E720228D759F400ECBF49 /* WorkspaceSidebarViewController.swift in Sources */,
 				43804AB728D1A014002880FE /* ConnectionTableCellView.swift in Sources */,
+				43E64A082928F2BF00FDBF29 /* ScriptWindowController.swift in Sources */,
 				436E720628D75B0500ECBF49 /* WorkspaceDetailViewController.swift in Sources */,
 				4396EADA290576A300A15D25 /* ResourceConfigTableViewController.swift in Sources */,
 				431C698228F2E0C60082986A /* NewTopicFormViewController.swift in Sources */,
