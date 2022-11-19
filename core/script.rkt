@@ -35,11 +35,21 @@
   #<<SCRIPT
 local script = {}
 
+-- Returning `false` or `nil` from this function removes the `record`
+-- from the result set.  Modifications you make to `record` in this
+-- function will be visible in `map`.
+--
+-- See Help -> Manual... for details.
 function script.filter(record)
-  return true
+  return record.partition_id >= 0
 end
 
+-- Modifications you make to `record` in this function will be visible
+-- in the records data table.
 function script.map(record)
+  if record.value ~= nil then
+    record.value = tostring(#record.value)
+  end
   return record
 end
 
