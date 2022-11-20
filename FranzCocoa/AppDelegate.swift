@@ -5,7 +5,15 @@ import SwiftUI
 
 @main
 class AppDelegate: NSObject, NSApplicationDelegate {
+  private lazy var updater = AutoUpdater()
+
   func applicationDidFinishLaunching(_ aNotification: Notification) {
+    updater.start(withInterval: 3600 * 4) { changes, version in
+        RunLoop.main.schedule {
+          WindowManager.shared.showUpdatesWindow(withChangelog: changes, andRelease: version)
+        }
+    }
+
     FutureUtil.set(defaultErrorHandler: Error.alert(withError:))
     assert(Error.wait(Backend.shared.ping()) == "pong")
     WindowManager.shared.showWelcomeWindow()

@@ -69,6 +69,8 @@
 		43E5AE8C291245E000C74966 /* DispatchQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43E5AE8B291245E000C74966 /* DispatchQueue.swift */; };
 		43E64A082928F2BF00FDBF29 /* ScriptWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43E64A062928F2BF00FDBF29 /* ScriptWindowController.swift */; };
 		43E64A092928F2BF00FDBF29 /* ScriptWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43E64A072928F2BF00FDBF29 /* ScriptWindowController.xib */; };
+		43F987A6292A81D400E5E1DE /* AutoUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43F987A5292A81D400E5E1DE /* AutoUpdater.swift */; };
+		43F987A8292A867B00E5E1DE /* UpdatesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43F987A7292A867B00E5E1DE /* UpdatesWindowController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -145,6 +147,8 @@
 		43E5AE8B291245E000C74966 /* DispatchQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DispatchQueue.swift; sourceTree = "<group>"; };
 		43E64A062928F2BF00FDBF29 /* ScriptWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptWindowController.swift; sourceTree = "<group>"; };
 		43E64A072928F2BF00FDBF29 /* ScriptWindowController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ScriptWindowController.xib; sourceTree = "<group>"; };
+		43F987A5292A81D400E5E1DE /* AutoUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoUpdater.swift; sourceTree = "<group>"; };
+		43F987A7292A867B00E5E1DE /* UpdatesWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdatesWindowController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -202,6 +206,7 @@
 			children = (
 				43CD621828CE24B000095144 /* AppDelegate.swift */,
 				43CD621A28CE24B100095144 /* Assets.xcassets */,
+				43F987A5292A81D400E5E1DE /* AutoUpdater.swift */,
 				43CD622E28CE258100095144 /* Backend.swift */,
 				43CD623028CE258F00095144 /* BackendExtensions.swift */,
 				437887F528E9FE5900D0B263 /* BrokerDetailView.swift */,
@@ -245,6 +250,7 @@
 				43196F8928F1DAB2003C793B /* TopicDetailView.swift */,
 				437A77DD290D5AA1001965B0 /* TopicRecordsTableViewController.swift */,
 				437A77DE290D5AA1001965B0 /* TopicRecordsTableViewController.xib */,
+				43F987A7292A867B00E5E1DE /* UpdatesWindowController.swift */,
 				43804AB228D19ACD002880FE /* WelcomeWindowConnectionsViewController.swift */,
 				43804AB328D19ACD002880FE /* WelcomeWindowConnectionsViewController.xib */,
 				43CD623D28CE282400095144 /* WelcomeWindowContentViewController.swift */,
@@ -462,6 +468,7 @@
 				436E720628D75B0500ECBF49 /* WorkspaceDetailViewController.swift in Sources */,
 				4396EADA290576A300A15D25 /* ResourceConfigTableViewController.swift in Sources */,
 				431C698228F2E0C60082986A /* NewTopicFormViewController.swift in Sources */,
+				43F987A8292A867B00E5E1DE /* UpdatesWindowController.swift in Sources */,
 				4322BBD92924DED8002358C3 /* Editor.swift in Sources */,
 				43453F3D291505A6000CE90E /* Timed.swift in Sources */,
 				43E5AE8C291245E000C74966 /* DispatchQueue.swift in Sources */,
@@ -476,6 +483,7 @@
 				43D3AEAB28FFDF3500D52E92 /* PreferencesWindowController.swift in Sources */,
 				43CD623728CE27B200095144 /* WindowManager.swift in Sources */,
 				43CD621928CE24B000095144 /* AppDelegate.swift in Sources */,
+				43F987A6292A81D400E5E1DE /* AutoUpdater.swift in Sources */,
 				43804AB428D19ACD002880FE /* WelcomeWindowConnectionsViewController.swift in Sources */,
 				43CBADD4290FB8D70066C7CE /* PublishRecordFormViewController.swift in Sources */,
 				43CD623128CE258F00095144 /* BackendExtensions.swift in Sources */,

@@ -7,6 +7,7 @@ class WindowManager {
 
   private var welcomeWindowController: WelcomeWindowController?
   private var preferencesWindowController: PreferencesWindowController?
+  private var updatesWindowController: UpdatesWindowController?
   private var workspaces = [UInt64: WorkspaceWindowController]() // conn id -> ctl
   private var scripts = [ScriptWindowKey: ScriptWindowController]() // workspace id -> ctl
 
@@ -92,6 +93,19 @@ class WindowManager {
       ctl.close()
       scripts.removeValue(forKey: k)
     }
+  }
+
+  func showUpdatesWindow(withChangelog changelog: String, andRelease release: Release) {
+    assert(Thread.isMainThread)
+    if updatesWindowController == nil {
+      updatesWindowController = UpdatesWindowController()
+    }
+    updatesWindowController?.showWindow(self)
+    updatesWindowController?.configure(withChangelog: changelog, andRelease: release)
+  }
+
+  func closeUpdatesWindow() {
+    updatesWindowController?.close()
   }
 
   // XXX: Kind of a strange place for this to be in.
