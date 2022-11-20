@@ -88,7 +88,10 @@
     (pool-get-records id max-bytes))
   (cond
     [script
-     (define proc (table-ref script transform-proc-key (λ () values)))
+     (define proc
+       (table-ref script transform-key))
+     (unless (procedure? proc)
+       (error 'script "script.transform: not a procedure"))
      (for*/list ([r (in-vector records)]
                  [t (in-value (proc (record->table r)))]
                  #:when (truthy? t))
@@ -139,7 +142,7 @@
   (begin (define id k) ...))
 
 (define-lua-keys
-  [transform-proc-key #"transform"]
+  [transform-key #"transform"]
   [partition-id-key #"partition_id"]
   [offset-key #"offset"]
   [timestamp-key #"timestamp"]
