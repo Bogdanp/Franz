@@ -88,12 +88,11 @@
     (pool-get-records id max-bytes))
   (cond
     [script
-     (define filter-proc (table-ref script filter-proc-key (λ () values)))
-     (define map-proc (table-ref script map-proc-key (λ () values)))
+     (define proc (table-ref script transform-proc-key (λ () values)))
      (for*/list ([r (in-vector records)]
-                 [t (in-value (record->table r))]
-                 #:when (truthy? (filter-proc t)))
-       (table->IteratorRecord (map-proc t)))]
+                 [t (in-value (proc (record->table r)))]
+                 #:when (truthy? t))
+       (table->IteratorRecord t))]
     [else
      (for/list ([r (in-vector records)])
        (record->IteratorRecord r))]))
@@ -140,8 +139,7 @@
   (begin (define id k) ...))
 
 (define-lua-keys
-  [filter-proc-key #"filter"]
-  [map-proc-key #"map"]
+  [transform-proc-key #"transform"]
   [partition-id-key #"partition_id"]
   [offset-key #"offset"]
   [timestamp-key #"timestamp"]
