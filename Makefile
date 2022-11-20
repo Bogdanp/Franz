@@ -8,6 +8,7 @@ RKT_MAIN_ZO=${RKT_SRC}/compiled/main_rkt.zo
 RESOURCES_PATH=${APP_SRC}/resources
 RUNTIME_NAME=runtime-${ARCH}
 RUNTIME_PATH=${RESOURCES_PATH}/${RUNTIME_NAME}
+MANUAL_PATH=${RESOURCES_PATH}/manual
 
 CORE_ZO=${RESOURCES_PATH}/core-${ARCH}.zo
 
@@ -34,3 +35,6 @@ ${CORE_ZO}: ${RKT_MAIN_ZO}
 
 ${APP_SRC}/Backend.swift: ${CORE_ZO}
 	raco noise-serde-codegen ${RKT_SRC}/main.rkt > $@
+
+${MANUAL_PATH}/index.html: manual/*.scrbl
+	raco scribble --html --dest ${MANUAL_PATH} +m manual/index.scrbl

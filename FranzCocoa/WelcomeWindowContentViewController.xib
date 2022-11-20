@@ -33,7 +33,7 @@
                             <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSApplicationIcon" id="rQR-Tq-Alh"/>
                         </imageView>
                         <stackView distribution="fill" orientation="horizontal" alignment="centerY" spacing="20" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="luV-df-HLp">
-                            <rect key="frame" x="85" y="40" width="290" height="17"/>
+                            <rect key="frame" x="84" y="40" width="293" height="17"/>
                             <subviews>
                                 <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="buc-Nk-xYX">
                                     <rect key="frame" x="0.0" y="0.0" width="114" height="17"/>
@@ -47,11 +47,11 @@
                                     </connections>
                                 </button>
                                 <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EZI-ln-abM">
-                                    <rect key="frame" x="134" y="1" width="72" height="16"/>
+                                    <rect key="frame" x="134" y="1" width="75" height="16"/>
                                     <buttonCell key="cell" type="bevel" title=" Support" bezelStyle="rounded" imagePosition="leading" alignment="center" imageScaling="proportionallyDown" inset="2" id="h7Y-Hb-awC">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="system"/>
-                                        <imageReference key="image" image="questionmark.circle" catalog="system" symbolScale="default" variableValue="0.0"/>
+                                        <imageReference key="image" image="NSTouchBarMailTemplate" symbolScale="default" variableValue="0.0"/>
                                     </buttonCell>
                                     <color key="contentTintColor" name="AccentColor"/>
                                     <connections>
@@ -59,7 +59,7 @@
                                     </connections>
                                 </button>
                                 <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XEL-TI-nsu">
-                                    <rect key="frame" x="226" y="1" width="64" height="16"/>
+                                    <rect key="frame" x="229" y="1" width="64" height="16"/>
                                     <buttonCell key="cell" type="bevel" title=" Twitter" bezelStyle="rounded" image="person.fill" catalog="system" imagePosition="leading" alignment="center" imageScaling="proportionallyDown" inset="2" id="f8y-44-03z">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="system"/>
@@ -142,9 +142,9 @@
     </objects>
     <resources>
         <image name="NSApplicationIcon" width="32" height="32"/>
+        <image name="NSTouchBarMailTemplate" width="18" height="13"/>
         <image name="doc.text" catalog="system" width="14" height="16"/>
         <image name="person.fill" catalog="system" width="14" height="14"/>
-        <image name="questionmark.circle" catalog="system" width="15" height="15"/>
         <image name="xmark" catalog="system" width="14" height="13"/>
         <namedColor name="AccentColor">
             <color red="0.0" green="0.46000000000000002" blue="0.89000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

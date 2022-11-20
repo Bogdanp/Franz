@@ -35,6 +35,7 @@ class WelcomeWindowContentViewController: NSViewController {
   }
 
   @IBAction func didPushDocumentationButton(_ sender: Any) {
+    WindowManager.shared.openManual()
   }
 
   @IBAction func didPushSupportButton(_ sender: Any) {

@@ -419,9 +419,9 @@
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Help" systemMenu="help" id="F2S-fz-NVQ">
                         <items>
-                            <menuItem title="Franz Help" keyEquivalent="?" id="FKE-Sm-Kum">
+                            <menuItem title="Franz Manual" keyEquivalent="?" id="FKE-Sm-Kum">
                                 <connections>
-                                    <action selector="showHelp:" target="-1" id="y7X-2Q-9no"/>
+                                    <action selector="didPushManualButton:" target="Voe-Tx-rLC" id="DM5-C8-8Y5"/>
                                 </connections>
                             </menuItem>
                         </items>

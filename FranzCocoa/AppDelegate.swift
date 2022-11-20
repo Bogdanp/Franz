@@ -32,4 +32,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
   @IBAction func didPushPreferencesButton(_ sender: Any) {
     WindowManager.shared.showPreferencesWindow()
   }
+
+  @IBAction func didPushManualButton(_ sender: Any) {
+    WindowManager.shared.openManual()
+  }
 }

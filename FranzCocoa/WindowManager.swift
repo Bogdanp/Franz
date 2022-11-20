@@ -91,6 +91,13 @@ class WindowManager {
       scripts.removeValue(forKey: k)
     }
   }
+
+  // XXX: Kind of a strange place for this to be in.
+  func openManual() {
+    if let url = Bundle.main.url(forResource: "resources/manual/index", withExtension: "html") {
+      NSWorkspace.shared.open(url)
+    }
+  }
 }
 
 fileprivate struct ScriptWindowKey: Hashable, Equatable {
