@@ -68,10 +68,16 @@ SCRIPT
        (close-output-port out)))))
 
 (define (lua-eval str)
-  (define path (make-temporary-file))
-  (call-with-output-file path
-    #:exists 'truncate/replace
-    (lambda (out)
-      (define in (make-#lang-lua-port str))
-      (copy-port in out)))
-  (dynamic-require path '#%chunk))
+  (define path #f)
+  (dynamic-wind
+    (lambda ()
+      (set! path (make-temporary-file "franz-~a.lua")))
+    (lambda ()
+      (call-with-output-file path
+        #:exists 'truncate/replace
+        (lambda (out)
+          (define in (make-#lang-lua-port str))
+          (copy-port in out)))
+      (dynamic-require path '#%chunk))
+    (lambda ()
+      (delete-file path))))
