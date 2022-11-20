@@ -119,14 +119,19 @@ class TopicRecordsTableViewController: NSViewController {
     Backend.shared.getRecords(
       iteratorId,
       withMaxBytes: options.maxBytes
-    ).onComplete { [weak self] records in
-      guard cookie == self?.cookie else {
-        logger.debug("loadRecords: cookie expired")
+    ).sink(
+      onError: { error in
+        Error.alert(withError: error)
         completionHandler(nil)
-        return
-      }
-      completionHandler(records)
-    }
+      },
+      onComplete: { [weak self] records in
+        guard cookie == self?.cookie else {
+          logger.debug("loadRecords: cookie expired")
+          completionHandler(nil)
+          return
+        }
+        completionHandler(records)
+      })
   }
 
   // Invariant: completionHandler is always called on the main thread.

@@ -13,7 +13,7 @@ class Error {
     let alert = NSAlert()
     alert.alertStyle = .critical
     alert.messageText = "Error"
-    alert.informativeText = "Franz encountered an unexpected error.  Most likely, this is a bug, so please report it!"
+    alert.informativeText = "Franz encountered an unexpected error."
     alert.accessoryView = textField
     alert.runModal()
   }
