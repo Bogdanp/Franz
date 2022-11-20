@@ -12,6 +12,15 @@ class ScriptWindowController: NSWindowController {
   lazy var editorCtl = EditorViewController()
   weak var delegate: ScriptWindowControllerDelegate?
 
+  private weak var tableAppearedObserver: AnyObject?
+  private weak var tableDisappearedObserver: AnyObject?
+
+  deinit {
+    for obs in [tableAppearedObserver, tableDisappearedObserver] where obs != nil {
+      NotificationCenter.default.removeObserver(obs!)
+    }
+  }
+
   convenience init(withId id: UVarint, andTopic topic: String) {
     self.init(windowNibName: "ScriptWindowController")
     self.id = id
@@ -34,20 +43,59 @@ class ScriptWindowController: NSWindowController {
       window.center()
     }
     resetTitle()
+
+    tableAppearedObserver = NotificationCenter.default.addObserver(
+      forName: .TopicRecordsTableAppeared,
+      object: nil,
+      queue: .main
+    ) { [weak self] notification in
+      guard let self else { return }
+      guard let ob = notification.object as? ScriptWindowControllerDelegate else { return }
+      guard notification.userInfo?["id"] as? UVarint == id else { return }
+      guard notification.userInfo?["topic"] as? String == topic else { return }
+      self.delegate = ob
+      self.enableToggleItem()
+      self.toolbar.validateVisibleItems()
+    }
+
+    tableDisappearedObserver = NotificationCenter.default.addObserver(
+      forName: .TopicRecordsTableDisappeared,
+      object: nil,
+      queue: .main
+    ) { [weak self] notification in
+      guard let self else { return }
+      guard let ob = notification.object as? ScriptWindowControllerDelegate else { return }
+      guard notification.userInfo?["id"] as? UVarint == id else { return }
+      guard notification.userInfo?["topic"] as? String == topic else { return }
+      self.delegate = ob
+      self.deactivate()
+      self.disableToggleItem()
+      self.toolbar.validateVisibleItems()
+    }
+  }
+
+  private var toggleToolbarItem: NSToolbarItem? {
+    toolbar.items.first(where: { $0.itemIdentifier == .toggleActive })
+  }
+
+  private func disableToggleItem() {
+    toggleToolbarItem?.action = nil
+  }
+
+  private func enableToggleItem() {
+    toggleToolbarItem?.action = #selector(didPressToggleButton(_:))
   }
 
   private func activate() {
-    let toolbarItem = toolbar.items.first(where: { $0.itemIdentifier == .toggleActive })
     if let activated = delegate?.scriptWindow(willActivate: editorCtl.code), activated {
-      toolbarItem?.image = bolt(accented: true)
+      toggleToolbarItem?.image = bolt(accented: true)
       active = true
     }
   }
 
   private func deactivate() {
-    let toolbarItem = toolbar.items.first(where: { $0.itemIdentifier == .toggleActive })
     delegate?.scriptWindowWillDeactivate()
-    toolbarItem?.image = bolt()
+    toggleToolbarItem?.image = bolt()
     active = false
   }
 

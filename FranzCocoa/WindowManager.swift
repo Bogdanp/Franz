@@ -1,12 +1,14 @@
-import Foundation
 import AppKit
+import Foundation
+import NoiseSerde
 
 class WindowManager {
   static var shared = WindowManager()
 
   private var welcomeWindowController: WelcomeWindowController?
   private var preferencesWindowController: PreferencesWindowController?
-  private var workspaces = [UInt64: WorkspaceWindowController]()
+  private var workspaces = [UInt64: WorkspaceWindowController]() // conn id -> ctl
+  private var scripts = [ScriptWindowKey: ScriptWindowController]() // workspace id -> ctl
 
   func launchWorkspace(withConn conn: ConnectionDetails, andPassword password: String?) {
     assert(Thread.isMainThread)
@@ -64,4 +66,34 @@ class WindowManager {
     preferencesWindowController?.window?.center()
     preferencesWindowController?.showWindow(self)
   }
+
+  func showScriptWindow(
+    forWorkspace id: UVarint,
+    andTopic topic: String,
+    withDelegate delegate: ScriptWindowControllerDelegate? = nil
+  ) {
+    assert(Thread.isMainThread)
+    let key = ScriptWindowKey(workspaceId: id, topic: topic)
+    if let ctl = scripts[key] {
+      ctl.delegate = delegate
+      ctl.showWindow(self)
+      return
+    }
+    let ctl = ScriptWindowController(withId: id, andTopic: topic)
+    ctl.delegate = delegate
+    ctl.showWindow(self)
+    scripts[key] = ctl
+  }
+
+  func closeScriptWindows(forWorkspace id: UVarint) {
+    for (k, ctl) in scripts where k.workspaceId == id {
+      ctl.close()
+      scripts.removeValue(forKey: k)
+    }
+  }
+}
+
+fileprivate struct ScriptWindowKey: Hashable, Equatable {
+  let workspaceId: UVarint
+  let topic: String
 }

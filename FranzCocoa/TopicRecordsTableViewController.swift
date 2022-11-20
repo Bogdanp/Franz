@@ -33,8 +33,6 @@ class TopicRecordsTableViewController: NSViewController {
   private var optionsDefaultsKey: String?
   private var options = TopicRecordsOptions()
 
-  private var scriptWindowCtl: ScriptWindowController?
-
   private var bytesFmt: ByteCountFormatter = {
     let fmt = ByteCountFormatter()
     fmt.countStyle = .memory
@@ -67,6 +65,34 @@ class TopicRecordsTableViewController: NSViewController {
     statsLabel.font = .monospacedDigitSystemFont(ofSize: 10, weight: .regular)
     statsLabel.textColor = .secondaryLabelColor
     statsLabel.stringValue = ""
+  }
+
+  override func viewDidAppear() {
+    super.viewDidAppear()
+
+    guard let id, let topic else { return }
+    NotificationCenter.default.post(
+      name: .TopicRecordsTableAppeared,
+      object: self,
+      userInfo: [
+        "id": id,
+        "topic": topic,
+      ]
+    )
+  }
+
+  override func viewDidDisappear() {
+    super.viewDidDisappear()
+
+    guard let id, let topic else { return }
+    NotificationCenter.default.post(
+      name: .TopicRecordsTableDisappeared,
+      object: self,
+      userInfo: [
+        "id": id,
+        "topic": topic,
+      ]
+    )
   }
 
   func configure(withId id: UVarint, andTopic topic: String) {
@@ -424,13 +450,7 @@ class TopicRecordsTableViewController: NSViewController {
   }
 
   @IBAction func didPressScriptButton(_ sender: NSButton) {
-    guard let scriptWindowCtl else {
-      scriptWindowCtl = ScriptWindowController(withId: id, andTopic: topic)
-      scriptWindowCtl?.delegate = self
-      scriptWindowCtl?.showWindow(self)
-      return
-    }
-    scriptWindowCtl.showWindow(self)
+    WindowManager.shared.showScriptWindow(forWorkspace: id, andTopic: topic, withDelegate: self)
   }
 }
 
