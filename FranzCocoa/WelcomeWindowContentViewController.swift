@@ -33,4 +33,15 @@ class WelcomeWindowContentViewController: NSViewController {
   @IBAction func didPushNewConnectionButton(_ sender: Any) {
     newConnection()
   }
+
+  @IBAction func didPushDocumentationButton(_ sender: Any) {
+  }
+
+  @IBAction func didPushSupportButton(_ sender: Any) {
+    NSWorkspace.shared.open(URL(string: "mailto:bogdan@defn.io?subject=Franz%20Support")!)
+  }
+
+  @IBAction func didPushTwitterButton(_ sender: Any) {
+    NSWorkspace.shared.open(URL(string: "https://twitter.com/franz_app")!)
+  }
 }
