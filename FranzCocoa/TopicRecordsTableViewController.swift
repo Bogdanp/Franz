@@ -28,7 +28,6 @@ class TopicRecordsTableViewController: NSViewController {
   private var items = [Item]()
   private var cookie = 0
   private var liveModeOn = false
-  private var backpressureSema = DispatchSemaphore(value: 1)
 
   private var optionsDefaultsKey: String?
   private var options = TopicRecordsOptions()
@@ -161,8 +160,6 @@ class TopicRecordsTableViewController: NSViewController {
   }
 
   // Invariant: completionHandler is always called on the main thread.
-  // Invariant: backpressureSema must always be released before
-  // syncing on the main thread.
   private func setRecords(_ records: [IteratorRecord],
                           byAppending appending: Bool = true,
                           completionHandler: @escaping () -> Void = { }) {
@@ -182,11 +179,9 @@ class TopicRecordsTableViewController: NSViewController {
     let sortDirection = self.options.sortDirection
     let keepBytes = self.options.keepBytes
 
-    backpressureSema.wait()
-    DispatchQueue.uiBackground.async { [backpressureSema, weak self] in
+    DispatchQueue.uiBackground.async { [weak self] in
       guard let self else {
         // https://lists.apple.com/archives/cocoa-dev/2014/Apr/msg00484.html
-        backpressureSema.signal()
         DispatchQueue.main.sync {
           completionHandler()
         }
@@ -266,7 +261,6 @@ class TopicRecordsTableViewController: NSViewController {
         }
       }
 
-      backpressureSema.signal()
       DispatchQueue.main.sync { [weak self] in
         guard let self else { return }
         var scrollToBottom = false
