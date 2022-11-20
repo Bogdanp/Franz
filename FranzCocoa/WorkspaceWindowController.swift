@@ -180,8 +180,10 @@ extension WorkspaceWindowController: NSToolbarDelegate {
       case .statusBar:
         let item = NSToolbarItem(itemIdentifier: itemIdentifier)
         item.view = statusBarView
-        item.minSize.width = 200
-        item.maxSize.width = .infinity
+        if #unavailable(macOS 13) {
+          item.minSize.width = 200
+          item.maxSize.width = .infinity
+        }
         return item
       case .reloadButton:
         let item = NSToolbarItem(itemIdentifier: itemIdentifier)
