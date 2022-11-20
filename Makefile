@@ -38,3 +38,6 @@ ${APP_SRC}/Backend.swift: ${CORE_ZO}
 
 ${MANUAL_PATH}/index.html: manual/*.scrbl
 	raco scribble --html --dest ${MANUAL_PATH} +m manual/index.scrbl
+
+website/manual/index.html: manual/*.scrbl
+	raco scribble --html --dest website/manual +m manual/index.scrbl
