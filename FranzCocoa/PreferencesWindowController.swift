@@ -133,9 +133,9 @@ fileprivate struct LicenseView: View {
         Text("Trial Active")
           .font(.largeTitle)
         Text("""
-        Your trial ends on \(trialDeadline). Please purchase a license to \
-        support Franz development and to continue using the software past \
-        that date.
+        Your trial ends on \(trialDeadline). Please [purchase a license]\
+        (https://franz.defn.io) to support Franz development and to continue \
+        using the software past that date.
         """)
         Form {
           TextField("License Key:", text: $license)
@@ -155,7 +155,7 @@ fileprivate struct LicenseView: View {
         Text("Trial Expired")
           .font(.largeTitle)
         Text("""
-        Your trial has ended.  Please [Purchase a License](https://franz.defn.io) \
+        Your trial has ended.  Please [purchase a license](https://franz.defn.io) \
         to continue using the software.
         """)
         Form {

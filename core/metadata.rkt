@@ -6,6 +6,7 @@
          noise/backend
          noise/serde
          racket/contract
+         racket/date
          racket/port
          racket/runtime-path
          racket/sequence
@@ -23,7 +24,9 @@
  insert-connection!
  update-connection!
  touch-connection!
- delete-connection!)
+ delete-connection!
+
+ reset-trial-deadline!)
 
 (define-logger metadata)
 
@@ -148,14 +151,15 @@
   (lambda (m)
     (set-metadata-updated-at m (current-seconds))))
 
+(define (metadata-query key)
+  (~> (from metadata #:as m)
+      (where (= m.key ,(symbol->string key)))))
+
 (define (get-metadata key [default #f])
   (call-with-transaction conn
     (lambda ()
-      (define q
-        (~> (from metadata #:as m)
-            (where (= m.key ,(symbol->string key)))))
       (cond
-        [(lookup conn q) => metadata-value]
+        [(lookup conn (metadata-query key)) => metadata-value]
         [(procedure? default)
          (define value (default))
          (begin0 value
@@ -168,13 +172,17 @@
    (call-with-transaction conn
      (lambda ()
        (cond
-         [(get-metadata key)
+         [(lookup conn (metadata-query key))
           => (lambda (m)
                (~> (set-metadata-value m value)
                    (update-one! conn _)))]
          [else
           (~> (make-metadata #:key key #:value value)
               (insert-one! conn _))])))))
+
+(define (reset-trial-deadline! year month day)
+  (define seconds (find-seconds 0 0 0 day month year #t))
+  (put-metadata! 'trial-deadline (number->string seconds)))
 
 (define-rpc (is-license-valid : Bool)
   (or (get-license)
@@ -187,7 +195,7 @@
     'trial-deadline
     (lambda ()
       (number->string
-       (+ (current-seconds) (* 90 86400)))))))
+       (+ (current-seconds) (* 30 86400)))))))
 
 (define-rpc (get-license : (Optional String))
   (and~> (get-metadata 'license)
@@ -206,6 +214,15 @@
        (define deadline (get-trial-deadline))
        (check-true (> deadline (current-seconds)))
        (check-equal? (get-trial-deadline) deadline))))
+
+  (test-case "reset-trial-deadline"
+    (call-with-test-connection
+     (lambda (_)
+       (define deadline (get-trial-deadline))
+       (check-true (> deadline (current-seconds)))
+       (define target-seconds (find-seconds 0 0 0 1 3 2023 #t))
+       (reset-trial-deadline! 2023 3 1)
+       (check-equal? (get-trial-deadline) target-seconds))))
 
   (test-case "get license"
     (test-case "no licenses"

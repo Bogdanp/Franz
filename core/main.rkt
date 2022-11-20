@@ -34,6 +34,7 @@
                      #:database database-path
                      #:mode 'create)])
       (migrate!)
+      (reset-trial-deadline! 2023 3 1)
       (serve in-fd out-fd)))
   (with-handlers ([exn:break? void])
     (sync never-evt))
