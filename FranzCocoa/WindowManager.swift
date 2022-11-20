@@ -12,6 +12,7 @@ class WindowManager {
 
   func launchWorkspace(withConn conn: ConnectionDetails, andPassword password: String?) {
     assert(Thread.isMainThread)
+    guard checkLicense() else { return }
     guard let id = conn.id else {
       preconditionFailure()
     }
@@ -58,13 +59,14 @@ class WindowManager {
     welcomeWindowController = nil
   }
 
-  func showPreferencesWindow() {
+  func showPreferencesWindow(selectingTab tab: PreferencesTab = .general) {
     assert(Thread.isMainThread)
     if preferencesWindowController == nil {
       preferencesWindowController = PreferencesWindowController()
     }
     preferencesWindowController?.window?.center()
     preferencesWindowController?.showWindow(self)
+    preferencesWindowController?.display(tab: tab)
   }
 
   func showScriptWindow(
@@ -97,6 +99,15 @@ class WindowManager {
     if let url = Bundle.main.url(forResource: "resources/manual/index", withExtension: "html") {
       NSWorkspace.shared.open(url)
     }
+  }
+
+  private func checkLicense() -> Bool {
+    if let ok = Error.wait(Backend.shared.isLicenseValid()), ok {
+      return true
+    }
+
+    showPreferencesWindow(selectingTab: .license)
+    return false
   }
 }
 

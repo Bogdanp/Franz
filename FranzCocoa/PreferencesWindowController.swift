@@ -1,7 +1,15 @@
 import Cocoa
+import NoiseSerde
 import SwiftUI
 
+enum PreferencesTab {
+  case general
+  case license
+}
+
 class PreferencesWindowController: NSWindowController {
+  private lazy var tabController = PreferencesTabViewController()
+
   convenience init() {
     self.init(windowNibName: "PreferencesWindowController")
   }
@@ -19,7 +27,6 @@ class PreferencesWindowController: NSWindowController {
     licenseItem.label = "License"
     licenseItem.viewController = NSHostingController(rootView: LicenseView())
 
-    let tabController = PreferencesTabViewController()
     tabController.delegate = self
     tabController.tabStyle = .toolbar
     tabController.addTabViewItem(generalItem)
@@ -28,6 +35,15 @@ class PreferencesWindowController: NSWindowController {
     window?.contentViewController = tabController
     window?.setContentSize(.init(width: 600, height: 150))
     window?.center()
+  }
+
+  func display(tab: PreferencesTab) {
+    switch tab {
+    case .general:
+      tabController.selectedTabViewItemIndex = 0
+    case .license:
+      tabController.selectedTabViewItemIndex = 1
+    }
   }
 }
 
@@ -91,15 +107,18 @@ fileprivate struct GeneralView: View {
 fileprivate struct LicenseView: View {
   @State var activatedLicense = Error.wait(Backend.shared.getLicense()) ?? ""
   @State var license = ""
-  let trialDeadline = Error.wait(Backend.shared.getTrialDeadline())
-    .map { seconds in
-      let date = Date(timeIntervalSince1970: TimeInterval(Int(seconds)))
-      return DateFormatter.localizedString(
+  let (trialActive, trialDeadline): (Bool, String) = {
+    if let deadline = Error.wait(Backend.shared.getTrialDeadline()) {
+      let now = UVarint(NSDate().timeIntervalSince1970)
+      let date = Date(timeIntervalSince1970: TimeInterval(Int(deadline)))
+      return (deadline > now, DateFormatter.localizedString(
         from: date,
         dateStyle: .long,
         timeStyle: .none
-      )
+      ))
     }
+    return (false, "")
+  }()
 
   var body: some View {
     if activatedLicense != "" {
@@ -109,7 +128,7 @@ fileprivate struct LicenseView: View {
         Text("Thank you for supporting Franz development by purchasing a license.")
       }
       .padding()
-    } else if let trialDeadline {
+    } else if trialActive {
       VStack(alignment: .leading) {
         Text("Trial Active")
           .font(.largeTitle)
@@ -117,6 +136,27 @@ fileprivate struct LicenseView: View {
         Your trial ends on \(trialDeadline). Please purchase a license to \
         support Franz development and to continue using the software past \
         that date.
+        """)
+        Form {
+          TextField("License Key:", text: $license)
+            .onSubmit {
+              activate()
+            }
+          Button("Activate License") {
+            activate()
+          }
+          .keyboardShortcut(.return)
+          .disabled(license == "")
+        }
+      }
+      .padding()
+    } else {
+      VStack(alignment: .leading) {
+        Text("Trial Expired")
+          .font(.largeTitle)
+        Text("""
+        Your trial has ended.  Please [Purchase a License](https://franz.defn.io) \
+        to continue using the software.
         """)
         Form {
           TextField("License Key:", text: $license)

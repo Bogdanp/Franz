@@ -176,13 +176,18 @@
           (~> (make-metadata #:key key #:value value)
               (insert-one! conn _))])))))
 
+(define-rpc (is-license-valid : Bool)
+  (or (get-license)
+      (> (get-trial-deadline)
+         (current-seconds))))
+
 (define-rpc (get-trial-deadline : Varint)
   (string->number
    (get-metadata
     'trial-deadline
     (lambda ()
       (number->string
-       (+ (current-seconds) (* 30 86400)))))))
+       (+ (current-seconds) (* 90 86400)))))))
 
 (define-rpc (get-license : (Optional String))
   (and~> (get-metadata 'license)
