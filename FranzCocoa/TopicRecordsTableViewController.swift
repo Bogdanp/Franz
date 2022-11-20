@@ -313,7 +313,7 @@ class TopicRecordsTableViewController: NSViewController {
         status("Ready")
         var deadline = DispatchTime.now()
         if records.isEmpty {
-          deadline = deadline.advanced(by: .seconds(Defaults.shared.reloadIntervalMs/1000))
+          deadline = deadline.advanced(by: .seconds(1))
         }
         DispatchQueue.main.asyncAfter(deadline: deadline) { [weak self] in
           self?.scheduleLoad(withCookie: cookie)
