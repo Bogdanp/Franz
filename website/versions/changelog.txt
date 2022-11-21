@@ -1,3 +1,8 @@
+# 2022.11.21 (Build 2)
+## Fixed
+
+* An issue with setting the port number on connections.
+
 # 2022.11.20 (Build 1)
 
 * Initial BETA release.
