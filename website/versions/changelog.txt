@@ -2,6 +2,8 @@
 ## Fixed
 
 * An issue with setting the port number on connections.
+* An issue with downloading updates.  You may have to download this
+  update manually from the website at https://franz.defn.io.
 
 # 2022.11.20 (Build 1)
 
