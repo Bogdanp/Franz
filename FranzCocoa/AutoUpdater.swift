@@ -52,15 +52,19 @@ class AutoUpdater {
 
   func start(withInterval interval: Double, andCompletionHandler handler: @escaping (String, Release) -> Void) {
     stop()
-    checkForUpdates(withCompletionHandler: handler)
-    timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { _ in
-      self.checkForUpdates(withCompletionHandler: handler)
+    checkForUpdates(completionHandler: handler)
+    timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
+      self?.checkForUpdates(completionHandler: handler)
     }
   }
 
   func stop() {
-    if let timer {
-      timer.invalidate()
+    timer?.invalidate()
+  }
+
+  func resetCaches(completionHandler handler: @escaping () -> Void) {
+    session.reset {
+      handler()
     }
   }
 
@@ -84,15 +88,24 @@ class AutoUpdater {
     }
   }
 
-  func checkForUpdates(withCompletionHandler handler: @escaping (String, Release) -> Void) {
-    fetchChangelog { changelog in
-      self.fetchReleasesJSON { releases in
+  func checkForUpdates(
+    rejectionHandler reject: @escaping () -> Void = {  },
+    completionHandler complete: @escaping (String, Release) -> Void
+  ) {
+    fetchChangelog { [weak self] changelog in
+      self?.fetchReleasesJSON { releases in
         let latest = releases.sorted { a, b in
           a.version > b.version
         }.first
 
-        if let latest = latest, latest.version != self.currentVersion {
-          handler(changelog, latest)
+        if let latest, latest.version != self?.currentVersion {
+          RunLoop.main.schedule {
+            complete(changelog, latest)
+          }
+        } else {
+          RunLoop.main.schedule {
+            reject()
+          }
         }
       }
     }

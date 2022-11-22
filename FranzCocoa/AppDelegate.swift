@@ -9,9 +9,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
   func applicationDidFinishLaunching(_ aNotification: Notification) {
     updater.start(withInterval: 3600 * 4) { changes, version in
-        RunLoop.main.schedule {
-          WindowManager.shared.showUpdatesWindow(withChangelog: changes, andRelease: version)
-        }
+      WindowManager.shared.showUpdatesWindow(withChangelog: changes, andRelease: version)
     }
 
     FutureUtil.set(defaultErrorHandler: Error.alert(withError:))
@@ -43,5 +41,21 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
   @IBAction func didPushManualButton(_ sender: Any) {
     WindowManager.shared.openManual()
+  }
+
+  @IBAction func didPushCheckForUpdatesButton(_ sender: Any) {
+    updater.resetCaches { [weak self] in
+      self?.updater.checkForUpdates(
+        rejectionHandler: {
+          let alert = NSAlert()
+          alert.messageText = "You're up to date!"
+          alert.informativeText = "You are running the latest version of Franz available."
+          alert.runModal()
+        },
+        completionHandler: { changes, version in
+          WindowManager.shared.showUpdatesWindow(withChangelog: changes, andRelease: version)
+        }
+      )
+    }
   }
 }
