@@ -1,10 +1,62 @@
 import AppKit
 import Foundation
+import OSLog
+
+fileprivate let logger = Logger(
+  subsystem: "io.defn.Franz",
+  category: "Defaults"
+)
 
 class Defaults {
   static var shared = Defaults()
 
-  @IntDefault(key: "reloadIntervalMs") var reloadIntervalMs: Int = 10000
+  @BoolDefault(key: "checkForUpdates") var checkForUpdates = true
+  @CodableDefault(key: "updateInterval") var updateInterval = UpdateInterval.everyFourHours
+  @IntDefault(key: "reloadIntervalMs") var reloadIntervalMs = 10000
+
+  @propertyWrapper struct CodableDefault<T: Codable> {
+    var key: String
+    var def: T!
+    var wrappedValue: T {
+      get {
+        return Defaults.shared.get(codable: key) ?? def
+      }
+      set {
+        let key = self.key
+        do {
+          try Defaults.shared.set(codable: newValue, forKey: key)
+        } catch {
+          logger.error("failed to set codable value for \(key): \(error)")
+        }
+      }
+    }
+
+    init(wrappedValue: T, key: String) {
+      self.key = key
+      self.def = wrappedValue
+    }
+  }
+
+  @propertyWrapper struct BoolDefault {
+    var key: String
+    var def: Bool!
+    var wrappedValue: Bool {
+      get {
+        if Defaults.shared.get(string: key) != nil {
+          return Defaults.shared.get(bool: key)
+        }
+        return def
+      }
+      set {
+        Defaults.shared.set(bool: newValue, forKey: key)
+      }
+    }
+
+    init(wrappedValue: Bool, key: String) {
+      self.key = key
+      self.def = wrappedValue
+    }
+  }
 
   @propertyWrapper struct IntDefault {
     var key: String
@@ -25,8 +77,16 @@ class Defaults {
     }
   }
 
+  func get(bool k: String) -> Bool {
+    UserDefaults.standard.bool(forKey: k)
+  }
+
   func get(integer k: String) -> Int {
     UserDefaults.standard.integer(forKey: k)
+  }
+
+  func get(string k: String) -> String? {
+    UserDefaults.standard.string(forKey: k)
   }
 
   func get<V: Decodable>(codable k: String) -> V? {
@@ -36,6 +96,10 @@ class Defaults {
     } catch {
       return nil
     }
+  }
+
+  func set(bool v: Bool, forKey k: String) {
+    UserDefaults.standard.set(v, forKey: k)
   }
 
   func set(integer v: Int, forKey k: String) {

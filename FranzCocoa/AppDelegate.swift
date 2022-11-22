@@ -5,11 +5,11 @@ import SwiftUI
 
 @main
 class AppDelegate: NSObject, NSApplicationDelegate {
-  private lazy var updater = AutoUpdater()
-
   func applicationDidFinishLaunching(_ aNotification: Notification) {
-    updater.start(withInterval: 3600 * 4) { changes, version in
-      WindowManager.shared.showUpdatesWindow(withChangelog: changes, andRelease: version)
+    if Defaults.shared.checkForUpdates {
+      AutoUpdater.shared.start(withInterval: Double(Defaults.shared.updateInterval.seconds)) { changes, version in
+        WindowManager.shared.showUpdatesWindow(withChangelog: changes, andRelease: version)
+      }
     }
 
     FutureUtil.set(defaultErrorHandler: Error.alert(withError:))
@@ -44,8 +44,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
   }
 
   @IBAction func didPushCheckForUpdatesButton(_ sender: Any) {
-    updater.resetCaches { [weak self] in
-      self?.updater.checkForUpdates(
+    AutoUpdater.shared.resetCaches {
+      AutoUpdater.shared.checkForUpdates(
         rejectionHandler: {
           let alert = NSAlert()
           alert.messageText = "You're up to date!"

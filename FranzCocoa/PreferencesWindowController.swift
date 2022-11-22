@@ -1,10 +1,17 @@
 import Cocoa
 import NoiseSerde
+import OSLog
 import SwiftUI
+
+fileprivate let logger = Logger(
+  subsystem: "io.defn.Franz",
+  category: "Preferences"
+)
 
 enum PreferencesTab {
   case general
   case license
+  case updates
 }
 
 class PreferencesWindowController: NSWindowController {
@@ -18,32 +25,42 @@ class PreferencesWindowController: NSWindowController {
     super.windowDidLoad()
 
     let generalItem = NSTabViewItem()
-    generalItem.image = .init(systemSymbolName: "gearshape", accessibilityDescription: nil)
+    generalItem.image = .init(systemSymbolName: "gearshape", accessibilityDescription: "General Tab")
     generalItem.label = "General"
     generalItem.viewController = NSHostingController(rootView: GeneralView())
 
     let licenseItem = NSTabViewItem()
-    licenseItem.image = .init(systemSymbolName: "checkmark.seal", accessibilityDescription: nil)
+    licenseItem.image = .init(systemSymbolName: "checkmark.seal", accessibilityDescription: "License Tab")
     licenseItem.label = "License"
     licenseItem.viewController = NSHostingController(rootView: LicenseView())
+
+    let updatesItem = NSTabViewItem()
+    updatesItem.image = .init(systemSymbolName: "arrow.clockwise", accessibilityDescription: "Updates Tab")
+    updatesItem.label = "Updates"
+    updatesItem.viewController = NSHostingController(rootView: UpdatesView())
 
     tabController.delegate = self
     tabController.tabStyle = .toolbar
     tabController.addTabViewItem(generalItem)
     tabController.addTabViewItem(licenseItem)
+    tabController.addTabViewItem(updatesItem)
 
     window?.contentViewController = tabController
-    window?.setContentSize(.init(width: 600, height: 150))
+    window?.setContentSize(.init(width: 500, height: 150))
     window?.center()
   }
 
   func display(tab: PreferencesTab) {
+    var index: Int!
     switch tab {
     case .general:
-      tabController.selectedTabViewItemIndex = 0
+      index = 0
     case .license:
-      tabController.selectedTabViewItemIndex = 1
+      index = 1
+    case .updates:
+      index = 2
     }
+    tabController.selectedTabViewItemIndex = index
   }
 }
 
@@ -52,12 +69,13 @@ extension PreferencesWindowController: PreferencesTabViewDelegate {
   func preferencesTabView(didSelectItem item: NSTabViewItem) {
     guard let window else { return }
     window.title = item.label
-    // FIXME: There must be a better approach.
     switch item.label {
     case "General":
-      window.setContentSize(.init(width: 600, height: 170))
+      window.setContentSize(.init(width: 500, height: 170))
     case "License":
-      window.setContentSize(.init(width: 600, height: 250))
+      window.setContentSize(.init(width: 500, height: 250))
+    case "Updates":
+      window.setContentSize(.init(width: 500, height: 150))
     default:
       ()
     }
@@ -177,6 +195,64 @@ fileprivate struct LicenseView: View {
   private func activate() {
     if let activated = Error.wait(Backend.shared.activateLicense(license)), activated {
       activatedLicense = license
+    }
+  }
+}
+
+// MARK: - UpdatesView
+fileprivate struct UpdatesView: View {
+  @State var checkForUpdates = Defaults.shared.checkForUpdates
+  @State var interval = Defaults.shared.updateInterval
+
+  var body: some View {
+    Form {
+      Toggle("Automatically check for updates", isOn: $checkForUpdates)
+        .onChange(of: checkForUpdates) { check in
+          Defaults.shared.checkForUpdates = check
+          self.reset()
+        }
+      Picker("Check interval:", selection: $interval) {
+        Text("Every hour").tag(UpdateInterval.everyHour)
+        Text("Every four hours").tag(UpdateInterval.everyFourHours)
+        Text("Every day").tag(UpdateInterval.everyDay)
+      }
+      .onChange(of: interval) { ivl in
+        Defaults.shared.updateInterval = ivl
+        self.reset()
+      }
+      Spacer()
+    }
+    .padding()
+  }
+
+  private func reset() {
+    if !checkForUpdates {
+      AutoUpdater.shared.stop()
+      return
+    }
+
+    AutoUpdater.shared.start(
+      withInterval: Double(interval.seconds),
+      checkingImmediately: false
+    ) { changes, version in
+      WindowManager.shared.showUpdatesWindow(withChangelog: changes, andRelease: version)
+    }
+  }
+}
+
+enum UpdateInterval: Hashable, Codable {
+  case everyHour
+  case everyFourHours
+  case everyDay
+
+  var seconds: Int {
+    switch self {
+    case .everyHour:
+      return 3600
+    case .everyFourHours:
+      return 4 * 3600
+    case .everyDay:
+      return 24 * 3600
     }
   }
 }

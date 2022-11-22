@@ -50,9 +50,17 @@ class AutoUpdater {
 
   private var timer: Timer?
 
-  func start(withInterval interval: Double, andCompletionHandler handler: @escaping (String, Release) -> Void) {
+  static let shared = AutoUpdater()
+
+  func start(
+    withInterval interval: Double,
+    checkingImmediately immediate: Bool = true,
+    andCompletionHandler handler: @escaping (String, Release) -> Void
+  ) {
     stop()
-    checkForUpdates(completionHandler: handler)
+    if immediate {
+      checkForUpdates(completionHandler: handler)
+    }
     timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
       self?.checkForUpdates(completionHandler: handler)
     }
