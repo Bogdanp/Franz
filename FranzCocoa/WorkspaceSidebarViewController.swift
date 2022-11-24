@@ -1,13 +1,21 @@
 import Cocoa
 import NoiseSerde
+import OSLog
+
+fileprivate let logger = Logger(
+  subsystem: "io.defn.Franz",
+  category: "WorkspaceSidebar"
+)
 
 class WorkspaceSidebarViewController: NSViewController {
   private var id: UVarint!
+  private var conn: ConnectionDetails!
   private var metadata = Metadata(brokers: [], topics: [], groups: [])
   private var entries = [SidebarEntry]()
   private var filteredEntries = [SidebarEntry]()
   private var selectedEntry: SidebarEntry?
   private var contextMenu = NSMenu()
+  private var defaultsKey: String?
 
   @IBOutlet weak var tableView: NSTableView!
   @IBOutlet weak var noTopicsField: NSTextField!
@@ -30,18 +38,34 @@ class WorkspaceSidebarViewController: NSViewController {
     filterField.focusRingType = .none
   }
 
-  func configure(withId id: UVarint, andMetadata metadata: Metadata) {
+  func configure(withId id: UVarint, andConn conn: ConnectionDetails, andMetadata metadata: Metadata) {
     assert(Thread.isMainThread)
 
     self.id = id
+    self.conn = conn
     self.metadata = metadata
+    self.defaultsKey = "WorkspaceSidebar:\(conn.id!)"
     self.updateEntries()
+  }
+
+  private func getState() -> WorkspaceSidebarState {
+    guard let defaultsKey else { return WorkspaceSidebarState() }
+    return Defaults.shared.get(codable: defaultsKey) ?? WorkspaceSidebarState()
+  }
+
+  private func setState(_ state: WorkspaceSidebarState) {
+    guard let defaultsKey else { return }
+    do {
+      try Defaults.shared.set(codable: state, forKey: defaultsKey)
+    } catch {
+      logger.error("failed to save sidebar state: \(error)")
+    }
   }
 
   private func updateEntries() {
     var oldBrokers = [String: SidebarEntry]()
     var oldTopics = [String: SidebarEntry]()
-    var oldGroups = [String: SidebarEntry]()
+    var oldConsumerGroups = [String: SidebarEntry]()
     for e in entries {
       switch e.kind {
       case .broker:
@@ -49,14 +73,20 @@ class WorkspaceSidebarViewController: NSViewController {
       case .topic:
         oldTopics[e.label] = e
       case .consumerGroup:
-        oldGroups[e.label] = e
+        oldConsumerGroups[e.label] = e
       default:
-        ()
+        continue
       }
     }
 
+    let state = getState()
     entries.removeAll(keepingCapacity: true)
-    entries.append(SidebarEntry(withKind: .group, label: "Brokers"))
+    entries.append(SidebarEntry(
+      withKind: .group,
+      label: "Brokers",
+      andTag: SidebarGroup.brokers.rawValue,
+      andCollapsed: state.groupCollapsedStates[.brokers] ?? false
+    ))
     for b in metadata.brokers {
       if let e = oldBrokers[b.address] {
         e.data = b
@@ -67,7 +97,12 @@ class WorkspaceSidebarViewController: NSViewController {
       }
     }
 
-    entries.append(SidebarEntry(withKind: .group, label: "Topics"))
+    entries.append(SidebarEntry(
+      withKind: .group,
+      label: "Topics",
+      andTag: SidebarGroup.topics.rawValue,
+      andCollapsed: state.groupCollapsedStates[.topics] ?? false
+    ))
     for t in metadata.topics {
       if let e = oldTopics[t.name] {
         e.data = t
@@ -79,9 +114,14 @@ class WorkspaceSidebarViewController: NSViewController {
       }
     }
 
-    entries.append(SidebarEntry(withKind: .group, label: "Consumer Groups"))
+    entries.append(SidebarEntry(
+      withKind: .group,
+      label: "Consumer Groups",
+      andTag: SidebarGroup.consumerGroups.rawValue,
+      andCollapsed: state.groupCollapsedStates[.consumerGroups] ?? false
+    ))
     for g in metadata.groups {
-      if let e = oldGroups[g.id] {
+      if let e = oldConsumerGroups[g.id] {
         e.data = g
         entries.append(e)
       } else {
@@ -92,6 +132,7 @@ class WorkspaceSidebarViewController: NSViewController {
 
     filterEntries()
     updateSelection()
+    updateCollapsed()
   }
 
   private func filterEntries() {
@@ -123,6 +164,43 @@ class WorkspaceSidebarViewController: NSViewController {
     }
   }
 
+  func updateCollapsed(animatingItems animate: Bool = false) {
+    var collapsed = Set<SidebarEntryKind>()
+    var hidden = IndexSet()
+    var notHidden = IndexSet()
+    for (idx, e) in filteredEntries.enumerated() {
+      if e.kind == .group {
+        guard let group = SidebarGroup(rawValue: e.tag) else {
+          continue
+        }
+        if e.collapsed {
+          switch group {
+          case .brokers:
+            collapsed.insert(.broker)
+          case .topics:
+            collapsed.insert(.topic)
+          case .consumerGroups:
+            collapsed.insert(.consumerGroup)
+          }
+        }
+        continue
+      }
+      if collapsed.contains(e.kind) {
+        hidden.insert(idx)
+      } else {
+        notHidden.insert(idx)
+      }
+    }
+
+    if !tableView.hiddenRowIndexes.isSuperset(of: hidden) {
+      tableView.hideRows(at: hidden, withAnimation: animate ? .slideUp : [])
+    }
+
+    if !tableView.hiddenRowIndexes.isDisjoint(with: notHidden) {
+      tableView.unhideRows(at: notHidden, withAnimation: animate ? .slideDown : [])
+    }
+  }
+
   func selectEntry(withKind kind: SidebarEntryKind, andLabel label: String) {
     for (i, e) in filteredEntries.enumerated() {
       if e.kind == kind && e.label == label {
@@ -142,6 +220,7 @@ class WorkspaceSidebarViewController: NSViewController {
   @IBAction func didFilterSidebarItems(_ sender: NSSearchField) {
     filterEntries()
     updateSelection()
+    updateCollapsed()
   }
 }
 
@@ -262,6 +341,9 @@ extension WorkspaceSidebarViewController: NSTableViewDelegate {
         return nil
       }
 
+      view.collapsed = entry.collapsed
+      view.delegate = self
+      view.tag = entry.tag
       view.textField.stringValue = entry.label
       return view
     }
@@ -302,6 +384,12 @@ extension NSUserInterfaceItemIdentifier {
 }
 
 // MARK: - SidebarEntry
+enum SidebarGroup: Int, Codable, Hashable {
+  case brokers
+  case topics
+  case consumerGroups
+}
+
 enum SidebarEntryKind {
   case group
   case broker
@@ -314,11 +402,40 @@ class SidebarEntry: NSObject {
   let label: String
   var count: String?
   var data: Any?
+  var tag = -1
+  var collapsed = false
 
-  init(withKind kind: SidebarEntryKind, label: String, count: String? = nil, andData data: Any? = nil) {
+  init(
+    withKind kind: SidebarEntryKind,
+    label: String,
+    count: String? = nil,
+    andData data: Any? = nil,
+    andTag tag: Int = -1,
+    andCollapsed collapsed: Bool = false
+  ) {
     self.kind = kind
     self.label = label
     self.count = count
     self.data = data
+    self.tag = tag
+    self.collapsed = collapsed
   }
+}
+
+// MARK: - SidebarGroupCellViewDelegate
+extension WorkspaceSidebarViewController: SidebarGroupCellViewDelegate {
+  func sidebarGroupCellView(withTag tag: Int, collapsed: Bool) {
+    guard let group = SidebarGroup(rawValue: tag) else { return }
+    var state = getState()
+    state.groupCollapsedStates[group] = collapsed
+    setState(state)
+    guard let entry = entries.first(where: { $0.tag == tag }) else { return }
+    entry.collapsed = collapsed
+    updateCollapsed(animatingItems: true)
+  }
+}
+
+// MARK: - WorkspaceSidebarState
+struct WorkspaceSidebarState: Codable {
+  var groupCollapsedStates = [SidebarGroup: Bool]()
 }
