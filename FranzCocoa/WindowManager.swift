@@ -8,6 +8,7 @@ class WindowManager {
   private var welcomeWindowController: WelcomeWindowController?
   private var preferencesWindowController: PreferencesWindowController?
   private var updatesWindowController: UpdatesWindowController?
+  private var updatesProgressWindowController: UpdatesProgressWindowController?
   private var workspaces = [UInt64: WorkspaceWindowController]() // conn id -> ctl
   private var scripts = [ScriptWindowKey: ScriptWindowController]() // workspace id -> ctl
 
@@ -106,6 +107,20 @@ class WindowManager {
 
   func closeUpdatesWindow() {
     updatesWindowController?.close()
+  }
+
+  func showUpdatesProgressWindow(withCloseHandler hdl: @escaping () -> Void = { }) {
+    assert(Thread.isMainThread)
+    if updatesProgressWindowController == nil {
+      updatesProgressWindowController = UpdatesProgressWindowController()
+    }
+    updatesProgressWindowController?.configure(withCloseHandler: hdl)
+    updatesProgressWindowController?.showWindow(self)
+  }
+
+  func closeUpdatesProgressWindow() {
+    updatesProgressWindowController?.close()
+    updatesProgressWindowController = nil
   }
 
   // XXX: Kind of a strange place for this to be in.

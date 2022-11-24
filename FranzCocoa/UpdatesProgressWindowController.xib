@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21507" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21507"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="UpdatesProgressWindowController" customModule="Franz" customModuleProvider="target">
+            <connections>
+                <outlet property="progressIndicator" destination="jME-xs-Rc3" id="Y8c-8k-qP6"/>
+                <outlet property="window" destination="F0z-JX-Cv5" id="gIp-Ho-8D9"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <window title="Updating Franz" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="F0z-JX-Cv5">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="196" y="240" width="400" height="88"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1095"/>
+            <view key="contentView" id="se5-gp-TjO">
+                <rect key="frame" x="0.0" y="0.0" width="400" height="88"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="EYX-lA-ao8">
+                        <rect key="frame" x="20" y="20" width="48" height="48"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="48" id="Pig-Eo-JS8"/>
+                            <constraint firstAttribute="height" constant="48" id="QwG-du-gwi"/>
+                        </constraints>
+                        <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSApplicationIcon" id="rDF-qb-XJ2"/>
+                    </imageView>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="2OM-j6-Xxp">
+                        <rect key="frame" x="74" y="52" width="152" height="16"/>
+                        <textFieldCell key="cell" lineBreakMode="clipping" title="Checking for updates..." id="Nd5-Nr-TH4">
+                            <font key="font" metaFont="systemSemibold" size="13"/>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <progressIndicator maxValue="100" indeterminate="YES" style="bar" translatesAutoresizingMaskIntoConstraints="NO" id="jME-xs-Rc3">
+                        <rect key="frame" x="76" y="25" width="304" height="20"/>
+                    </progressIndicator>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="jME-xs-Rc3" firstAttribute="top" secondItem="2OM-j6-Xxp" secondAttribute="bottom" constant="8" symbolic="YES" id="8mZ-Pj-4B0"/>
+                    <constraint firstItem="EYX-lA-ao8" firstAttribute="leading" secondItem="se5-gp-TjO" secondAttribute="leading" constant="20" symbolic="YES" id="CKI-gk-N7N"/>
+                    <constraint firstAttribute="bottom" secondItem="EYX-lA-ao8" secondAttribute="bottom" constant="20" symbolic="YES" id="E7l-YV-JH9"/>
+                    <constraint firstItem="jME-xs-Rc3" firstAttribute="leading" secondItem="EYX-lA-ao8" secondAttribute="trailing" constant="8" symbolic="YES" id="WqB-UB-oe3"/>
+                    <constraint firstItem="EYX-lA-ao8" firstAttribute="top" secondItem="se5-gp-TjO" secondAttribute="top" constant="20" symbolic="YES" id="cTG-ew-4jf"/>
+                    <constraint firstItem="2OM-j6-Xxp" firstAttribute="leading" secondItem="EYX-lA-ao8" secondAttribute="trailing" constant="8" symbolic="YES" id="cqj-Qb-6H9"/>
+                    <constraint firstItem="2OM-j6-Xxp" firstAttribute="top" secondItem="se5-gp-TjO" secondAttribute="top" constant="20" symbolic="YES" id="uMk-uk-mU0"/>
+                    <constraint firstAttribute="trailing" secondItem="jME-xs-Rc3" secondAttribute="trailing" constant="20" symbolic="YES" id="uW9-Ts-P4h"/>
+                </constraints>
+            </view>
+            <connections>
+                <outlet property="delegate" destination="-2" id="0bl-1N-AYu"/>
+            </connections>
+            <point key="canvasLocation" x="46" y="35"/>
+        </window>
+    </objects>
+    <resources>
+        <image name="NSApplicationIcon" width="32" height="32"/>
+    </resources>
+</document>

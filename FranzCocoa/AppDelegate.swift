@@ -44,15 +44,23 @@ class AppDelegate: NSObject, NSApplicationDelegate {
   }
 
   @IBAction func didPushCheckForUpdatesButton(_ sender: Any) {
+    var canceled = false
+    WindowManager.shared.showUpdatesProgressWindow {
+      canceled = true
+    }
     AutoUpdater.shared.resetCaches {
       AutoUpdater.shared.checkForUpdates(
         rejectionHandler: {
+          guard !canceled else { return }
+          WindowManager.shared.closeUpdatesProgressWindow()
           let alert = NSAlert()
           alert.messageText = "You're up to date!"
           alert.informativeText = "You are running the latest version of Franz available."
           alert.runModal()
         },
         completionHandler: { changes, version in
+          guard !canceled else { return }
+          WindowManager.shared.closeUpdatesProgressWindow()
           WindowManager.shared.showUpdatesWindow(withChangelog: changes, andRelease: version)
         }
       )

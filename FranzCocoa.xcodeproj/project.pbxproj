@@ -40,6 +40,8 @@
 		4396EADA290576A300A15D25 /* ResourceConfigTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4396EAD8290576A300A15D25 /* ResourceConfigTableViewController.swift */; };
 		4396EADB290576A300A15D25 /* ResourceConfigTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4396EAD9290576A300A15D25 /* ResourceConfigTableViewController.xib */; };
 		4396EAE12905B0D200A15D25 /* Tabs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4396EAE02905B0D200A15D25 /* Tabs.swift */; };
+		439D6EB1292F7741005C9935 /* UpdatesProgressWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 439D6EAF292F7741005C9935 /* UpdatesProgressWindowController.swift */; };
+		439D6EB2292F7741005C9935 /* UpdatesProgressWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 439D6EB0292F7741005C9935 /* UpdatesProgressWindowController.xib */; };
 		43CBADD4290FB8D70066C7CE /* PublishRecordFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CBADD2290FB8D70066C7CE /* PublishRecordFormViewController.swift */; };
 		43CBADD5290FB8D70066C7CE /* PublishRecordFormViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43CBADD3290FB8D70066C7CE /* PublishRecordFormViewController.xib */; };
 		43CD621928CE24B000095144 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CD621828CE24B000095144 /* AppDelegate.swift */; };
@@ -118,6 +120,8 @@
 		4396EAD8290576A300A15D25 /* ResourceConfigTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceConfigTableViewController.swift; sourceTree = "<group>"; };
 		4396EAD9290576A300A15D25 /* ResourceConfigTableViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ResourceConfigTableViewController.xib; sourceTree = "<group>"; };
 		4396EAE02905B0D200A15D25 /* Tabs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tabs.swift; sourceTree = "<group>"; };
+		439D6EAF292F7741005C9935 /* UpdatesProgressWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdatesProgressWindowController.swift; sourceTree = "<group>"; };
+		439D6EB0292F7741005C9935 /* UpdatesProgressWindowController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UpdatesProgressWindowController.xib; sourceTree = "<group>"; };
 		43CBADD2290FB8D70066C7CE /* PublishRecordFormViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublishRecordFormViewController.swift; sourceTree = "<group>"; };
 		43CBADD3290FB8D70066C7CE /* PublishRecordFormViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PublishRecordFormViewController.xib; sourceTree = "<group>"; };
 		43CD621528CE24B000095144 /* Franz.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Franz.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -250,6 +254,8 @@
 				43196F8928F1DAB2003C793B /* TopicDetailView.swift */,
 				437A77DD290D5AA1001965B0 /* TopicRecordsTableViewController.swift */,
 				437A77DE290D5AA1001965B0 /* TopicRecordsTableViewController.xib */,
+				439D6EAF292F7741005C9935 /* UpdatesProgressWindowController.swift */,
+				439D6EB0292F7741005C9935 /* UpdatesProgressWindowController.xib */,
 				43F987A7292A867B00E5E1DE /* UpdatesWindowController.swift */,
 				43804AB228D19ACD002880FE /* WelcomeWindowConnectionsViewController.swift */,
 				43804AB328D19ACD002880FE /* WelcomeWindowConnectionsViewController.xib */,
@@ -385,6 +391,7 @@
 				436E720F28D760D400ECBF49 /* SidebarEntryCellView.xib in Resources */,
 				436E71FB28D7511400ECBF49 /* WorkspaceWindowController.xib in Resources */,
 				431C698328F2E0C60082986A /* NewTopicFormViewController.xib in Resources */,
+				439D6EB2292F7741005C9935 /* UpdatesProgressWindowController.xib in Resources */,
 				43804AB528D19ACD002880FE /* WelcomeWindowConnectionsViewController.xib in Resources */,
 				4396EADB290576A300A15D25 /* ResourceConfigTableViewController.xib in Resources */,
 				43CD624928CE3B5D00095144 /* ConnectionDetailsFormViewController.xib in Resources */,
@@ -473,6 +480,7 @@
 				43453F3D291505A6000CE90E /* Timed.swift in Sources */,
 				43E5AE8C291245E000C74966 /* DispatchQueue.swift in Sources */,
 				43CD624828CE3B5D00095144 /* ConnectionDetailsFormViewController.swift in Sources */,
+				439D6EB1292F7741005C9935 /* UpdatesProgressWindowController.swift in Sources */,
 				4395503828FD45B000CC0050 /* GroupOffsetsOutlineViewController.swift in Sources */,
 				43196F8A28F1DAB2003C793B /* TopicDetailView.swift in Sources */,
 				43D03DD428FAC6030049D44D /* Keychain.swift in Sources */,
