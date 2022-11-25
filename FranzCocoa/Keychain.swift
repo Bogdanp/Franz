@@ -49,17 +49,29 @@ class Keychain {
   }
 
   func upsert(password: String, withId id: String) -> KeychainUpsertResult {
-    switch update(password: password, withId: id) {
+    switch lookup(passwordWithId: id) {
+    case .badData:
+      return .error(-1)
     case .error(let status):
       return .error(status)
     case .success:
-      return .updated
-    case .itemNotFound:
-      switch insert(password: password, withId: id) {
-      case .success:
-        return .inserted
+      switch delete(passwordWithId: id) {
       case .error(let status):
         return .error(status)
+      case .success:
+        switch insert(password: password, withId: id) {
+        case .error(let status):
+          return .error(status)
+        case .success:
+          return .updated
+        }
+      }
+    case .notFound:
+      switch insert(password: password, withId: id) {
+      case .error(let status):
+        return .error(status)
+      case .success:
+        return .inserted
       }
     }
   }
@@ -106,7 +118,7 @@ class Keychain {
     }
   }
 
-  private func insert(password: String, withId id: String) -> KeychainInsertResult {
+  private func insert(password: String, withId id: String) -> KeychainResult {
     let attrs = [
       kSecClass: kSecClassGenericPassword,
       kSecAttrLabel: "Franz",
@@ -121,25 +133,6 @@ class Keychain {
       return .error(res)
     }
   }
-
-  private func update(password: String, withId id: String) -> KeychainUpdateResult {
-    let query = [
-      kSecClass: kSecClassGenericPassword,
-      kSecAttrAccount: id,
-    ] as [String: Any]
-    let attrs = [
-      kSecValueData: password,
-    ] as [String: Any]
-    let res = SecItemUpdate(query as CFDictionary, attrs as CFDictionary)
-    switch res {
-    case errSecSuccess:
-      return .success
-    case errSecItemNotFound:
-      return .itemNotFound
-    default:
-      return .error(res)
-    }
-  }
 }
 
 fileprivate enum KeychainLookupResult {
@@ -149,13 +142,7 @@ fileprivate enum KeychainLookupResult {
   case error(OSStatus)
 }
 
-fileprivate enum KeychainInsertResult {
+fileprivate enum KeychainResult {
   case success
-  case error(OSStatus)
-}
-
-fileprivate enum KeychainUpdateResult {
-  case success
-  case itemNotFound
   case error(OSStatus)
 }
