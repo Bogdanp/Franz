@@ -383,7 +383,7 @@ class TopicRecordsTableViewController: NSViewController {
         }
         popover.animates = false
         popover.close()
-        popover.contentSize = NSSize(width: 250, height: 100)
+        popover.contentSize = NSSize(width: 270, height: 120)
         popover.contentViewController = NSHostingController(
           rootView: resetForm.frame(
             width: popover.contentSize.width,
@@ -392,7 +392,7 @@ class TopicRecordsTableViewController: NSViewController {
         popover.animates = true
       }
       popover.behavior = .semitransient
-      popover.contentSize = NSSize(width: 250, height: 260)
+      popover.contentSize = NSSize(width: 270, height: 260)
       popover.contentViewController = NSHostingController(
         rootView: form.frame(
           width: popover.contentSize.width,
@@ -877,11 +877,13 @@ fileprivate struct TopicRecordsOptionsForm: View {
 fileprivate struct IteratorResetForm: View {
   enum Offset {
     case earliest
-    case offset
     case latest
+    case timestamp
+    case offset
   }
 
   @State var target = Offset.latest
+  @State var timestamp = Date()
   @State var offset = UVarint(0)
 
   var resetAction: (IteratorOffset) -> Void
@@ -897,10 +899,17 @@ fileprivate struct IteratorResetForm: View {
     Form {
       Picker("Target:", selection: $target) {
         Text("Earliest").tag(Offset.earliest)
-        Text("Offset").tag(Offset.offset)
         Text("Latest").tag(Offset.latest)
+        Text("Timestamp").tag(Offset.timestamp)
+        Text("Offset").tag(Offset.offset)
       }
-      if target == .offset {
+      if target == .timestamp {
+        DatePicker(
+          "Timestamp:",
+          selection: $timestamp,
+          displayedComponents: [.date, .hourAndMinute]
+        )
+      } else if target == .offset {
         TextField("Offset:", value: $offset, formatter: offsetFormatter)
           .onSubmit {
             resetAction(.exact(offset))
@@ -910,10 +919,12 @@ fileprivate struct IteratorResetForm: View {
         switch target {
         case .earliest:
           resetAction(.earliest)
-        case .offset:
-          resetAction(.exact(offset))
         case .latest:
           resetAction(.latest)
+        case .timestamp:
+          resetAction(.timestamp(UVarint(timestamp.timeIntervalSince1970*1000)))
+        case .offset:
+          resetAction(.exact(offset))
         }
       }
         .buttonStyle(.borderedProminent)

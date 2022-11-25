@@ -32,6 +32,7 @@ public enum AuthMechanism: Readable, Writable {
 public enum IteratorOffset: Readable, Writable {
   case earliest
   case latest
+  case timestamp(UVarint)
   case exact(UVarint)
 
   public static func read(from inp: InputPort, using buf: inout Data) -> IteratorOffset {
@@ -42,6 +43,10 @@ public enum IteratorOffset: Readable, Writable {
     case 0x0001:
       return .latest
     case 0x0002:
+      return .timestamp(
+        UVarint.read(from: inp, using: &buf)
+      )
+    case 0x0003:
       return .exact(
         UVarint.read(from: inp, using: &buf)
       )
@@ -56,8 +61,11 @@ public enum IteratorOffset: Readable, Writable {
       UVarint(0x0000).write(to: out)
     case .latest:
       UVarint(0x0001).write(to: out)
-    case .exact(let offset):
+    case .timestamp(let timestamp):
       UVarint(0x0002).write(to: out)
+      timestamp.write(to: out)
+    case .exact(let offset):
+      UVarint(0x0003).write(to: out)
       offset.write(to: out)
     }
   }
