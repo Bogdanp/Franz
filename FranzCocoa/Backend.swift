@@ -3,6 +3,32 @@ import Foundation
 import NoiseBackend
 import NoiseSerde
 
+public enum AuthMechanism: Readable, Writable {
+  case plain
+  case aws
+
+  public static func read(from inp: InputPort, using buf: inout Data) -> AuthMechanism {
+    let tag = UVarint.read(from: inp, using: &buf)
+    switch tag {
+    case 0x0000:
+      return .plain
+    case 0x0001:
+      return .aws
+    default:
+      preconditionFailure("AuthMechanism: unexpected tag \(tag)")
+    }
+  }
+
+  public func write(to out: OutputPort) {
+    switch self {
+    case .plain:
+      UVarint(0x0000).write(to: out)
+    case .aws:
+      UVarint(0x0001).write(to: out)
+    }
+  }
+}
+
 public enum IteratorOffset: Readable, Writable {
   case earliest
   case latest
@@ -133,9 +159,12 @@ public struct ConnectionDetails: Readable, Writable {
   public let name: String
   public let bootstrapHost: String
   public let bootstrapPort: UVarint
+  public let authMechanism: AuthMechanism
   public let username: String?
   public let password: String?
   public let passwordId: String?
+  public let awsRegion: String?
+  public let awsAccessKeyId: String?
   public let useSsl: Bool
 
   public init(
@@ -143,18 +172,24 @@ public struct ConnectionDetails: Readable, Writable {
     name: String,
     bootstrapHost: String,
     bootstrapPort: UVarint,
+    authMechanism: AuthMechanism,
     username: String?,
     password: String?,
     passwordId: String?,
+    awsRegion: String?,
+    awsAccessKeyId: String?,
     useSsl: Bool
   ) {
     self.id = id
     self.name = name
     self.bootstrapHost = bootstrapHost
     self.bootstrapPort = bootstrapPort
+    self.authMechanism = authMechanism
     self.username = username
     self.password = password
     self.passwordId = passwordId
+    self.awsRegion = awsRegion
+    self.awsAccessKeyId = awsAccessKeyId
     self.useSsl = useSsl
   }
 
@@ -164,9 +199,12 @@ public struct ConnectionDetails: Readable, Writable {
       name: String.read(from: inp, using: &buf),
       bootstrapHost: String.read(from: inp, using: &buf),
       bootstrapPort: UVarint.read(from: inp, using: &buf),
+      authMechanism: AuthMechanism.read(from: inp, using: &buf),
       username: String?.read(from: inp, using: &buf),
       password: String?.read(from: inp, using: &buf),
       passwordId: String?.read(from: inp, using: &buf),
+      awsRegion: String?.read(from: inp, using: &buf),
+      awsAccessKeyId: String?.read(from: inp, using: &buf),
       useSsl: Bool.read(from: inp, using: &buf)
     )
   }
@@ -176,9 +214,12 @@ public struct ConnectionDetails: Readable, Writable {
     name.write(to: out)
     bootstrapHost.write(to: out)
     bootstrapPort.write(to: out)
+    authMechanism.write(to: out)
     username.write(to: out)
     password.write(to: out)
     passwordId.write(to: out)
+    awsRegion.write(to: out)
+    awsAccessKeyId.write(to: out)
     useSsl.write(to: out)
   }
 }

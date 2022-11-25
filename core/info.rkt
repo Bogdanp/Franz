@@ -2,7 +2,8 @@
 
 (define collection "franz")
 (define version "1.0")
-(define deps '("base"
+(define deps '("amazon-msk-sasl-lib"
+               "base"
                "db-lib"
                "deta-lib"
                "kafka-lib"

@@ -87,9 +87,12 @@ class ConnectionDetailsFormViewController: NSViewController {
       name: nameField.stringValue == "" ? "Unnamed Connection" : nameField.stringValue,
       bootstrapHost: bootstrapHostField.stringValue == "" ? "127.0.0.1" : bootstrapHostField.stringValue,
       bootstrapPort: bootstrapPortField.stringValue == "" ? 9092 : UVarint(bootstrapPortField.integerValue),
+      authMechanism: .plain,
       username: usernameField.stringValue == "" ? nil : usernameField.stringValue,
       password: passwordField.stringValue == "" ? nil : passwordField.stringValue,
       passwordId: passwordField.stringValue == "" ? nil : passwordId,
+      awsRegion: nil,
+      awsAccessKeyId: nil,
       useSsl: enableSSLCheckbox.state == .on
     ))
   }

@@ -57,11 +57,21 @@
     (define filename-str (path->string filename))
     (when (zero? (query-value conn applied?-stmt filename-str))
       (log-metadata-debug "running migration '~a'" filename-str)
-      (query-exec conn (call-with-input-file (build-path migrations filename) port->string))
-      (query-exec conn track-stmt filename-str (current-seconds)))))
+      (call-with-transaction conn
+        (lambda ()
+          (define statements
+            (call-with-input-file (build-path migrations filename)
+              (lambda (in)
+                (string-split (port->string in) "--more--"))))
+          (for ([statement (in-list statements)])
+            (query-exec conn statement))
+          (query-exec conn track-stmt filename-str (current-seconds)))))))
 
 
 ;; connection-details ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define auth-mechanism/c
+  (or/c 'plain 'aws-msk-iam))
 
 (define-schema connection-details
   #:table "connection_details"
@@ -69,8 +79,11 @@
    [name string/f #:contract non-empty-string?]
    [(bootstrap-host "127.0.0.1") string/f #:contract non-empty-string?]
    [(bootstrap-port 9092) integer/f #:contract (integer-in 0 65535)]
+   [(auth-mechanism 'plain) symbol/f #:contract auth-mechanism/c]
    [(username sql-null) string/f #:nullable]
    [(password-id sql-null) string/f #:nullable]
+   [(aws-region sql-null) string/f #:nullable]
+   [(aws-access-key-id sql-null) string/f #:nullable]
    [(ssl-on? #f) boolean/f]
    [(created-at (current-seconds)) integer/f]
    [(updated-at (current-seconds)) integer/f]

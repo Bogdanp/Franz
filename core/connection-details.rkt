@@ -6,26 +6,47 @@
          noise/serde
          (only-in openssl ssl-secure-client-context)
          racket/contract
+         racket/match
          racket/port
          racket/random
          racket/string
+         (prefix-in sasl: sasl/aws-msk-iam)
          (prefix-in sasl: sasl/plain)
          threading
          (prefix-in meta: "metadata.rkt"))
 
 (provide
+ (enum-out AuthMechanism)
  (record-out ConnectionDetails)
  ConnectionDetails->client)
+
+(define-enum AuthMechanism
+  [plain]
+  [aws])
 
 (define-record ConnectionDetails
   [(id #f) : (Optional UVarint)]
   [name : String #:contract non-empty-string?]
   [(bootstrap-host "127.0.0.1") : String #:contract non-empty-string?]
   [(bootstrap-port 9092) : UVarint #:contract (integer-in 0 65535)]
+  [(auth-mechanism (AuthMechanism.plain)) : AuthMechanism]
   [(username #f) : (Optional String) #:contract (or/c #f string?)]
   [(password #f) : (Optional String) #:contract (or/c #f string?)]
   [(password-id #f) : (Optional String) #:contract (or/c #f string?)]
+  [(aws-region #f) : (Optional String) #:contract (or/c #f string?)]
+  [(aws-access-key-id #f) : (Optional String) #:contract (or/c #f string?)]
   [(use-ssl #f) : Bool #:contract boolean?])
+
+(define (meta->AuthMechanism m)
+  (case m
+    [(plain) (AuthMechanism.plain)]
+    [(aws-msk-iam) (AuthMechanism.aws)]
+    [else (raise-argument-error 'meta->AuthMechanism "auth-mechanism/c" m)]))
+
+(define (AuthMechanism->meta m)
+  (match m
+    [(AuthMechanism.plain) 'plain]
+    [(AuthMechanism.aws) 'aws-msk-iam]))
 
 (define (meta->ConnectionDetails c)
   (make-ConnectionDetails
@@ -33,8 +54,11 @@
    #:name (meta:connection-details-name c)
    #:bootstrap-host (meta:connection-details-bootstrap-host c)
    #:bootstrap-port (meta:connection-details-bootstrap-port c)
+   #:auth-mechanism (meta->AuthMechanism (meta:connection-details-auth-mechanism c))
    #:username (sql-null->false (meta:connection-details-username c))
    #:password-id (sql-null->false (meta:connection-details-password-id c))
+   #:aws-region (sql-null->false (meta:connection-details-aws-region c))
+   #:aws-access-key-id (sql-null->false (meta:connection-details-aws-access-key-id c))
    #:use-ssl (meta:connection-details-ssl-on? c)))
 
 (define (ConnectionDetails->meta c)
@@ -43,8 +67,11 @@
      #:name (ConnectionDetails-name c)
      #:bootstrap-host (ConnectionDetails-bootstrap-host c)
      #:bootstrap-port (ConnectionDetails-bootstrap-port c)
+     #:auth-mechanism (AuthMechanism->meta (ConnectionDetails-auth-mechanism c))
      #:username (or (ConnectionDetails-username c) sql-null)
      #:password-id (or (ConnectionDetails-password-id c) sql-null)
+     #:aws-region (or (ConnectionDetails-aws-region c) sql-null)
+     #:aws-access-key-id (or (ConnectionDetails-aws-access-key-id c) sql-null)
      #:ssl-on? (ConnectionDetails-use-ssl c)))
   (cond
     [(ConnectionDetails-id c)
@@ -56,11 +83,29 @@
    #:id "Franz"
    #:bootstrap-host (ConnectionDetails-bootstrap-host c)
    #:bootstrap-port (ConnectionDetails-bootstrap-port c)
-   #:sasl-mechanism&ctx (let ([username (ConnectionDetails-username c)]
-                              [password (ConnectionDetails-password c)])
-                          (and username
-                               password
-                               `(plain ,(sasl:plain-client-message username password))))
+   #:sasl-mechanism&ctx (match (ConnectionDetails-auth-mechanism c)
+                          [(AuthMechanism.plain)
+                           (define username (ConnectionDetails-username c))
+                           (define password (ConnectionDetails-password c))
+                           (and username
+                                password
+                                `(plain ,(sasl:plain-client-message username password)))]
+                          [(AuthMechanism.aws)
+                           (define region (ConnectionDetails-aws-region c))
+                           (define access-key-id (ConnectionDetails-aws-access-key-id c))
+                           (define secret-access-key (ConnectionDetails-password c))
+                           (println
+                            (list
+                             region access-key-id secret-access-key))
+                           (and region
+                                access-key-id
+                                secret-access-key
+                                `(AWS_MSK_IAM ,(lambda (host _port)
+                                                 (sasl:make-aws-msk-iam-ctx
+                                                  #:region region
+                                                  #:access-key-id access-key-id
+                                                  #:secret-access-key secret-access-key
+                                                  #:server-name host))))])
    #:ssl-ctx (and (ConnectionDetails-use-ssl c)
                   (ssl-secure-client-context))))
 
