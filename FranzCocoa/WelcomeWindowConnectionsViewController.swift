@@ -72,6 +72,9 @@ class WelcomeWindowConnectionsViewController: NSViewController {
     let formController = ConnectionDetailsFormViewController()
     formController.configure(actionLabel: "Save", details: conn, { changedConn in
       _ = Error.wait(Backend.shared.updateConnection(changedConn))
+      if let password = changedConn.password, let id = changedConn.passwordId {
+        _ = Keychain.shared.upsert(password: password, withId: id)
+      }
       self.reload()
     })
     presentAsSheet(formController)
