@@ -219,7 +219,7 @@ state.
 @section{Keyboard Shortcuts}
 
 @defkbd[(shift cmd 1)]{
-  Display the @tech{Welcome Screen}.
+  Displays the @tech{Welcome Screen}.
 }
 
 @defkbd[(cmd 1)]{
@@ -252,8 +252,9 @@ appear, so please let me know when you run into them by emailing me at
 
 @subsection{Compression}
 
-The only compression format currently supported is @tt{gzip}.  If you
-need support for any other format, please e-mail me and let me know.
+The only compression formats currently supported are @tt{gzip} and
+@tt{lz4}.  If you need support for any other format, please e-mail me
+and let me know.
 
 @section[#:tag "ref"]{Scripting Reference}
 
@@ -272,8 +273,8 @@ need support for any other format, please e-mail me and let me know.
   Decodes the JSON data in @tt{str} to a Lua table.
 }
 
-@deflua[json.encode (t) string]{
-  Encodes the Lua table @tt{t} to JSON.
+@deflua[json.encode (v) string]{
+  Encodes the Lua value @tt{v} to JSON.
 }
 
 @deflua[math.abs (n) number]{
