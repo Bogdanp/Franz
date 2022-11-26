@@ -899,8 +899,8 @@ fileprivate struct IteratorResetForm: View {
     Form {
       Picker("Target:", selection: $target) {
         Text("Earliest").tag(Offset.earliest)
-        Text("Latest").tag(Offset.latest)
         Text("Timestamp").tag(Offset.timestamp)
+        Text("Latest").tag(Offset.latest)
         Text("Offset").tag(Offset.offset)
       }
       if target == .timestamp {
@@ -919,10 +919,10 @@ fileprivate struct IteratorResetForm: View {
         switch target {
         case .earliest:
           resetAction(.earliest)
-        case .latest:
-          resetAction(.latest)
         case .timestamp:
           resetAction(.timestamp(UVarint(timestamp.timeIntervalSince1970*1000)))
+        case .latest:
+          resetAction(.latest)
         case .offset:
           resetAction(.exact(offset))
         }

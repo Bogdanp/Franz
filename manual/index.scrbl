@@ -79,11 +79,11 @@ When you open the Records Table tab on a topic, it immediately starts
 streaming new data into the table.  You can stop this by pressing the
 ``Toggle Live Mode'' button on the bottom left corner of the table.
 You can configure how much data is requested from the topic on each
-fetch by click the ``Options..'' button in the bottom right, and you
+fetch by click the ``Options...'' button in the bottom right, and you
 can manually load more data by pressing the ``Load More Records...''
 button.
 
-From the ``Options..'' popover, you can also reset the topic iterator
+From the ``Options...'' popover, you can also reset the topic iterator
 to any offset you like.
 
 You can right-click on any record with a non-null key to publish a
@@ -132,7 +132,7 @@ loaded.
 
 Returning @tt{nil} from the @tt{transform} function will cause the
 record to be skipped in the @tech{Records Table}.  You can leverage
-this to, for example, filter messages by partition:
+this to, for example, filter records by partition:
 
 @codeblock[#:keep-lang-line? #f]|{
   #lang lua
@@ -163,6 +163,41 @@ record's JSON value:
 
 See the @secref{ref} for a list of all the functionality available
 within the scripting environment.
+
+@subsubsection{Jumping to Offsets}
+
+From the ``Options...'' popover of a @tech{Records Table}, push the
+``Reset...'' button to get to the @deftech{Reset Popover}.  From
+there, you can reset the record iterator to various offsets, as
+described below.
+
+@subsubsub*section{Earliest}
+
+Queries each partition for its earliest offset and moves the iterator
+back.  This is slightly different than explicitly resetting all
+partitions to offset 0 as the first offset on a partition might not
+necessarily be 0 (as in the case of compacted records).  Functionally,
+however, it has the same effect: the iterator will start iterating
+through records from the very beginning of the topic's history.
+
+@subsubsub*section{Timestamp}
+
+Queries each partition for the first offset on or after the given date
+and time and moves the iterator there.  For partitions where the
+timestamp represents a time after the latest offset, it makes an
+additional query to find the latest offset.
+
+@subsubsub*section{Latest}
+
+Queries each partition for its latest offset and moves the iterator
+forward.
+
+@subsubsub*section{Offset}
+
+Moves the iterator to the given offset for every partition.  For
+partitions that are behind the selected offset, no new data will be
+received until they reach it.
+
 
 @subsubsection{Configuration Table Tab}
 
