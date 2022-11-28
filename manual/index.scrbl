@@ -243,6 +243,10 @@ state.
   script.
 }
 
+@defkbd[(cmd @",")]{
+  Opens the Preferences Window.
+}
+
 @section{Known Issues and Limitations}
 
 Franz is currently in Beta so you should expect minor issues and
@@ -306,6 +310,12 @@ and let me know.
   The @tt{i} argument defaults to @racket[1] and the @tt{j} argument
   defaults to the length of @tt{str}.
 }
+
+@section{Privacy}
+
+Apart from when checking for updates, Franz never phones home for any
+reason.  Automatic Updates can be turned off from the Preferences
+Window (@kbd[cmd @","]).
 
 @section{Credits}
 
