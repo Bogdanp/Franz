@@ -1,4 +1,4 @@
-CROSS_VERSION=8.6
+CROSS_VERSION=8.7
 CROSS_PREFIX=raco cross --version ${CROSS_VERSION} --target x86_64-linux
 
 .PHONY: serve
@@ -24,7 +24,7 @@ manual/index.html: ../manual/*.scrbl
 
 .PHONY: cross_setup
 cross_setup:
-	${CROSS_PREFIX} pkg install threading-lib
+	${CROSS_PREFIX} pkg install -D --skip-installed at-exp-lib threading-lib web-server-lib
 
 api: api.rkt
 	${CROSS_PREFIX} exe -o api api.rkt
