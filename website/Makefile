@@ -1,6 +1,10 @@
 CROSS_VERSION=8.6
 CROSS_PREFIX=raco cross --version ${CROSS_VERSION} --target x86_64-linux
 
+.PHONY: serve
+serve:
+	python -m http.server
+
 .PHONY: deploy
 deploy: manual/index.html
 	rsync \
