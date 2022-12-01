@@ -62,9 +62,10 @@
           (define statements
             (call-with-input-file (build-path migrations filename)
               (lambda (in)
-                (string-split (port->string in) "--more--"))))
+                (regexp-split #rx"\\s*;\\s*" (port->string in)))))
           (for ([statement (in-list statements)])
-            (query-exec conn statement))
+            (unless (string=? "" (string-trim statement))
+              (query-exec conn statement)))
           (query-exec conn track-stmt filename-str (current-seconds)))))))
 
 
