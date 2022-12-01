@@ -285,30 +285,132 @@ and let me know.
   Returns the absolute value of @tt{n}.
 }
 
+@deflua[math.acos (n) number]{
+  Returns the arc cosine of @tt{n} in radians.
+}
+
+@deflua[math.asin (n) number]{
+  Returns the arc sine of @tt{n} in radians.
+}
+
+@deflua[math.atan (y x) number]{
+  Returns the arc tangent of @tt{y/x}.  The @tt{x} argument defaults
+  to @racket[1] if not provided.
+}
+
 @deflua[math.ceil (n) number]{
   Rounds @tt{n} towards positive infinity.
+}
+
+@deflua[math.cos (n) number]{
+  Returns the cosine of @tt{n}.
+}
+
+@deflua[math.deg (n) number]{
+  Converts the angle @tt{n} from radians to degrees.
+}
+
+@deflua[math.exp (n) number]{
+  Raises the base of natural logarithms to @tt{n} (@tt{e^n}).
 }
 
 @deflua[math.floor (n) number]{
   Rounds @tt{n} towards negative infinity.
 }
 
-@deflua[math.min (n ...) number]{
-  Returns the smallest number amongst the given set.
+@deflua[math.log (n base) number]{
+  Returns the logarithm of @tt{x} in the given @tt{base}.  The
+  @tt{base} argument defaults to @tt{e}.
 }
 
 @deflua[math.max (n ...) number]{
   Returns the largest number amongst the given set.
 }
 
+@deflua[math.min (n ...) number]{
+  Returns the smallest number amongst the given set.
+}
+
+@deflua[math.rad (n) number]{
+  Converts the angle @tt{n} from degrees to radians.
+}
+
+@deflua[math.random (m n) number]{
+  With no arguments, returns a random number in the range @tt{[0.0,
+  1.0]}.  With one argument, returns a random number in the range
+  @tt{[0.0, m]}.  With two arguments, returns a random number in the
+  range @tt{[m, n]}.
+}
+
+@deflua[math.randomseed (x y) number]{
+  With no arguments, seeds the random number generator arbitrarily.
+  With one argument, seeds the random number generator to @tt{x}.
+  With two arguments, seeds the random number generator to
+  @tt{x ~ y & 0x7FFFFFFF}.
+}
+
+@deflua[math.sin (n) number]{
+  Returns the sine of @tt{n}.
+}
+
 @deflua[math.sqrt (n) number]{
   Returns the square root of @tt{n}.
+}
+
+@deflua[math.tan (n) number]{
+  Returns the tangent of @tt{n}.
+}
+
+@deflua[math.tointeger (v) number]{
+  Converts @tt{v} to an integer.  Returns @tt{false} if the value
+  cannot be converted.
+}
+
+@deflua[string.byte (str i j) table]{
+  Returns the bytes in @tt{str} between @tt{i} and @tt{j}.  The @tt{i}
+  argument defaults to @tt{1} and the @tt{j} argument defaults to the
+  length of @tt{str}.
+}
+
+@deflua[string.char (...) string]{
+  Constructs a string from the given bytes.
+}
+
+@deflua[string.format (fmt ...) string]{
+  Formats the variable arguments according to @tt{fmt}.  Behaves the
+  same as the standard C function @tt{sprintf}, except that there is
+  an additional conversion specifier, @tt{%q}, which quotes literal
+  Lua values.
+}
+
+@deflua[string.len (str) number]{
+  Returns the length of @tt{str}.
+}
+
+@deflua[string.lower (str) string]{
+  Returns a new string with the characters in @tt{str} lowercased
+  according to the current locale.
+}
+
+@deflua[string.rep (str n sep) string]{
+  Repeats @tt{str} @tt{n} times, interspersing @tt{sep} between
+  repetitions.  The @tt{sep} argument defaults to @racket[""].
+}
+
+@deflua[string.reverse (str) string]{
+  Returns a new string with the characters in @tt{str} in reverse
+  order.
 }
 
 @deflua[string.sub (str i j) string]{
   Returns a substring of @tt{str} starting from @tt{i} until @tt{j}.
   The @tt{i} argument defaults to @racket[1] and the @tt{j} argument
   defaults to the length of @tt{str}.
+}
+
+@deflua[string.upper (str) string]{
+  Returns a new string with the characters in @tt{str} uppercased
+  according to the current locale.
 }
 
 @section{Privacy}
