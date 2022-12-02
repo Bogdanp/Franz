@@ -115,9 +115,6 @@
                            (define region (ConnectionDetails-aws-region c))
                            (define access-key-id (ConnectionDetails-aws-access-key-id c))
                            (define secret-access-key (ConnectionDetails-password c))
-                           (println
-                            (list
-                             region access-key-id secret-access-key))
                            (and region
                                 access-key-id
                                 secret-access-key
