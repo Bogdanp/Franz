@@ -72,7 +72,7 @@
 ;; connection-details ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define auth-mechanism/c
-  (or/c 'plain 'aws-msk-iam))
+  (or/c 'plain 'scram-sha-256 'scram-sha-512 'aws-msk-iam))
 
 (define-schema connection-details
   #:table "connection_details"

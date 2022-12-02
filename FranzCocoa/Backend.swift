@@ -5,6 +5,8 @@ import NoiseSerde
 
 public enum AuthMechanism: Readable, Writable {
   case plain
+  case scramSHA256
+  case scramSHA512
   case aws
 
   public static func read(from inp: InputPort, using buf: inout Data) -> AuthMechanism {
@@ -13,6 +15,10 @@ public enum AuthMechanism: Readable, Writable {
     case 0x0000:
       return .plain
     case 0x0001:
+      return .scramSHA256
+    case 0x0002:
+      return .scramSHA512
+    case 0x0003:
       return .aws
     default:
       preconditionFailure("AuthMechanism: unexpected tag \(tag)")
@@ -23,8 +29,12 @@ public enum AuthMechanism: Readable, Writable {
     switch self {
     case .plain:
       UVarint(0x0000).write(to: out)
-    case .aws:
+    case .scramSHA256:
       UVarint(0x0001).write(to: out)
+    case .scramSHA512:
+      UVarint(0x0002).write(to: out)
+    case .aws:
+      UVarint(0x0003).write(to: out)
     }
   }
 }

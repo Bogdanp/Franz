@@ -55,7 +55,7 @@ class ConnectionDetailsFormViewController: NSViewController {
         switch Keychain.shared.get(passwordWithId: passwordId) {
         case .success(let password):
           switch details.authMechanism {
-          case .plain:
+          case .plain, .scramSHA256, .scramSHA512:
             passwordField.stringValue = password
           case .aws:
             awsAccessKeySecretField.stringValue = password
@@ -97,6 +97,10 @@ class ConnectionDetailsFormViewController: NSViewController {
       case 0:
         return .plain
       case 1:
+        return .scramSHA256
+      case 2:
+        return .scramSHA512
+      case 3:
         return .aws
       default:
         preconditionFailure()
@@ -106,8 +110,12 @@ class ConnectionDetailsFormViewController: NSViewController {
       switch newValue {
       case .plain:
         authMechanismButton.selectItem(withTag: 0)
-      case .aws:
+      case .scramSHA256:
         authMechanismButton.selectItem(withTag: 1)
+      case .scramSHA512:
+        authMechanismButton.selectItem(withTag: 2)
+      case .aws:
+        authMechanismButton.selectItem(withTag: 3)
       }
     }
   }
@@ -116,7 +124,7 @@ class ConnectionDetailsFormViewController: NSViewController {
     plainAuthView.removeFromSuperview()
     awsAuthView.removeFromSuperview()
     switch authMechanism {
-    case .plain:
+    case .plain, .scramSHA256, .scramSHA512:
       authView.addSubview(plainAuthView)
       authViewHeightConstraint.constant = 36
       plainAuthView.setFrameOrigin(authView.bounds.origin)
@@ -145,7 +153,7 @@ class ConnectionDetailsFormViewController: NSViewController {
     var awsAccessKeyId: String?
     let authMechanism = self.authMechanism
     switch authMechanism {
-    case .plain:
+    case .plain, .scramSHA256, .scramSHA512:
       username = usernameField.stringValue == "" ? nil : usernameField.stringValue
       password = passwordField.stringValue == "" ? nil : passwordField.stringValue
     case .aws:

@@ -114,7 +114,13 @@
                         <menu key="menu" id="FVO-Uq-MLa">
                             <items>
                                 <menuItem title="PLAIN" state="on" id="Ppw-Wr-jyy"/>
-                                <menuItem title="AWS IAM" tag="1" id="1uC-I1-fZr"/>
+                                <menuItem title="SCRAM SHA256" tag="1" id="y1E-w3-lsN">
+                                    <modifierMask key="keyEquivalentModifierMask"/>
+                                </menuItem>
+                                <menuItem title="SCRAM SHA512" tag="2" id="uY2-jp-2pO">
+                                    <modifierMask key="keyEquivalentModifierMask"/>
+                                </menuItem>
+                                <menuItem title="AWS IAM" tag="3" id="1uC-I1-fZr"/>
                             </items>
                         </menu>
                     </popUpButtonCell>

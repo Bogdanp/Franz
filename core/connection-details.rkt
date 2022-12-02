@@ -11,6 +11,7 @@
          racket/random
          racket/string
          (prefix-in sasl: sasl/aws-msk-iam)
+         (prefix-in sasl: sasl/scram)
          (prefix-in sasl: sasl/plain)
          threading
          (prefix-in meta: "metadata.rkt"))
@@ -22,6 +23,8 @@
 
 (define-enum AuthMechanism
   [plain]
+  [scramSHA256]
+  [scramSHA512]
   [aws])
 
 (define-record ConnectionDetails
@@ -40,12 +43,16 @@
 (define (meta->AuthMechanism m)
   (case m
     [(plain) (AuthMechanism.plain)]
+    [(scram-sha-256) (AuthMechanism.scramSHA256)]
+    [(scram-sha-512) (AuthMechanism.scramSHA512)]
     [(aws-msk-iam) (AuthMechanism.aws)]
     [else (raise-argument-error 'meta->AuthMechanism "auth-mechanism/c" m)]))
 
 (define (AuthMechanism->meta m)
   (match m
     [(AuthMechanism.plain) 'plain]
+    [(AuthMechanism.scramSHA256) 'scram-sha-256]
+    [(AuthMechanism.scramSHA512) 'scram-sha-512]
     [(AuthMechanism.aws) 'aws-msk-iam]))
 
 (define (meta->ConnectionDetails c)
@@ -90,6 +97,20 @@
                            (and username
                                 password
                                 `(plain ,(sasl:plain-client-message username password)))]
+                          [(AuthMechanism.scramSHA256)
+                           (define username (ConnectionDetails-username c))
+                           (define password (ConnectionDetails-password c))
+                           (and username
+                                password
+                                `(SCRAM-SHA-256 ,(lambda (_host _port)
+                                                   (sasl:make-scram-client-ctx 'sha256 username password))))]
+                          [(AuthMechanism.scramSHA512)
+                           (define username (ConnectionDetails-username c))
+                           (define password (ConnectionDetails-password c))
+                           (and username
+                                password
+                                `(SCRAM-SHA-512 ,(lambda (_host _port)
+                                                   (sasl:make-scram-client-ctx 'sha512 username password))))]
                           [(AuthMechanism.aws)
                            (define region (ConnectionDetails-aws-region c))
                            (define access-key-id (ConnectionDetails-aws-access-key-id c))
