@@ -9,6 +9,6 @@
                "kafka-lib"
                "lua-lib"
                "noise-serde-lib"
-               "sasl-lib"
+               ["sasl-lib" #:version "1.2"]
                "threading-lib"))
 (define build-deps '("rackunit-lib"))
