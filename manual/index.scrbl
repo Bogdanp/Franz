@@ -484,7 +484,8 @@ use that codec to decode your record data.
 
   function script.transform(record)
     local person = person_codec:read(record.value)
-    return person.Name
+    record.value = person.Name
+    return record
   end
 
   return script
