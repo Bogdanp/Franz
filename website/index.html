@@ -5,220 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/png" href="favicon.png">
     <title>Franz for macOS</title>
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      :root {
-        --fg-color: #000000;
-        --fg-color--secondary: #151515;
-        --bg-color: #ffffff;
-        --bg-color-alt: #fafafa;
-      }
-
-      body {
-        background: var(--bg-color);
-        color: var(--fg-color);
-        font: 62.5%/1.4 sans-serif;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-      }
-
-      section {
-        padding: 64px 24px;
-      }
-
-      section.feature {
-        opacity: 1;
-        transition: opacity 0.1s;
-      }
-
-      section.alt {
-        background: var(--bg-color-alt);
-        box-shadow: 0 0 25px 10px rgba(0, 0, 0, 0.02) inset;
-        min-height: 100px;
-      }
-
-      p {
-        color: var(--fg-color--secondary);
-        font-size: 1rem;
-        font-weight: 300;
-      }
-
-      .screenshot {
-        display: block;
-        width: 100%;
-      }
-
-      a {
-        color: inherit;
-        font: inherit;
-        font-size: inherit;
-        text-decoration: none;
-      }
-
-      a:hover {
-        text-decoration: underline;
-      }
-
-      .container {
-        margin: 0 auto;
-      }
-
-      .hero {
-        padding: 96px 24px;
-      }
-
-      .hero__info {
-      }
-
-      .logo {
-        width: 128px;
-        height: auto;
-      }
-
-      .title {
-        font-size: 2rem;
-        font-weight: 600;
-      }
-
-      .subtitle {
-        color: var(--fg-color--secondary);
-        font-size: 1.4rem;
-        font-weight: 300;
-      }
-
-      .ctas {
-      }
-
-      .ctas__download-button {
-        display: inline-block;
-        padding: 4px 8px;
-        border: 1px solid #dedede;
-        border-radius: 5px;
-        font-size: 1.2rem;
-        font-weight: 200;
-      }
-
-      .ctas__download-button:hover {
-        border-color: #000;
-        text-decoration: none;
-      }
-
-      .ctas__download-button sup {
-        color: #dd0000;
-        font-size: 0.5rem;
-        font-weight: 300;
-        text-transform: uppercase;
-      }
-
-      .ctas__purchase-button {
-        display: inline-block;
-        padding: 4px 8px;
-        border: 1px solid #dedede;
-        border-radius: 5px;
-        font-size: 1.2rem;
-        font-weight: 200;
-      }
-
-      .ctas__purchase-button:hover {
-        border-color: #000;
-        text-decoration: none;
-      }
-
-
-      .binding {
-        display: inline-block;
-        padding: 3px 7px;
-        background: #fff;
-        border-radius: 3px;
-        box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.05);
-        font-size: 0.9rem;
-      }
-
-      .modifier {
-        display: inline-block;
-        padding: 3px 7px;
-        background: #fff;
-        border-radius: 3px;
-        box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.05);
-        color: #0c60ff;
-        font-size: 0.9rem;
-      }
-
-      .col {
-        padding: 12px 0;
-        text-align: center;
-      }
-
-      .col p {
-        margin: 0 auto;
-        max-width: 320px;
-      }
-
-      .footer {
-        margin: 32px 0 0 0;
-      }
-
-      .footer__links {
-        list-style: none;
-        display: grid;
-        grid-auto-flow: column;
-        font-size: 1rem;
-        text-align: center;
-      }
-
-      .footer__link {
-        display: block;
-      }
-
-      .footer__copyright {
-        display: block;
-        margin: 32px 0 0 0;
-        text-align: center;
-      }
-
-      @media screen and (min-width: 960px) {
-        .screenshot {
-          width: 520px;
-        }
-
-        .row {
-          display: grid;
-          grid-template-columns: 2fr 2fr;
-          align-items: center;
-        }
-
-        .row.prefer-left {
-          grid-template-columns: 1.5fr 1fr;
-        }
-
-        .row.prefer-right {
-          grid-template-columns: 1fr 1.5fr;
-        }
-
-        .col {
-          padding: 0 12px;
-          text-align: left;
-        }
-
-        .col p {
-          margin: 0 0;
-          max-width: auto;
-          text-align: left;
-        }
-
-        p.ctas__sep {
-          text-align: center;
-        }
-
-        .container {
-          width: 960px;
-        }
-      }
-    </style>
+    <link rel="stylesheet" type="text/css" href="screen.css">
   </head>
   <body>
     <section class="hero">
@@ -240,8 +27,8 @@
                 Download <sup><strong>Beta</strong></sup>
               </a>
 
-              <a id="purchase" class="ctas__purchase-button" href="javascript:;">
-                Purchase License
+              <a id="purchase" class="ctas__purchase-button" href="/buy.html">
+                Purchase a License
               </a>
             </div>
 
@@ -334,6 +121,12 @@
       <div class="container">
         <ul class="footer__links">
           <li class="footer__link">
+            <a href="/">Home</a>
+          </li>
+          <li class="footer__link">
+            <a href="/buy.html">Pricing</a>
+          </li>
+          <li class="footer__link">
             <a href="/manual/">Manual</a>
           </li>
           <li class="footer__link">
@@ -352,13 +145,5 @@
         </p>
       </div>
     </section>
-
-    <script src="https://cdn.paddle.com/paddle/paddle.js"></script>
-    <script type="text/javascript">
-      Paddle.Setup({ vendor: 161445 });
-      document.querySelector("#purchase").addEventListener("click", function() {
-          Paddle.Checkout.open({ product: 802128 });
-      });
-    </script>
   </body>
 </html>
