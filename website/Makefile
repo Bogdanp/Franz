@@ -20,7 +20,7 @@ deploy_api: api_dist/bin/api
 	ssh racksnaps "sudo -S systemctl restart franz-api"
 
 manual/index.html: ../manual/*.scrbl
-	raco scribble --html --dest website/manual +m ../manual/index.scrbl
+	raco scribble --html --dest manual +m ../manual/index.scrbl
 
 .PHONY: cross_setup
 cross_setup:
