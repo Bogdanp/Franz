@@ -270,8 +270,33 @@ and let me know.
       #:column-properties '(left right)
       #:row-properties '(bottom-border ())
       (list
-       (list @tt[@|id-str| "(" @args-str ")"] @tt[@symbol->string['res]])
-       (list @elem[(elemtag `("lua"  ,id-str)) pre-content ...] 'cont)))))
+       (list @elem[(elemtag `("lua" ,id-str)) @tt[@|id-str| "(" @args-str ")"]] @tt[@symbol->string['res]])
+       (list @nested[pre-content ...] 'cont)))))
+
+@(define-syntax-rule (lua id)
+  (let ([id-str (symbol->string 'id)])
+    (elemref `("lua" ,id-str) id-str)))
+
+@deflua[avro.parse (str) avro.Codec]{
+  Decodes the Apache Avro schema represented by @tt{str} and returns a
+  @tt{avro.Codec}.  Raises an error if the schema is invalid.
+
+  Use the @lua[avro.Codec:read] method on the returned codec to decode
+  data.
+}
+
+@deflua[avro.Codec:read (str) any]{
+  Reads the data in @tt{str} according to its internal schema.  Avro
+  records are represented by Lua tables with keys named after every
+  field.  Arrays are represented by integer-indexed tables.  Enums are
+  represented by strings.  Unions are represented by tables with
+  exactly two keys: a @tt{type} key referencing the fully-qualified
+  type name of the value and a @tt{value} key containing the value.
+  Bytes and string values both map to Lua strings.  All other
+  primitive values map to Lua values in the way you would expect.
+
+  See @secref["decoding-avro-data"] for an example.
+}
 
 @deflua[json.decode (str) table]{
   Decodes the JSON data in @tt{str} to a Lua table.
@@ -412,6 +437,59 @@ and let me know.
   Returns a new string with the characters in @tt{str} uppercased
   according to the current locale.
 }
+
+@subsection{Examples}
+
+@subsubsection[#:tag "decoding-json-data"]{Decoding JSON Data}
+
+Use @lua[json.decode] to decode your data.
+
+@codeblock[#:keep-lang-line? #f]|{
+  #lang lua
+  local script = {}
+
+  function script.transform(record)
+    local object = json.decode(record.value)
+    return object.field
+  end
+
+  return script
+}|
+
+@subsubsection[#:tag "decoding-avro-data"]{Decoding Avro Data}
+
+Use @lua[avro.parse] to convert an Avro Schema into a codec.  Then,
+use that codec to decode your record data.
+
+@codeblock[#:keep-lang-line? #f]|{
+  #lang lua
+  local script = {}
+  local schema = [[
+    {
+      "type": "record",
+      "name": "Person",
+      "fields": [
+        {
+          "name": "Name",
+          "type": "string"
+        },
+        {
+          "name": "Age",
+          "type": "int"
+        }
+      ]
+    }
+  ]]
+  local person_codec = avro.parse(schema)
+
+  function script.transform(record)
+    local person = person_codec:read(record.value)
+    return person.Name
+  end
+
+  return script
+}|
+
 
 @section{Privacy}
 
