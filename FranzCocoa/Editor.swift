@@ -213,6 +213,20 @@ class EditorTextView: NSTextView {
     }
   }
 
+  override func paste(_ sender: Any?) {
+    guard let textStorage else { return }
+    guard let data = NSPasteboard.general.data(forType: .string) else { return }
+    guard let text = String(data: data, encoding: .utf8) else { return }
+    let range = selectedRange()
+    textStorage.beginEditing()
+    if range.length > 0 {
+      textStorage.deleteCharacters(in: range)
+    }
+    textStorage.insert(attributedString(text), at: range.location)
+    textStorage.endEditing()
+    didChangeText()
+  }
+
   private func attributedString(_ str: String) -> NSAttributedString {
     return NSAttributedString(string: str, attributes: [.font: font as Any])
   }
