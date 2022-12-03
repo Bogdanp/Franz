@@ -30,6 +30,9 @@ EOF
 
 (define c (make-client))
 (define p (make-producer c))
+(create-topics c (make-CreateTopic
+                  #:name "people"
+                  #:partitions 2))
 (with-handlers ([exn:break? void])
   (let loop ()
     (for ([_ (in-range 1000)])
