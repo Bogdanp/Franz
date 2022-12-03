@@ -458,6 +458,9 @@ Use @lua[json.decode] to decode your data.
 
 @subsubsection[#:tag "decoding-avro-data"]{Decoding Avro Data}
 
+@(define (avro-yt . pre-content)
+   (apply link "https://www.youtube.com/watch?v=suUseaJ3bJI" pre-content))
+
 Use @lua[avro.parse] to convert an Avro Schema into a codec.  Then,
 use that codec to decode your record data.
 
@@ -518,6 +521,8 @@ to:
 
   return script
 }|
+
+See @avro-yt{this YouTube video} for a live demo.
 
 
 @section{Privacy}
