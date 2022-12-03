@@ -491,6 +491,34 @@ use that codec to decode your record data.
   return script
 }|
 
+You can write your schema as a Lua table and convert it to JSON using
+@lua[json.encode].  For example, you could rewrite the above example
+to:
+
+@codeblock[#:keep-lang-line? #f]|{
+  #lang lua
+  local script = {}
+  local schema = json.encode(
+    {
+      type = "record",
+      name = "Person",
+      fields = {
+        { name = "Name", type = "string" },
+        { name = "Age",  type = "int" }
+      }
+    }
+  )
+  local person_codec = avro.parse(schema)
+
+  function script.transform(record)
+    local person = person_codec:read(record.value)
+    record.value = person.Name
+    return record
+  end
+
+  return script
+}|
+
 
 @section{Privacy}
 
