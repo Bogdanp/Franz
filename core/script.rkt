@@ -4,6 +4,7 @@
          avro
          lua/env
          lua/value
+         messagepack
          noise/backend
          noise/serde
          racket/file
@@ -88,30 +89,33 @@ SCRIPT
 ;; extlib ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define-runtime-module-path-index avro.lua "extlib/avro.lua")
+(define-runtime-module-path-index msgpack.lua "extlib/msgpack.lua")
 
 (define symbol->bytes
   (compose1 string->bytes/utf-8 symbol->string))
 
-(define null-hash
+(define avro-null-hash
   (hasheq
    'type "null"
    'value 'null))
 
-(define (avro->lua v)
+(define (->lua v)
   (cond
+    [(msgpack-nil? v)
+     nil]
     [(list? v)
      (define t (make-table))
      (begin0 t
        (for ([(v idx) (in-indexed (in-list v))])
-         (table-set! t (add1 idx) (avro->lua v))))]
+         (table-set! t (add1 idx) (->lua v))))]
     [(hash? v)
      (cond
-       [(equal? v null-hash) nil]
+       [(equal? v avro-null-hash) nil]
        [else
         (define t (make-table))
         (begin0 t
           (for ([(k v) (in-hash v)])
-            (table-set! t (symbol->bytes k) (avro->lua v))))])]
+            (table-set! t (->lua k) (->lua v))))])]
     [(string? v)
      (string->bytes/utf-8 v)]
     [(symbol? v)
@@ -123,9 +127,14 @@ SCRIPT
   `((#"avro" . ,(λ (env name)
                   (table-set! env #"#%avro-make-codec" make-codec)
                   (table-set! env #"#%avro-codec-read" codec-read)
-                  (table-set! env #"#%avro-tolua" avro->lua)
+                  (table-set! env #"#%avro-tolua" ->lua)
                   (define mod (car (dynamic-require avro.lua '#%chunk)))
-                  (table-set! env name mod)))))
+                  (table-set! env name mod)))
+    (#"msgpack" . ,(λ (env name)
+                     (table-set! env #"#%msgpack-read" read-msgpack)
+                     (table-set! env #"#%msgpack-tolua" ->lua)
+                     (define mod (car (dynamic-require msgpack.lua '#%chunk)))
+                     (table-set! env name mod)))))
 
 (define (call-with-lua-extlib proc)
   (define mods
@@ -146,4 +155,5 @@ SCRIPT
         (lua-eval (port->string in)))))
 
   (check-equal? (lua-eval "return 42") '(42))
-  (check-true (car (eval-fixture "avro-basics.lua"))))
+  (check-true (car (eval-fixture "avro-basics.lua")))
+  (check-true (car (eval-fixture "msgpack-basics.lua"))))

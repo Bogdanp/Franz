@@ -391,6 +391,15 @@ and let me know.
   cannot be converted.
 }
 
+@deflua[msgpack.unpack (str) any]{
+  Decodes the MessagePack-encoded value represented by @tt{str} to
+  Lua.  Arrays and maps are represented as Lua tables.  Strings and
+  binary data are represented as Lua strings.  Nil is represented as
+  Lua @tt{nil}.
+
+  See @secref["decoding-msgpack-data"] for an example.
+}
+
 @deflua[string.byte (str i j) table]{
   Returns the bytes in @tt{str} between @tt{i} and @tt{j}.  The @tt{i}
   argument defaults to @tt{1} and the @tt{j} argument defaults to the
@@ -450,7 +459,8 @@ Use @lua[json.decode] to decode your data.
 
   function script.transform(record)
     local object = json.decode(record.value)
-    return object.field
+    record.value = tostring(object.field)
+    return record
   end
 
   return script
@@ -523,6 +533,23 @@ to:
 }|
 
 See @avro-yt{this YouTube video} for a live demo.
+
+@subsubsection[#:tag "decoding-msgpack-data"]{Decoding MessagePack Data}
+
+Use @lua[msgpack.unpack] to decode your data.
+
+@codeblock[#:keep-lang-line? #f]|{
+  #lang lua
+  local script = {}
+
+  function script.transform(record)
+    local object = msgpack.unpack(record.value)
+    record.value = tostring(object.field)
+    return record
+  end
+
+  return script
+}|
 
 
 @section{Privacy}

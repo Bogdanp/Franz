@@ -9,6 +9,7 @@
                "deta-lib"
                "kafka-lib"
                "lua-lib"
+               "messagepack-lib"
                "noise-serde-lib"
                ["sasl-lib" #:version "1.2"]
                "threading-lib"))
