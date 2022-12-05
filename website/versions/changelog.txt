@@ -1,3 +1,13 @@
+# 2022.12.12 (Build 3)
+## Added
+
+* Amazon MSK IAM auth.
+* SCRAM SHA256 and SHA512 auth.
+* Seek to timestamp.
+* LZ4 decompression.
+* Support for decoding Apache Avro data.
+* Support for decoding MessagePack data.
+
 # 2022.11.21 (Build 2)
 ## Fixed
 
