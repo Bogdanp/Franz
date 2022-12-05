@@ -48,6 +48,7 @@ class TopicRecordsTableViewController: NSViewController {
 
     contextMenu.delegate = self
 
+    tableView.allowsMultipleSelection = true
     tableView.menu = contextMenu
     tableView.dataSource = self
     tableView.delegate = self
