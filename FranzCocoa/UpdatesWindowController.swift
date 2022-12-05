@@ -115,6 +115,7 @@ fileprivate struct Changelog: NSViewRepresentable {
     scrollView.autoresizingMask = [.width, .height]
 
     let textView = NSTextView()
+    textView.font = .monospacedSystemFont(ofSize: 12, weight: .regular)
     scrollView.addSubview(textView)
     scrollView.documentView = textView
 
