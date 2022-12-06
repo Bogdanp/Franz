@@ -65,7 +65,7 @@
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Uiv-9V-Vbm">
+                <textField identifier="Bootstrap Host" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Uiv-9V-Vbm">
                     <rect key="frame" x="133" y="133" width="191" height="21"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="127.0.0.1" drawsBackground="YES" id="w0o-F9-2Lg">
                         <font key="font" metaFont="system"/>
@@ -73,7 +73,7 @@
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="clO-aY-uLb">
+                <textField identifier="Bootstrap Port" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="clO-aY-uLb">
                     <rect key="frame" x="370" y="133" width="100" height="21"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="100" id="Sdj-r1-8el"/>
