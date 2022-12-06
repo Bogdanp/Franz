@@ -6,6 +6,7 @@
          racket/file
 
          "appdata.rkt"
+         "logger.rkt"
          "metadata.rkt"
 
          ;; For RPC:
@@ -23,14 +24,18 @@
 (define (main in-fd out-fd)
   (module-cache-clear!)
   (collect-garbage)
-  (define database-path
+  (define-values (database-path reset-trial-deadline?)
     (cond
-      [(equal? (getenv "FRANZ_TEMP_DATABASE") "x")
-       (define path (make-temporary-file "franz~a.sqlite3"))
-       (begin0 path
-         (delete-file path))]
+      [(getenv "FRANZ_DATABASE_PATH")
+       => (λ (p)
+            (define path (make-temporary-file "franz~a.sqlite3"))
+            (delete-file path)
+            (unless (string=? p "x")
+              (copy-file p path))
+            (values path #f))]
       [else
-       (build-application-path "metadata.sqlite3")]))
+       (values (build-application-path "metadata.sqlite3") #t)]))
+  (log-franz-debug "database path: ~a" database-path)
   (define stop
     (parameterize ([current-connection
                     (sqlite3-connect
@@ -38,7 +43,8 @@
                      #:database database-path
                      #:mode 'create)])
       (migrate!)
-      (reset-trial-deadline! 2023 1 15)
+      (when reset-trial-deadline?
+        (reset-trial-deadline! 2023 1 15))
       (serve in-fd out-fd)))
   (with-handlers ([exn:break? void])
     (sync never-evt))
