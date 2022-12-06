@@ -58,8 +58,10 @@
                    [`(open ,res-ch ,nack ,conf)
                     (define-values (client-id-or-exn next-state)
                       (with-handlers ([exn:fail? (λ (e) (values e s))])
-                        (begin0 (state-add-client s (ConnectionDetails->client conf))
-                          (log-franz-debug "pool: opened client ~a" client-id-or-exn))))
+                        (define-values (client-id next-s)
+                          (state-add-client s (ConnectionDetails->client conf)))
+                        (begin0 (values client-id next-s)
+                          (log-franz-debug "pool: opened client ~a" client-id))))
                     (state-add-req next-state (req client-id-or-exn res-ch nack))]
 
                    [`(close ,res-ch ,nack ,id)
