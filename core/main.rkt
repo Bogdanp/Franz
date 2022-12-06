@@ -3,6 +3,7 @@
 (require (only-in db sqlite3-connect)
          noise/backend
          noise/serde
+         racket/file
 
          "appdata.rkt"
          "metadata.rkt"
@@ -23,7 +24,13 @@
   (module-cache-clear!)
   (collect-garbage)
   (define database-path
-    (build-application-path "metadata.sqlite3"))
+    (cond
+      [(equal? (getenv "FRANZ_TEMP_DATABASE") "x")
+       (define path (make-temporary-file "franz~a.sqlite3"))
+       (begin0 path
+         (delete-file path))]
+      [else
+       (build-application-path "metadata.sqlite3")]))
   (define stop
     (parameterize ([current-connection
                     (sqlite3-connect
