@@ -81,7 +81,7 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "PLTSTDERR"
-            value = "error debug@noise debug@kafka"
+            value = "error debug@noise debug@kafka debug@franz"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
