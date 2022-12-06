@@ -13,6 +13,8 @@ class WelcomeWindowController: NSWindowController {
 
     window?.delegate = self
     window?.isMovableByWindowBackground = true
+    window?.setFrameAutosaveName("Welcome to Franz")
+    window?.title = "Welcome to Franz"
     window?.center()
 
     let contentCtl = WelcomeWindowContentViewController()
@@ -60,11 +62,13 @@ fileprivate class SplitViewController: NSSplitViewController {
     super.loadView()
   }
 
-  override func splitView(_ splitView: NSSplitView,
-                          effectiveRect proposedEffectiveRect: NSRect,
-                          forDrawnRect drawnRect: NSRect,
-                          ofDividerAt dividerIndex: Int) -> NSRect {
-    return .zero
+  override func splitView(
+    _ splitView: NSSplitView,
+    effectiveRect proposedEffectiveRect: NSRect,
+    forDrawnRect drawnRect: NSRect,
+    ofDividerAt dividerIndex: Int) -> NSRect {
+
+      return .zero
   }
 }
 
