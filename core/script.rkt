@@ -1,7 +1,6 @@
 #lang racket/base
 
-(require (for-syntax racket/base)
-         avro
+(require avro
          lua/env
          lua/value
          messagepack
@@ -46,11 +45,6 @@ local script = {}
 --
 -- See Help -> Manual... to learn more.
 function script.transform(record)
-  local key = record.key
-  local value = record.value
-  if record.partition_id ~= 0 then
-    return nil
-  end
   return record
 end
 
