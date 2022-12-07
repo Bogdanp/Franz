@@ -63,6 +63,44 @@ final class FranzCocoaUITests: XCTestCase {
     licenseWindow.typeKey("q", modifierFlags:.command)
   }
 
+  func testMechanismSelector() throws {
+    let app = makeUIApp()
+    app.launch()
+
+    let window = app.windows["Welcome to Franz"]
+    window.buttons["New Connection..."].click()
+
+    let sheet = window.sheets.firstMatch
+    let nameField = sheet.textFields["Connection Name"]
+    nameField.click()
+    nameField.typeText("Example")
+    let usernameField = sheet.textFields["root"]
+    usernameField.click()
+    usernameField.typeText("root")
+    let passwordField = sheet.secureTextFields.firstMatch
+    passwordField.click()
+    passwordField.typeText("hunter2")
+
+    sheet.popUpButtons["PLAIN"].click()
+    sheet.menuItems["SCRAM-SHA-256"].click()
+    sheet.popUpButtons["SCRAM-SHA-256"].click()
+    sheet.menuItems["SCRAM-SHA-512"].click()
+    sheet.popUpButtons["SCRAM-SHA-512"].click()
+    sheet.menuItems["AWS-MSK-IAM"].click()
+
+    let regionField = sheet.textFields["us-east-1"]
+    regionField.click()
+    regionField.typeText("us-east-1")
+    let accessKeyField = sheet.textFields["AKEYEXAMPLE"]
+    accessKeyField.click()
+    accessKeyField.typeText("example")
+    let secretKeyField = sheet.secureTextFields.firstMatch
+    secretKeyField.click()
+    secretKeyField.typeText("hunter2")
+    sheet.buttons["Cancel"].click()
+    window.typeKey("q", modifierFlags: .command)
+  }
+
   private func fixture(_ path: String, ofType ext: String = "sqlite3") -> String {
     return Bundle(for: type(of: self)).path(forResource: "fixtures/\(path)", ofType: ext)!
   }
