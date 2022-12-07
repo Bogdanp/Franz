@@ -91,10 +91,12 @@
      (define proc
        (table-ref script transform-key))
      (unless (procedure? proc)
-       (error 'script "script.transform: not a procedure"))
+       (error 'script "script.transform is not a procedure"))
      (for*/list ([r (in-vector records)]
                  [t (in-value (proc (record->table r)))]
                  #:when (truthy? t))
+       (unless (table? t)
+         (error 'script "script.transform must return a table or nil~n  received: ~s" t))
        (table->IteratorRecord t))]
     [else
      (for/list ([r (in-vector records)])
