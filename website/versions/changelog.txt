@@ -4,9 +4,9 @@
 * Amazon MSK IAM auth.
 * SCRAM SHA256 and SHA512 auth.
 * Seek to timestamp.
-* LZ4 decompression.
-* Support for decoding Apache Avro data.
-* Support for decoding MessagePack data.
+* LZ4 support.
+* Apache Avro support.
+* MessagePack support.
 
 # 2022.11.21 (Build 2)
 ## Fixed
