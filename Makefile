@@ -41,3 +41,10 @@ ${MANUAL_PATH}/index.html: manual/*.scrbl
 
 website/manual/index.html: manual/*.scrbl
 	make -C website manual/index.html
+
+.PHONY: sync-arm64
+sync-arm64:
+	rm -f ${RESOURCES_PATH}/core-arm64.zo
+	rm -rf ${RESOURCES_PATH}/runtime-arm64
+	scp -r racecar.local:~/sandbox/franz/FranzCocoa/resources/core-arm64.zo ${RESOURCES_PATH}/
+	scp -r racecar.local:~/sandbox/franz/FranzCocoa/resources/runtime-arm64 ${RESOURCES_PATH}/
