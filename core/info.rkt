@@ -11,7 +11,7 @@
                "lua-lib"
                "messagepack-lib"
                "noise-serde-lib"
-               ["sasl-lib" #:version "1.2"]
+               ["sasl-lib" #:version "1.3"]
                "threading-lib"))
 (define build-deps '("rackunit-lib"))
 (define compile-omit-paths '("fixtures"))
