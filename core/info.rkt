@@ -8,6 +8,7 @@
                "db-lib"
                "deta-lib"
                "kafka-lib"
+               "libsqlite3"
                "lua-lib"
                "messagepack-lib"
                "noise-serde-lib"
