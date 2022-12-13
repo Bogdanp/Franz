@@ -2,7 +2,7 @@
 
 (define collection "franz")
 (define version "1.0")
-(define deps '("amazon-msk-sasl-lib"
+(define deps '(["amazon-msk-sasl-lib" #:version "0.2"]
                "avro-lib"
                "base"
                "db-lib"
