@@ -44,7 +44,7 @@
                      #:mode 'create)])
       (migrate!)
       (when reset-trial-deadline?
-        (reset-trial-deadline! 2023 1 15))
+        (reset-trial-deadline! 2023 2 15))
       (serve in-fd out-fd)))
   (with-handlers ([exn:break? void])
     (sync never-evt))
