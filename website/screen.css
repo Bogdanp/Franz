@@ -55,6 +55,13 @@ a:hover {
   text-decoration: underline;
 }
 
+ul {
+  padding: 1rem;
+  padding-left: 2rem;
+  font-size: 0.8rem;
+  font-weight: 300;
+}
+
 .container {
   margin: 0 auto;
 }
