@@ -55,14 +55,17 @@
                ch
                (lambda (msg)
                  (match msg
-                   [`(open ,res-ch ,nack ,conf)
-                    (define-values (client-id-or-exn next-state)
-                      (with-handlers ([exn:fail? (λ (e) (values e s))])
-                        (define-values (client-id next-s)
-                          (state-add-client s (ConnectionDetails->client conf)))
-                        (begin0 (values client-id next-s)
-                          (log-franz-debug "pool: opened client ~a" client-id))))
-                    (state-add-req next-state (req client-id-or-exn res-ch nack))]
+                   [`(make-conn ,res-ch ,nack ,conf)
+                    (define conn-promise
+                      (delay/thread
+                       (ConnectionDetails->client conf)))
+                    (state-add-req s (req conn-promise res-ch nack))]
+
+                   [`(open ,res-ch ,nack ,client)
+                    (define-values (client-id next-state)
+                      (state-add-client s client))
+                    (log-franz-debug "pool: openend client ~a" client-id)
+                    (state-add-req next-state (req client-id res-ch nack))]
 
                    [`(close ,res-ch ,nack ,id)
                     (define client
@@ -313,7 +316,9 @@
   (make-parameter (make-pool)))
 
 (define (pool-open conf [p (current-pool)])
-  (sync (pool-send p open conf)))
+  (define conn
+    (force (sync (pool-send p make-conn conf))))
+  (sync (pool-send p open conn)))
 
 (define (pool-close id [p (current-pool)])
   (sync (pool-send p close id)))
