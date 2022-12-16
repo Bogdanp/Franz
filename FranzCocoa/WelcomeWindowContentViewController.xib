@@ -33,7 +33,7 @@
                             <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSApplicationIcon" id="rQR-Tq-Alh"/>
                         </imageView>
                         <stackView distribution="fill" orientation="horizontal" alignment="centerY" spacing="20" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="luV-df-HLp">
-                            <rect key="frame" x="84" y="40" width="293" height="17"/>
+                            <rect key="frame" x="75" y="40" width="311" height="17"/>
                             <subviews>
                                 <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="buc-Nk-xYX">
                                     <rect key="frame" x="0.0" y="0.0" width="114" height="17"/>
@@ -59,14 +59,14 @@
                                     </connections>
                                 </button>
                                 <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XEL-TI-nsu">
-                                    <rect key="frame" x="229" y="1" width="64" height="16"/>
-                                    <buttonCell key="cell" type="bevel" title=" Twitter" bezelStyle="rounded" image="person.fill" catalog="system" imagePosition="leading" alignment="center" imageScaling="proportionallyDown" inset="2" id="f8y-44-03z">
+                                    <rect key="frame" x="229" y="1" width="82" height="16"/>
+                                    <buttonCell key="cell" type="bevel" title=" Mastodon" bezelStyle="rounded" image="person.fill" catalog="system" imagePosition="leading" alignment="center" imageScaling="proportionallyDown" inset="2" id="f8y-44-03z">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="system"/>
                                     </buttonCell>
                                     <color key="contentTintColor" name="AccentColor"/>
                                     <connections>
-                                        <action selector="didPushTwitterButton:" target="-2" id="uK2-wo-I4q"/>
+                                        <action selector="didPushMastodonButton:" target="-2" id="JjR-0C-Act"/>
                                     </connections>
                                 </button>
                             </subviews>

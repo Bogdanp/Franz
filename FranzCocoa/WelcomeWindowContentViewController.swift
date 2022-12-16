@@ -42,7 +42,7 @@ class WelcomeWindowContentViewController: NSViewController {
     NSWorkspace.shared.open(URL(string: "mailto:bogdan@defn.io?subject=Franz%20Support")!)
   }
 
-  @IBAction func didPushTwitterButton(_ sender: Any) {
-    NSWorkspace.shared.open(URL(string: "https://twitter.com/franz_app")!)
+  @IBAction func didPushMastodonButton(_ sender: Any) {
+    NSWorkspace.shared.open(URL(string: "https://hachyderm.io/@franz_app")!)
   }
 }
