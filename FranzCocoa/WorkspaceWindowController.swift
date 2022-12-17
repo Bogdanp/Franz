@@ -1,12 +1,19 @@
 import Cocoa
 import NoiseBackend
 import NoiseSerde
+import OSLog
 import SwiftUI
+
+fileprivate var logger = Logger(
+  subsystem: "io.defn.Franz",
+  category: "WorkspaceWindowController"
+)
 
 class WorkspaceWindowController: NSWindowController {
   private var conn: ConnectionDetails!
   private var pass: String?
   private var id: UVarint!
+  private weak var connectFuture: Future<String, UVarint>?
 
   private var metadata: Metadata?
   private var topic: String?
@@ -71,7 +78,12 @@ class WorkspaceWindowController: NSWindowController {
 
   private func connect() {
     status("Connecting")
-    Backend.shared.openWorkspace(withConn: conn, andPassword: pass).sink(
+    if let connectFuture {
+      logger.debug("canceling previous connect future")
+      connectFuture.cancel()
+    }
+    connectFuture = Backend.shared.openWorkspace(withConn: conn, andPassword: pass)
+    connectFuture?.sink(
       onError: { err in
         self.status("Connection Failed")
         let alert = NSAlert()
