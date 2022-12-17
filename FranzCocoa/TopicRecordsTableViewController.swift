@@ -375,7 +375,7 @@ class TopicRecordsTableViewController: NSViewController {
         }
         self.setRecords(self.items.map(\.record), byAppending: false)
         popover.close()
-      } resetAction: {
+      } offsetsAction: {
         let resetForm = IteratorResetForm { offset in
           self.reset(offset: offset) { [weak self] in
             self?.loadRecords(byAppending: false)
@@ -800,7 +800,7 @@ fileprivate struct TopicRecordsOptionsForm: View {
   @StateObject var model: TopicRecordsOptions
 
   let saveAction: () -> Void
-  let resetAction: () -> Void
+  let offsetsAction: () -> Void
 
   var bytesFmt: ByteCountFormatter = {
     let fmt = ByteCountFormatter()
@@ -865,8 +865,8 @@ fileprivate struct TopicRecordsOptionsForm: View {
         .buttonStyle(.borderedProminent)
         .keyboardShortcut(.defaultAction)
 
-        Button("Reset...", role: .destructive) {
-          resetAction()
+        Button("Offsets...") {
+          offsetsAction()
         }
       }
     }
@@ -916,7 +916,7 @@ fileprivate struct IteratorResetForm: View {
             resetAction(.exact(offset))
           }
       }
-      Button("Reset") {
+      Button("Jump") {
         switch target {
         case .earliest:
           resetAction(.earliest)

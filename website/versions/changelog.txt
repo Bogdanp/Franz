@@ -1,3 +1,9 @@
+# 2023.01.04 (Build 4)
+## Changed
+
+* The Records Table "Reset..." button has benn renamed to "Offsets..."
+  to make it clear that it's not performing a destructive action.
+
 # 2022.12.14 (Build 3)
 ## Added
 
