@@ -52,7 +52,9 @@ class TopicRecordsTableViewController: NSViewController {
     tableView.menu = contextMenu
     tableView.dataSource = self
     tableView.delegate = self
+    tableView.doubleAction = #selector(didDoubleClickRow(_:))
     tableView.setDraggingSourceOperationMask(.copy, forLocal: false)
+    tableView.target = self
     if let connection = delegate?.getConnectionName(), let topic {
       tableView.autosaveName = "Franz:\(connection):TopicRecords:\(topic)"
       tableView.autosaveTableColumns = true
@@ -357,6 +359,10 @@ class TopicRecordsTableViewController: NSViewController {
     }
   }
 
+  private func view(record: IteratorRecord) {
+    print("record=\(record)")
+  }
+
   @objc func didPressSegmentedControl(_ sender: NSSegmentedControl) {
     guard let delegate else { return }
     let segment = sender.selectedSegment
@@ -447,6 +453,11 @@ class TopicRecordsTableViewController: NSViewController {
   @IBAction func didPressScriptButton(_ sender: NSButton) {
     WindowManager.shared.showScriptWindow(forWorkspace: id, andTopic: topic, withDelegate: self)
   }
+
+  @objc func didDoubleClickRow(_ sender: NSTableView) {
+    guard sender.clickedRow >= 0 else { return }
+    view(record: items[sender.clickedRow].record)
+  }
 }
 
 // MARK: - ScriptWindowControllerDelegate
@@ -471,12 +482,25 @@ extension TopicRecordsTableViewController: NSMenuDelegate {
     guard !liveModeOn else { return }
     guard tableView.clickedRow >= 0 else { return }
     let record = items[tableView.clickedRow].record
+    menu.addItem(.init(
+      title: "View",
+      action: #selector(didPressViewRecordItem(_:)),
+      keyEquivalent: ""
+    ))
     if record.key != nil {
+      menu.addItem(.separator())
       menu.addItem(.init(
         title: "Publish Tombstone...",
         action: #selector(didPressPublishTombstoneItem(_:)),
-        keyEquivalent: ""))
+        keyEquivalent: String.backspaceKeyEquivalent
+      ))
     }
+  }
+
+  @objc func didPressViewRecordItem(_ sender: NSMenu) {
+    guard !liveModeOn else { return }
+    guard tableView.clickedRow >= 0 else { return }
+    view(record: items[tableView.clickedRow].record)
   }
 
   @objc func didPressPublishTombstoneItem(_ sender: NSMenu) {
