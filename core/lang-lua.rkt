@@ -1,12 +1,21 @@
 #lang racket/base
 
 (require (prefix-in json: json/lexer)
+         (prefix-in json: json/pretty)
          (prefix-in lua: lua/lang/lexer)
          noise/backend
          noise/serde
+         racket/port
          "lang.rkt")
 
 ;; TODO: Generify lexers.
+(define-rpc (pp-json [code : String] : String)
+  (call-with-output-string
+   (lambda (out)
+     (call-with-input-string code
+       (lambda (in)
+         (json:pretty-print-json in out))))))
+
 (define-rpc (lex-json [code : String] : (Listof Token))
   (define in (open-input-string code))
   (define l (json:make-lexer #:partial-strings? #t in))
