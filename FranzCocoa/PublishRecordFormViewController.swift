@@ -33,14 +33,14 @@ class PublishRecordFormViewController: NSViewController {
     partitionButton.removeAllItems()
 
     addChild(keyEditorCtl)
-    keyEditorCtl.configure(code: "{}", border: .lineBorder)
+    keyEditorCtl.configure(code: "{}", language: .json, border: .lineBorder)
     keyEditorCtl.view.removeFromSuperview()
     keyView.addSubview(keyEditorCtl.view)
     keyEditorCtl.view.setFrameOrigin(.zero)
     keyEditorCtl.view.setFrameSize(keyView.frame.size)
 
     addChild(valueEditorCtl)
-    valueEditorCtl.configure(code: "[1, 2, 3]", border: .lineBorder)
+    valueEditorCtl.configure(code: "[1, 2, 3]", language: .json, border: .lineBorder)
     valueEditorCtl.view.removeFromSuperview()
     valueView.addSubview(valueEditorCtl.view)
     valueEditorCtl.view.setFrameOrigin(.zero)

@@ -835,7 +835,7 @@ public class Backend {
     )
   }
 
-  public func lexLua(_ code: String) -> Future<String, [Token]> {
+  public func lexJson(_ code: String) -> Future<String, [Token]> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0014).write(to: out)
@@ -847,10 +847,22 @@ public class Backend {
     )
   }
 
-  public func openIterator(forTopic topic: String, andOffset offset: IteratorOffset, inWorkspace id: UVarint) -> Future<String, UVarint> {
+  public func lexLua(_ code: String) -> Future<String, [Token]> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0015).write(to: out)
+        code.write(to: out)
+      },
+      readProc: { (inp: InputPort, buf: inout Data) -> [Token] in
+        return [Token].read(from: inp, using: &buf)
+      }
+    )
+  }
+
+  public func openIterator(forTopic topic: String, andOffset offset: IteratorOffset, inWorkspace id: UVarint) -> Future<String, UVarint> {
+    return impl.send(
+      writeProc: { (out: OutputPort) in
+        UVarint(0x0016).write(to: out)
         topic.write(to: out)
         offset.write(to: out)
         id.write(to: out)
@@ -864,7 +876,7 @@ public class Backend {
   public func openWorkspace(withConn conn: ConnectionDetails, andPassword password: String?) -> Future<String, UVarint> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0016).write(to: out)
+        UVarint(0x0017).write(to: out)
         conn.write(to: out)
         password.write(to: out)
       },
@@ -877,7 +889,7 @@ public class Backend {
   public func ping() -> Future<String, String> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0017).write(to: out)
+        UVarint(0x0018).write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> String in
         return String.read(from: inp, using: &buf)
@@ -888,7 +900,7 @@ public class Backend {
   public func publishRecord(toTopic topic: String, andPartition pid: UVarint, withKey key: Data?, andValue value: Data?, inWorkspace id: UVarint) -> Future<String, IteratorRecord> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0018).write(to: out)
+        UVarint(0x0019).write(to: out)
         topic.write(to: out)
         pid.write(to: out)
         key.write(to: out)
@@ -904,7 +916,7 @@ public class Backend {
   public func resetIterator(withId id: UVarint, toOffset offset: IteratorOffset) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0019).write(to: out)
+        UVarint(0x001a).write(to: out)
         id.write(to: out)
         offset.write(to: out)
       },
@@ -915,7 +927,7 @@ public class Backend {
   public func resetPartitionOffset(forGroupNamed groupId: String, andTopic topic: String, andPartitionId pid: UVarint, andTarget target: Symbol, andOffset offset: UVarint?, inWorkspace id: UVarint) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x001a).write(to: out)
+        UVarint(0x001b).write(to: out)
         groupId.write(to: out)
         topic.write(to: out)
         pid.write(to: out)
@@ -930,7 +942,7 @@ public class Backend {
   public func resetTopicOffsets(forGroupNamed groupId: String, andTopic topic: String, andTarget target: Symbol, inWorkspace id: UVarint) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x001b).write(to: out)
+        UVarint(0x001c).write(to: out)
         groupId.write(to: out)
         topic.write(to: out)
         target.write(to: out)
@@ -943,7 +955,7 @@ public class Backend {
   public func saveConnection(_ c: ConnectionDetails) -> Future<String, ConnectionDetails> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x001c).write(to: out)
+        UVarint(0x001d).write(to: out)
         c.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> ConnectionDetails in
@@ -955,7 +967,7 @@ public class Backend {
   public func touchConnection(_ c: ConnectionDetails) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x001d).write(to: out)
+        UVarint(0x001e).write(to: out)
         c.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> Void in }
@@ -965,7 +977,7 @@ public class Backend {
   public func updateConnection(_ c: ConnectionDetails) -> Future<String, ConnectionDetails> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x001e).write(to: out)
+        UVarint(0x001f).write(to: out)
         c.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> ConnectionDetails in

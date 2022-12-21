@@ -86,7 +86,7 @@ class EditorViewController: NSViewController {
 
   func configure(
     code: String = "",
-    language: Language = .lua,
+    language: Language = .plain,
     border: NSBorderType = .noBorder
   ) {
     textStorage.setAttributedString(NSAttributedString(string: code))
@@ -106,10 +106,12 @@ class EditorViewController: NSViewController {
 
   private func lex(_ code: String) -> [Token] {
     switch language {
+    case .plain:
+      return []
+    case .json:
+      return Error.wait(Backend.shared.lexJson(code)) ?? []
     case .lua:
       return Error.wait(Backend.shared.lexLua(code)) ?? []
-    default:
-      return []
     }
   }
 
@@ -412,6 +414,7 @@ struct Editor: NSViewControllerRepresentable {
 
 // MARK: - Language
 enum Language {
+  case plain
   case json
   case lua
 }

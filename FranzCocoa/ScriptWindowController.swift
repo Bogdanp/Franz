@@ -26,7 +26,7 @@ class ScriptWindowController: NSWindowController {
     self.id = id
     self.topic = topic
     if let script = Error.wait(Backend.shared.getScript(forTopic: topic, inWorkspace: id)) {
-      editorCtl.configure(code: script)
+      editorCtl.configure(code: script, language: .lua)
     }
   }
 
@@ -250,7 +250,7 @@ extension ScriptWindowController: NSWindowDelegate {
     assert(Thread.isMainThread)
     do {
       guard let code = String(data: try Data(contentsOf: url), encoding: .utf8) else { return }
-      editorCtl.configure(code: code)
+      editorCtl.configure(code: code, language: .lua)
       window?.isDocumentEdited = false
     } catch {
       Error.alert(withError: error)
