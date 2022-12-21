@@ -5,8 +5,10 @@
 (define deps '(["amazon-msk-sasl-lib" #:version "0.2"]
                "avro-lib"
                "base"
+               "confluent-schema-registry-lib"
                "db-lib"
                "deta-lib"
+               "json-lexer-lib"
                ["kafka-lib" #:version "0.3"]
                "libsqlite3"
                "lua-lib"

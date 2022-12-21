@@ -1,9 +1,26 @@
 #lang racket/base
 
-(require (prefix-in lua: lua/lang/lexer)
+(require (prefix-in json: json/lexer)
+         (prefix-in lua: lua/lang/lexer)
          noise/backend
          noise/serde
          "lang.rkt")
+
+;; TODO: Generify lexers.
+(define-rpc (lex-json [code : String] : (Listof Token))
+  (define in (open-input-string code))
+  (define l (json:make-lexer #:partial-strings? #t in))
+  (let loop ([tokens null])
+    (define t
+      (let retry ()
+        (with-handlers ([exn:fail?
+                         (lambda (_)
+                           (skip-to-next-whitespace in)
+                           (retry))])
+          (json:lexer-take l))))
+    (case (json:token-type t)
+      [(eof) (reverse tokens)]
+      [else (loop (cons (->Token t) tokens))])))
 
 (define-rpc (lex-lua [code : String] : (Listof Token))
   (define in (open-input-string code))
@@ -17,7 +34,7 @@
         ;; terminate.
         (with-handlers* ([exn:fail?
                           (lambda (_)
-                            (void (regexp-match #rx"[\r\t\n ]" in))
+                            (skip-to-next-whitespace in)
                             (retry))])
           (lua:lexer-take l))))
     (case (lua:token-type t)
@@ -44,3 +61,6 @@
           [(name) (TokenType.name)]
           [else (TokenType.punctuation)]))
       (hash-ref! memo type default))))
+
+(define (skip-to-next-whitespace in)
+  (void (regexp-match #rx"[\r\t\n ]" in)))
