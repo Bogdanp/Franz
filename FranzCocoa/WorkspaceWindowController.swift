@@ -30,6 +30,7 @@ class WorkspaceWindowController: NSWindowController {
   private weak var reloadMetadataMenuItem: NSMenuItem?
   private weak var newTopicMenuItem: NSMenuItem?
   private weak var publishMenuItem: NSMenuItem?
+  private weak var configureSRMenuItem: NSMenuItem?
 
   private var statusMu = DispatchSemaphore(value: 1)
   private var statusCookie = 0
@@ -64,6 +65,7 @@ class WorkspaceWindowController: NSWindowController {
     reloadMetadataMenuItem = MainMenu.shared.find(itemByPath: [.ConnectionMenuItem, .ReloadMetadataMenuItem])
     newTopicMenuItem = MainMenu.shared.find(itemByPath: [.TopicMenuItem, .NewTopicMenuItem])
     publishMenuItem = MainMenu.shared.find(itemByPath: [.TopicMenuItem, .PublishMenuItem])
+    configureSRMenuItem = MainMenu.shared.find(itemByPath: [.SchemaRegistryMenuItem, .ConfigureMenuItem])
 
     shouldCascadeWindows = false
     window?.delegate = self
@@ -140,6 +142,12 @@ class WorkspaceWindowController: NSWindowController {
     ctl.configure(withId: id)
     window?.contentViewController?.presentAsSheet(ctl)
   }
+
+  @objc func didPressConfigureSRItem(_ sender: Any) {
+    let ctl = ConfigureSchemaRegistryFormViewController()
+    ctl.configure(withId: id)
+    window?.contentViewController?.presentAsSheet(ctl)
+  }
 }
 
 // MARK: NSWindowDelegate
@@ -149,6 +157,7 @@ extension WorkspaceWindowController: NSWindowDelegate {
       reloadMetadataMenuItem: #selector(didPressReloadButton(_:)),
       newTopicMenuItem: #selector(didPressNewTopicItem(_:)),
       publishMenuItem: #selector(didPressPublishButton(_:)),
+      configureSRMenuItem: #selector(didPressConfigureSRItem(_:)),
     ]
     for (item, selector) in items {
       guard let item else { continue }
@@ -158,7 +167,7 @@ extension WorkspaceWindowController: NSWindowDelegate {
   }
 
   func windowDidResignKey(_ notification: Notification) {
-    for item in [reloadMetadataMenuItem, newTopicMenuItem, publishMenuItem] {
+    for item in [reloadMetadataMenuItem, newTopicMenuItem, publishMenuItem, configureSRMenuItem] {
       guard let item else { continue }
       item.target = nil
       item.action = nil

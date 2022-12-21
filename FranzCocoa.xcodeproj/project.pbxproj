@@ -43,6 +43,8 @@
 		4396EAE12905B0D200A15D25 /* Tabs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4396EAE02905B0D200A15D25 /* Tabs.swift */; };
 		439D6EB1292F7741005C9935 /* UpdatesProgressWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 439D6EAF292F7741005C9935 /* UpdatesProgressWindowController.swift */; };
 		439D6EB2292F7741005C9935 /* UpdatesProgressWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 439D6EB0292F7741005C9935 /* UpdatesProgressWindowController.xib */; };
+		43B3C06A2952F15A00E0289C /* ConfigureSchemaRegistryFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43B3C0682952F15A00E0289C /* ConfigureSchemaRegistryFormViewController.swift */; };
+		43B3C06B2952F15A00E0289C /* ConfigureSchemaRegistryFormViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B3C0692952F15A00E0289C /* ConfigureSchemaRegistryFormViewController.xib */; };
 		43CBADD4290FB8D70066C7CE /* PublishRecordFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CBADD2290FB8D70066C7CE /* PublishRecordFormViewController.swift */; };
 		43CBADD5290FB8D70066C7CE /* PublishRecordFormViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43CBADD3290FB8D70066C7CE /* PublishRecordFormViewController.xib */; };
 		43CD621928CE24B000095144 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CD621828CE24B000095144 /* AppDelegate.swift */; };
@@ -124,6 +126,8 @@
 		4396EAE02905B0D200A15D25 /* Tabs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tabs.swift; sourceTree = "<group>"; };
 		439D6EAF292F7741005C9935 /* UpdatesProgressWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdatesProgressWindowController.swift; sourceTree = "<group>"; };
 		439D6EB0292F7741005C9935 /* UpdatesProgressWindowController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UpdatesProgressWindowController.xib; sourceTree = "<group>"; };
+		43B3C0682952F15A00E0289C /* ConfigureSchemaRegistryFormViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigureSchemaRegistryFormViewController.swift; sourceTree = "<group>"; };
+		43B3C0692952F15A00E0289C /* ConfigureSchemaRegistryFormViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ConfigureSchemaRegistryFormViewController.xib; sourceTree = "<group>"; };
 		43CBADD2290FB8D70066C7CE /* PublishRecordFormViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublishRecordFormViewController.swift; sourceTree = "<group>"; };
 		43CBADD3290FB8D70066C7CE /* PublishRecordFormViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PublishRecordFormViewController.xib; sourceTree = "<group>"; };
 		43CD621528CE24B000095144 /* Franz.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Franz.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -217,6 +221,8 @@
 				43CD622E28CE258100095144 /* Backend.swift */,
 				43CD623028CE258F00095144 /* BackendExtensions.swift */,
 				437887F528E9FE5900D0B263 /* BrokerDetailView.swift */,
+				43B3C0682952F15A00E0289C /* ConfigureSchemaRegistryFormViewController.swift */,
+				43B3C0692952F15A00E0289C /* ConfigureSchemaRegistryFormViewController.xib */,
 				43CD624628CE3B5D00095144 /* ConnectionDetailsFormViewController.swift */,
 				43CD624728CE3B5D00095144 /* ConnectionDetailsFormViewController.xib */,
 				43804AB628D1A014002880FE /* ConnectionTableCellView.swift */,
@@ -397,6 +403,7 @@
 				431C698328F2E0C60082986A /* NewTopicFormViewController.xib in Resources */,
 				439D6EB2292F7741005C9935 /* UpdatesProgressWindowController.xib in Resources */,
 				43804AB528D19ACD002880FE /* WelcomeWindowConnectionsViewController.xib in Resources */,
+				43B3C06B2952F15A00E0289C /* ConfigureSchemaRegistryFormViewController.xib in Resources */,
 				4396EADB290576A300A15D25 /* ResourceConfigTableViewController.xib in Resources */,
 				43CD624928CE3B5D00095144 /* ConnectionDetailsFormViewController.xib in Resources */,
 				436E720728D75B0500ECBF49 /* WorkspaceDetailViewController.xib in Resources */,
@@ -506,6 +513,7 @@
 				4314EDF828D85E0E00431770 /* SidebarGroupCellView.swift in Sources */,
 				436E71FA28D7511400ECBF49 /* WorkspaceWindowController.swift in Sources */,
 				43D3AEA628FFD8D100D52E92 /* Pasteboard.swift in Sources */,
+				43B3C06A2952F15A00E0289C /* ConfigureSchemaRegistryFormViewController.swift in Sources */,
 				433C5E8B29066310005F4C4B /* Infos.swift in Sources */,
 				437887F628E9FE5900D0B263 /* BrokerDetailView.swift in Sources */,
 				436E720D28D760BF00ECBF49 /* SidebarEntryCellView.swift in Sources */,

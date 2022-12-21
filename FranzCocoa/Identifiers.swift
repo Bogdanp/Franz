@@ -12,6 +12,8 @@ extension NSUserInterfaceItemIdentifier {
   static let TopicMenuItem = Self("TopicMenuItem")
   static let NewTopicMenuItem = Self("NewTopicMenuItem")
   static let PublishMenuItem = Self("PublishMenuItem")
+  static let SchemaRegistryMenuItem = Self("SchemaRegistryMenuItem")
+  static let ConfigureMenuItem = Self("ConfigureMenuItem")
 
   static let GroupOffsetsTopic = Self("GroupOffsets.Topic")
   static let GroupOffsetsOffset = Self("GroupOffsets.Offset")

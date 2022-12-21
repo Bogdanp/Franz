@@ -357,6 +357,16 @@
                         </items>
                     </menu>
                 </menuItem>
+                <menuItem title="Schema Registry" identifier="SchemaRegistryMenuItem" id="wcC-Z0-3vj">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <menu key="submenu" title="Schema Registry" id="gIg-oV-BM1">
+                        <items>
+                            <menuItem title="Configure..." identifier="ConfigureMenuItem" id="cN4-Xm-Agr">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
                 <menuItem title="View" id="H8h-7b-M4v">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="View" id="HyV-fh-RgO">
