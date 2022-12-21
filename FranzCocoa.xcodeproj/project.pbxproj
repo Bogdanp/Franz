@@ -45,6 +45,10 @@
 		439D6EB2292F7741005C9935 /* UpdatesProgressWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 439D6EB0292F7741005C9935 /* UpdatesProgressWindowController.xib */; };
 		43B3C06A2952F15A00E0289C /* ConfigureSchemaRegistryFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43B3C0682952F15A00E0289C /* ConfigureSchemaRegistryFormViewController.swift */; };
 		43B3C06B2952F15A00E0289C /* ConfigureSchemaRegistryFormViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B3C0692952F15A00E0289C /* ConfigureSchemaRegistryFormViewController.xib */; };
+		43B3C06E2952FB9000E0289C /* RecordDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43B3C06C2952FB9000E0289C /* RecordDetailViewController.swift */; };
+		43B3C06F2952FB9000E0289C /* RecordDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B3C06D2952FB9000E0289C /* RecordDetailViewController.xib */; };
+		43B3C0722952FFFF00E0289C /* RecordWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43B3C0702952FFFF00E0289C /* RecordWindowController.swift */; };
+		43B3C0732952FFFF00E0289C /* RecordWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B3C0712952FFFF00E0289C /* RecordWindowController.xib */; };
 		43CBADD4290FB8D70066C7CE /* PublishRecordFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CBADD2290FB8D70066C7CE /* PublishRecordFormViewController.swift */; };
 		43CBADD5290FB8D70066C7CE /* PublishRecordFormViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43CBADD3290FB8D70066C7CE /* PublishRecordFormViewController.xib */; };
 		43CD621928CE24B000095144 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CD621828CE24B000095144 /* AppDelegate.swift */; };
@@ -128,6 +132,10 @@
 		439D6EB0292F7741005C9935 /* UpdatesProgressWindowController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UpdatesProgressWindowController.xib; sourceTree = "<group>"; };
 		43B3C0682952F15A00E0289C /* ConfigureSchemaRegistryFormViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigureSchemaRegistryFormViewController.swift; sourceTree = "<group>"; };
 		43B3C0692952F15A00E0289C /* ConfigureSchemaRegistryFormViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ConfigureSchemaRegistryFormViewController.xib; sourceTree = "<group>"; };
+		43B3C06C2952FB9000E0289C /* RecordDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordDetailViewController.swift; sourceTree = "<group>"; };
+		43B3C06D2952FB9000E0289C /* RecordDetailViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RecordDetailViewController.xib; sourceTree = "<group>"; };
+		43B3C0702952FFFF00E0289C /* RecordWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordWindowController.swift; sourceTree = "<group>"; };
+		43B3C0712952FFFF00E0289C /* RecordWindowController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RecordWindowController.xib; sourceTree = "<group>"; };
 		43CBADD2290FB8D70066C7CE /* PublishRecordFormViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublishRecordFormViewController.swift; sourceTree = "<group>"; };
 		43CBADD3290FB8D70066C7CE /* PublishRecordFormViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PublishRecordFormViewController.xib; sourceTree = "<group>"; };
 		43CD621528CE24B000095144 /* Franz.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Franz.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -248,6 +256,10 @@
 				43D3AEAA28FFDF3500D52E92 /* PreferencesWindowController.xib */,
 				43CBADD2290FB8D70066C7CE /* PublishRecordFormViewController.swift */,
 				43CBADD3290FB8D70066C7CE /* PublishRecordFormViewController.xib */,
+				43B3C06C2952FB9000E0289C /* RecordDetailViewController.swift */,
+				43B3C06D2952FB9000E0289C /* RecordDetailViewController.xib */,
+				43B3C0702952FFFF00E0289C /* RecordWindowController.swift */,
+				43B3C0712952FFFF00E0289C /* RecordWindowController.xib */,
 				4396EAD8290576A300A15D25 /* ResourceConfigTableViewController.swift */,
 				4396EAD9290576A300A15D25 /* ResourceConfigTableViewController.xib */,
 				43CD623228CE25F300095144 /* resources */,
@@ -398,6 +410,7 @@
 				43CBADD5290FB8D70066C7CE /* PublishRecordFormViewController.xib in Resources */,
 				4395503928FD45B000CC0050 /* GroupOffsetsOutlineViewController.xib in Resources */,
 				43CD623A28CE27DB00095144 /* WelcomeWindowController.xib in Resources */,
+				43B3C06F2952FB9000E0289C /* RecordDetailViewController.xib in Resources */,
 				436E720F28D760D400ECBF49 /* SidebarEntryCellView.xib in Resources */,
 				436E71FB28D7511400ECBF49 /* WorkspaceWindowController.xib in Resources */,
 				431C698328F2E0C60082986A /* NewTopicFormViewController.xib in Resources */,
@@ -415,6 +428,7 @@
 				43804AB928D1A026002880FE /* ConnectionTableCellView.xib in Resources */,
 				43D3AEAC28FFDF3500D52E92 /* PreferencesWindowController.xib in Resources */,
 				437A77E0290D5AA1001965B0 /* TopicRecordsTableViewController.xib in Resources */,
+				43B3C0732952FFFF00E0289C /* RecordWindowController.xib in Resources */,
 				436E720328D759F400ECBF49 /* WorkspaceSidebarViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -476,8 +490,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				43B3C06E2952FB9000E0289C /* RecordDetailViewController.swift in Sources */,
 				43196F8C28F1DB94003C793B /* GroupDetailView.swift in Sources */,
 				43D3AEA828FFD96500D52E92 /* Defaults.swift in Sources */,
+				43B3C0722952FFFF00E0289C /* RecordWindowController.swift in Sources */,
 				43CD622F28CE258100095144 /* Backend.swift in Sources */,
 				431C697F28F2C1A70082986A /* StringExtensions.swift in Sources */,
 				436E720228D759F400ECBF49 /* WorkspaceSidebarViewController.swift in Sources */,

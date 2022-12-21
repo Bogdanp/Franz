@@ -360,7 +360,9 @@ class TopicRecordsTableViewController: NSViewController {
   }
 
   private func view(record: IteratorRecord) {
-    print("record=\(record)")
+    let window = RecordWindowController()
+    window.configure(withRecord: record)
+    window.showWindow(self)
   }
 
   @objc func didPressSegmentedControl(_ sender: NSSegmentedControl) {
