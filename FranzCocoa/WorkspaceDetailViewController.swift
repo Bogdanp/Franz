@@ -88,12 +88,15 @@ protocol WorkspaceDetailDelegate: AnyObject {
 
 // MARK: - NSViewController
 extension NSViewController {
-  func fullSizeConstraints(forSubview subview: NSView) -> [NSLayoutConstraint] {
+  func fullSizeConstraints(
+    forSubview subview: NSView,
+    relativeTo view: NSView? = nil
+  ) -> [NSLayoutConstraint] {
     let leading = NSLayoutConstraint(
       item: subview,
       attribute: .leading,
       relatedBy: .equal,
-      toItem: self.view,
+      toItem: view ?? self.view,
       attribute: .leading,
       multiplier: 1.0,
       constant: 0.0
@@ -102,7 +105,7 @@ extension NSViewController {
       item: subview,
       attribute: .trailing,
       relatedBy: .equal,
-      toItem: self.view,
+      toItem: view ?? self.view,
       attribute: .trailing,
       multiplier: 1.0,
       constant: 0.0
@@ -111,7 +114,7 @@ extension NSViewController {
       item: subview,
       attribute: .top,
       relatedBy: .equal,
-      toItem: self.view,
+      toItem: view ?? self.view,
       attribute: .top,
       multiplier: 1.0,
       constant: 0.0
@@ -120,7 +123,7 @@ extension NSViewController {
       item: subview,
       attribute: .bottom,
       relatedBy: .equal,
-      toItem: self.view,
+      toItem: view ?? self.view,
       attribute: .bottom,
       multiplier: 1.0,
       constant: 0.0
