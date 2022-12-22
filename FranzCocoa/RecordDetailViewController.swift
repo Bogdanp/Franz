@@ -24,6 +24,10 @@ class RecordDetailViewController: NSViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
+    partitionIdField.isSelectable = true
+    offsetField.isSelectable = true
+    timestampField.isSelectable = true
+
     if let data = record?.key, let code = String(data: data, encoding: .utf8) {
       keyEditorCtl.configure(code: code, language: .json, border: .noBorder)
     } else {
