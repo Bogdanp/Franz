@@ -18,9 +18,6 @@ class RecordDetailViewController: NSViewController {
 
   private var currentTab = Tab.key
 
-  private var keyEditorCtl = EditorViewController()
-  private var valueEditorCtl = EditorViewController()
-
   override func viewDidLoad() {
     super.viewDidLoad()
 
@@ -28,21 +25,13 @@ class RecordDetailViewController: NSViewController {
     offsetField.isSelectable = true
     timestampField.isSelectable = true
 
-    if let data = record?.key, let code = String(data: data, encoding: .utf8) {
-      keyEditorCtl.configure(code: code, language: .json, border: .noBorder)
-    } else {
-      keyEditorCtl.configure(code: "", language: .json)
-    }
-    keyEditorCtl.isEditable = false
+    let keyDataCtl = DataViewController()
+    keyDataCtl.configure(withData: record?.key ?? Data())
+    tabView.addTabViewItem(.init(viewController: keyDataCtl))
 
-    if let data = record?.value, let code = String(data: data, encoding: .utf8) {
-      valueEditorCtl.configure(code: code, language: .json, border: .noBorder)
-    } else {
-      valueEditorCtl.configure(code: "", language: .json)
-    }
-    valueEditorCtl.isEditable = false
-    tabView.addTabViewItem(.init(viewController: keyEditorCtl))
-    tabView.addTabViewItem(.init(viewController: valueEditorCtl))
+    let valueDataCtl = DataViewController()
+    valueDataCtl.configure(withData: record?.value ?? Data())
+    tabView.addTabViewItem(.init(viewController: valueDataCtl))
 
     reset()
   }
@@ -82,22 +71,5 @@ class RecordDetailViewController: NSViewController {
   @IBAction func didPushValueButton(_ sender: Any) {
     currentTab = .value
     reset()
-  }
-
-  @IBAction func didPushFormatButton(_ sender: Any) {
-    switch currentTab {
-    case .key:
-      if let data = record?.key,
-         let code = String(data: data, encoding: .utf8),
-         let formatted = Error.wait(Backend.shared.ppJson(code)) {
-        keyEditorCtl.configure(code: formatted, language: .json)
-      }
-    case .value:
-      if let data = record?.value,
-         let code = String(data: data, encoding: .utf8),
-         let formatted = Error.wait(Backend.shared.ppJson(code)) {
-        valueEditorCtl.configure(code: formatted, language: .json)
-      }
-    }
   }
 }

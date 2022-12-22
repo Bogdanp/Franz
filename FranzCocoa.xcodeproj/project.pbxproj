@@ -19,6 +19,8 @@
 		433C5E8B29066310005F4C4B /* Infos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 433C5E8A29066310005F4C4B /* Infos.swift */; };
 		43453F3D291505A6000CE90E /* Timed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43453F3C291505A6000CE90E /* Timed.swift */; };
 		435427F5293F50230040AE04 /* fixtures in Resources */ = {isa = PBXBuildFile; fileRef = 435427F4293F50230040AE04 /* fixtures */; };
+		435EBE5529542E7C00DCFEBF /* DataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 435EBE5329542E7C00DCFEBF /* DataViewController.swift */; };
+		435EBE5629542E7C00DCFEBF /* DataViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 435EBE5429542E7C00DCFEBF /* DataViewController.xib */; };
 		436E71FA28D7511400ECBF49 /* WorkspaceWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436E71F828D7511400ECBF49 /* WorkspaceWindowController.swift */; };
 		436E71FB28D7511400ECBF49 /* WorkspaceWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 436E71F928D7511400ECBF49 /* WorkspaceWindowController.xib */; };
 		436E720228D759F400ECBF49 /* WorkspaceSidebarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436E720028D759F400ECBF49 /* WorkspaceSidebarViewController.swift */; };
@@ -105,6 +107,8 @@
 		433C5E8A29066310005F4C4B /* Infos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Infos.swift; sourceTree = "<group>"; };
 		43453F3C291505A6000CE90E /* Timed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timed.swift; sourceTree = "<group>"; };
 		435427F4293F50230040AE04 /* fixtures */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fixtures; sourceTree = "<group>"; };
+		435EBE5329542E7C00DCFEBF /* DataViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataViewController.swift; sourceTree = "<group>"; };
+		435EBE5429542E7C00DCFEBF /* DataViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DataViewController.xib; sourceTree = "<group>"; };
 		436E71F828D7511400ECBF49 /* WorkspaceWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceWindowController.swift; sourceTree = "<group>"; };
 		436E71F928D7511400ECBF49 /* WorkspaceWindowController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WorkspaceWindowController.xib; sourceTree = "<group>"; };
 		436E720028D759F400ECBF49 /* WorkspaceSidebarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceSidebarViewController.swift; sourceTree = "<group>"; };
@@ -235,6 +239,8 @@
 				43CD624728CE3B5D00095144 /* ConnectionDetailsFormViewController.xib */,
 				43804AB628D1A014002880FE /* ConnectionTableCellView.swift */,
 				43804AB828D1A026002880FE /* ConnectionTableCellView.xib */,
+				435EBE5329542E7C00DCFEBF /* DataViewController.swift */,
+				435EBE5429542E7C00DCFEBF /* DataViewController.xib */,
 				43D3AEA728FFD96500D52E92 /* Defaults.swift */,
 				43E5AE8B291245E000C74966 /* DispatchQueue.swift */,
 				4322BBD82924DED8002358C3 /* Editor.swift */,
@@ -427,6 +433,7 @@
 				43CD621E28CE24B100095144 /* MainMenu.xib in Resources */,
 				43804AB928D1A026002880FE /* ConnectionTableCellView.xib in Resources */,
 				43D3AEAC28FFDF3500D52E92 /* PreferencesWindowController.xib in Resources */,
+				435EBE5629542E7C00DCFEBF /* DataViewController.xib in Resources */,
 				437A77E0290D5AA1001965B0 /* TopicRecordsTableViewController.xib in Resources */,
 				43B3C0732952FFFF00E0289C /* RecordWindowController.xib in Resources */,
 				436E720328D759F400ECBF49 /* WorkspaceSidebarViewController.xib in Resources */,
@@ -522,6 +529,7 @@
 				43804AB428D19ACD002880FE /* WelcomeWindowConnectionsViewController.swift in Sources */,
 				43CBADD4290FB8D70066C7CE /* PublishRecordFormViewController.swift in Sources */,
 				43CD623128CE258F00095144 /* BackendExtensions.swift in Sources */,
+				435EBE5529542E7C00DCFEBF /* DataViewController.swift in Sources */,
 				43D03DD628FAFE3B0049D44D /* Notifications.swift in Sources */,
 				4396EAE12905B0D200A15D25 /* Tabs.swift in Sources */,
 				437A77DF290D5AA1001965B0 /* TopicRecordsTableViewController.swift in Sources */,
