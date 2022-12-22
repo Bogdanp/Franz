@@ -1,5 +1,11 @@
 import Cocoa
 
+enum DataFormat: Int {
+  case binary
+  case json
+  case text
+}
+
 class DataViewController: NSViewController {
   private var data: Data!
 
@@ -9,14 +15,9 @@ class DataViewController: NSViewController {
 
   private var contentViewConstraints = [NSLayoutConstraint]()
 
-  private enum Format: Int {
-    case binary
-    case plain
-    case json
-  }
+  private var format = DataFormat.binary
 
-  private var format = Format.binary
-
+  private var binaryCtl = HexViewerViewController()
   private var editorCtl = EditorViewController()
 
   override func viewDidLoad() {
@@ -26,28 +27,34 @@ class DataViewController: NSViewController {
   }
 
   private func reset() {
+    formatPopup.selectItem(withTag: format.rawValue)
+    formatButton.isEnabled = false
     switch format {
     case .binary:
-      formatButton.isEnabled = false
-    case .plain:
-      if let text = String(data: data, encoding: .utf8) {
-        editorCtl.configure(code: text, language: .plain)
-      }
-      formatButton.isEnabled = false
+      binaryCtl.configure(withData: data)
     case .json:
       if let code = String(data: data, encoding: .utf8) {
         editorCtl.configure(code: code, language: .json)
       }
       formatButton.isEnabled = true
+    case .text:
+      if let text = String(data: data, encoding: .utf8) {
+        editorCtl.configure(code: text, language: .plain)
+      }
     }
 
+    binaryCtl.view.removeFromSuperviewWithoutNeedingDisplay()
+    binaryCtl.removeFromParent()
     editorCtl.view.removeFromSuperviewWithoutNeedingDisplay()
     editorCtl.removeFromParent()
     NSLayoutConstraint.deactivate(contentViewConstraints)
     switch format {
     case .binary:
-      ()
-    case .plain, .json:
+      addChild(binaryCtl)
+      contentView.addSubview(binaryCtl.view)
+      binaryCtl.view.setFrameOrigin(.zero)
+      binaryCtl.view.setFrameSize(contentView.frame.size)
+    case  .json, .text:
       addChild(editorCtl)
       contentView.addSubview(editorCtl.view)
       editorCtl.view.setFrameOrigin(.zero)
@@ -61,12 +68,13 @@ class DataViewController: NSViewController {
     }
   }
 
-  func configure(withData data: Data) {
+  func configure(withData data: Data, andFormat format: DataFormat = .binary) {
     self.data = data
+    self.format = format
   }
 
   @IBAction func didChangeFormat(_ sender: NSPopUpButton) {
-    guard let format = Format(rawValue: sender.selectedTag()) else {
+    guard let format = DataFormat(rawValue: sender.selectedTag()) else {
       return
     }
     self.format = format

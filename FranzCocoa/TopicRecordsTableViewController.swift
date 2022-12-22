@@ -361,7 +361,11 @@ class TopicRecordsTableViewController: NSViewController {
 
   private func view(record: IteratorRecord) {
     let ctl = RecordWindowController()
-    ctl.configure(withRecord: record)
+    ctl.configure(
+      withRecord: record,
+      andKeyFormat: options.keyFormat.dataFormat,
+      andValueFormat: options.valueFormat.dataFormat
+    )
     ctl.showWindow(self)
     ctl.window?.center()
   }
@@ -762,6 +766,17 @@ fileprivate enum ContentType: Codable {
       return .json
     case .text:
       return .plainText
+    }
+  }
+
+  var dataFormat: DataFormat {
+    switch self {
+    case .binary:
+      return .binary
+    case .json:
+      return .json
+    case .text:
+      return .text
     }
   }
 }

@@ -2,6 +2,8 @@ import Cocoa
 
 class RecordDetailViewController: NSViewController {
   private var record: IteratorRecord?
+  private var keyFormat = DataFormat.binary
+  private var valueFormat = DataFormat.binary
 
   @IBOutlet weak var partitionIdField: NSTextField!
   @IBOutlet weak var offsetField: NSTextField!
@@ -26,11 +28,11 @@ class RecordDetailViewController: NSViewController {
     timestampField.isSelectable = true
 
     let keyDataCtl = DataViewController()
-    keyDataCtl.configure(withData: record?.key ?? Data())
+    keyDataCtl.configure(withData: record?.key ?? Data(), andFormat: keyFormat)
     tabView.addTabViewItem(.init(viewController: keyDataCtl))
 
     let valueDataCtl = DataViewController()
-    valueDataCtl.configure(withData: record?.value ?? Data())
+    valueDataCtl.configure(withData: record?.value ?? Data(), andFormat: valueFormat)
     tabView.addTabViewItem(.init(viewController: valueDataCtl))
 
     reset()
@@ -59,8 +61,14 @@ class RecordDetailViewController: NSViewController {
     }
   }
 
-  func configure(withRecord record: IteratorRecord) {
+  func configure(
+    withRecord record: IteratorRecord,
+    andKeyFormat keyFormat: DataFormat = .binary,
+    andValueFormat valueFormat: DataFormat = .binary
+  ) {
     self.record = record
+    self.keyFormat = keyFormat
+    self.valueFormat = valueFormat
   }
 
   @IBAction func didPushKeyButton(_ sender: Any) {

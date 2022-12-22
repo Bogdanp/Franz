@@ -48,15 +48,15 @@
                             </connections>
                         </button>
                         <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="bv3-4J-8A9">
-                            <rect key="frame" x="3" y="1" width="98" height="25"/>
+                            <rect key="frame" x="3" y="2" width="78" height="25"/>
                             <popUpButtonCell key="cell" type="push" title="Binary" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="FVo-02-zmU" id="lQI-Gc-i1f">
                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" metaFont="menu"/>
                                 <menu key="menu" id="MmT-Dx-YqK">
                                     <items>
                                         <menuItem title="Binary" state="on" id="FVo-02-zmU"/>
-                                        <menuItem title="Plain Text" tag="1" id="9ky-2T-NFf"/>
-                                        <menuItem title="JSON" tag="2" id="Lhr-hw-WOA"/>
+                                        <menuItem title="JSON" tag="1" id="Lhr-hw-WOA"/>
+                                        <menuItem title="Text" tag="2" id="9ky-2T-NFf"/>
                                     </items>
                                 </menu>
                             </popUpButtonCell>
@@ -75,7 +75,7 @@
                         <constraint firstItem="KhZ-gB-XOj" firstAttribute="top" secondItem="nnE-fn-kQl" secondAttribute="bottom" id="ZZD-mS-jyD"/>
                         <constraint firstItem="aOh-wr-fkA" firstAttribute="top" secondItem="KhZ-gB-XOj" secondAttribute="bottom" constant="6" id="bUX-Ye-f4U"/>
                         <constraint firstItem="bv3-4J-8A9" firstAttribute="leading" secondItem="6al-f1-Tin" secondAttribute="leading" constant="6" id="i1I-qQ-KXi"/>
-                        <constraint firstItem="bv3-4J-8A9" firstAttribute="top" secondItem="KhZ-gB-XOj" secondAttribute="bottom" constant="6" id="mS3-wJ-rQs"/>
+                        <constraint firstItem="bv3-4J-8A9" firstAttribute="top" secondItem="KhZ-gB-XOj" secondAttribute="bottom" constant="5" id="mS3-wJ-rQs"/>
                         <constraint firstItem="KhZ-gB-XOj" firstAttribute="leading" secondItem="6al-f1-Tin" secondAttribute="leading" id="oWO-yy-uJq"/>
                     </constraints>
                 </visualEffectView>
