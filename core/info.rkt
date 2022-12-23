@@ -7,7 +7,7 @@
                "base"
                "confluent-schema-registry-lib"
                "db-lib"
-               "deta-lib"
+               ["deta-lib" #:version "0.11"]
                "json-lexer-lib"
                ["kafka-lib" #:version "0.3"]
                "libsqlite3"
