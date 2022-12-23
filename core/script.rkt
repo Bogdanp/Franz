@@ -75,7 +75,9 @@ SCRIPT
           (copy-port in out)))
       (call-with-lua-extlib
        (lambda ()
-         (dynamic-require path '#%chunk))))
+         (define modpath `(file ,(path->string path)))
+         (dynamic-require `(submod ,modpath configure-runtime) #f void)
+         (dynamic-require modpath '#%chunk))))
     (lambda ()
       (delete-file path))))
 
