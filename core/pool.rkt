@@ -474,3 +474,197 @@
   (findf
    (λ (t) (string=? (k:TopicMetadata-name t) name))
    (k:Metadata-topics (k:client-metadata c))))
+
+
+;; tests ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(module+ test
+  (require (prefix-in k: kafka/consumer)
+           rackunit
+           rackunit/text-ui)
+
+  (define test-details
+    (make-ConnectionDetails
+     #:name "Integration Tests"
+     #:bootstrap-host "127.0.0.1"
+     #:bootstrap-port 9092
+     #:use-ssl #f))
+
+  (define integration-tests
+    (test-suite
+     "pool integration"
+     #:before (λ () (current-pool (make-pool)))
+     #:after  (λ () (pool-shutdown))
+
+     (test-case "client setup, teardown"
+       (define id (pool-open test-details))
+       (check-not-false id)
+       (check-false (null? (Metadata-brokers (pool-get-metadata id #f))))
+       (check-false (null? (Metadata-brokers (pool-get-metadata id #t))))
+       (check-not-false (pool-close id)))
+
+     (test-case "create topic, publish, delete"
+       (define t "franz_integration_create_example")
+       (define id (pool-open test-details))
+       (test-begin
+         (define res (pool-create-topic id t 2 1 (hash)))
+         (check-equal? (k:CreatedTopic-error-code res) 0)
+         (define conf (pool-get-resource-configs id 'topic t))
+         (check-false (null? conf)))
+       (pool-delete-topic id t)
+       (pool-close id))
+
+     (test-case "publish, iterate"
+       (define t "franz_integration_publish_iterate_example")
+       (define id (pool-open test-details))
+       (test-begin
+         (pool-create-topic id t 2 1 (hash))
+         (define it (pool-open-iterator id t 'latest))
+         (let-values ([(script records) (pool-get-records it (* 1 1024 1024))])
+           (check-false script)
+           (check-equal? (vector-length records) 0))
+         (pool-publish-record id t 0 #"transaction-1" #"100")
+         (let-values ([(script records) (pool-get-records it (* 1 1024 1024))])
+           (check-false script)
+           (check-equal? (vector-length records) 1)
+           (check-equal? (k:record-key (vector-ref records 0)) #"transaction-1"))
+         (pool-publish-record id t 1 #"transaction-2" #"50")
+         (let-values ([(script records) (pool-get-records it (* 1 1024 1024))])
+           (check-false script)
+           (check-equal? (vector-length records) 1)
+           (check-equal? (k:record-value (vector-ref records 0)) #"50"))
+         (check-true (pool-activate-script id t "a script"))
+         (pool-reset-iterator it 'earliest)
+         (let-values ([(script records) (pool-get-records it (* 1 1024 1024))])
+           (check-equal? script "a script")
+           (check-equal? (vector-length records) 2))
+         (check-true (pool-deactivate-script id t))
+         (let-values ([(script records) (pool-get-records it (* 1 1024 1024))])
+           (check-false script)
+           (check-equal? records (vector)))
+         (pool-close-iterator it))
+       (pool-delete-topic id t)
+       (pool-close id))
+
+     (test-case "consumer groups"
+       (define g "franz_integration_consumer_group")
+       (define t "franz_integration_consumer_groups_example")
+       (define id (pool-open test-details))
+       (define (consume n)
+         (define c (k:make-consumer (k:make-client) g t))
+         (dynamic-wind
+           void
+           (lambda ()
+             (define records
+               (let loop ([consumed 0]
+                          [records null])
+                 (cond
+                   [(< consumed n)
+                    (define-values (type data)
+                      (sync (k:consume-evt c)))
+                    (case type
+                      [(records)
+                       (loop (+ consumed (vector-length data))
+                             (append records (vector->list data)))]
+                      [else
+                       (loop consumed records)])]
+                   [else
+                    records])))
+             (begin0 records
+               (k:consumer-commit c)))
+           (lambda ()
+             (k:consumer-stop c))))
+       (test-begin
+         (pool-create-topic id t 2 1 (hash))
+         (pool-publish-record id t 0 #"partition-0-record-0" #f)
+         (pool-publish-record id t 0 #"partition-0-record-1" #f)
+         (pool-publish-record id t 1 #"partition-1-record-0" #f)
+         (pool-delete-group id g)
+         (check-equal?
+          (for/hash ([r (in-list (consume 3))])
+            (values (k:record-key r) #t))
+          (hash
+           #"partition-0-record-0" #t
+           #"partition-0-record-1" #t
+           #"partition-1-record-0" #t))
+         (check-not-false
+          (findf (λ (group) (equal? (Group-id group) g))
+                 (Metadata-groups (pool-get-metadata id #t))))
+         (check-equal?
+          (pool-fetch-offsets id g)
+          (make-GroupOffsets
+           #:group-id g
+           #:topics (list
+                     (make-GroupTopic
+                      #:name t
+                      #:partitions (list
+                                    (make-GroupPartitionOffset
+                                     #:partition-id 0
+                                     #:high-watermark 2
+                                     #:offset 2
+                                     #:member-id #f
+                                     #:client-id #f
+                                     #:client-host #f)
+                                    (make-GroupPartitionOffset
+                                     #:partition-id 1
+                                     #:high-watermark 1
+                                     #:offset 1
+                                     #:member-id #f
+                                     #:client-id #f
+                                     #:client-host #f))))
+           #:state 'empty))
+         (pool-reset-topic-offsets id g t 'earliest)
+         (check-equal?
+          (pool-fetch-offsets id g)
+          (make-GroupOffsets
+           #:group-id g
+           #:topics (list
+                     (make-GroupTopic
+                      #:name t
+                      #:partitions (list
+                                    (make-GroupPartitionOffset
+                                     #:partition-id 0
+                                     #:high-watermark 2
+                                     #:offset 0
+                                     #:member-id #f
+                                     #:client-id #f
+                                     #:client-host #f)
+                                    (make-GroupPartitionOffset
+                                     #:partition-id 1
+                                     #:high-watermark 1
+                                     #:offset 0
+                                     #:member-id #f
+                                     #:client-id #f
+                                     #:client-host #f))))
+           #:state 'empty))
+         (pool-reset-partition-offset id g t 0 'offset 1)
+         (pool-reset-partition-offset id g t 1 'latest #f)
+         (check-equal?
+          (pool-fetch-offsets id g)
+          (make-GroupOffsets
+           #:group-id g
+           #:topics (list
+                     (make-GroupTopic
+                      #:name t
+                      #:partitions (list
+                                    (make-GroupPartitionOffset
+                                     #:partition-id 0
+                                     #:high-watermark 2
+                                     #:offset 1
+                                     #:member-id #f
+                                     #:client-id #f
+                                     #:client-host #f)
+                                    (make-GroupPartitionOffset
+                                     #:partition-id 1
+                                     #:high-watermark 1
+                                     #:offset 1
+                                     #:member-id #f
+                                     #:client-id #f
+                                     #:client-host #f))))
+           #:state 'empty)))
+       (pool-delete-group id g)
+       (pool-delete-topic id t)
+       (pool-close id))))
+
+  (when (equal? (getenv "FRANZ_INTEGRATION_TESTS") "x")
+    (run-tests integration-tests)))
