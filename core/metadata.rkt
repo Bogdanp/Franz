@@ -26,6 +26,11 @@
  touch-connection!
  delete-connection!
 
+ (schema-out schema-registry)
+ get-schema-registry
+ insert-schema-registry!
+ update-schema-registry!
+
  reset-trial-deadline!)
 
 (define-logger metadata)
@@ -86,6 +91,7 @@
    [(aws-region sql-null) string/f #:nullable]
    [(aws-access-key-id sql-null) string/f #:nullable]
    [(ssl-on? #f) boolean/f]
+   [(schema-registry-id sql-null) integer/f #:nullable]
    [(created-at (current-seconds)) integer/f]
    [(updated-at (current-seconds)) integer/f]
    [(last-used-at (current-seconds)) integer/f])
@@ -152,6 +158,62 @@
        (check-not-false (member c (get-connections)))
        (delete-connection! (connection-details-id c))
        (check-true (null? (get-connections)))))))
+
+
+;; schema-registry ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define schema-registry-kind/c
+  (or/c 'confluent))
+
+(define-schema schema-registry
+  #:table "schema_registries"
+  ([id id/f #:primary-key #:auto-increment]
+   [(kind 'confluent) symbol/f #:contract schema-registry-kind/c]
+   [url string/f]
+   [(username sql-null) string/f #:nullable]
+   [(password-id sql-null) string/f #:nullable]
+   [(created-at (current-seconds)) integer/f]
+   [(updated-at (current-seconds)) integer/f])
+  #:pre-persist-hook
+  (lambda (c)
+    (set-schema-registry-updated-at c (current-seconds))))
+
+(define/contract (get-schema-registry id)
+  (-> id/c (or/c #f schema-registry?))
+  (lookup conn (~> (from schema-registry #:as r)
+                   (where (= r.id ,id)))))
+
+(define/contract (insert-schema-registry! r)
+  (-> schema-registry? schema-registry?)
+  (insert-one! conn r))
+
+(define/contract (update-schema-registry! r)
+  (-> schema-registry? schema-registry?)
+  (update-one! conn r #:force? #t))
+
+(module+ test
+  (test-case "registry crud"
+    (call-with-test-connection
+     (lambda (_)
+       (define r
+         (insert-schema-registry!
+          (make-schema-registry
+           #:url "http://localhost:8080"
+           #:username "example"
+           #:password-id "password123")))
+       (define c
+         (insert-connection!
+          (make-connection-details
+           #:name "Example Connection"
+           #:schema-registry-id (schema-registry-id r))))
+       (check-equal? (get-schema-registry (connection-details-schema-registry-id c)) r)
+
+       (define updated-r
+         (~> (set-schema-registry-username r sql-null)
+             (set-schema-registry-password-id sql-null)))
+       (check-equal?
+        (update-schema-registry! updated-r)
+        (get-schema-registry (schema-registry-id r)))))))
 
 
 ;; license ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

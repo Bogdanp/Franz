@@ -12,6 +12,7 @@
          ;; For RPC:
          "connection-details.rkt"
          "lang-lua.rkt"
+         "schema-registry.rkt"
          "script.rkt"
          "workspace.rkt")
 

@@ -193,7 +193,8 @@ class ConnectionDetailsFormViewController: NSViewController {
       passwordId: password != nil ? passwordId : nil,
       awsRegion: awsRegion,
       awsAccessKeyId: awsAccessKeyId,
-      useSsl: enableSSLCheckbox.state == .on
+      useSsl: enableSSLCheckbox.state == .on,
+      schemaRegistryId: nil
     ))
   }
 }

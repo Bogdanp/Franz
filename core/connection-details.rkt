@@ -38,7 +38,8 @@
   [(password-id #f) : (Optional String) #:contract (or/c #f string?)]
   [(aws-region #f) : (Optional String) #:contract (or/c #f string?)]
   [(aws-access-key-id #f) : (Optional String) #:contract (or/c #f string?)]
-  [(use-ssl #f) : Bool #:contract boolean?])
+  [(use-ssl #f) : Bool #:contract boolean?]
+  [(schema-registry-id #f) : (Optional UVarint) #:contract (or/c #f exact-nonnegative-integer?)])
 
 (define (meta->AuthMechanism m)
   (case m
@@ -66,7 +67,8 @@
    #:password-id (sql-null->false (meta:connection-details-password-id c))
    #:aws-region (sql-null->false (meta:connection-details-aws-region c))
    #:aws-access-key-id (sql-null->false (meta:connection-details-aws-access-key-id c))
-   #:use-ssl (meta:connection-details-ssl-on? c)))
+   #:use-ssl (meta:connection-details-ssl-on? c)
+   #:schema-registry-id (sql-null->false (meta:connection-details-schema-registry-id c))))
 
 (define (ConnectionDetails->meta c)
   (define meta:c
@@ -79,7 +81,8 @@
      #:password-id (or (ConnectionDetails-password-id c) sql-null)
      #:aws-region (or (ConnectionDetails-aws-region c) sql-null)
      #:aws-access-key-id (or (ConnectionDetails-aws-access-key-id c) sql-null)
-     #:ssl-on? (ConnectionDetails-use-ssl c)))
+     #:ssl-on? (ConnectionDetails-use-ssl c)
+     #:schema-registry-id (or (ConnectionDetails-schema-registry-id c) sql-null)))
   (cond
     [(ConnectionDetails-id c)
      => (λ (id) (meta:set-connection-details-id meta:c id))]
