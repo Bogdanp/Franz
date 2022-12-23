@@ -363,11 +363,11 @@ class TopicRecordsTableViewController: NSViewController {
     let ctl = RecordWindowController()
     ctl.configure(
       withRecord: record,
+      andTopic: topic,
       andKeyFormat: options.keyFormat.dataFormat,
       andValueFormat: options.valueFormat.dataFormat
     )
-    ctl.showWindow(self)
-    ctl.window?.center()
+    ctl.show(self)
   }
 
   @objc func didPressSegmentedControl(_ sender: NSSegmentedControl) {

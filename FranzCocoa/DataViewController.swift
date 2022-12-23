@@ -35,12 +35,12 @@ class DataViewController: NSViewController {
     case .json:
       if let code = String(data: data, encoding: .utf8) {
         editorCtl.configure(code: code, language: .json)
+      } else {
+        editorCtl.configure(code: "", language: .json)
       }
       formatButton.isEnabled = true
     case .text:
-      if let text = String(data: data, encoding: .utf8) {
-        editorCtl.configure(code: text, language: .plain)
-      }
+      editorCtl.configure(code: String(decoding: data, as: UTF8.self), language: .plain)
     }
 
     binaryCtl.view.removeFromSuperviewWithoutNeedingDisplay()

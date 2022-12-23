@@ -1,6 +1,7 @@
 import Cocoa
 
 class RecordWindowController: NSWindowController {
+  private var topic: String?
   private var record: IteratorRecord?
   private lazy var detailCtl = RecordDetailViewController()
 
@@ -14,22 +15,29 @@ class RecordWindowController: NSWindowController {
   }
 
   private func reset() {
-    guard let record else { return }
-    window?.title = "Record@\(record.offset)"
+    guard let record, let topic else { return }
+    window?.title = "\(topic): Record \(record.partitionId)@\(record.offset)"
     window?.contentViewController = detailCtl
   }
 
   func configure(
     withRecord record: IteratorRecord,
+    andTopic topic: String,
     andKeyFormat keyFormat: DataFormat,
     andValueFormat valueFormat: DataFormat
   ) {
     self.record = record
+    self.topic = topic
     self.detailCtl.configure(
       withRecord: record,
       andKeyFormat: keyFormat,
       andValueFormat: valueFormat
     )
     self.reset()
+  }
+
+  func show(_ sender: Any) {
+    showWindow(sender)
+    window?.center()
   }
 }
