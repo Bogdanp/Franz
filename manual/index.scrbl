@@ -211,6 +211,17 @@ reset individual offsets by right-clicking any of the entries.
 You may only reset offsets if the consumer group is in the empty
 state.
 
+@subsection{Schema Registry}
+
+With a @tech{Workspace Window} in the foreground, you can configure a
+@deftech{Schema Registry} from the main menu by selecting ``Schema
+Registry'' @tt{->} ``Configure...''.  Once a registry is configured,
+records are automatically converted to JSON according to the schemas
+found in the registry before being displayed in the @tech{Records
+Table} and before being passed to any Lua scripts.  To remove a
+registry, open the configuration window and remove its URL then press
+``Save''.
+
 @section{Keyboard Shortcuts}
 
 @defkbd[(shift cmd 1)]{
@@ -244,11 +255,19 @@ state.
 
 @section{Known Issues and Limitations}
 
+If any of these limitations are showstoppers for you, please e-mail me
+at @tt{bogdan@"@"defn.io} and let me know.
+
 @subsection{Compression}
 
 The only compression formats currently supported are @tt{gzip} and
-@tt{lz4}.  If you need support for any other format, please e-mail me
-and let me know.
+@tt{lz4}.
+
+@subsection[#:tag "limitations-schema-registry"]{Schema Registry}
+
+The only type of @tech{schema registry} currently supported is the
+Confluent Schema Registry.  Protobuf schemas are currently not
+supported.
 
 @section[#:tag "ref"]{Scripting Reference}
 
