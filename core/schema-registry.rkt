@@ -7,6 +7,7 @@
          noise/serde
          racket/contract
          racket/match
+         threading
          (prefix-in meta: "metadata.rkt")
          "pool.rkt"
          "schema-registry/confluent.rkt")
@@ -31,7 +32,7 @@
     [else (raise-argument-error 'meta->SchemaRegistryKind "schema-registry-kind/c" m)]))
 
 (define (SchemaRegistryKind->meta m)
-  (case m
+  (match m
     [(SchemaRegistryKind.confluent) 'confluent]))
 
 (define (meta->SchemaRegistry r)
@@ -80,12 +81,14 @@
    (meta:update-schema-registry!
     (SchemaRegistry->meta r))))
 
-(define cust (make-custodian))
+(define-rpc (delete-schema-registry [_ id : UVarint])
+  (meta:delete-schema-registry! id))
+
 (define-rpc (activate-schema-registry [_ r : SchemaRegistry]
                                       [with-password password : (Optional String)]
                                       [in-workspace id : UVarint])
-  (pool-activate-registry id (parameterize ([current-custodian cust])
-                               (SchemaRegistry->impl r password))))
+  (~> (pool-call-in-context (λ () (SchemaRegistry->impl r password)))
+      (pool-activate-registry id _)))
 
 (define-rpc (deactivate-schema-registry [in-workspace id : UVarint])
   (pool-deactivate-registry id))

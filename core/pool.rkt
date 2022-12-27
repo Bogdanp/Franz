@@ -15,6 +15,7 @@
  pool?
  make-pool
  current-pool
+ pool-call-in-context
  pool-open
  pool-close
  pool-get-metadata
@@ -57,11 +58,11 @@
                ch
                (lambda (msg)
                  (match msg
-                   [`(make-conn ,res-ch ,nack ,conf)
-                    (define conn-promise
+                   [`(call-in-context ,res-ch ,nack ,proc)
+                    (define res-promise
                       (delay/thread
-                       (ConnectionDetails->client conf)))
-                    (state-add-req s (req conn-promise res-ch nack))]
+                       (proc)))
+                    (state-add-req s (req res-promise res-ch nack))]
 
                    [`(open ,res-ch ,nack ,client)
                     (define-values (client-id next-state)
@@ -275,7 +276,7 @@
                        (match-define (iterator cid topic impl)
                          (state-ref-iterator s id))
                        (values
-                        (state-ref-registry s id)
+                        (state-ref-registry s cid)
                         (state-ref-script s cid topic)
                         (k:get-records impl #:max-bytes max-bytes))))
                     (state-add-req s (req records res-ch nack))]
@@ -326,9 +327,14 @@
 (define current-pool
   (make-parameter (make-pool)))
 
+(define (pool-call-in-context proc [p (current-pool)])
+  (force (sync (pool-send p call-in-context proc))))
+
 (define (pool-open conf [p (current-pool)])
+  (define (make-client)
+    (ConnectionDetails->client conf))
   (define conn
-    (force (sync (pool-send p make-conn conf))))
+    (pool-call-in-context make-client p))
   (sync (pool-send p open conn)))
 
 (define (pool-close id [p (current-pool)])

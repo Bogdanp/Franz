@@ -30,6 +30,7 @@
  get-schema-registry
  insert-schema-registry!
  update-schema-registry!
+ delete-schema-registry!
 
  reset-trial-deadline!)
 
@@ -190,6 +191,12 @@
 (define/contract (update-schema-registry! r)
   (-> schema-registry? schema-registry?)
   (update-one! conn r #:force? #t))
+
+(define/contract (delete-schema-registry! id)
+  (-> id/c void?)
+  (query-exec conn (~> (from schema-registry #:as r)
+                       (where (= r.id ,id))
+                       (delete))))
 
 (module+ test
   (test-case "registry crud"

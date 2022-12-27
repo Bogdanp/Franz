@@ -105,9 +105,34 @@ class WorkspaceWindowController: NSWindowController {
       },
       onComplete: { id in
         self.id = id
+        if let schemaRegistryId = self.conn.schemaRegistryId,
+           let registry = Error.wait(Backend.shared.getSchemaRegistry(schemaRegistryId)) {
+          self.activateRegistry(registry)
+        }
         self.loadMetadata(forcingReload: false)
       }
     )
+  }
+
+  private func activateRegistry(_ registry: SchemaRegistry) {
+    var password: String?
+    if let passwordId = registry.passwordId {
+      switch Keychain.shared.get(passwordWithId: passwordId, forResource: "schema registry") {
+      case .success(let p):
+        password = p
+      default:
+        ()
+      }
+    }
+    _ = Error.wait(Backend.shared.activateSchemaRegistry(
+      registry,
+      withPassword: password,
+      inWorkspace: id
+    ))
+  }
+
+  private func deactivateRegistry() {
+    _ = Error.wait(Backend.shared.deactivateSchemaRegistry(inWorkspace: id))
   }
 
   private func loadMetadata(forcingReload reload: Bool = true, andThen proc: @escaping () -> Void = {}) {
@@ -145,7 +170,9 @@ class WorkspaceWindowController: NSWindowController {
 
   @objc func didPressConfigureSRItem(_ sender: Any) {
     let ctl = ConfigureSchemaRegistryFormViewController()
-    ctl.configure(withId: id)
+    let reg = conn.schemaRegistryId.flatMap { Error.wait(Backend.shared.getSchemaRegistry($0)) }
+    ctl.delegate = self
+    ctl.configure(withId: id, andRegistry: reg)
     window?.contentViewController?.presentAsSheet(ctl)
   }
 }
@@ -291,8 +318,59 @@ extension WorkspaceWindowController: PublishRecordFormDelegate {
       ).onComplete { _ in
         status("Ready")
         self.contentViewController?.dismiss(sender)
-        // TODO: Notify the topic's records table to show the record if it's currently being displayed.
       }
+  }
+}
+
+// MARK: - ConfigureSchemaRegistryFormDelegate
+extension WorkspaceWindowController: ConfigureSchemaRegistryFormDelegate {
+  func didCancelConfigureSchemaRegistryForm(_ sender: ConfigureSchemaRegistryFormViewController) {
+  }
+
+  func didSaveConfigureSchemaRegistryForm(registry: SchemaRegistry?) {
+    if let registry {
+      if registry.id == nil {
+        if let registry = Error.wait(Backend.shared.saveSchemaRegistry(registry)) {
+          conn = ConnectionDetails(
+            id: conn.id,
+            name: conn.name,
+            bootstrapHost: conn.bootstrapHost,
+            bootstrapPort: conn.bootstrapPort,
+            authMechanism: conn.authMechanism,
+            username: conn.username,
+            password: conn.password,
+            passwordId: conn.passwordId,
+            awsRegion: conn.awsRegion,
+            awsAccessKeyId: conn.awsAccessKeyId,
+            useSsl: conn.useSsl,
+            schemaRegistryId: registry.id
+          )
+          _ = Error.wait(Backend.shared.updateConnection(conn))
+        }
+      } else {
+        _ = Error.wait(Backend.shared.updateSchemaRegistry(registry))
+      }
+
+      activateRegistry(registry)
+    } else if let registryId = conn.schemaRegistryId {
+      conn = ConnectionDetails(
+        id: conn.id,
+        name: conn.name,
+        bootstrapHost: conn.bootstrapHost,
+        bootstrapPort: conn.bootstrapPort,
+        authMechanism: conn.authMechanism,
+        username: conn.username,
+        password: conn.password,
+        passwordId: conn.passwordId,
+        awsRegion: conn.awsRegion,
+        awsAccessKeyId: conn.awsAccessKeyId,
+        useSsl: conn.useSsl,
+        schemaRegistryId: nil
+      )
+      _ = Error.wait(Backend.shared.updateConnection(conn))
+      _ = Error.wait(Backend.shared.deleteSchemaRegistry(registryId))
+      deactivateRegistry()
+    }
   }
 }
 
