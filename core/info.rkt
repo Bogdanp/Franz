@@ -9,7 +9,7 @@
                "db-lib"
                ["deta-lib" #:version "0.11"]
                "json-lexer-lib"
-               ["kafka-lib" #:version "0.3"]
+               ["kafka-lib" #:version "0.4"]
                "libsqlite3"
                "lua-lib"
                "messagepack-lib"
