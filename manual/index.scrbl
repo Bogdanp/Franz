@@ -29,11 +29,6 @@ It helps you manage your Kafka clusters, topics and consumer groups
 and it provides convenient functionality for monitoring the data being
 published to topics.
 
-Franz is currently in beta and free during the beta period.  Beta
-builds expire after 30 days, so be sure to update when new builds come
-out.  Once out of Beta, you will be able to purchase a perpetual
-license for a small fee.
-
 @section{Connections}
 
 When you start Franz, you are presented with the @deftech{Welcome
@@ -248,11 +243,6 @@ state.
 }
 
 @section{Known Issues and Limitations}
-
-Franz is currently in Beta so you should expect minor issues and
-limitations to pop up.  I do my best to resolve these issues when they
-appear, so please let me know when you run into them by emailing me at
-@tt{bogdan@"@"defn.io} with the topic ``Franz Support''.
 
 @subsection{Compression}
 
