@@ -1,10 +1,15 @@
 #lang racket/base
 
-(require (only-in db sql-null sql-null->false)
+(require (prefix-in csr: confluent/schema-registry)
+         (only-in db sql-null sql-null->false)
+         (prefix-in http: net/http-easy)
          noise/backend
          noise/serde
          racket/contract
-         (prefix-in meta: "metadata.rkt"))
+         racket/match
+         (prefix-in meta: "metadata.rkt")
+         "pool.rkt"
+         "schema-registry/confluent.rkt")
 
 (provide
  (enum-out SchemaRegistryKind)
@@ -49,6 +54,18 @@
      => (λ (id) (meta:set-schema-registry-id meta:r id))]
     [else meta:r]))
 
+(define (SchemaRegistry->impl r [password #f])
+  (match (SchemaRegistry-kind r)
+    [(SchemaRegistryKind.confluent)
+     (define c
+       (if (SchemaRegistry-username r)
+           (csr:make-client
+            (SchemaRegistry-url r)
+            (http:basic-auth (SchemaRegistry-username r) (or password "")))
+           (csr:make-client
+            (SchemaRegistry-url r))))
+     (make-confluent-registry c)]))
+
 (define-rpc (get-schema-registry [id : UVarint] : SchemaRegistry)
   (meta->SchemaRegistry
    (meta:get-schema-registry id)))
@@ -62,3 +79,13 @@
   (meta->SchemaRegistry
    (meta:update-schema-registry!
     (SchemaRegistry->meta r))))
+
+(define cust (make-custodian))
+(define-rpc (activate-schema-registry [_ r : SchemaRegistry]
+                                      [with-password password : (Optional String)]
+                                      [in-workspace id : UVarint])
+  (pool-activate-registry id (parameterize ([current-custodian cust])
+                               (SchemaRegistry->impl r password))))
+
+(define-rpc (deactivate-schema-registry [in-workspace id : UVarint])
+  (pool-deactivate-registry id))

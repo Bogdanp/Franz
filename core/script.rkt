@@ -15,9 +15,9 @@
                         [in-workspace id : UVarint] : String)
   default-script)
 
-(define-rpc (activate [script : String]
-                      [for-topic topic : String]
-                      [in-workspace id : UVarint])
+(define-rpc (activate-script [_ script : String]
+                             [for-topic topic : String]
+                             [in-workspace id : UVarint])
   (define script-res
     (lua-eval script))
   (unless (pair? script-res)

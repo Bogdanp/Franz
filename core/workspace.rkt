@@ -10,7 +10,8 @@
          "connection-details.rkt"
          "group.rkt"
          "iterator.rkt"
-         "pool.rkt")
+         "pool.rkt"
+         "schema-registry/generic.rkt")
 
 (define-rpc (open-workspace [with-conn conn : ConnectionDetails]
                             [and-password password : (Optional String)] : UVarint)
@@ -84,7 +85,7 @@
 
 (define-rpc (get-records [_ id : UVarint]
                          [with-max-bytes max-bytes : UVarint] : (Listof IteratorRecord))
-  (define-values (script records)
+  (define-values (registry script records)
     (pool-get-records id max-bytes))
   (cond
     [script
@@ -93,14 +94,14 @@
      (unless (procedure? proc)
        (error 'script "script.transform is not a procedure"))
      (for*/list ([r (in-vector records)]
-                 [t (in-value (proc (record->table r)))]
+                 [t (in-value (proc (record->table (if registry (decode-record registry r) r))))]
                  #:when (truthy? t))
        (unless (table? t)
          (error 'script "script.transform must return a table or nil~n  received: ~s" t))
        (table->IteratorRecord t))]
     [else
      (for/list ([r (in-vector records)])
-       (record->IteratorRecord r))]))
+       (record->IteratorRecord (if registry (decode-record registry r) r)))]))
 
 (define-rpc (reset-iterator [with-id id : UVarint]
                             [to-offset offset : IteratorOffset])

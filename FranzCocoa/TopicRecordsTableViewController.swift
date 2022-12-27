@@ -470,7 +470,7 @@ class TopicRecordsTableViewController: NSViewController {
 // MARK: - ScriptWindowControllerDelegate
 extension TopicRecordsTableViewController: ScriptWindowControllerDelegate {
   func scriptWindow(willActivate script: String) -> Bool {
-    return Error.wait(Backend.shared.activate(script, forTopic: topic, inWorkspace: id)) != nil
+    return Error.wait(Backend.shared.activateScript(script, forTopic: topic, inWorkspace: id)) != nil
   }
 
   func scriptWindowWillDeactivate() {

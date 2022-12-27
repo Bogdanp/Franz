@@ -27,6 +27,8 @@
  pool-reset-partition-offset
  pool-activate-script
  pool-deactivate-script
+ pool-activate-registry
+ pool-deactivate-registry
  pool-open-iterator
  pool-get-records
  pool-reset-iterator
@@ -250,6 +252,14 @@
                     (~> (state-remove-script s id topic)
                         (state-add-req (req #t res-ch nack)))]
 
+                   [`(activate-registry ,res-ch ,nack ,id ,registry)
+                    (~> (state-add-registry s id registry)
+                        (state-add-req (req #t res-ch nack)))]
+
+                   [`(deactivate-registry ,res-ch ,nack ,id)
+                    (~> (state-remove-registry s id)
+                        (state-add-req (req #t res-ch nack)))]
+
                    [`(open-iterator ,res-ch ,nack ,id ,topic ,offset)
                     (with-handlers ([exn:fail? (λ (e) (state-add-req s (req e res-ch nack)))])
                       (define c (state-ref-client s id))
@@ -265,6 +275,7 @@
                        (match-define (iterator cid topic impl)
                          (state-ref-iterator s id))
                        (values
+                        (state-ref-registry s id)
                         (state-ref-script s cid topic)
                         (k:get-records impl #:max-bytes max-bytes))))
                     (state-add-req s (req records res-ch nack))]
@@ -353,6 +364,12 @@
 (define (pool-deactivate-script id topic [p (current-pool)])
   (sync (pool-send p deactivate-script id topic)))
 
+(define (pool-activate-registry id registry [p (current-pool)])
+  (sync (pool-send p activate-registry id registry)))
+
+(define (pool-deactivate-registry id [p (current-pool)])
+  (sync (pool-send p deactivate-registry id)))
+
 (define (pool-open-iterator id topic offset [p (current-pool)])
   (sync (pool-send p open-iterator id topic offset)))
 
@@ -400,11 +417,12 @@
    clients
    clients-seq
    scripts ;; client-id -> (topic -> table?)
+   registries ;; client-id -> registry?
    iterators
    iterators-seq))
 
 (define (make-state)
-  (state null (hasheqv) 0 (hasheqv) (hasheqv) 0))
+  (state null (hasheqv) 0 (hasheqv) (hasheqv) (hasheqv) 0))
 
 (define (state-add-req s r)
   (struct-copy state s [reqs (cons r (state-reqs s))]))
@@ -424,12 +442,14 @@
 (define (state-remove-client s id)
   (struct-copy state s
                [clients (hash-remove (state-clients s) id)]
-               [scripts (hash-remove (state-scripts s) id)]))
+               [scripts (hash-remove (state-scripts s) id)]
+               [registries (hash-remove (state-registries s) id)]))
 
 (define (state-clear-clients s)
   (struct-copy state s
                [clients (hasheqv)]
-               [scripts (hasheqv)]))
+               [scripts (hasheqv)]
+               [registries (hasheqv)]))
 
 (define (state-add-script s id topic script)
   (define scripts
@@ -446,6 +466,15 @@
     (~> (hash-ref (state-scripts s) id hash)
         (hash-remove topic)))
   (struct-copy state s [scripts (hash-set (state-scripts s) id scripts)]))
+
+(define (state-add-registry s id r)
+  (struct-copy state s [registries (hash-set (state-registries s) id r)]))
+
+(define (state-ref-registry s id)
+  (hash-ref (state-registries s) id #f))
+
+(define (state-remove-registry s id)
+  (struct-copy state s [registries (hash-remove (state-registries s) id)]))
 
 (define (state-add-iterator s it)
   (define id (state-iterators-seq s))
@@ -520,26 +549,31 @@
        (test-begin
          (pool-create-topic id t 2 1 (hash))
          (define it (pool-open-iterator id t 'latest))
-         (let-values ([(script records) (pool-get-records it (* 1 1024 1024))])
+         (let-values ([(registry script records) (pool-get-records it (* 1 1024 1024))])
+           (check-false registry)
            (check-false script)
            (check-equal? (vector-length records) 0))
          (pool-publish-record id t 0 #"transaction-1" #"100")
-         (let-values ([(script records) (pool-get-records it (* 1 1024 1024))])
+         (let-values ([(registry script records) (pool-get-records it (* 1 1024 1024))])
+           (check-false registry)
            (check-false script)
            (check-equal? (vector-length records) 1)
            (check-equal? (k:record-key (vector-ref records 0)) #"transaction-1"))
          (pool-publish-record id t 1 #"transaction-2" #"50")
-         (let-values ([(script records) (pool-get-records it (* 1 1024 1024))])
+         (let-values ([(registry script records) (pool-get-records it (* 1 1024 1024))])
+           (check-false registry)
            (check-false script)
            (check-equal? (vector-length records) 1)
            (check-equal? (k:record-value (vector-ref records 0)) #"50"))
          (check-true (pool-activate-script id t "a script"))
          (pool-reset-iterator it 'earliest)
-         (let-values ([(script records) (pool-get-records it (* 1 1024 1024))])
+         (let-values ([(registry script records) (pool-get-records it (* 1 1024 1024))])
+           (check-false registry)
            (check-equal? script "a script")
            (check-equal? (vector-length records) 2))
          (check-true (pool-deactivate-script id t))
-         (let-values ([(script records) (pool-get-records it (* 1 1024 1024))])
+         (let-values ([(registry script records) (pool-get-records it (* 1 1024 1024))])
+           (check-false registry)
            (check-false script)
            (check-equal? records (vector)))
          (pool-close-iterator it))
