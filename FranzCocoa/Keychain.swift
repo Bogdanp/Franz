@@ -22,7 +22,7 @@ enum KeychainDeleteResult {
 class Keychain {
   static let shared = Keychain()
 
-  func get(passwordWithId id: String) -> KeychainGetResult {
+  func get(passwordWithId id: String, forResource what: String = "cluster") -> KeychainGetResult {
     switch lookup(passwordWithId: id) {
     case .success(let password):
       return .success(password)
@@ -32,7 +32,7 @@ class Keychain {
       let passwordField = NSSecureTextField(frame: NSRect(x: 0, y: 0, width: 250, height: 22))
       let alert = NSAlert()
       alert.messageText = "Password Required"
-      alert.informativeText = "A password is required to access this cluster."
+      alert.informativeText = "A password is required to access this \(what)."
       alert.accessoryView = passwordField
       alert.window.initialFirstResponder = passwordField
       alert.addButton(withTitle: "OK")
