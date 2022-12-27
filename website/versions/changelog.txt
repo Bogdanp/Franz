@@ -1,7 +1,7 @@
 # 2023.01.04 (Build 4)
 ## Changed
 
-* The Records Table "Reset..." button has been renamed to "Offsets..."
+* The Records Table "Reset..." button has been renamed to "Jump..."
   to make it clear that it's not performing a destructive action.
 
 ## Added

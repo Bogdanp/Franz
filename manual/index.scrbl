@@ -162,9 +162,9 @@ within the scripting environment.
 @subsubsection{Jumping to Offsets}
 
 From the ``Options...'' popover of a @tech{Records Table}, push the
-``Offsets...'' button to get to the @deftech{Offsets Popover}.  From
-there, you can reset the record iterator to various offsets, as
-described below.
+``Jump...'' button to get to the @deftech{Jump Popover}.  From there,
+you can reset the record iterator to various offsets, as described
+below.
 
 @subsubsub*section{Earliest}
 
