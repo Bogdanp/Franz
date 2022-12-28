@@ -51,7 +51,7 @@ class ConfigureSchemaRegistryFormViewController: NSViewController {
         passwordId: passwordId
       )
       if let passwordId {
-        _ = Keychain.shared.upsert(password: password, withId: passwordId)
+        Keychain.shared.upsert(password: password, withId: passwordId)
       }
       delegate?.didSaveConfigureSchemaRegistryForm(registry: registry)
     } else {

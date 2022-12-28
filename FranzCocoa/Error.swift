@@ -18,6 +18,7 @@ class Error {
     alert.runModal()
   }
 
+  @discardableResult
   static func wait<Err, Res>(_ fut: Future<Err, Res?>) -> Res? {
     do {
       return try fut.wait()
@@ -27,6 +28,7 @@ class Error {
     }
   }
 
+  @discardableResult
   static func wait<Err, Res>(_ fut: Future<Err, Res>) -> Res? {
     do {
       return try fut.wait()

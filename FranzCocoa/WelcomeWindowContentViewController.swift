@@ -18,7 +18,7 @@ class WelcomeWindowContentViewController: NSViewController {
     formController.configure(actionLabel: "Connect") { details in
       guard let conn = Error.wait(Backend.shared.saveConnection(details)) else { return }
       if let password = details.password, let id = details.passwordId {
-        _ = Keychain.shared.upsert(password: password, withId: id)
+        Keychain.shared.upsert(password: password, withId: id)
       }
       WindowManager.shared.launchWorkspace(withConn: conn, andPassword: details.password)
       WindowManager.shared.closeWelcomeWindow()

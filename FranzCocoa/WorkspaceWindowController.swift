@@ -124,7 +124,7 @@ class WorkspaceWindowController: NSWindowController {
         ()
       }
     }
-    _ = Error.wait(Backend.shared.activateSchemaRegistry(
+    Error.wait(Backend.shared.activateSchemaRegistry(
       registry,
       withPassword: password,
       inWorkspace: id
@@ -132,7 +132,7 @@ class WorkspaceWindowController: NSWindowController {
   }
 
   private func deactivateRegistry() {
-    _ = Error.wait(Backend.shared.deactivateSchemaRegistry(inWorkspace: id))
+    Error.wait(Backend.shared.deactivateSchemaRegistry(inWorkspace: id))
   }
 
   private func loadMetadata(forcingReload reload: Bool = true, andThen proc: @escaping () -> Void = {}) {
@@ -204,7 +204,7 @@ extension WorkspaceWindowController: NSWindowDelegate {
   func windowWillClose(_ notification: Notification) {
     if WindowManager.shared.removeWorkspace(withId: conn.id!), let id {
       WindowManager.shared.closeScriptWindows(forWorkspace: id)
-      _ = Backend.shared.closeWorkspace(id)
+      Error.wait(Backend.shared.closeWorkspace(id))
     }
   }
 }
@@ -332,17 +332,17 @@ extension WorkspaceWindowController: ConfigureSchemaRegistryFormDelegate {
       if registry.id == nil {
         if let registry = Error.wait(Backend.shared.saveSchemaRegistry(registry)) {
           conn.schemaRegistryId = registry.id
-          _ = Error.wait(Backend.shared.updateConnection(conn))
+          Error.wait(Backend.shared.updateConnection(conn))
         }
       } else {
-        _ = Error.wait(Backend.shared.updateSchemaRegistry(registry))
+        Error.wait(Backend.shared.updateSchemaRegistry(registry))
       }
 
       activateRegistry(registry)
     } else if let registryId = conn.schemaRegistryId {
       conn.schemaRegistryId = nil
-      _ = Error.wait(Backend.shared.updateConnection(conn))
-      _ = Error.wait(Backend.shared.deleteSchemaRegistry(registryId))
+      Error.wait(Backend.shared.updateConnection(conn))
+      Error.wait(Backend.shared.deleteSchemaRegistry(registryId))
       deactivateRegistry()
     }
   }

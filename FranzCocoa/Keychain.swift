@@ -40,7 +40,7 @@ class Keychain {
       switch alert.runModal() {
       case .alertFirstButtonReturn:
         let password = passwordField.stringValue
-        _ = upsert(password: password, withId: id)
+        upsert(password: password, withId: id)
         return .success(password)
       default:
         return .aborted
@@ -48,6 +48,7 @@ class Keychain {
     }
   }
 
+  @discardableResult
   func upsert(password: String, withId id: String) -> KeychainUpsertResult {
     switch lookup(passwordWithId: id) {
     case .badData:
@@ -76,6 +77,7 @@ class Keychain {
     }
   }
 
+  @discardableResult
   func delete(passwordWithId id: String) -> KeychainDeleteResult {
     let query = [
       kSecClass: kSecClassGenericPassword,

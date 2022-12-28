@@ -40,7 +40,7 @@ class TopicRecordsTableViewController: NSViewController {
 
   deinit {
     guard let iteratorId else { return }
-    _ = Backend.shared.closeIterator(withId: iteratorId)
+    Error.wait(Backend.shared.closeIterator(withId: iteratorId))
   }
 
   override func viewDidLoad() {
@@ -114,7 +114,7 @@ class TopicRecordsTableViewController: NSViewController {
     ).onComplete { [weak self] iteratorId in
       guard let self else {
         status("Ready")
-        _ = Backend.shared.closeIterator(withId: iteratorId)
+        Error.wait(Backend.shared.closeIterator(withId: iteratorId))
         return
       }
       self.iteratorId = iteratorId
@@ -474,11 +474,11 @@ extension TopicRecordsTableViewController: ScriptWindowControllerDelegate {
   }
 
   func scriptWindowWillDeactivate() {
-    _ = Error.wait(Backend.shared.deactivateScript(forTopic: topic, inWorkspace: id))
+    Error.wait(Backend.shared.deactivateScript(forTopic: topic, inWorkspace: id))
   }
 
   func scriptWindowWillClose() {
-    _ = Error.wait(Backend.shared.deactivateScript(forTopic: topic, inWorkspace: id))
+    Error.wait(Backend.shared.deactivateScript(forTopic: topic, inWorkspace: id))
   }
 }
 

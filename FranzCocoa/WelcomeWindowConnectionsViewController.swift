@@ -46,7 +46,7 @@ class WelcomeWindowConnectionsViewController: NSViewController {
   @objc func didRequestSelectConnection(_ sender: NSTableView) {
     assert(Thread.isMainThread)
     let conn = connections[sender.selectedRow]
-    _ = Backend.shared.touchConnection(conn)
+    Error.wait(Backend.shared.touchConnection(conn))
     guard let passwordId = conn.passwordId else {
       WindowManager.shared.launchWorkspace(withConn: conn, andPassword: nil)
       WindowManager.shared.closeWelcomeWindow()
@@ -71,9 +71,9 @@ class WelcomeWindowConnectionsViewController: NSViewController {
     let conn = connections[connectionsTable.clickedRow]
     let formController = ConnectionDetailsFormViewController()
     formController.configure(actionLabel: "Save", details: conn, { changedConn in
-      _ = Error.wait(Backend.shared.updateConnection(changedConn))
+      Error.wait(Backend.shared.updateConnection(changedConn))
       if let password = changedConn.password, let id = changedConn.passwordId {
-        _ = Keychain.shared.upsert(password: password, withId: id)
+        Keychain.shared.upsert(password: password, withId: id)
       }
       self.reload()
     })

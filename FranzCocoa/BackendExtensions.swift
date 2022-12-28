@@ -20,7 +20,7 @@ extension Backend {
   func deleteConnectionAndSystemResources(_ c: ConnectionDetails) -> Future<String, Void> {
     return deleteConnection(c).andThen { _ in
       if let id = c.passwordId {
-        _ = Keychain.shared.delete(passwordWithId: id)
+        Keychain.shared.delete(passwordWithId: id)
       }
       return FutureUtil.resolved(with: ())
         .mapError({ _ in preconditionFailure("unreachable") })
