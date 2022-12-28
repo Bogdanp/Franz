@@ -13,7 +13,7 @@
                "libsqlite3"
                "lua-lib"
                "messagepack-lib"
-               ["noise-serde-lib" #:version "0.2"]
+               ["noise-serde-lib" #:version "0.3"]
                ["sasl-lib" #:version "1.3"]
                "threading-lib"))
 (define build-deps '("rackunit-lib"))

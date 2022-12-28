@@ -39,7 +39,7 @@
   [(aws-region #f) : (Optional String) #:contract (or/c #f string?)]
   [(aws-access-key-id #f) : (Optional String) #:contract (or/c #f string?)]
   [(use-ssl #f) : Bool #:contract boolean?]
-  [(schema-registry-id #f) : (Optional UVarint) #:contract (or/c #f exact-nonnegative-integer?)])
+  [(schema-registry-id #f) : (Optional UVarint) #:mutable #:contract (or/c #f exact-nonnegative-integer?)])
 
 (define (meta->AuthMechanism m)
   (case m

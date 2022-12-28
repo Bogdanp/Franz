@@ -205,7 +205,7 @@ public struct ConnectionDetails: Readable, Writable {
   public let awsRegion: String?
   public let awsAccessKeyId: String?
   public let useSsl: Bool
-  public let schemaRegistryId: UVarint?
+  public var schemaRegistryId: UVarint?
 
   public init(
     id: UVarint?,

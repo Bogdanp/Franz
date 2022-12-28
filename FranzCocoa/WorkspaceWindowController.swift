@@ -331,20 +331,7 @@ extension WorkspaceWindowController: ConfigureSchemaRegistryFormDelegate {
     if let registry {
       if registry.id == nil {
         if let registry = Error.wait(Backend.shared.saveSchemaRegistry(registry)) {
-          conn = ConnectionDetails(
-            id: conn.id,
-            name: conn.name,
-            bootstrapHost: conn.bootstrapHost,
-            bootstrapPort: conn.bootstrapPort,
-            authMechanism: conn.authMechanism,
-            username: conn.username,
-            password: conn.password,
-            passwordId: conn.passwordId,
-            awsRegion: conn.awsRegion,
-            awsAccessKeyId: conn.awsAccessKeyId,
-            useSsl: conn.useSsl,
-            schemaRegistryId: registry.id
-          )
+          conn.schemaRegistryId = registry.id
           _ = Error.wait(Backend.shared.updateConnection(conn))
         }
       } else {
@@ -353,20 +340,7 @@ extension WorkspaceWindowController: ConfigureSchemaRegistryFormDelegate {
 
       activateRegistry(registry)
     } else if let registryId = conn.schemaRegistryId {
-      conn = ConnectionDetails(
-        id: conn.id,
-        name: conn.name,
-        bootstrapHost: conn.bootstrapHost,
-        bootstrapPort: conn.bootstrapPort,
-        authMechanism: conn.authMechanism,
-        username: conn.username,
-        password: conn.password,
-        passwordId: conn.passwordId,
-        awsRegion: conn.awsRegion,
-        awsAccessKeyId: conn.awsAccessKeyId,
-        useSsl: conn.useSsl,
-        schemaRegistryId: nil
-      )
+      conn.schemaRegistryId = nil
       _ = Error.wait(Backend.shared.updateConnection(conn))
       _ = Error.wait(Backend.shared.deleteSchemaRegistry(registryId))
       deactivateRegistry()
