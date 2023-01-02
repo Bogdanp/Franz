@@ -10,7 +10,7 @@
                ["deta-lib" #:version "0.11"]
                "http-easy-lib"
                "json-lexer-lib"
-               ["kafka-lib" #:version "0.4"]
+               ["kafka-lib" #:version "0.4.1"]
                "libsqlite3"
                "lua-lib"
                "messagepack-lib"
