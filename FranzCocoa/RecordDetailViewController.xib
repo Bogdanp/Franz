@@ -8,6 +8,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="RecordDetailViewController" customModule="Franz" customModuleProvider="target">
             <connections>
+                <outlet property="headersButton" destination="mPJ-cp-lpZ" id="CND-cm-2Db"/>
                 <outlet property="keyButton" destination="tRN-nA-Vea" id="nZR-8z-dJh"/>
                 <outlet property="offsetField" destination="cky-xQ-wQu" id="l1W-wK-Fjk"/>
                 <outlet property="partitionIdField" destination="KVd-hL-pnT" id="Es8-MB-wKl"/>
@@ -110,6 +111,19 @@
                             <rect key="frame" x="0.0" y="0.0" width="567" height="327"/>
                             <font key="font" metaFont="system"/>
                         </tabView>
+                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="mPJ-cp-lpZ">
+                            <rect key="frame" x="184" y="336" width="80" height="18"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="80" id="ZDX-u0-wwa"/>
+                            </constraints>
+                            <buttonCell key="cell" type="inline" title="Headers" bezelStyle="inline" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="wYY-BW-pnp">
+                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                <font key="font" metaFont="smallSystemBold"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="didPushHeadersButton:" target="-2" id="Tyu-0c-ijD"/>
+                            </connections>
+                        </button>
                     </subviews>
                     <constraints>
                         <constraint firstItem="go2-hS-GoT" firstAttribute="top" secondItem="Xv5-Hg-gOY" secondAttribute="bottom" constant="8" symbolic="YES" id="0dP-VN-L3T"/>
@@ -128,6 +142,7 @@
                         <constraint firstAttribute="trailing" secondItem="8of-3t-gm5" secondAttribute="trailing" id="JeN-Yb-ls2"/>
                         <constraint firstItem="twC-0i-GgS" firstAttribute="top" secondItem="a1p-hG-Ekr" secondAttribute="top" constant="8" id="Jxw-aH-1ab"/>
                         <constraint firstItem="JbP-QR-wGw" firstAttribute="top" secondItem="tRN-nA-Vea" secondAttribute="bottom" constant="8" symbolic="YES" id="LeJ-Xo-OcY"/>
+                        <constraint firstItem="mPJ-cp-lpZ" firstAttribute="top" secondItem="Xv5-Hg-gOY" secondAttribute="bottom" constant="8" symbolic="YES" id="Ndc-ba-u0u"/>
                         <constraint firstItem="8of-3t-gm5" firstAttribute="leading" secondItem="a1p-hG-Ekr" secondAttribute="leading" id="PCk-eD-d7q"/>
                         <constraint firstItem="XdJ-5G-FF8" firstAttribute="top" secondItem="a1p-hG-Ekr" secondAttribute="top" constant="8" id="X3W-Wf-tsc"/>
                         <constraint firstItem="8of-3t-gm5" firstAttribute="top" secondItem="JbP-QR-wGw" secondAttribute="bottom" id="X4P-SL-hPj"/>
@@ -135,6 +150,7 @@
                         <constraint firstItem="cky-xQ-wQu" firstAttribute="leading" secondItem="XdJ-5G-FF8" secondAttribute="trailing" constant="8" symbolic="YES" id="anP-Zl-Ep9"/>
                         <constraint firstItem="Xv5-Hg-gOY" firstAttribute="leading" secondItem="a1p-hG-Ekr" secondAttribute="leading" id="eKk-nQ-7GH"/>
                         <constraint firstAttribute="trailing" secondItem="JbP-QR-wGw" secondAttribute="trailing" id="fPI-TV-h8g"/>
+                        <constraint firstItem="mPJ-cp-lpZ" firstAttribute="leading" secondItem="go2-hS-GoT" secondAttribute="trailing" constant="8" symbolic="YES" id="hfb-FC-JqI"/>
                         <constraint firstItem="KVd-hL-pnT" firstAttribute="top" secondItem="a1p-hG-Ekr" secondAttribute="top" constant="8" id="vpy-qY-rCD"/>
                         <constraint firstItem="tzq-02-ml0" firstAttribute="leading" secondItem="cky-xQ-wQu" secondAttribute="trailing" constant="8" symbolic="YES" id="z1X-Pe-Yv9"/>
                         <constraint firstItem="go2-hS-GoT" firstAttribute="leading" secondItem="tRN-nA-Vea" secondAttribute="trailing" constant="8" symbolic="YES" id="zY5-Vd-cbf"/>

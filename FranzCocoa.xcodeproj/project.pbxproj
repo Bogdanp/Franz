@@ -17,6 +17,8 @@
 		4322BBD92924DED8002358C3 /* Editor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4322BBD82924DED8002358C3 /* Editor.swift */; };
 		432C24632903F03B00C6F336 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432C24622903F03B00C6F336 /* Error.swift */; };
 		433C5E8B29066310005F4C4B /* Infos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 433C5E8A29066310005F4C4B /* Infos.swift */; };
+		4342530F2964A8C300CC05BC /* HeadersTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4342530D2964A8C300CC05BC /* HeadersTableViewController.swift */; };
+		434253102964A8C300CC05BC /* HeadersTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4342530E2964A8C300CC05BC /* HeadersTableViewController.xib */; };
 		43453F3D291505A6000CE90E /* Timed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43453F3C291505A6000CE90E /* Timed.swift */; };
 		435427F5293F50230040AE04 /* fixtures in Resources */ = {isa = PBXBuildFile; fileRef = 435427F4293F50230040AE04 /* fixtures */; };
 		435EBE5529542E7C00DCFEBF /* DataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 435EBE5329542E7C00DCFEBF /* DataViewController.swift */; };
@@ -107,6 +109,8 @@
 		4322BBD82924DED8002358C3 /* Editor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Editor.swift; sourceTree = "<group>"; };
 		432C24622903F03B00C6F336 /* Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
 		433C5E8A29066310005F4C4B /* Infos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Infos.swift; sourceTree = "<group>"; };
+		4342530D2964A8C300CC05BC /* HeadersTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadersTableViewController.swift; sourceTree = "<group>"; };
+		4342530E2964A8C300CC05BC /* HeadersTableViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = HeadersTableViewController.xib; sourceTree = "<group>"; };
 		43453F3C291505A6000CE90E /* Timed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timed.swift; sourceTree = "<group>"; };
 		435427F4293F50230040AE04 /* fixtures */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fixtures; sourceTree = "<group>"; };
 		435EBE5329542E7C00DCFEBF /* DataViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataViewController.swift; sourceTree = "<group>"; };
@@ -253,6 +257,8 @@
 				43196F8B28F1DB94003C793B /* GroupDetailView.swift */,
 				4395503628FD45B000CC0050 /* GroupOffsetsOutlineViewController.swift */,
 				4395503728FD45B000CC0050 /* GroupOffsetsOutlineViewController.xib */,
+				4342530D2964A8C300CC05BC /* HeadersTableViewController.swift */,
+				4342530E2964A8C300CC05BC /* HeadersTableViewController.xib */,
 				43B8DCC629546B200056E9FD /* HexViewerViewController.swift */,
 				43B8DCC729546B200056E9FD /* HexViewerViewController.xib */,
 				43D03DD728FB03940049D44D /* Identifiers.swift */,
@@ -418,6 +424,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				434253102964A8C300CC05BC /* HeadersTableViewController.xib in Resources */,
 				43E64A092928F2BF00FDBF29 /* ScriptWindowController.xib in Resources */,
 				43CBADD5290FB8D70066C7CE /* PublishRecordFormViewController.xib in Resources */,
 				4395503928FD45B000CC0050 /* GroupOffsetsOutlineViewController.xib in Resources */,
@@ -520,6 +527,7 @@
 				43F987A8292A867B00E5E1DE /* UpdatesWindowController.swift in Sources */,
 				4322BBD92924DED8002358C3 /* Editor.swift in Sources */,
 				43453F3D291505A6000CE90E /* Timed.swift in Sources */,
+				4342530F2964A8C300CC05BC /* HeadersTableViewController.swift in Sources */,
 				43E5AE8C291245E000C74966 /* DispatchQueue.swift in Sources */,
 				43CD624828CE3B5D00095144 /* ConnectionDetailsFormViewController.swift in Sources */,
 				439D6EB1292F7741005C9935 /* UpdatesProgressWindowController.swift in Sources */,

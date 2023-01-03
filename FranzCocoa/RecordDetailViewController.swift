@@ -12,10 +12,12 @@ class RecordDetailViewController: NSViewController {
   @IBOutlet weak var tabView: NSTabView!
   @IBOutlet weak var keyButton: NSButton!
   @IBOutlet weak var valueButton: NSButton!
+  @IBOutlet weak var headersButton: NSButton!
 
   private enum Tab {
     case key
     case value
+    case headers
   }
 
   private var currentTab = Tab.key
@@ -27,13 +29,18 @@ class RecordDetailViewController: NSViewController {
     offsetField.isSelectable = true
     timestampField.isSelectable = true
 
+    guard let record else { return }
     let keyDataCtl = DataViewController()
-    keyDataCtl.configure(withData: record?.key ?? Data(), andFormat: keyFormat)
+    keyDataCtl.configure(withData: record.key ?? Data(), andFormat: keyFormat)
     tabView.addTabViewItem(.init(viewController: keyDataCtl))
 
     let valueDataCtl = DataViewController()
-    valueDataCtl.configure(withData: record?.value ?? Data(), andFormat: valueFormat)
+    valueDataCtl.configure(withData: record.value ?? Data(), andFormat: valueFormat)
     tabView.addTabViewItem(.init(viewController: valueDataCtl))
+
+    let headersDataCtl = HeadersTableViewController()
+    headersDataCtl.configure(record.headers)
+    tabView.addTabViewItem(.init(viewController: headersDataCtl))
 
     reset()
   }
@@ -49,15 +56,19 @@ class RecordDetailViewController: NSViewController {
       timeStyle: .long
     )
 
+    keyButton.state = .off
+    valueButton.state = .off
+    headersButton.state = .off
     switch currentTab {
     case .key:
       keyButton.state = .on
-      valueButton.state = .off
       tabView.selectTabViewItem(at: 0)
     case .value:
-      keyButton.state = .off
       valueButton.state = .on
       tabView.selectTabViewItem(at: 1)
+    case .headers:
+      headersButton.state = .on
+      tabView.selectTabViewItem(at: 2)
     }
   }
 
@@ -78,6 +89,11 @@ class RecordDetailViewController: NSViewController {
 
   @IBAction func didPushValueButton(_ sender: Any) {
     currentTab = .value
+    reset()
+  }
+
+  @IBAction func didPushHeadersButton(_ sender: Any) {
+    currentTab = .headers
     reset()
   }
 }
