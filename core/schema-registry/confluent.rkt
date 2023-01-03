@@ -32,20 +32,24 @@
          (proc bs))))
 
 (define (get-codec client id)
-  (println (list 'get-codec id))
-  (define schema
-    (impl:get-schema client id))
-  (case (impl:Schema-type schema)
-    [(avro)
-     (define c
-       (make-codec (impl:Schema-schema schema)))
-     (λ (bs)
-       (call-with-input-bytes bs
-         (lambda (in)
-           (void (read-bytes 5 in))
-           (jsexpr->bytes (codec-read c in)))))]
-    [(json)
-     (λ (bs)
-       (subbytes bs 5))]
-    [else
-     (error 'decode "unsupported schema type: ~a" (impl:Schema-type schema))]))
+  (with-handlers ([(λ (e)
+                     (and (impl:exn:fail:schema-registry:client? e)
+                          (eqv? (impl:exn:fail:schema-registry:client-code e) 40403)))
+                   (λ (_)
+                     (λ (bs) bs))])
+    (define schema
+      (impl:get-schema client id))
+    (case (impl:Schema-type schema)
+      [(avro)
+       (define c
+         (make-codec (impl:Schema-schema schema)))
+       (λ (bs)
+         (call-with-input-bytes bs
+           (lambda (in)
+             (void (read-bytes 5 in))
+             (jsexpr->bytes (codec-read c in)))))]
+      [(json)
+       (λ (bs)
+         (subbytes bs 5))]
+      [else
+       (error 'decode "unsupported schema type: ~a" (impl:Schema-type schema))])))
