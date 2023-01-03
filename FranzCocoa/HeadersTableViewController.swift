@@ -3,18 +3,54 @@ import Cocoa
 class HeadersTableViewController: NSViewController {
   private var headers: [(String, Data)]?
 
+  @IBOutlet var tableMenu: NSMenu!
   @IBOutlet weak var tableView: NSTableView!
 
   override func viewDidLoad() {
     super.viewDidLoad()
 
+    tableMenu.delegate = self
     tableView.dataSource = self
     tableView.delegate = self
+    tableView.menu = tableMenu
   }
 
   func configure(_ headers: [String: Data]) {
     self.headers = headers.map { ($0, $1) }.sorted { $0.0 < $1.0 }
     self.tableView?.reloadData()
+  }
+
+  private func sendToPasteboard(_ accessor: ((String, Data)) -> String) {
+    guard let tableView, tableView.clickedRow >= 0,
+          let header = headers?[tableView.clickedRow] else {
+      return
+    }
+    Pasteboard.put(accessor(header))
+  }
+
+  @IBAction func didPushCopyKeyButton(_ sender: Any) {
+    sendToPasteboard { $0.0 }
+  }
+
+  @IBAction func didPushCopyValueButton(_ sender: Any) {
+    sendToPasteboard { String(decoding: $0.1, as: UTF8.self) }
+  }
+}
+
+// MARK: - NSMenuDelegate
+extension HeadersTableViewController: NSMenuDelegate {
+  func menuNeedsUpdate(_ menu: NSMenu) {
+    guard let tableView else { return }
+    menu.autoenablesItems = false
+    if tableView.clickedRow == -1 {
+      for it in menu.items {
+        it.isEnabled = false
+      }
+    } else {
+      for it in menu.items {
+        it.isEnabled = true
+      }
+    }
   }
 }
 
