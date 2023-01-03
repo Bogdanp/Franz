@@ -4,6 +4,7 @@
          (prefix-in k: kafka/iterator)
          (prefix-in kerr: kafka/private/error) ;; FIXME
          lua/value
+         (only-in lua/private/table table-ht)
          noise/backend
          noise/serde
          "broker.rkt"
@@ -139,7 +140,8 @@
    (k:record-offset r)
    (k:record-timestamp r)
    (k:record-key r)
-   (k:record-value r)))
+   (k:record-value r)
+   (k:record-headers r)))
 
 (define-syntax-rule (define-lua-keys [id k] ...)
   (begin (define id k) ...))
@@ -150,7 +152,8 @@
   [offset-key #"offset"]
   [timestamp-key #"timestamp"]
   [key-key #"key"]
-  [value-key #"value"])
+  [value-key #"value"]
+  [headers-key #"headers"])
 
 (define (record->table r)
   (make-table
@@ -158,7 +161,11 @@
    (cons offset-key (k:record-offset r))
    (cons timestamp-key (k:record-timestamp r))
    (cons key-key (or (k:record-key r) nil))
-   (cons value-key (or (k:record-value r) nil))))
+   (cons value-key (or (k:record-value r) nil))
+   (cons headers-key (let ([t (make-table)])
+                       (begin0 t
+                         (for ([(k v) (in-hash (k:record-headers r))])
+                           (table-set! t (string->bytes/utf-8 k) (or v nil))))))))
 
 (define (table->IteratorRecord t)
   (define pid (table-ref t partition-id-key))
@@ -180,7 +187,13 @@
       (if (nil? v) #f v)))
   (when (and value (not (bytes? value)))
     (error 'script "record values must be either nil or strings~n  received: ~e~n" value))
-  (IteratorRecord pid offset timestamp key value))
+  (define headers
+    (let ([v (table-ref t headers-key)])
+      (if (nil? v)
+          (hash)
+          (for/hash ([(k v) (in-hash (table-ht v))])
+            (values (bytes->string/utf-8 k) (if (nil? v) #"" v))))))
+  (IteratorRecord pid offset timestamp key value headers))
 
 (define (truthy? v)
   (and (not (nil? v)) v))

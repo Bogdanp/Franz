@@ -394,19 +394,22 @@ public struct IteratorRecord: Readable, Writable {
   public let timestamp: UVarint
   public let key: Data?
   public let value: Data?
+  public let headers: [String: Data]
 
   public init(
     partitionId: UVarint,
     offset: UVarint,
     timestamp: UVarint,
     key: Data?,
-    value: Data?
+    value: Data?,
+    headers: [String: Data]
   ) {
     self.partitionId = partitionId
     self.offset = offset
     self.timestamp = timestamp
     self.key = key
     self.value = value
+    self.headers = headers
   }
 
   public static func read(from inp: InputPort, using buf: inout Data) -> IteratorRecord {
@@ -415,7 +418,8 @@ public struct IteratorRecord: Readable, Writable {
       offset: UVarint.read(from: inp, using: &buf),
       timestamp: UVarint.read(from: inp, using: &buf),
       key: Data?.read(from: inp, using: &buf),
-      value: Data?.read(from: inp, using: &buf)
+      value: Data?.read(from: inp, using: &buf),
+      headers: [String: Data].read(from: inp, using: &buf)
     )
   }
 
@@ -425,6 +429,7 @@ public struct IteratorRecord: Readable, Writable {
     timestamp.write(to: out)
     key.write(to: out)
     value.write(to: out)
+    headers.write(to: out)
   }
 }
 

@@ -18,7 +18,8 @@
   [offset : UVarint]
   [timestamp : UVarint]
   [key : (Optional Bytes)]
-  [value : (Optional Bytes)])
+  [value : (Optional Bytes)]
+  [headers : (HashTable String Bytes)])
 
 (define (IteratorOffset-> io)
   (cond
