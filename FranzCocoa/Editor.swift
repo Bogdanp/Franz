@@ -432,7 +432,7 @@ protocol Theme {
 
 // MARK: - LightTheme
 fileprivate class LightTheme: Theme {
-  var font       = NSFont.monospacedSystemFont(ofSize: 12, weight: .regular)
+  var font       = NSFont.monospacedSystemFont(ofSize: 14, weight: .regular)
   var background = rgb(0xFF, 0xFF, 0xFF)
   var foreground = rgb(0x1D, 0x1D, 0x1D)
   var comment    = rgb(0x4A, 0x56, 0x60)
@@ -443,7 +443,7 @@ fileprivate class LightTheme: Theme {
 
 // MARK: - DarkTheme
 fileprivate class DarkTheme: Theme {
-  var font       = NSFont.monospacedSystemFont(ofSize: 12, weight: .regular)
+  var font       = NSFont.monospacedSystemFont(ofSize: 14, weight: .regular)
   var background = rgb(0x1F, 0x20, 0x24)
   var foreground = rgb(0xD8, 0xD8, 0xD9)
   var comment    = rgb(0x92, 0xA2, 0xB1)
