@@ -12,10 +12,14 @@ class Error {
   }
 
   static func alert(withError err: Any) {
+    var str = "\(err)"
+    if let err = err as? LocalizedError {
+      str = err.localizedDescription
+    }
     let textField = NSTextField()
     textField.isEditable = true
     textField.isSelectable = true
-    textField.stringValue = "\(err)"
+    textField.stringValue = str
     textField.frame = NSRect(x: 0, y: 0, width: 400, height: 200)
     textField.font = .monospacedSystemFont(ofSize: 12, weight: .regular)
     let alert = NSAlert()
