@@ -9,6 +9,7 @@
  (record-out TokenSpan)
  (record-out Token)
 
+ (enum-out Lexer)
  lexer?
  lexer-take
  gen:lexer)
@@ -43,6 +44,10 @@
 (define-record Token
   [type : TokenType]
   [span : TokenSpan])
+
+(define-enum Lexer
+  [json]
+  [lua])
 
 (define-generics lexer
   {lexer-take lexer})

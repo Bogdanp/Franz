@@ -9,10 +9,6 @@
          "lexer/json.rkt"
          "lexer/lua.rkt")
 
-(define-enum Lexer
-  [json]
-  [lua])
-
 (define-rpc (pp-json [code : String] : String)
   (call-with-output-string
    (lambda (out)
@@ -22,7 +18,8 @@
 
 (define-rpc (lex [code : String]
                  [using lexer : Lexer] : (Listof Token))
-  (define in (open-input-string code))
+  (define in
+    (open-input-string code))
   (define l
     (match lexer
       [(Lexer.json) (make-json-lexer in)]
