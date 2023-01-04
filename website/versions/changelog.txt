@@ -1,14 +1,16 @@
-# 2023.01.04 (Build 4)
+# 2023.01.09 (Build 4)
+## Added
+
+* Schema Registry support.
+* A Record detail viewer.  Double-click records in the Topic Records
+  Table to see their data in full.
+
 ## Changed
 
 * The Records Table "Reset..." button has been renamed to "Jump..."
   to make it clear that it's not performing a destructive action.
-
-## Added
-
-* A Record detail viewer.  Double-click records in the Topic Records
-  Table to see their data in full.
-* Schema Registry support.
+* LZ4 decompression performance is improved.
+* Avro decoding now supports optional fields.
 
 # 2022.12.14 (Build 3)
 ## Added
