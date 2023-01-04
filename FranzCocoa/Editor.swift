@@ -109,9 +109,9 @@ class EditorViewController: NSViewController {
     case .plain:
       return []
     case .json:
-      return Error.wait(Backend.shared.lexJson(code)) ?? []
+      return Error.wait(Backend.shared.lex(code, using: .json)) ?? []
     case .lua:
-      return Error.wait(Backend.shared.lexLua(code)) ?? []
+      return Error.wait(Backend.shared.lex(code, using: .lua)) ?? []
     }
   }
 
