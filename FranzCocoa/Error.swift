@@ -3,6 +3,14 @@ import Foundation
 import NoiseBackend
 
 class Error {
+  static func block(_ proc: @escaping () throws -> Void) {
+    do {
+      try proc()
+    } catch {
+      alert(withError: error)
+    }
+  }
+
   static func alert(withError err: Any) {
     let textField = NSTextField()
     textField.isEditable = true

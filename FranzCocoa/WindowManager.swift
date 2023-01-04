@@ -74,7 +74,7 @@ class WindowManager {
   func showScriptWindow(
     forWorkspace id: UVarint,
     andTopic topic: String,
-    withDelegate delegate: ScriptWindowControllerDelegate? = nil
+    withDelegate delegate: ScriptWindowDelegate? = nil
   ) {
     assert(Thread.isMainThread)
     let key = ScriptWindowKey(workspaceId: id, topic: topic)

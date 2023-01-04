@@ -10,7 +10,7 @@ class ScriptWindowController: NSWindowController {
   @IBOutlet weak var toolbar: NSToolbar!
 
   lazy var editorCtl = EditorViewController()
-  weak var delegate: ScriptWindowControllerDelegate?
+  weak var delegate: ScriptWindowDelegate?
 
   private weak var tableAppearedObserver: AnyObject?
   private weak var tableDisappearedObserver: AnyObject?
@@ -50,7 +50,7 @@ class ScriptWindowController: NSWindowController {
       queue: .main
     ) { [weak self] notification in
       guard let self else { return }
-      guard let ob = notification.object as? ScriptWindowControllerDelegate else { return }
+      guard let ob = notification.object as? ScriptWindowDelegate else { return }
       guard notification.userInfo?["id"] as? UVarint == id else { return }
       guard notification.userInfo?["topic"] as? String == topic else { return }
       self.delegate = ob
@@ -64,7 +64,7 @@ class ScriptWindowController: NSWindowController {
       queue: .main
     ) { [weak self] notification in
       guard let self else { return }
-      guard let ob = notification.object as? ScriptWindowControllerDelegate else { return }
+      guard let ob = notification.object as? ScriptWindowDelegate else { return }
       guard notification.userInfo?["id"] as? UVarint == id else { return }
       guard notification.userInfo?["topic"] as? String == topic else { return }
       self.delegate = ob
@@ -107,7 +107,7 @@ class ScriptWindowController: NSWindowController {
 }
 
 // MARK: - ScriptWindowControllerDelegate
-protocol ScriptWindowControllerDelegate: AnyObject {
+protocol ScriptWindowDelegate: AnyObject {
   func scriptWindow(willActivate script: String) -> Bool
   func scriptWindowWillClose()
   func scriptWindowWillDeactivate()

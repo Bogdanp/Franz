@@ -38,6 +38,8 @@ class TopicRecordsTableViewController: NSViewController {
     return fmt
   }()
 
+  private lazy var recordWindowCtls = [RecordWindowController]()
+
   deinit {
     guard let iteratorId else { return }
     Error.wait(Backend.shared.closeIterator(withId: iteratorId))
@@ -361,6 +363,7 @@ class TopicRecordsTableViewController: NSViewController {
 
   private func view(record: IteratorRecord) {
     let ctl = RecordWindowController()
+    ctl.delegate = self
     ctl.configure(
       withRecord: record,
       andTopic: topic,
@@ -368,6 +371,7 @@ class TopicRecordsTableViewController: NSViewController {
       andValueFormat: options.valueFormat.dataFormat
     )
     ctl.show(self)
+    recordWindowCtls.append(ctl)
   }
 
   @objc func didPressSegmentedControl(_ sender: NSSegmentedControl) {
@@ -467,8 +471,16 @@ class TopicRecordsTableViewController: NSViewController {
   }
 }
 
-// MARK: - ScriptWindowControllerDelegate
-extension TopicRecordsTableViewController: ScriptWindowControllerDelegate {
+// MARK: - RecordWindowDelegate
+extension TopicRecordsTableViewController: RecordWindowDelegate {
+  func recordWindowWillClose(_ sender: AnyObject) {
+    guard let ctl = sender as? RecordWindowController else { return }
+    recordWindowCtls.removeAll { $0 == ctl }
+  }
+}
+
+// MARK: - ScriptWindowDelegate
+extension TopicRecordsTableViewController: ScriptWindowDelegate {
   func scriptWindow(willActivate script: String) -> Bool {
     return Error.wait(Backend.shared.activateScript(script, forTopic: topic, inWorkspace: id)) != nil
   }

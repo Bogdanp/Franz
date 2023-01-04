@@ -82,6 +82,35 @@ class RecordDetailViewController: NSViewController {
     self.valueFormat = valueFormat
   }
 
+  func save() {
+    var title = ""
+    var data: Data?
+    switch currentTab {
+    case .key:
+      title = "Save Record Key"
+      data = record?.key
+    case .value:
+      title = "Save Record Value"
+      data = record?.value
+    default:
+      ()
+    }
+    guard let data else { return }
+
+    let dialog = NSSavePanel()
+    dialog.isExtensionHidden = false
+    dialog.title = title
+    switch dialog.runModal() {
+    case .OK:
+      guard let url = dialog.url else { return }
+      Error.block {
+        try data.write(to: url, options: .atomic)
+      }
+    default:
+      return
+    }
+  }
+
   @IBAction func didPushKeyButton(_ sender: Any) {
     currentTab = .key
     reset()
