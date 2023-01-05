@@ -425,6 +425,7 @@ class TopicRecordsTableViewController: NSViewController {
       status("Fetching Records")
       loadRecords { [weak self] records in
         guard let self, let records else {
+          sender.isEnabled = true
           status("Ready")
           return
         }
