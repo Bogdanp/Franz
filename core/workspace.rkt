@@ -127,7 +127,8 @@
    #:offset (k:ProduceResponsePartition-offset part)
    #:timestamp timestamp
    #:key key
-   #:value value))
+   #:value value
+   #:headers (hash)))
 
 (define-rpc (close-all-workspaces)
   (void (pool-shutdown)))
