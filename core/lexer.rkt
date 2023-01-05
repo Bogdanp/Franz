@@ -56,6 +56,17 @@
       (Token (TokenType.keyword) (TokenSpan 10 5))
       (Token (TokenType.punctuation) (TokenSpan 15 1)))))
 
+  (test-case "json lexing with error"
+    (check-equal?
+     (lex "[1, #f, true]" (Lexer.json))
+     (list
+      (Token (TokenType.punctuation) (TokenSpan 0 1))
+      (Token (TokenType.number) (TokenSpan 1 1))
+      (Token (TokenType.punctuation) (TokenSpan 2 1))
+      (Token (TokenType.whitespace) (TokenSpan 3 1))
+      (Token (TokenType.keyword) (TokenSpan 8 4))
+      (Token (TokenType.punctuation) (TokenSpan 12 1)))))
+
   (test-case "lua lexing"
     (check-equal?
      (lex "local function foo() return 42 end" (Lexer.lua))
