@@ -168,7 +168,8 @@ ul {
 .footer__links {
   list-style: none;
   display: grid;
-  grid-auto-flow: column;
+  grid-auto-flow: row;
+  grid-row-gap: 6px;
   font-size: 1rem;
   text-align: center;
 }
@@ -223,5 +224,9 @@ ul {
 
   .container {
     width: 960px;
+  }
+
+  .footer__links {
+    grid-auto-flow: column;
   }
 }
