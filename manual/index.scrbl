@@ -222,6 +222,11 @@ Table} and before being passed to any Lua scripts.  To remove a
 registry, open the configuration window and remove its URL then press
 ``Save''.
 
+@(define (registry-yt . pre-content)
+   (apply link "https://www.youtube.com/watch?v=RESS4IdghxU" pre-content))
+
+See @registry-yt{this YouTube video} for a live demo.
+
 @section{Keyboard Shortcuts}
 
 @defkbd[(shift cmd 1)]{
