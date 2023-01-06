@@ -133,6 +133,52 @@
 (define-rpc (close-all-workspaces)
   (void (pool-shutdown)))
 
+(module+ test
+  (require rackunit
+           rackunit/text-ui)
+
+  (define test-details
+    (make-ConnectionDetails
+     #:name "Integration Tests"
+     #:bootstrap-host "127.0.0.1"
+     #:bootstrap-port 9092
+     #:use-ssl #f))
+
+  (define integration-tests
+    (test-suite
+     "workspace integration"
+     #:before (λ () (current-pool (make-pool)))
+     #:after  (λ () (close-all-workspaces))
+
+     (test-case "publish record"
+       (define id
+         (open-workspace test-details #f))
+       (define t "workspace-publish-test")
+       (test-begin
+         (create-topic t 2 1 (list (TopicOption "cleanup.policy" "compact")) id)
+         (publish-record t 0 #"k" #"v" id))
+       (delete-topic t id)
+       (close-workspace id))
+
+     (test-case "read record"
+       (define id
+         (open-workspace test-details #f))
+       (define t "workspace-read-test")
+       (test-begin
+         (create-topic t 2 1 null id)
+         (publish-record t 0 #"k" #"v" id))
+       (test-begin
+         (define it (open-iterator t (IteratorOffset.earliest) id))
+         (define recs (get-records it (* 1024 1024)))
+         (check-equal? (length recs) 1)
+         (check-equal? (IteratorRecord-key (car recs)) #"k")
+         (check-equal? (IteratorRecord-value (car recs)) #"v"))
+       (delete-topic t id)
+       (close-workspace id))))
+
+  (when (equal? (getenv "FRANZ_INTEGRATION_TESTS") "x")
+    (run-tests integration-tests)))
+
 ;; help ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define (record->IteratorRecord r)
