@@ -182,11 +182,22 @@ class ConnectionDetailsFormViewController: NSViewController {
       }
     }
 
+    let bootstrapHost = (
+      bootstrapHostField.stringValue == ""
+      ? "127.0.0.1"
+      : bootstrapHostField.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
+    )
+    let bootstrapPort = (
+      bootstrapPortField.stringValue == ""
+      ? 9092
+      : UVarint(bootstrapPortField.integerValue)
+    )
+
     actionProc(ConnectionDetails(
       id: details?.id,
       name: nameField.stringValue == "" ? "Unnamed Connection" : nameField.stringValue,
-      bootstrapHost: bootstrapHostField.stringValue == "" ? "127.0.0.1" : bootstrapHostField.stringValue,
-      bootstrapPort: bootstrapPortField.stringValue == "" ? 9092 : UVarint(bootstrapPortField.integerValue),
+      bootstrapHost: bootstrapHost,
+      bootstrapPort: bootstrapPort,
       authMechanism: authMechanism,
       username: username,
       password: password,
