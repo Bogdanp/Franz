@@ -51,6 +51,10 @@
                           [in-workspace id : UVarint])
   (void (pool-delete-topic id name)))
 
+(define-rpc (find-topic-groups [forTopic topic : String]
+                               [in-workspace id : UVarint] : (Listof String))
+  (pool-find-topic-groups id topic))
+
 (define-rpc (delete-group [named group-id : String]
                           [in-workspace id : UVarint])
   (void (pool-delete-group id group-id)))

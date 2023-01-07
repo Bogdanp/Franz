@@ -3,6 +3,7 @@
 (require (prefix-in k: kafka)
          (prefix-in k: kafka/iterator)
          (prefix-in k: kafka/producer)
+         racket/list
          racket/match
          racket/promise
          threading
@@ -26,6 +27,7 @@
  pool-fetch-offsets
  pool-reset-topic-offsets
  pool-reset-partition-offset
+ pool-find-topic-groups
  pool-activate-script
  pool-deactivate-script
  pool-activate-registry
@@ -245,6 +247,34 @@
 
                     (state-add-req s (req result res-ch nack))]
 
+                   [`(find-topic-groups ,res-ch ,nack ,id ,topic)
+                    (define result
+                      (delay/thread
+                       (define c (state-ref-client s id))
+                       (define meta (find-topic c topic))
+                       (define all-groups (k:list-groups c))
+                       (define group-descriptions
+                         (apply k:describe-groups c (map k:Group-id all-groups)))
+                       (define-values (member-groups pending-groups)
+                         (partition
+                          (λ (g) (member topic (k:Group-topics g)))
+                          group-descriptions))
+                       (define topics&partitions
+                         (hash topic (map k:PartitionMetadata-id (k:TopicMetadata-partitions meta))))
+                       (define committed-groups
+                         (filter values (for/list/concurrent ([g (in-list pending-groups)])
+                                          (define res (k:fetch-offsets c (k:Group-id g) topics&partitions))
+                                          (define parts (hash-ref (k:GroupOffsets-topics res) topic null))
+                                          (define has-committed-offsets?
+                                            (for/or ([p (in-list parts)])
+                                              (>= (k:GroupPartitionOffset-offset p) 0)))
+                                          (and has-committed-offsets? g))))
+                       (sort
+                        (for/list ([g (in-list (append member-groups committed-groups))])
+                          (k:Group-id g))
+                        string<?)))
+                    (state-add-req s (req result res-ch nack))]
+
                    [`(activate-script ,res-ch ,nack ,id ,topic ,script)
                     (~> (state-add-script s id topic script)
                         (state-add-req (req #t res-ch nack)))]
@@ -363,6 +393,9 @@
 
 (define (pool-reset-partition-offset id group-id topic pid target offset [p (current-pool)])
   (force (sync (pool-send p reset-partition-offset id group-id topic pid target offset))))
+
+(define (pool-find-topic-groups id topic [p (current-pool)])
+  (force (sync (pool-send p find-topic-groups id topic))))
 
 (define (pool-activate-script id topic script [p (current-pool)])
   (sync (pool-send p activate-script id topic script)))
