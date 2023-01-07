@@ -361,13 +361,19 @@ class TopicRecordsTableViewController: NSViewController {
   }
 
   private func view(record: IteratorRecord) {
+    var tab = RecordDetailViewController.Tab.key
+    if tableView.clickedColumn >= 0 &&
+        tableView.tableColumns[tableView.clickedColumn].identifier == .TopicRecordsValue {
+      tab = .value
+    }
     let ctl = RecordWindowController()
     ctl.delegate = self
     ctl.configure(
       withRecord: record,
       andTopic: topic,
       andKeyFormat: options.keyFormat.dataFormat,
-      andValueFormat: options.valueFormat.dataFormat
+      andValueFormat: options.valueFormat.dataFormat,
+      andTab: tab
     )
     ctl.show(self)
     recordWindowCtls.append(ctl)

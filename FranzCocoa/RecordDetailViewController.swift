@@ -14,7 +14,7 @@ class RecordDetailViewController: NSViewController {
   @IBOutlet weak var valueButton: NSButton!
   @IBOutlet weak var headersButton: NSButton!
 
-  private enum Tab {
+  enum Tab {
     case key
     case value
     case headers
@@ -56,6 +56,7 @@ class RecordDetailViewController: NSViewController {
       timeStyle: .long
     )
 
+    print("tab=\(currentTab)")
     keyButton.state = .off
     valueButton.state = .off
     headersButton.state = .off
@@ -75,11 +76,13 @@ class RecordDetailViewController: NSViewController {
   func configure(
     withRecord record: IteratorRecord,
     andKeyFormat keyFormat: DataFormat = .binary,
-    andValueFormat valueFormat: DataFormat = .binary
+    andValueFormat valueFormat: DataFormat = .binary,
+    andTab tab: Tab = .key
   ) {
     self.record = record
     self.keyFormat = keyFormat
     self.valueFormat = valueFormat
+    self.currentTab = tab
   }
 
   func save() {

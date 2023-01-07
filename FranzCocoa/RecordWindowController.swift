@@ -27,14 +27,16 @@ class RecordWindowController: NSWindowController {
     withRecord record: IteratorRecord,
     andTopic topic: String,
     andKeyFormat keyFormat: DataFormat,
-    andValueFormat valueFormat: DataFormat
+    andValueFormat valueFormat: DataFormat,
+    andTab tab: RecordDetailViewController.Tab
   ) {
     self.record = record
     self.topic = topic
     self.detailCtl.configure(
       withRecord: record,
       andKeyFormat: keyFormat,
-      andValueFormat: valueFormat
+      andValueFormat: valueFormat,
+      andTab: tab
     )
     self.reset()
   }
