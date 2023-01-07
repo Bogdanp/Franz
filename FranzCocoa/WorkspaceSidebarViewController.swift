@@ -358,6 +358,11 @@ extension WorkspaceSidebarViewController: NSTableViewDelegate {
   }
 
   func tableViewSelectionDidChange(_ notification: Notification) {
+    if tableView.selectedRow == -1 {
+      delegate?.sidebar(didDeselectEntry: selectedEntry)
+      selectedEntry = nil
+      return
+    }
     let e = filteredEntries[tableView.selectedRow]
     guard e.kind != .group else { return }
     guard let data = e.data else { return }
