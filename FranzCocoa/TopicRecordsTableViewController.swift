@@ -186,7 +186,6 @@ class TopicRecordsTableViewController: NSViewController {
 
     DispatchQueue.uiBackground.async { [weak self] in
       guard let self else {
-        // https://lists.apple.com/archives/cocoa-dev/2014/Apr/msg00484.html
         DispatchQueue.main.sync {
           completionHandler()
         }
