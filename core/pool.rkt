@@ -244,7 +244,6 @@
                            [else
                             (raise-argument-error 'reset-partition-offset "(or/c 'earliest 'latest 'offset)" target)]))
                        (k:reset-offsets c group-id offsets)))
-
                     (state-add-req s (req result res-ch nack))]
 
                    [`(find-topic-groups ,res-ch ,nack ,id ,topic)
