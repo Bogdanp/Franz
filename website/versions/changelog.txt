@@ -1,3 +1,13 @@
+# 2023.01.23 (Build 5)
+## Added
+
+* The Consumer Groups tab to the Topic Detail view.
+
+## Changed
+
+* The Record Detail viewer opens to the tab corresponding to the
+  clicked column.
+
 # 2023.01.06 (Build 4)
 ## Added
 
