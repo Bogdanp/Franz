@@ -84,6 +84,7 @@ protocol WorkspaceDetailDelegate: AnyObject {
   func clearStatusCookie()
   func makeStatusProc() -> ((String) -> Void)
   func request(topicNamed topic: String)
+  func request(groupNamed group: String)
 }
 
 // MARK: - NSViewController

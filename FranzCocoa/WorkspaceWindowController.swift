@@ -386,6 +386,10 @@ extension WorkspaceWindowController: WorkspaceDetailDelegate {
   func request(topicNamed name: String) {
     loadMetadata(andSelectTopic: name)
   }
+
+  func request(groupNamed name: String) {
+    sidebarCtl.selectEntry(withKind: .consumerGroup, andLabel: name)
+  }
 }
 
 // MARK: - WorkspaceSidebarDelegate
