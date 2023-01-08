@@ -83,7 +83,7 @@ class ScriptWindowController: NSWindowController {
   }
 
   private func enableToggleItem() {
-    toggleToolbarItem?.action = #selector(didPressToggleButton(_:))
+    toggleToolbarItem?.action = #selector(toggleScript(_:))
   }
 
   private func activate() {
@@ -103,147 +103,6 @@ class ScriptWindowController: NSWindowController {
     guard let topic else { return }
     let filename = url?.lastPathComponent ?? "Untitled.lua"
     window?.title = "\(topic) - \(filename)"
-  }
-}
-
-// MARK: - ScriptWindowControllerDelegate
-protocol ScriptWindowDelegate: AnyObject {
-  func scriptWindow(willActivate script: String) -> Bool
-  func scriptWindowWillClose()
-  func scriptWindowWillDeactivate()
-}
-
-// MARK: - EditorViewControllerDelegate
-extension ScriptWindowController: EditorViewControllerDelegate {
-  func codeDidChange(_ sender: EditorViewController) {
-    if active {
-      deactivate()
-    }
-    window?.isDocumentEdited = true
-  }
-}
-
-// MARK: - NSToolbarDelegate
-extension ScriptWindowController: NSToolbarDelegate {
-  private func bolt(accented: Bool = false) -> NSImage {
-    var conf = NSImage.SymbolConfiguration(pointSize: 18, weight: .regular)
-    if accented {
-      conf = conf.applying(.init(paletteColors: [.controlAccentColor]))
-    }
-    return NSImage(systemSymbolName: "bolt.fill", accessibilityDescription: "Toggle Active")!
-      .withSymbolConfiguration(conf)!
-  }
-
-  func toolbar(
-    _ toolbar: NSToolbar,
-    itemForItemIdentifier itemIdentifier: NSToolbarItem.Identifier,
-    willBeInsertedIntoToolbar flag: Bool) -> NSToolbarItem? {
-
-      switch itemIdentifier {
-      case .toggleActive:
-        let item = NSToolbarItem(itemIdentifier: itemIdentifier)
-        item.image = bolt()
-        item.label = "Toggle Active"
-        item.action = #selector(didPressToggleButton(_:))
-        return item
-      default:
-        return nil
-      }
-  }
-
-  func toolbarAllowedItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-    return [.toggleActive]
-  }
-
-  func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-    return [.flexibleSpace, .toggleActive]
-  }
-
-  @objc func didPressToggleButton(_ sender: NSToolbarItem) {
-    if active {
-      deactivate()
-    } else {
-      activate()
-    }
-  }
-}
-
-// MARK: - NSToolbarItem.Identifier
-extension NSToolbarItem.Identifier {
-  static let toggleActive = Self("toggleActive")
-}
-
-// MARK: - NSWindowDelegate
-extension ScriptWindowController: NSWindowDelegate {
-  func windowWillClose(_ notification: Notification) {
-    deactivate()
-    delegate?.scriptWindowWillClose()
-  }
-
-  func windowDidBecomeKey(_ notification: Notification) {
-    let items: [[NSUserInterfaceItemIdentifier]: Selector] = [
-      [.FileMenuItem, .OpenMenuItem]: #selector(didPressOpenMenuItem(_:)),
-      [.FileMenuItem, .SaveMenuItem]: #selector(didPressSaveMenuItem(_:)),
-      [.FileMenuItem, .SaveAsMenuItem]: #selector(didPressSaveAsMenuItem(_:)),
-    ]
-    for (path, selector) in items {
-      guard let item = MainMenu.shared.find(itemByPath: path) else { continue }
-      item.action = selector
-      item.target = self
-    }
-    resetSaveItems()
-  }
-
-  func windowDidResignKey(_ notification: Notification) {
-    let paths: [[NSUserInterfaceItemIdentifier]] = [
-      [.FileMenuItem, .OpenMenuItem],
-      [.FileMenuItem, .SaveMenuItem],
-      [.FileMenuItem, .SaveAsMenuItem],
-      [.FileMenuItem, .RevertMenuItem],
-    ]
-    for path in paths {
-      guard let item = MainMenu.shared.find(itemByPath: path) else { continue }
-      item.action = nil
-      item.target = nil
-    }
-
-    if let item = MainMenu.shared.find(itemByPath: [.FileMenuItem, .SaveMenuItem]) {
-      item.title = "Save..."
-    }
-  }
-
-  @objc func didPressOpenMenuItem(_ sender: NSMenuItem) {
-    let dialog = NSOpenPanel()
-    dialog.allowedContentTypes = [.init(filenameExtension: "lua")!]
-    dialog.canChooseFiles = true
-    switch dialog.runModal() {
-    case .OK:
-      guard let url = dialog.url else { return }
-      self.url = url
-      self.open(url)
-      self.resetTitle()
-      self.resetSaveItems()
-    default:
-      return
-    }
-  }
-
-  @objc func didPressSaveMenuItem(_ sender: NSMenuItem) {
-    if let url {
-      save(to: url)
-    } else {
-      saveAs()
-    }
-  }
-
-  @objc func didPressSaveAsMenuItem(_ sender: NSMenuItem) {
-    saveAs()
-  }
-
-  @objc func didPressRevertMenuItem(_ sender: NSMenuItem) {
-    if let url {
-      open(url)
-    }
   }
 
   private func open(_ url: URL) {
@@ -277,21 +136,129 @@ extension ScriptWindowController: NSWindowDelegate {
       self.url = url
       self.save(to: url)
       self.resetTitle()
-      self.resetSaveItems()
     default:
       return
     }
   }
 
-  private func resetSaveItems() {
-    if let item = MainMenu.shared.find(itemByPath: [.FileMenuItem, .SaveMenuItem]) {
-      item.title = url == nil ? "Save..." : "Save"
+  @objc func openDocument(_ sender: Any) {
+    let dialog = NSOpenPanel()
+    dialog.allowedContentTypes = [.init(filenameExtension: "lua")!]
+    dialog.canChooseFiles = true
+    switch dialog.runModal() {
+    case .OK:
+      guard let url = dialog.url else { return }
+      self.url = url
+      self.open(url)
+      self.resetTitle()
+    default:
+      return
     }
-    if let item = MainMenu.shared.find(itemByPath: [.FileMenuItem, .RevertMenuItem]) {
-      if url != nil {
-        item.action = #selector(didPressRevertMenuItem(_:))
-        item.target = self
+  }
+
+  @objc func saveDocument(_ sender: Any) {
+    if let url {
+      save(to: url)
+    } else {
+      saveAs()
+    }
+  }
+
+  @objc func saveDocumentAs(_ sender: Any) {
+    saveAs()
+  }
+
+  @objc func revertDocumentToSaved(_ sender: Any) {
+    if let url {
+      open(url)
+    }
+  }
+
+  @objc func toggleScript(_ sender: Any) {
+    if active {
+      deactivate()
+    } else {
+      activate()
+    }
+  }
+}
+
+// MARK: - ScriptWindowControllerDelegate
+protocol ScriptWindowDelegate: AnyObject {
+  func scriptWindow(willActivate script: String) -> Bool
+  func scriptWindowWillClose()
+  func scriptWindowWillDeactivate()
+}
+
+// MARK: - EditorViewControllerDelegate
+extension ScriptWindowController: EditorViewControllerDelegate {
+  func codeDidChange(_ sender: EditorViewController) {
+    if active {
+      deactivate()
+    }
+    window?.isDocumentEdited = true
+  }
+}
+
+// MARK: - NSMenuItemValidation
+extension ScriptWindowController: NSMenuItemValidation {
+  func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
+    if menuItem.action == #selector(saveDocument(_:)) {
+      menuItem.title = url == nil ? "Save..." : "Save"
+    }
+    if menuItem.action == #selector(revertDocumentToSaved(_:)) {
+      return url != nil && (window?.isDocumentEdited ?? false)
+    }
+    return true
+  }
+}
+
+// MARK: - NSToolbarDelegate
+extension ScriptWindowController: NSToolbarDelegate {
+  private func bolt(accented: Bool = false) -> NSImage {
+    var conf = NSImage.SymbolConfiguration(pointSize: 18, weight: .regular)
+    if accented {
+      conf = conf.applying(.init(paletteColors: [.controlAccentColor]))
+    }
+    return NSImage(systemSymbolName: "bolt.fill", accessibilityDescription: "Toggle Active")!
+      .withSymbolConfiguration(conf)!
+  }
+
+  func toolbar(
+    _ toolbar: NSToolbar,
+    itemForItemIdentifier itemIdentifier: NSToolbarItem.Identifier,
+    willBeInsertedIntoToolbar flag: Bool) -> NSToolbarItem? {
+
+      switch itemIdentifier {
+      case .toggleActive:
+        let item = NSToolbarItem(itemIdentifier: itemIdentifier)
+        item.image = bolt()
+        item.label = "Toggle Active"
+        item.action = #selector(toggleScript(_:))
+        return item
+      default:
+        return nil
       }
-    }
+  }
+
+  func toolbarAllowedItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
+    return [.toggleActive]
+  }
+
+  func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
+    return [.flexibleSpace, .toggleActive]
+  }
+}
+
+// MARK: - NSToolbarItem.Identifier
+extension NSToolbarItem.Identifier {
+  static let toggleActive = Self("toggleActive")
+}
+
+// MARK: - NSWindowDelegate
+extension ScriptWindowController: NSWindowDelegate {
+  func windowWillClose(_ notification: Notification) {
+    deactivate()
+    delegate?.scriptWindowWillClose()
   }
 }

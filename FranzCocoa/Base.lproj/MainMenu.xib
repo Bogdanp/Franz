@@ -74,7 +74,11 @@
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="File" id="bib-Uj-vzu">
                         <items>
-                            <menuItem title="Open..." keyEquivalent="o" identifier="OpenMenuItem" id="5ey-cD-1Q8"/>
+                            <menuItem title="Open..." keyEquivalent="o" identifier="OpenMenuItem" id="5ey-cD-1Q8">
+                                <connections>
+                                    <action selector="openDocument:" target="-1" id="pp0-GV-BTi"/>
+                                </connections>
+                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="0yc-Ij-9gN"/>
                             <menuItem title="Save…" keyEquivalent="s" identifier="SaveMenuItem" id="pxx-59-PXV">
                                 <connections>
