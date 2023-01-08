@@ -56,7 +56,6 @@ class RecordDetailViewController: NSViewController {
       timeStyle: .long
     )
 
-    print("tab=\(currentTab)")
     keyButton.state = .off
     valueButton.state = .off
     headersButton.state = .off
