@@ -61,6 +61,7 @@ struct SchemaDetailView: View {
             Editor(
               code: code,
               language: .json,
+              border: .bezelBorder,
               isEditable: false
             )
           }

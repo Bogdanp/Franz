@@ -401,11 +401,12 @@ struct Editor: NSViewControllerRepresentable {
 
   var code: String = ""
   var language: Language = .lua
+  var border: NSBorderType = .noBorder
   var isEditable = true
 
   func makeNSViewController(context: Context) -> EditorViewController {
     let ctl = EditorViewController()
-    ctl.configure(code: code, language: language)
+    ctl.configure(code: code, language: language, border: border)
     ctl.isEditable = isEditable
     return ctl
   }
