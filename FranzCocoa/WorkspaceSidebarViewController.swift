@@ -10,7 +10,7 @@ fileprivate let logger = Logger(
 class WorkspaceSidebarViewController: NSViewController {
   private var id: UVarint!
   private var conn: ConnectionDetails!
-  private var metadata = Metadata(brokers: [], topics: [], groups: [])
+  private var metadata = Metadata(brokers: [], topics: [], groups: [], schemas: [])
   private var entries = [SidebarEntry]()
   private var filteredEntries = [SidebarEntry]()
   private var selectedEntry: SidebarEntry?
@@ -66,6 +66,7 @@ class WorkspaceSidebarViewController: NSViewController {
     var oldBrokers = [String: SidebarEntry]()
     var oldTopics = [String: SidebarEntry]()
     var oldConsumerGroups = [String: SidebarEntry]()
+    var oldSchemas = [String: SidebarEntry]()
     for e in entries {
       switch e.kind {
       case .broker:
@@ -74,6 +75,8 @@ class WorkspaceSidebarViewController: NSViewController {
         oldTopics[e.label] = e
       case .consumerGroup:
         oldConsumerGroups[e.label] = e
+      case .schema:
+        oldSchemas[e.label] = e
       default:
         continue
       }
@@ -130,6 +133,24 @@ class WorkspaceSidebarViewController: NSViewController {
       }
     }
 
+    if conn?.schemaRegistryId != nil {
+      entries.append(SidebarEntry(
+        withKind: .group,
+        label: "Schemas",
+        andTag: SidebarGroup.schemas.rawValue,
+        andCollapsed: state.groupCollapsedStates[.schemas] ?? false
+      ))
+      for s in metadata.schemas {
+        if let e = oldSchemas[s.name] {
+          e.data = s
+          entries.append(e)
+        } else {
+          let e = SidebarEntry(withKind: .schema, label: s.name, andData: s)
+          entries.append(e)
+        }
+      }
+    }
+
     filterEntries()
     updateSelection()
     updateCollapsed()
@@ -181,6 +202,8 @@ class WorkspaceSidebarViewController: NSViewController {
             collapsed.insert(.topic)
           case .consumerGroups:
             collapsed.insert(.consumerGroup)
+          case .schemas:
+            collapsed.insert(.schema)
           }
         }
         continue
@@ -312,7 +335,7 @@ extension WorkspaceSidebarViewController: NSTableViewDelegate {
   func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
     let entry = filteredEntries[row]
     switch entry.kind {
-    case .broker, .topic, .consumerGroup:
+    case .broker, .topic, .consumerGroup, .schema:
       guard let view = tableView.makeView(withIdentifier: .entry, owner: nil) as? SidebarEntryCellView else {
         return nil
       }
@@ -331,6 +354,8 @@ extension WorkspaceSidebarViewController: NSTableViewDelegate {
         image = NSImage(systemSymbolName: "tray.full.fill", accessibilityDescription: "Topic")
       case .consumerGroup:
         image = NSImage(systemSymbolName: "circle.grid.3x3.fill", accessibilityDescription: "Consumer Group")
+      case .schema:
+        image = NSImage(systemSymbolName: "doc.plaintext.fill", accessibilityDescription: "Schema")
       default:
         image = nil
       }
@@ -393,6 +418,7 @@ enum SidebarGroup: Int, Codable, Hashable {
   case brokers
   case topics
   case consumerGroups
+  case schemas
 }
 
 enum SidebarEntryKind {
@@ -400,6 +426,7 @@ enum SidebarEntryKind {
   case broker
   case topic
   case consumerGroup
+  case schema
 }
 
 class SidebarEntry: NSObject {

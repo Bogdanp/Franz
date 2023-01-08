@@ -20,6 +20,7 @@
 		4342530F2964A8C300CC05BC /* HeadersTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4342530D2964A8C300CC05BC /* HeadersTableViewController.swift */; };
 		434253102964A8C300CC05BC /* HeadersTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4342530E2964A8C300CC05BC /* HeadersTableViewController.xib */; };
 		43453F3D291505A6000CE90E /* Timed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43453F3C291505A6000CE90E /* Timed.swift */; };
+		4352A29F296B1B2C0081AF19 /* SchemaDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4352A29E296B1B2C0081AF19 /* SchemaDetailView.swift */; };
 		435427F5293F50230040AE04 /* fixtures in Resources */ = {isa = PBXBuildFile; fileRef = 435427F4293F50230040AE04 /* fixtures */; };
 		435EBE5529542E7C00DCFEBF /* DataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 435EBE5329542E7C00DCFEBF /* DataViewController.swift */; };
 		435EBE5629542E7C00DCFEBF /* DataViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 435EBE5429542E7C00DCFEBF /* DataViewController.xib */; };
@@ -111,6 +112,7 @@
 		4342530D2964A8C300CC05BC /* HeadersTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadersTableViewController.swift; sourceTree = "<group>"; };
 		4342530E2964A8C300CC05BC /* HeadersTableViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = HeadersTableViewController.xib; sourceTree = "<group>"; };
 		43453F3C291505A6000CE90E /* Timed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timed.swift; sourceTree = "<group>"; };
+		4352A29E296B1B2C0081AF19 /* SchemaDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchemaDetailView.swift; sourceTree = "<group>"; };
 		435427F4293F50230040AE04 /* fixtures */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fixtures; sourceTree = "<group>"; };
 		435EBE5329542E7C00DCFEBF /* DataViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataViewController.swift; sourceTree = "<group>"; };
 		435EBE5429542E7C00DCFEBF /* DataViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DataViewController.xib; sourceTree = "<group>"; };
@@ -278,6 +280,7 @@
 				4396EAD8290576A300A15D25 /* ResourceConfigTableViewController.swift */,
 				4396EAD9290576A300A15D25 /* ResourceConfigTableViewController.xib */,
 				43CD623228CE25F300095144 /* resources */,
+				4352A29E296B1B2C0081AF19 /* SchemaDetailView.swift */,
 				43E64A062928F2BF00FDBF29 /* ScriptWindowController.swift */,
 				43E64A072928F2BF00FDBF29 /* ScriptWindowController.xib */,
 				436E720C28D760BF00ECBF49 /* SidebarEntryCellView.swift */,
@@ -520,6 +523,7 @@
 				43E64A082928F2BF00FDBF29 /* ScriptWindowController.swift in Sources */,
 				436E720628D75B0500ECBF49 /* WorkspaceDetailViewController.swift in Sources */,
 				4396EADA290576A300A15D25 /* ResourceConfigTableViewController.swift in Sources */,
+				4352A29F296B1B2C0081AF19 /* SchemaDetailView.swift in Sources */,
 				431C698228F2E0C60082986A /* NewTopicFormViewController.swift in Sources */,
 				43F987A8292A867B00E5E1DE /* UpdatesWindowController.swift in Sources */,
 				4322BBD92924DED8002358C3 /* Editor.swift in Sources */,

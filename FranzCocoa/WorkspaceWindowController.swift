@@ -313,6 +313,8 @@ extension WorkspaceWindowController: ConfigureSchemaRegistryFormDelegate {
       Error.wait(Backend.shared.deleteSchemaRegistry(registryId))
       deactivateRegistry()
     }
+
+    loadMetadata(forcingReload: true)
   }
 }
 

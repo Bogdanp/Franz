@@ -47,6 +47,14 @@ class WorkspaceDetailViewController: NSViewController {
           group: group,
           delegate: delegate))
       display(controller: hostingCtl)
+    case .schema:
+      guard let schema = entry as? Schema else { return }
+      let hostingCtl = NSHostingController(
+        rootView: SchemaDetailView(
+          id: id,
+          schema: schema,
+          delegate: delegate))
+      display(controller: hostingCtl)
     default:
       clear()
     }
