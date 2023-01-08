@@ -1,7 +1,8 @@
 #lang racket/base
 
 (require noise/serde
-         racket/contract)
+         racket/contract
+         "schema-registry/schema.rkt")
 
 (provide
  (record-out Broker)
@@ -33,7 +34,8 @@
 (define-record Metadata
   [brokers : (Listof Broker)]
   [topics : (Listof Topic)]
-  [groups : (Listof Group)])
+  [groups : (Listof Group)]
+  [schemas : (Listof Schema)])
 
 (define-record TopicOption
   [key : String]

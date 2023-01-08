@@ -10,7 +10,9 @@
          "broker.rkt"
          "connection-details.rkt"
          "group.rkt"
-         "logger.rkt")
+         "logger.rkt"
+         (prefix-in sr: "schema-registry/generic.rkt")
+         (prefix-in sr: "schema-registry/schema.rkt"))
 
 (provide
  pool?
@@ -32,6 +34,7 @@
  pool-deactivate-script
  pool-activate-registry
  pool-deactivate-registry
+ pool-get-schema
  pool-open-iterator
  pool-get-records
  pool-reset-iterator
@@ -91,6 +94,11 @@
                              (k:client-metadata c)))
                        (define controller-id
                          (k:Metadata-controller-id meta))
+                       (define schemas
+                         (delay/thread
+                          (cond
+                            [(state-ref-registry s id) => sr:get-schemas]
+                            [else null])))
                        (define groups
                          (for/list ([g (in-list (k:list-groups c))])
                            (make-Group #:id (k:Group-id g))))
@@ -117,7 +125,8 @@
                        (make-Metadata
                         #:brokers (sort brokers < #:key Broker-id)
                         #:topics (sort topics string<? #:key Topic-name)
-                        #:groups (sort groups string<? #:key Group-id))))
+                        #:groups (sort groups string<? #:key Group-id)
+                        #:schemas (sort (force schemas) string<? #:key sr:Schema-name))))
                     (state-add-req s (req metadata res-ch nack))]
 
                    [`(get-resource-configs ,res-ch ,nack ,id ,type ,name)
@@ -290,6 +299,15 @@
                     (~> (state-remove-registry s id)
                         (state-add-req (req #t res-ch nack)))]
 
+                   [`(get-schema ,res-ch ,nack ,id ,name)
+                    (define result
+                      (delay/thread
+                       (define registry (state-ref-registry s id))
+                       (unless registry
+                         (error 'get-schema "Schema Registry not configured"))
+                       (sr:get-schema registry name)))
+                    (state-add-req s (req result res-ch nack))]
+
                    [`(open-iterator ,res-ch ,nack ,id ,topic ,offset)
                     (with-handlers ([exn:fail? (λ (e) (state-add-req s (req e res-ch nack)))])
                       (define c (state-ref-client s id))
@@ -407,6 +425,9 @@
 
 (define (pool-deactivate-registry id [p (current-pool)])
   (sync (pool-send p deactivate-registry id)))
+
+(define (pool-get-schema id name [p (current-pool)])
+  (force (sync (pool-send p get-schema id name))))
 
 (define (pool-open-iterator id topic offset [p (current-pool)])
   (sync (pool-send p open-iterator id topic offset)))

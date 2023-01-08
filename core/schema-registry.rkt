@@ -10,7 +10,8 @@
          threading
          (prefix-in meta: "metadata.rkt")
          "pool.rkt"
-         "schema-registry/confluent.rkt")
+         "schema-registry/confluent.rkt"
+         "schema-registry/schema.rkt")
 
 (provide
  (enum-out SchemaRegistryKind)
@@ -92,3 +93,7 @@
 
 (define-rpc (deactivate-schema-registry [in-workspace id : UVarint])
   (pool-deactivate-registry id))
+
+(define-rpc (get-schema [named name : String]
+                        [in-workspace id : UVarint] : Schema)
+  (pool-get-schema id name))

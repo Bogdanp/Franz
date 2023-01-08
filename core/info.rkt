@@ -5,7 +5,7 @@
 (define deps '(["amazon-msk-sasl-lib" #:version "0.2"]
                ["avro-lib" #:version "1.1"]
                "base"
-               ["confluent-schema-registry-lib" #:version "0.2"]
+               ["confluent-schema-registry-lib" #:version "0.2.1"]
                "db-lib"
                ["deta-lib" #:version "0.11"]
                "http-easy-lib"

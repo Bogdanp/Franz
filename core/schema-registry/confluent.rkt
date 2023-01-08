@@ -6,14 +6,36 @@
          kafka/consumer
          racket/match
          racket/port
-         "generic.rkt")
+         "generic.rkt"
+         "schema.rkt")
 
 (provide
  make-confluent-registry)
 
 (struct confluent-registry (client codecs)
   #:methods gen:registry
-  [(define (decode-record self r)
+  [(define (get-schemas self)
+     (define subjects
+       (impl:get-all-subjects (confluent-registry-client self)))
+     (for/list ([subject (in-list subjects)])
+       (make-Schema #:name subject)))
+
+   (define (get-schema self name)
+     (define client (confluent-registry-client self))
+     (define schema
+       (impl:get-subject-version client name 'latest))
+     (make-Schema
+      #:id (impl:Schema-id schema)
+      #:name name
+      #:type (case (impl:Schema-type schema)
+               [(avro) (SchemaType.avro)]
+               [(json) (SchemaType.json)]
+               [(protobuf) (SchemaType.protobuf)]
+               [else (error 'get-schema "unexpected schema type: ~a" (impl:Schema-type schema))])
+      #:version (impl:Schema-version schema)
+      #:schema (impl:Schema-schema schema)))
+
+   (define (decode-record self r)
      (match-define (record _ _ _ k v _) r)
      (struct-copy record r
                   [key (or (and k (decode self k)) k)]
