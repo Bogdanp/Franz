@@ -68,4 +68,5 @@ class TabState {
 enum TabAutosaveId {
   case brokerDetail
   case topicDetail
+  case schemaDetail
 }

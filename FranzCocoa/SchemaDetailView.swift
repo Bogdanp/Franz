@@ -6,6 +6,8 @@ struct SchemaDetailView: View {
   @State var schema: Schema
   weak var delegate: WorkspaceDetailDelegate?
 
+  @State private var currentTab = TabState.shared.get(.schemaDetail) as? Tab ?? Tab.info
+
   private var type: String {
     guard let type = schema.type else { return "Unknown "}
     switch type {
@@ -18,14 +20,14 @@ struct SchemaDetailView: View {
     }
   }
 
-  private var code: String? {
+  private var code: String {
     guard let type = schema.type,
           let code = schema.schema else {
-      return nil
+      return ""
     }
     switch type {
     case .avro, .json:
-      return Error.wait(Backend.shared.ppJson(code))
+      return Error.wait(Backend.shared.ppJson(code)) ?? ""
     case .protobuf:
       return code
     }
@@ -42,28 +44,35 @@ struct SchemaDetailView: View {
             .font(.subheadline)
             .foregroundColor(.secondary)
 
-          Infos {
-            Info(
-              label: "Type",
-              description: type
-            )
-            Info(
-              label: "Latest Version",
-              description: schema.version.map { $0.description } ?? "",
-              divider: false
-            )
-          }
-
-          if let code {
-            Spacer().frame(height: 15)
-            Text("Schema")
-              .font(.headline)
-            Editor(
-              code: code,
-              language: .json,
-              border: .bezelBorder,
-              isEditable: false
-            )
+          Tabs(
+            autosaveId: .schemaDetail,
+            items: [
+              .init(id: .info, symbol: "info.circle.fill", shortcut: .init("1")),
+              .init(id: .schema, symbol: "doc.plaintext.fill", shortcut: .init("2")),
+            ],
+            selection: $currentTab
+          ) { item in
+            switch item.id {
+            case .info:
+              Infos {
+                Info(
+                  label: "Type",
+                  description: type
+                )
+                Info(
+                  label: "Latest Version",
+                  description: schema.version.map { $0.description } ?? "",
+                  divider: false
+                )
+              }
+            case .schema:
+              Editor(
+                code: code,
+                language: .json,
+                border: .bezelBorder,
+                isEditable: false
+              )
+            }
           }
         }
         Spacer()
@@ -88,4 +97,9 @@ struct SchemaDetailView: View {
       status("Ready")
     }
   }
+}
+
+fileprivate enum Tab {
+  case info
+  case schema
 }
