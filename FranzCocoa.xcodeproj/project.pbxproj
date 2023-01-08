@@ -76,7 +76,6 @@
 		43D03DD428FAC6030049D44D /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D03DD328FAC6030049D44D /* Keychain.swift */; };
 		43D03DD628FAFE3B0049D44D /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D03DD528FAFE3B0049D44D /* Notifications.swift */; };
 		43D03DD828FB03940049D44D /* Identifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D03DD728FB03940049D44D /* Identifiers.swift */; };
-		43D03DDA28FB05000049D44D /* MainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D03DD928FB05000049D44D /* MainMenu.swift */; };
 		43D3AEA628FFD8D100D52E92 /* Pasteboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D3AEA528FFD8D100D52E92 /* Pasteboard.swift */; };
 		43D3AEA828FFD96500D52E92 /* Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D3AEA728FFD96500D52E92 /* Defaults.swift */; };
 		43D3AEAB28FFDF3500D52E92 /* PreferencesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D3AEA928FFDF3500D52E92 /* PreferencesWindowController.swift */; };
@@ -169,7 +168,6 @@
 		43D03DD328FAC6030049D44D /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
 		43D03DD528FAFE3B0049D44D /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
 		43D03DD728FB03940049D44D /* Identifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Identifiers.swift; sourceTree = "<group>"; };
-		43D03DD928FB05000049D44D /* MainMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenu.swift; sourceTree = "<group>"; };
 		43D3AEA528FFD8D100D52E92 /* Pasteboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pasteboard.swift; sourceTree = "<group>"; };
 		43D3AEA728FFD96500D52E92 /* Defaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Defaults.swift; sourceTree = "<group>"; };
 		43D3AEA928FFDF3500D52E92 /* PreferencesWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesWindowController.swift; sourceTree = "<group>"; };
@@ -264,7 +262,6 @@
 				43D03DD728FB03940049D44D /* Identifiers.swift */,
 				433C5E8A29066310005F4C4B /* Infos.swift */,
 				43D03DD328FAC6030049D44D /* Keychain.swift */,
-				43D03DD928FB05000049D44D /* MainMenu.swift */,
 				43CD621C28CE24B100095144 /* MainMenu.xib */,
 				431C698028F2E0C60082986A /* NewTopicFormViewController.swift */,
 				431C698128F2E0C60082986A /* NewTopicFormViewController.xib */,
@@ -537,7 +534,6 @@
 				432C24632903F03B00C6F336 /* Error.swift in Sources */,
 				43D03DD828FB03940049D44D /* Identifiers.swift in Sources */,
 				43CD623B28CE27DB00095144 /* WelcomeWindowController.swift in Sources */,
-				43D03DDA28FB05000049D44D /* MainMenu.swift in Sources */,
 				43D3AEAB28FFDF3500D52E92 /* PreferencesWindowController.swift in Sources */,
 				43CD623728CE27B200095144 /* WindowManager.swift in Sources */,
 				43CD621928CE24B000095144 /* AppDelegate.swift in Sources */,

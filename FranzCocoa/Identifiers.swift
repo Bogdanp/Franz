@@ -2,19 +2,6 @@ import AppKit
 import Foundation
 
 extension NSUserInterfaceItemIdentifier {
-  static let FileMenuItem = Self("FileMenuItem")
-  static let OpenMenuItem = Self("OpenMenuItem")
-  static let SaveMenuItem = Self("SaveMenuItem")
-  static let SaveAsMenuItem = Self("SaveAsMenuItem")
-  static let RevertMenuItem = Self("RevertMenuItem")
-  static let ConnectionMenuItem = Self("ConnectionMenuItem")
-  static let ReloadMetadataMenuItem = Self("ReloadMetadataMenuItem")
-  static let TopicMenuItem = Self("TopicMenuItem")
-  static let NewTopicMenuItem = Self("NewTopicMenuItem")
-  static let PublishMenuItem = Self("PublishMenuItem")
-  static let SchemaRegistryMenuItem = Self("SchemaRegistryMenuItem")
-  static let ConfigureMenuItem = Self("ConfigureMenuItem")
-
   static let GroupOffsetsTopic = Self("GroupOffsets.Topic")
   static let GroupOffsetsOffset = Self("GroupOffsets.Offset")
   static let GroupOffsetsLag = Self("GroupOffsets.Lag")
