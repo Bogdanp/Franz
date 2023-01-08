@@ -102,40 +102,41 @@ fileprivate struct ConsumerGroups: View {
   @State private var groupsLoading = false
 
   var body: some View {
-    VStack(alignment: .leading) {
-      Spacer().frame(height: 15)
-      Text("Consumer Groups")
-        .font(.headline)
-      Spacer().frame(height: 10)
+    HStack(alignment: .top) {
+      VStack(alignment: .leading) {
+        Spacer().frame(height: 15)
+        Text("Consumer Groups")
+          .font(.headline)
+        Spacer().frame(height: 10)
 
-      if groupsLoading {
-        ProgressView()
-          .scaleEffect(0.5, anchor: .topLeading)
-      } else if groups.count == 0 {
-        Text("This topic has no active consumer groups.")
-      } else {
-        ForEach(groups) { group in
-          HStack {
-            Text(group.name)
-            Spacer()
-            Button(action: {
-              delegate?.request(groupNamed: group.name)
-            }, label: {
-              Image(systemName: "arrow.triangle.turn.up.right.circle.fill")
-                .renderingMode(.template)
-                .tint(.secondary)
-            })
-            .buttonStyle(.plain)
+        if groupsLoading {
+          ProgressView()
+            .scaleEffect(0.5, anchor: .topLeading)
+        } else if groups.count == 0 {
+          Text("This topic has no active consumer groups.")
+        } else {
+          ForEach(groups) { group in
+            HStack {
+              Text(group.name)
+              Spacer()
+              Button(action: {
+                delegate?.request(groupNamed: group.name)
+              }, label: {
+                Image(systemName: "arrow.triangle.turn.up.right.circle.fill")
+                  .renderingMode(.template)
+                  .tint(.secondary)
+              })
+              .buttonStyle(.plain)
+            }
+            Divider()
           }
-          Divider()
         }
+
+        Spacer()
       }
+
+      Spacer()
     }
-    .frame(
-      maxWidth: .infinity,
-      maxHeight: .infinity,
-      alignment: .topLeading
-    )
     .onAppear {
       fetchGroups()
     }
