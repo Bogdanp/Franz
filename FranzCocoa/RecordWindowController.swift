@@ -58,23 +58,7 @@ extension RecordWindowController: NSWindowDelegate {
     delegate?.recordWindowWillClose(self)
   }
 
-  func windowDidBecomeKey(_ notification: Notification) {
-    guard let item = MainMenu.shared.find(itemByPath: [.FileMenuItem, .SaveAsMenuItem]) else {
-      return
-    }
-    item.action = #selector(didPushSaveAsItem(_:))
-    item.target = self
-  }
-
-  func windowDidResignKey(_ notification: Notification) {
-    guard let item = MainMenu.shared.find(itemByPath: [.FileMenuItem, .SaveAsMenuItem]) else {
-      return
-    }
-    item.action = nil
-    item.target = nil
-  }
-
-  @objc func didPushSaveAsItem(_ sender: NSMenuItem) {
+  @objc func saveDocumentAs(_ sender: NSMenuItem) {
     detailCtl.save()
   }
 }
