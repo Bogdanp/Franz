@@ -12,9 +12,11 @@ struct Tabs<Content: View, ID: Hashable>: View {
       HStack(spacing: 10) {
         ForEach(items, id: \.id) { item in
           Button {
-            selection = item.id
-            if let autosaveId {
-              TabState.shared.put(autosaveId, state: item.id)
+            withAnimation(.none) {
+              selection = item.id
+              if let autosaveId {
+                TabState.shared.put(autosaveId, state: item.id)
+              }
             }
           } label: {
             Image(nsImage: .init(systemSymbolName: item.symbol, accessibilityDescription: nil)!)
