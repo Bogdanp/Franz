@@ -27,11 +27,6 @@ class WorkspaceWindowController: NSWindowController {
   private let sidebarCtl = WorkspaceSidebarViewController()
   private let detailCtl = WorkspaceDetailViewController()
 
-  private weak var reloadMetadataMenuItem: NSMenuItem?
-  private weak var newTopicMenuItem: NSMenuItem?
-  private weak var publishMenuItem: NSMenuItem?
-  private weak var configureSRMenuItem: NSMenuItem?
-
   private var statusMu = DispatchSemaphore(value: 1)
   private var statusCookie = 0
 
@@ -61,11 +56,6 @@ class WorkspaceWindowController: NSWindowController {
     splitCtl.addSplitViewItem(sidebarItem)
     splitCtl.addSplitViewItem(detailItem)
     splitCtl.splitView.dividerStyle = .thin
-
-    reloadMetadataMenuItem = MainMenu.shared.find(itemByPath: [.ConnectionMenuItem, .ReloadMetadataMenuItem])
-    newTopicMenuItem = MainMenu.shared.find(itemByPath: [.TopicMenuItem, .NewTopicMenuItem])
-    publishMenuItem = MainMenu.shared.find(itemByPath: [.TopicMenuItem, .PublishMenuItem])
-    configureSRMenuItem = MainMenu.shared.find(itemByPath: [.SchemaRegistryMenuItem, .ConfigureMenuItem])
 
     shouldCascadeWindows = false
     window?.delegate = self
@@ -161,14 +151,30 @@ class WorkspaceWindowController: NSWindowController {
     statusBarStatusField.stringValue = s
   }
 
-  @objc func didPressNewTopicItem(_ sender: Any) {
+  @objc func toggleSidebar(_ sender: Any) {
+    splitCtl.toggleSidebar(sender)
+  }
+
+  @objc func performReload(_ sender: Any) {
+    loadMetadata()
+  }
+
+  @objc func newTopic(_ sender: Any) {
     let ctl = NewTopicFormViewController()
     ctl.delegate = self
     ctl.configure(withId: id)
     window?.contentViewController?.presentAsSheet(ctl)
   }
 
-  @objc func didPressConfigureSRItem(_ sender: Any) {
+  @objc func newRecord(_ sender: Any) {
+    guard let metadata else { return }
+    let ctl = PublishRecordFormViewController()
+    ctl.delegate = self
+    ctl.configure(withMetadata: metadata, andTopic: metadata.topics.first(where: { $0.name == topic }))
+    contentViewController?.presentAsSheet(ctl)
+  }
+
+  @objc func configureSchemaRegistry(_ sender: Any) {
     let ctl = ConfigureSchemaRegistryFormViewController()
     let reg = conn.schemaRegistryId.flatMap { Error.wait(Backend.shared.getSchemaRegistry($0)) }
     ctl.delegate = self
@@ -179,28 +185,6 @@ class WorkspaceWindowController: NSWindowController {
 
 // MARK: NSWindowDelegate
 extension WorkspaceWindowController: NSWindowDelegate {
-  func windowDidBecomeKey(_ notification: Notification) {
-    let items = [
-      reloadMetadataMenuItem: #selector(didPressReloadButton(_:)),
-      newTopicMenuItem: #selector(didPressNewTopicItem(_:)),
-      publishMenuItem: #selector(didPressPublishButton(_:)),
-      configureSRMenuItem: #selector(didPressConfigureSRItem(_:)),
-    ]
-    for (item, selector) in items {
-      guard let item else { continue }
-      item.target = self
-      item.action = selector
-    }
-  }
-
-  func windowDidResignKey(_ notification: Notification) {
-    for item in [reloadMetadataMenuItem, newTopicMenuItem, publishMenuItem, configureSRMenuItem] {
-      guard let item else { continue }
-      item.target = nil
-      item.action = nil
-    }
-  }
-
   func windowWillClose(_ notification: Notification) {
     if WindowManager.shared.removeWorkspace(withId: conn.id!), let id {
       WindowManager.shared.closeScriptWindows(forWorkspace: id)
@@ -222,7 +206,7 @@ extension WorkspaceWindowController: NSToolbarDelegate {
         item.image = NSImage(systemSymbolName: "sidebar.left", accessibilityDescription: "Toggle Sidebar")?
           .withSymbolConfiguration(.init(pointSize: 18, weight: .regular))
         item.label = "Toggle Sidebar"
-        item.action = #selector(didPressToggleSidebarButton(_:))
+        item.action = #selector(toggleSidebar(_:))
         return item
       case .statusBar:
         let item = NSToolbarItem(itemIdentifier: itemIdentifier)
@@ -237,14 +221,14 @@ extension WorkspaceWindowController: NSToolbarDelegate {
         item.image = NSImage(systemSymbolName: "arrow.clockwise", accessibilityDescription: "Reload")?
           .withSymbolConfiguration(.init(pointSize: 16, weight: .regular))
         item.label = "Reload"
-        item.action = #selector(didPressReloadButton(_:))
+        item.action = #selector(performReload(_:))
         return item
       case .publishButton:
         let item = NSToolbarItem(itemIdentifier: itemIdentifier)
         item.image = NSImage(systemSymbolName: "plus", accessibilityDescription: "Publish")?
           .withSymbolConfiguration(.init(pointSize: 18, weight: .regular))
         item.label = "Publish Record..."
-        item.action = #selector(didPressPublishButton(_:))
+        item.action = #selector(newRecord(_:))
         return item
       default:
         return nil
@@ -257,22 +241,6 @@ extension WorkspaceWindowController: NSToolbarDelegate {
 
   func toolbarAllowedItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
     return [.toggleSidebar, .statusBar, .reloadButton, .publishButton]
-  }
-
-  @objc func didPressToggleSidebarButton(_ sender: Any) {
-    splitCtl.toggleSidebar(sender)
-  }
-
-  @objc func didPressReloadButton(_ sender: Any) {
-    loadMetadata()
-  }
-
-  @objc func didPressPublishButton(_ sender: Any) {
-    guard let metadata else { return }
-    let ctl = PublishRecordFormViewController()
-    ctl.delegate = self
-    ctl.configure(withMetadata: metadata, andTopic: metadata.topics.first(where: { $0.name == topic }))
-    contentViewController?.presentAsSheet(ctl)
   }
 }
 
