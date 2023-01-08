@@ -17,5 +17,6 @@ trailing_comma:
 
 type_name:
   min_length: 1
+  max_length: 80
 
 reporter: "xcode"
