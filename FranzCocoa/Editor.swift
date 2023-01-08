@@ -411,9 +411,9 @@ struct Editor: NSViewControllerRepresentable {
     return ctl
   }
 
-  func updateNSViewController(_ nsViewController: EditorViewController, context: Context) {
-    nsViewController.configure(code: code, language: language, border: border)
-    nsViewController.isEditable = isEditable
+  func updateNSViewController(_ ctl: EditorViewController, context: Context) {
+    ctl.configure(code: code, language: language, border: border)
+    ctl.isEditable = isEditable
   }
 }
 
