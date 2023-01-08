@@ -1,8 +1,8 @@
 import Cocoa
 
 class WelcomeWindowController: NSWindowController {
-  private var split: SplitViewController!
-  private var newConnectionObserver: Any?
+  private var contentCtl: WelcomeWindowContentViewController!
+  private var splitCtl: SplitViewController!
 
   convenience init() {
     self.init(windowNibName: "WelcomeWindowController")
@@ -11,34 +11,20 @@ class WelcomeWindowController: NSWindowController {
   override func windowDidLoad() {
     super.windowDidLoad()
 
-    window?.delegate = self
     window?.isMovableByWindowBackground = true
     window?.setFrameAutosaveName("Welcome to Franz")
     window?.title = "Welcome to Franz"
     window?.center()
 
-    let contentCtl = WelcomeWindowContentViewController()
-    split = SplitViewController()
-    split.addSplitViewItem(NSSplitViewItem(viewController: contentCtl))
-    split.addSplitViewItem(NSSplitViewItem(sidebarWithViewController: WelcomeWindowConnectionsViewController()))
-    contentViewController = split
-
-    newConnectionObserver = NotificationCenter.default.addObserver(
-      forName: .NewConnectionRequested,
-      object: nil,
-      queue: .main) { _ in
-        contentCtl.newConnection()
-    }
+    contentCtl = WelcomeWindowContentViewController()
+    splitCtl = SplitViewController()
+    splitCtl.addSplitViewItem(NSSplitViewItem(viewController: contentCtl))
+    splitCtl.addSplitViewItem(NSSplitViewItem(sidebarWithViewController: WelcomeWindowConnectionsViewController()))
+    contentViewController = splitCtl
   }
-}
 
-// MARK: - NSWindowDelegate
-extension WelcomeWindowController: NSWindowDelegate {
-  func windowWillClose(_ notification: Notification) {
-    if let observer = newConnectionObserver {
-      NotificationCenter.default.removeObserver(observer)
-      newConnectionObserver = nil
-    }
+  @objc func newConnection(_ sender: Any) {
+    contentCtl.newConnection()
   }
 }
 
@@ -54,6 +40,13 @@ class WelcomeWindow: NSWindow {
   }
 }
 
+// MARK: - NSSplitView
+fileprivate class SplitView: NSSplitView {
+  override var dividerThickness: CGFloat {
+    0
+  }
+}
+
 // MARK: - NSSplitViewController
 fileprivate class SplitViewController: NSSplitViewController {
   override func loadView() {
@@ -66,14 +59,8 @@ fileprivate class SplitViewController: NSSplitViewController {
     _ splitView: NSSplitView,
     effectiveRect proposedEffectiveRect: NSRect,
     forDrawnRect drawnRect: NSRect,
-    ofDividerAt dividerIndex: Int) -> NSRect {
-
+    ofDividerAt dividerIndex: Int
+  ) -> NSRect {
       return .zero
-  }
-}
-
-fileprivate class SplitView: NSSplitView {
-  override var dividerThickness: CGFloat {
-    0
   }
 }

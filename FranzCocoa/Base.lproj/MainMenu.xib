@@ -336,7 +336,7 @@
                         <items>
                             <menuItem title="New Connection..." keyEquivalent="N" identifier="NewConnectionMenuItem" id="Gi5-1S-RQB">
                                 <connections>
-                                    <action selector="didPushNewConnectionButton:" target="Voe-Tx-rLC" id="Y6J-m8-qzu"/>
+                                    <action selector="newConnection:" target="-1" id="uof-pi-x0L"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="WHu-8t-f5x"/>
