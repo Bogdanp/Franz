@@ -116,7 +116,7 @@ class TopicRecordsTableViewController: NSViewController {
     status("Opening Iterator")
     Backend.shared.openIterator(
       forTopic: topic,
-      andOffset: .latest,
+      andOffset: .recent(20),
       inWorkspace: id
     ).onComplete { [weak self] iteratorId in
       guard let self else {
