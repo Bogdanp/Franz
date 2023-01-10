@@ -741,12 +741,13 @@ extension TopicRecordsTableViewController: NSTableViewDelegate {
       font = numberFont
     }
 
+    let insets = CGFloat(12)
     let rect = str.boundingRect(
       with: NSSize(width: 2000, height: 24),
       options: [.usesDeviceMetrics, .truncatesLastVisibleLine],
       attributes: [NSAttributedString.Key.font: font]
     )
-    return rect.width
+    return rect.width + insets
   }
 
   private var dataFont: NSFont {
