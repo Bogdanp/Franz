@@ -29,6 +29,11 @@ class TopicRecordsTableViewController: NSViewController {
   private var cookie = 0
   private var liveModeOn = false
 
+  private var longestKey = -1
+  private var longestKeyLen = 0
+  private var longestValue = -1
+  private var longestValueLen = 0
+
   private var optionsDefaultsKey: String?
   private var options = TopicRecordsOptions()
 
@@ -240,6 +245,10 @@ class TopicRecordsTableViewController: NSViewController {
       }
 
       var totalBytes = UVarint(0)
+      self.longestKey = -1
+      self.longestKeyLen = 0
+      self.longestValue = -1
+      self.longestValueLen = 0
       switch sortDirection {
       case .asc:
         for (row, it) in items.reversed().enumerated() {
@@ -249,6 +258,14 @@ class TopicRecordsTableViewController: NSViewController {
             logger.debug("setRecords: removing first \(n) items")
             items.removeFirst(n)
             break
+          }
+          if let key = it.record.key, self.longestKeyLen < key.count {
+            self.longestKeyLen = key.count
+            self.longestKey = row
+          }
+          if let value = it.record.value, self.longestValueLen < value.count {
+            self.longestValueLen = value.count
+            self.longestValue = row
           }
           totalBytes += size
         }
@@ -260,6 +277,14 @@ class TopicRecordsTableViewController: NSViewController {
             logger.debug("setRecords: removing last \(n) items")
             items.removeLast(n)
             break
+          }
+          if let key = it.record.key, self.longestKeyLen < key.count {
+            self.longestKeyLen = key.count
+            self.longestKey = row
+          }
+          if let value = it.record.value, self.longestValueLen < value.count {
+            self.longestValueLen = value.count
+            self.longestValue = row
           }
           totalBytes += size
         }
@@ -624,21 +649,21 @@ extension TopicRecordsTableViewController: NSTableViewDelegate {
     guard let view = tableView.makeView(withIdentifier: id, owner: self) as? NSTableCellView else { return nil }
     guard let textField = view.textField else { return nil }
     let record = items[row].record
-    textField.font = .monospacedSystemFont(ofSize: 12, weight: .regular)
+    textField.font = dataFont
     textField.textColor = tableView.selectedRow == row ? .selectedControlTextColor : .controlTextColor
     if id == .TopicRecordsPartitionId {
       textField.stringValue = "\(record.partitionId)"
-      textField.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
+      textField.font = numberFont
     } else if id == .TopicRecordsTimestamp {
       textField.stringValue = DateFormatter.localizedString(
         from: .init(timeIntervalSince1970: Double(record.timestamp)/1000.0),
         dateStyle: .short,
         timeStyle: .medium
       )
-      textField.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
+      textField.font = numberFont
     } else if id == .TopicRecordsOffset {
       textField.stringValue = "\(record.offset)"
-      textField.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
+      textField.font = numberFont
     } else if id == .TopicRecordsKey {
       setTextFieldData(textField, data: record.key)
     } else if id == .TopicRecordsValue {
@@ -649,7 +674,7 @@ extension TopicRecordsTableViewController: NSTableViewDelegate {
 
   private func setTextFieldData(_ textField: NSTextField, data: Data?) {
     if let data {
-      if let string = String.text(from: data, withMaxLength: 150) {
+      if let string = String.text(from: data, withMaxLength: 300) {
         textField.stringValue = string
         return
       }
@@ -680,6 +705,56 @@ extension TopicRecordsTableViewController: NSTableViewDelegate {
       return provider
     }
     return nil
+  }
+
+  func tableView(_ tableView: NSTableView, sizeToFitWidthOfColumn column: Int) -> CGFloat {
+    var str = String(repeating: "m", count: 6)
+    var font = dataFont
+    switch tableView.tableColumns[column].identifier {
+    case .TopicRecordsPartitionId:
+      str = String(repeating: "m", count: 6)
+      font = numberFont
+    case .TopicRecordsOffset:
+      str = String(repeating: "m", count: 8)
+      font = numberFont
+    case .TopicRecordsTimestamp:
+      str = String(repeating: "m", count: 10)
+      font = numberFont
+    case .TopicRecordsKey:
+      if longestKey >= 0,
+         let data = items[longestKey].record.key,
+         let decoded = String.text(from: data, withMaxLength: 300) {
+        str = decoded
+      } else {
+        str = String(repeating: "m", count: longestKeyLen)
+      }
+    case .TopicRecordsValue:
+      if longestValue >= 0,
+         let data = items[longestValue].record.value,
+         let decoded = String.text(from: data, withMaxLength: 300) {
+        str = decoded
+      } else {
+        str = String(repeating: "m", count: longestValueLen)
+      }
+    default:
+      str = String(repeating: "m", count: 10)
+      font = numberFont
+    }
+
+    let rect = str.boundingRect(
+      with: NSSize(width: 2000, height: 24),
+      options: [.usesDeviceMetrics, .truncatesLastVisibleLine],
+      attributes: [NSAttributedString.Key.font: font]
+    )
+    return rect.width
+  }
+
+  private var dataFont: NSFont {
+    .monospacedSystemFont(ofSize: 12, weight: .regular)
+  }
+
+  private var numberFont: NSFont {
+    .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
   }
 }
 
