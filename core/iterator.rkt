@@ -10,6 +10,7 @@
 (define-enum IteratorOffset
   [earliest]
   [latest]
+  [recent {count : UVarint}]
   [timestamp {timestamp : UVarint}]
   [exact {offset : UVarint}])
 
@@ -31,5 +32,7 @@
      (list 'timestamp (IteratorOffset.timestamp-timestamp io))]
     [(IteratorOffset.exact? io)
      (list 'exact (IteratorOffset.exact-offset io))]
+    [(IteratorOffset.recent? io)
+     (list 'recent (IteratorOffset.recent-count io))]
     [else
      (raise-argument-error 'IteratorOffset-> "IteratorOffset?" io)]))

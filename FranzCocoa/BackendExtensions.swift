@@ -63,6 +63,9 @@ extension IteratorOffset: Hashable {
     case .exact(let offset):
       hasher.combine(1)
       hasher.combine(offset)
+    case .recent(let count):
+      hasher.combine(2)
+      hasher.combine(count)
     }
   }
 
@@ -76,6 +79,8 @@ extension IteratorOffset: Hashable {
       return lhsTimestamp == rhsTimestamp
     case (.exact(let lhsOffset), .exact(let rhsOffset)):
       return lhsOffset == rhsOffset
+    case (.recent(let lhsCount), .recent(let rhsCount)):
+      return lhsCount == rhsCount
     default:
       return false
     }
