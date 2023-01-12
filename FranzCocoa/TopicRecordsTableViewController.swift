@@ -789,6 +789,7 @@ extension TopicRecordsTableViewController: NSTableViewDelegate {
       options: [.usesDeviceMetrics, .truncatesLastVisibleLine],
       attributes: [NSAttributedString.Key.font: font]
     )
+    tableView.reloadData()  // force redisplay
     return rect.width + insets
   }
 
