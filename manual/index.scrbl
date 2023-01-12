@@ -29,13 +29,14 @@ It helps you manage your Kafka clusters, topics and consumer groups
 and it provides convenient functionality for monitoring the data being
 published to topics.
 
+
 @section{Connections}
 
 When you start Franz, you are presented with the @deftech{Welcome
-Screen}.  From the Welcome Screen you can connect to servers you've
+Window}.  From the Welcome Window you can connect to servers you've
 previously used or create new connections.
 
-You can access the @tech{Welcome Screen} using the ``Window'' @tt{->}
+You can access the @tech{Welcome Window} using the ``Window'' @tt{->}
 ``Welcome to Franz'' menu item or by pressing @kbd[shift cmd 1].
 
 @subsection{Security}
@@ -71,15 +72,15 @@ stream live data being published on a topic or jump to any offset you
 like and paginate through the data manually.
 
 When you open the Records Table tab on a topic, it immediately starts
-streaming new data into the table.  You can stop this by pressing the
-``Toggle Live Mode'' button on the bottom left corner of the table.
-You can configure how much data is requested from the topic on each
-fetch by click the ``Options...'' button in the bottom right, and you
-can manually load more data by pressing the ``Load More Records...''
-button.
+streaming recent data into the table.  You can stop this by pressing
+the ``Toggle Live Mode'' button on the bottom left corner of the
+table.  You can configure how much data is requested from the topic on
+each fetch by click the ``Options...'' button in the bottom right, and
+you can manually load more data by pressing the ``Load More
+Records...''  button.
 
-From the ``Options...'' popover, you can also reset the topic iterator
-to any offset you like.
+From the ``Options...'' popover, you can also jump to any offset you
+like.  See @tech{Jump Popover} for details.
 
 You can right-click on any record with a non-null key to publish a
 tombstone for it.  Additionally, you can drag and drop any non-null
@@ -87,6 +88,9 @@ key or value from the table to any application that accepts files to
 export the dragged value.  You can use the ``Key Format'' and ``Value
 Format'' options from the ``Options...'' popover to control what
 format the columns are exported as.
+
+Double-clicking any record will bring up its @tech{Record Detail
+Window}.
 
 @subsubsection{Records Table Scripting}
 
@@ -162,9 +166,9 @@ within the scripting environment.
 @subsubsection{Jumping to Offsets}
 
 From the ``Options...'' popover of a @tech{Records Table}, push the
-``Jump...'' button to get to the @deftech{Jump Popover}.  From there,
-you can reset the record iterator to various offsets, as described
-below.
+``Jump...'' button to get to the @deftech{Jump Popover} (@kbd[shift
+cmd J]).  From there, you can reset the record iterator to various
+offsets, as described below.
 
 @subsubsub*section{Earliest}
 
@@ -182,6 +186,11 @@ and time and moves the iterator there.  For partitions where the
 timestamp represents a time after the latest offset, it makes an
 additional query to find the latest offset.
 
+@subsubsub*section{Recent}
+
+Queries each partition for its latest offset and moves the iterator to
+that position, minus the requested delta.
+
 @subsubsub*section{Latest}
 
 Queries each partition for its latest offset and moves the iterator
@@ -193,6 +202,11 @@ Moves the iterator to the given offset for every partition.  For
 partitions that are behind the selected offset, no new data will be
 received until they reach it.
 
+@subsubsection{Consumer Groups Tab}
+
+The @deftech{Consumer Groups Tab} displays the active consumer groups
+for the selected topic.  This is an easy way to discover what groups
+are actively reading from individual topics.
 
 @subsubsection{Configuration Table Tab}
 
@@ -200,6 +214,13 @@ The @deftech{Configuration Table} tab displays the selected topic's
 configuration.  Non-default values are presented in bold and sensitive
 values are hidden by default.  You may reveal sensitive values by
 right clicking on them and pressing the ``Reveal'' context menu item.
+
+@subsection{Record Detail Window}
+
+The @deftech{Record Detail Window} displays the contents of individual
+records.  You can configure the default format for the key and the
+value on a per-topic basis by customizing the ``Key Format'' and the
+``Value Format'' from the @tech{Records Table} ``Options...'' popover.
 
 @subsection{Consumer Groups}
 
@@ -227,10 +248,16 @@ registry, open the configuration window and remove its URL then press
 
 See @registry-yt{this YouTube video} for a live demo.
 
+
 @section{Keyboard Shortcuts}
 
 @defkbd[(shift cmd 1)]{
-  Displays the @tech{Welcome Screen}.
+  Displays the @tech{Welcome Window}.
+}
+
+@defkbd[(shift cmd J)]{
+  With a topic @tech{Records Table} visible, turns off live mode (if
+  on) and displays the @tech{Jump Popover}.
 }
 
 @defkbd[(cmd 1)]{
@@ -245,6 +272,10 @@ See @registry-yt{this YouTube video} for a live demo.
 }
 
 @defkbd[(cmd 3)]{
+  With a topic selected, switches to the @tech{Consumer Groups Tab}.
+}
+
+@defkbd[(cmd 4)]{
   With a topic selected, switches to the Configuration tab.
 }
 
@@ -257,6 +288,7 @@ See @registry-yt{this YouTube video} for a live demo.
 @defkbd[(cmd @",")]{
   Opens the Preferences Window.
 }
+
 
 @section{Known Issues and Limitations}
 
@@ -273,6 +305,7 @@ The only compression formats currently supported are @tt{gzip} and
 The only type of @tech{schema registry} currently supported is the
 Confluent Schema Registry.  Protobuf schemas are currently not
 supported.
+
 
 @section[#:tag "ref"]{Scripting Reference}
 
