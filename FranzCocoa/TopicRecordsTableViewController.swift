@@ -1055,12 +1055,14 @@ fileprivate struct IteratorResetForm: View {
   enum Offset {
     case earliest
     case latest
+    case recent
     case timestamp
     case offset
   }
 
   @State var target = Offset.latest
   @State var timestamp = Date()
+  @State var delta = UVarint(20)
   @State var offset = UVarint(0)
 
   var resetAction: (IteratorOffset) -> Void
@@ -1072,13 +1074,39 @@ fileprivate struct IteratorResetForm: View {
     return fmt
   }()
 
+  enum Field: Hashable {
+    case picker
+    case timestamp
+    case delta
+    case offset
+  }
+
+  @FocusState private var focused: Field?
+
   var body: some View {
     Form {
       Picker("Target:", selection: $target) {
         Text("Earliest").tag(Offset.earliest)
         Text("Timestamp").tag(Offset.timestamp)
+        Text("Recent").tag(Offset.recent)
         Text("Latest").tag(Offset.latest)
         Text("Offset").tag(Offset.offset)
+      }
+      .focused($focused, equals: .picker)
+      .onChange(of: target) { target in
+        // JANK: fields might not be visible when this fires, so add a delay.
+        DispatchQueue.main.asyncAfter(deadline: .now()+0.05) {
+          switch target {
+          case .timestamp:
+            focused = .timestamp
+          case .recent:
+            focused = .delta
+          case .offset:
+            focused = .offset
+          default:
+            ()
+          }
+        }
       }
       if target == .timestamp {
         DatePicker(
@@ -1086,8 +1114,16 @@ fileprivate struct IteratorResetForm: View {
           selection: $timestamp,
           displayedComponents: [.date, .hourAndMinute]
         )
+        .focused($focused, equals: .timestamp)
+      } else if target == .recent {
+        TextField("Delta:", value: $delta, formatter: offsetFormatter)
+          .focused($focused, equals: .delta)
+          .onSubmit {
+            resetAction(.recent(delta))
+          }
       } else if target == .offset {
         TextField("Offset:", value: $offset, formatter: offsetFormatter)
+          .focused($focused, equals: .offset)
           .onSubmit {
             resetAction(.exact(offset))
           }
@@ -1098,6 +1134,8 @@ fileprivate struct IteratorResetForm: View {
           resetAction(.earliest)
         case .timestamp:
           resetAction(.timestamp(UVarint(timestamp.timeIntervalSince1970*1000)))
+        case .recent:
+          resetAction(.recent(delta))
         case .latest:
           resetAction(.latest)
         case .offset:
