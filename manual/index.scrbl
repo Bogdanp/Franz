@@ -354,6 +354,31 @@ supported.
   Encodes the Lua value @tt{v} to JSON.
 }
 
+@deflua[kafka.parse_committed_offset (record) tuple]{
+  Decodes committed offset data off of the @tt{__committed_offsets}
+  topic.  On failure, returns @tt{nil}.  On success, returns a string
+  representing the type of event that was decoded and a value
+  representing that event.  The currently-supported event types are
+  @racket["offset_commit"] and @racket["group_metadata"].  For
+  example:
+
+  @codeblock[#:keep-lang-line? #f]|{
+    #lang lua
+    local script = {}
+
+    function script.transform(record)
+      local event_type, data = kafka.parse_committed_offset(record)
+      if event_type == nil then
+        return record
+      end
+      record.value = tostring(data) -- or json.encode(data)
+      return record
+    end
+
+    return script
+  }|
+}
+
 @deflua[math.abs (n) number]{
   Returns the absolute value of @tt{n}.
 }
