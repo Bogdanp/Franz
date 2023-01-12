@@ -6,6 +6,7 @@
 
 ## Changed
 
+* The Record Table now loads the latest 20 for each partition on open.
 * The Record Detail viewer opens to the tab corresponding to the
   clicked column.
 * Double-clicking the dividers between Record Table columns now sizes
