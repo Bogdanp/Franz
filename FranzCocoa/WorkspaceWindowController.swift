@@ -183,7 +183,11 @@ class WorkspaceWindowController: NSWindowController {
   }
 
   @objc func jumpToOffset(_ sender: Any) {
-    NotificationCenter.default.post(name: .TopicRecordsTableJumpRequested, object: nil)
+    NotificationCenter.default.post(
+      name: .TopicRecordsTableJumpRequested,
+      object: self,
+      userInfo: ["ID": id]
+    )
   }
 }
 

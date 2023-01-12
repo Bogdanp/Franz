@@ -94,8 +94,10 @@ class TopicRecordsTableViewController: NSViewController {
       forName: .TopicRecordsTableJumpRequested,
       object: nil,
       queue: .main
-    ) { [weak self] _ in
-      self?.didRequestJumpToOffset()
+    ) { [weak self] notification in
+      guard let self else { return }
+      guard notification.userInfo?["ID"] as? UVarint == id else { return }
+      self.didRequestJumpToOffset()
     }
   }
 
