@@ -204,16 +204,17 @@ received until they reach it.
 
 @subsubsection{Consumer Groups Tab}
 
-The @deftech{Consumer Groups Tab} displays the active consumer groups
-for the selected topic.  This is an easy way to discover what groups
-are actively reading from individual topics.
+The @deftech{Consumer Groups Tab} (@kbd[cmd 3]) displays the active
+consumer groups for the selected topic.  This is an easy way to
+discover what groups are actively reading from individual topics.
 
 @subsubsection{Configuration Table Tab}
 
-The @deftech{Configuration Table} tab displays the selected topic's
-configuration.  Non-default values are presented in bold and sensitive
-values are hidden by default.  You may reveal sensitive values by
-right clicking on them and pressing the ``Reveal'' context menu item.
+The @deftech{Configuration Table} (@kbd[cmd 4]) tab displays the
+selected topic's configuration.  Non-default values are presented in
+bold and sensitive values are hidden by default.  You may reveal
+sensitive values by right clicking on them and pressing the ``Reveal''
+context menu item.
 
 @subsection{Record Detail Window}
 
