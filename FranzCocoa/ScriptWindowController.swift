@@ -209,6 +209,9 @@ extension ScriptWindowController: NSMenuItemValidation {
     if menuItem.action == #selector(revertDocumentToSaved(_:)) {
       return url != nil && (window?.isDocumentEdited ?? false)
     }
+    if menuItem.action == #selector(toggleScript(_:)) {
+      menuItem.title = active ? "Deactivate" : "Activate"
+    }
     return true
   }
 }

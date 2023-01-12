@@ -105,7 +105,7 @@ Using the scripting window, you can edit the @tt{transform} function
 to control how data is presented in the @tech{Records Table}.
 
 To activate and deactivate a script, press the bolt icon in the
-@tech{scripting window} toolbar or use the @kbd[cmd R] keyboard
+@tech{scripting window} toolbar or use the @kbd[cmd return] keyboard
 shortcut.  After a script is activated, any changes made to the text
 of the script will cause it to be deactivated.
 
@@ -282,6 +282,9 @@ See @registry-yt{this YouTube video} for a live demo.
 
 @defkbd[(cmd R)]{
   Within a @tech{Workspace Window}, reloads the connection metadata.
+}
+
+@defkbd[(cmd return)]{
   Within a @tech{Scripting Window}, activates or deactivates the
   script.
 }

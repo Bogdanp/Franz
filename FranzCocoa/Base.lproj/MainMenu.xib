@@ -378,6 +378,21 @@
                         </items>
                     </menu>
                 </menuItem>
+                <menuItem title="Script" identifier="ScriptMenuItem" id="5Ml-Mb-4TT">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <menu key="submenu" title="Script" id="cSL-v8-COx">
+                        <items>
+                            <menuItem title="Activate" id="XZy-3T-uje">
+                                <string key="keyEquivalent" base64-UTF8="YES">
+DQ
+</string>
+                                <connections>
+                                    <action selector="toggleScript:" target="-1" id="Dey-MT-QfY"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
                 <menuItem title="Schema Registry" identifier="SchemaRegistryMenuItem" id="wcC-Z0-3vj">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Schema Registry" id="gIg-oV-BM1">
