@@ -363,10 +363,16 @@
                                     <action selector="newTopic:" target="-1" id="i29-gC-aDC"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Publish..." identifier="PublishMenuItem" id="fTi-r8-5Vz">
+                            <menuItem title="Publish Record..." identifier="PublishMenuItem" id="fTi-r8-5Vz">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="newRecord:" target="-1" id="QOE-6A-TBE"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="kCg-50-Yfz"/>
+                            <menuItem title="Jump to Offset..." keyEquivalent="J" id="K24-sK-EaS">
+                                <connections>
+                                    <action selector="jumpToOffset:" target="-1" id="7G8-Oy-zyi"/>
                                 </connections>
                             </menuItem>
                         </items>

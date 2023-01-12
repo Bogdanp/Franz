@@ -181,6 +181,22 @@ class WorkspaceWindowController: NSWindowController {
     ctl.configure(withId: id, andRegistry: reg)
     window?.contentViewController?.presentAsSheet(ctl)
   }
+
+  @objc func jumpToOffset(_ sender: Any) {
+    NotificationCenter.default.post(name: .TopicRecordsTableJumpRequested, object: nil)
+  }
+}
+
+// MARK: NSMenuItemValidation
+extension WorkspaceWindowController: NSMenuItemValidation {
+  func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
+    if menuItem.action == #selector(jumpToOffset(_:)) {
+      // Using TabState here is fairly piggy.
+      return detailCtl.currentEntryKind == .topic &&
+        TabState.shared.get(.topicDetail) as? TopicDetailView.Tab == .messages
+    }
+    return true
+  }
 }
 
 // MARK: NSWindowDelegate

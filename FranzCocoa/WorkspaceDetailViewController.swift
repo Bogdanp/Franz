@@ -12,6 +12,8 @@ class WorkspaceDetailViewController: NSViewController {
   private var contentView: NSView?
   private var contentViewConstraints: [NSLayoutConstraint]?
 
+  var currentEntryKind: SidebarEntryKind?
+
   override func viewDidLoad() {
     super.viewDidLoad()
   }
@@ -22,6 +24,7 @@ class WorkspaceDetailViewController: NSViewController {
 
   func show(entry: Any, withKind kind: SidebarEntryKind) {
     delegate?.clearStatusCookie()
+    currentEntryKind = kind
     switch kind {
     case .broker:
       guard let broker = entry as? Broker else { return }
@@ -69,6 +72,7 @@ class WorkspaceDetailViewController: NSViewController {
     children = []
     contentView = nil
     contentViewConstraints = nil
+    currentEntryKind = nil
   }
 
   private func display(controller: NSViewController) {

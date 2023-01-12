@@ -6,4 +6,5 @@ extension Notification.Name {
   static let EditorTextChanged = Self("Franz.EditorTextChanged")
   static let TopicRecordsTableAppeared = Self("Franz.TopicRecordsTableAppeared")
   static let TopicRecordsTableDisappeared = Self("Franz.TopicRecordsTableDisappeared")
+  static let TopicRecordsTableJumpRequested = Self("Franz.TopicRecordsTableJumpRequested")
 }

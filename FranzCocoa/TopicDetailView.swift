@@ -6,6 +6,13 @@ struct TopicDetailView: View {
   var topic: Topic
   weak var delegate: WorkspaceDetailDelegate?
 
+  enum Tab {
+    case info
+    case messages
+    case groups
+    case config
+  }
+
   @State private var groups = [Group]()
   @State private var groupsLoading = false
   @State private var configs = [ResourceConfig]()
@@ -78,13 +85,6 @@ struct TopicDetailView: View {
       status("Ready")
     }
   }
-}
-
-fileprivate enum Tab {
-  case info
-  case messages
-  case groups
-  case config
 }
 
 // MARK: - ConsumerGroups

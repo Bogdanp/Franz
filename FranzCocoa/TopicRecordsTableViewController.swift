@@ -44,6 +44,7 @@ class TopicRecordsTableViewController: NSViewController {
   }()
 
   private lazy var recordWindowCtls = [RecordWindowController]()
+  private var jumpNotificationObserver: AnyObject?
 
   deinit {
     guard let iteratorId else { return }
@@ -88,10 +89,21 @@ class TopicRecordsTableViewController: NSViewController {
         "topic": topic,
       ]
     )
+
+    jumpNotificationObserver = NotificationCenter.default.addObserver(
+      forName: .TopicRecordsTableJumpRequested,
+      object: nil,
+      queue: .main
+    ) { [weak self] _ in
+      self?.didRequestJumpToOffset()
+    }
   }
 
   override func viewDidDisappear() {
     super.viewDidDisappear()
+    if let jumpNotificationObserver {
+      NotificationCenter.default.removeObserver(jumpNotificationObserver)
+    }
 
     guard let id, let topic else { return }
     NotificationCenter.default.post(
@@ -479,6 +491,8 @@ class TopicRecordsTableViewController: NSViewController {
       self.setRecords(self.items.map(\.record), byAppending: false)
       popover.close()
     } jumpAction: {
+      popover.animates = false
+      popover.close()
       self.showJumpPopover(popover, relativeTo: bounds, of: view)
     }
     popover.behavior = .semitransient
@@ -497,8 +511,6 @@ class TopicRecordsTableViewController: NSViewController {
       }
       popover.close()
     }
-    popover.animates = false
-    popover.close()
     popover.contentSize = NSSize(width: 270, height: 120)
     popover.contentViewController = NSHostingController(
       rootView: resetForm.frame(
@@ -515,6 +527,18 @@ class TopicRecordsTableViewController: NSViewController {
   @objc func didDoubleClickRow(_ sender: NSTableView) {
     guard sender.clickedRow >= 0 else { return }
     view(record: items[sender.clickedRow].record)
+  }
+
+  func didRequestJumpToOffset() {
+    if liveModeOn {
+      stopLiveMode()
+    }
+    let segment = ControlTag.options.rawValue
+    let bounds = segmentedControl.relativeBounds(forSegment: segment)
+    let popover = NSPopover()
+    popover.behavior = .semitransient
+    showJumpPopover(popover, relativeTo: bounds, of: segmentedControl)
+    NSApp.keyWindow?.makeFirstResponder(popover)
   }
 }
 
