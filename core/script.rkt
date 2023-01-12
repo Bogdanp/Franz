@@ -14,7 +14,9 @@
 
 (define-rpc (get-script [for-topic topic : String]
                         [in-workspace id : UVarint] : String)
-  default-script)
+  (case topic
+    [("__consumer_offsets") consumer-offsets-script]
+    [else default-script]))
 
 (define-rpc (activate-script [_ script : String]
                              [for-topic topic : String]
@@ -46,6 +48,24 @@ local script = {}
 --
 -- See Help -> Manual... to learn more.
 function script.transform(record)
+  return record
+end
+
+return script
+SCRIPT
+  )
+
+(define consumer-offsets-script
+  #<<SCRIPT
+local script = {}
+
+function script.transform(record)
+  local event_type, data = kafka.parse_committed_offset(record)
+  if not event_type then
+    return record
+  end
+  record.key = event_type
+  record.value = tostring(data)
   return record
 end
 
