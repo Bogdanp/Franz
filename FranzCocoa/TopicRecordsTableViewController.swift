@@ -346,16 +346,24 @@ class TopicRecordsTableViewController: NSViewController {
   }
 
   private func toggleLiveMode(resettingIterator resetIterator: Bool = true) {
-    assert(Thread.isMainThread)
     if liveModeOn {
-      cookie += 1
-      liveModeOn = false
-      segmentedControl.setSelected(false, forSegment: 0)
-      segmentedControl.setEnabled(true, forSegment: 1)
-      segmentedControl.setEnabled(true, forSegment: 2)
-      return
+      stopLiveMode()
+    } else {
+      startLiveMode(resettingIterator: resetIterator)
     }
+  }
 
+  private func stopLiveMode() {
+    assert(Thread.isMainThread)
+    cookie += 1
+    liveModeOn = false
+    segmentedControl.setSelected(false, forSegment: 0)
+    segmentedControl.setEnabled(true, forSegment: 1)
+    segmentedControl.setEnabled(true, forSegment: 2)
+  }
+
+  private func startLiveMode(resettingIterator resetIterator: Bool) {
+    assert(Thread.isMainThread)
     cookie += 1
     let cookie = cookie
     setRecords([], byAppending: false)
