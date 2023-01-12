@@ -423,37 +423,7 @@ class TopicRecordsTableViewController: NSViewController {
     case .options:
       sender.setSelected(false, forSegment: segment)
       let bounds = sender.relativeBounds(forSegment: segment)
-      let popover = NSPopover()
-      let form = TopicRecordsOptionsForm(model: self.options) {
-        if let key = self.optionsDefaultsKey {
-          try? Defaults.shared.set(codable: self.options, forKey: key)
-        }
-        self.setRecords(self.items.map(\.record), byAppending: false)
-        popover.close()
-      } jumpAction: {
-        let resetForm = IteratorResetForm { offset in
-          self.reset(offset: offset) { [weak self] in
-            self?.loadRecords(byAppending: false)
-          }
-          popover.close()
-        }
-        popover.animates = false
-        popover.close()
-        popover.contentSize = NSSize(width: 270, height: 120)
-        popover.contentViewController = NSHostingController(
-          rootView: resetForm.frame(
-            width: popover.contentSize.width,
-            height: popover.contentSize.height))
-        popover.show(relativeTo: bounds, of: sender, preferredEdge: .minY)
-        popover.animates = true
-      }
-      popover.behavior = .semitransient
-      popover.contentSize = NSSize(width: 270, height: 260)
-      popover.contentViewController = NSHostingController(
-        rootView: form.frame(
-          width: popover.contentSize.width,
-          height: popover.contentSize.height))
-      popover.show(relativeTo: bounds, of: sender, preferredEdge: .minY)
+      showOptionsPopover(relativeTo: bounds, of: sender)
 
     case .more:
       sender.setSelected(false, forSegment: segment)
@@ -498,6 +468,44 @@ class TopicRecordsTableViewController: NSViewController {
         }
       }
     }
+  }
+
+  private func showOptionsPopover(relativeTo bounds: NSRect, of view: NSView) {
+    let popover = NSPopover()
+    let form = TopicRecordsOptionsForm(model: self.options) {
+      if let key = self.optionsDefaultsKey {
+        try? Defaults.shared.set(codable: self.options, forKey: key)
+      }
+      self.setRecords(self.items.map(\.record), byAppending: false)
+      popover.close()
+    } jumpAction: {
+      self.showJumpPopover(popover, relativeTo: bounds, of: view)
+    }
+    popover.behavior = .semitransient
+    popover.contentSize = NSSize(width: 270, height: 260)
+    popover.contentViewController = NSHostingController(
+      rootView: form.frame(
+        width: popover.contentSize.width,
+        height: popover.contentSize.height))
+    popover.show(relativeTo: bounds, of: view, preferredEdge: .minY)
+  }
+
+  private func showJumpPopover(_ popover: NSPopover, relativeTo bounds: NSRect, of view: NSView) {
+    let resetForm = IteratorResetForm { offset in
+      self.reset(offset: offset) { [weak self] in
+        self?.loadRecords(byAppending: false)
+      }
+      popover.close()
+    }
+    popover.animates = false
+    popover.close()
+    popover.contentSize = NSSize(width: 270, height: 120)
+    popover.contentViewController = NSHostingController(
+      rootView: resetForm.frame(
+        width: popover.contentSize.width,
+        height: popover.contentSize.height))
+    popover.show(relativeTo: bounds, of: view, preferredEdge: .minY)
+    popover.animates = true
   }
 
   @IBAction func didPressScriptButton(_ sender: NSButton) {
