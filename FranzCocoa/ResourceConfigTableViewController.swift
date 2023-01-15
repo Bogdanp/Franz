@@ -96,22 +96,61 @@ struct ResourceConfigTable: NSViewControllerRepresentable {
 extension ResourceConfigTableViewController: NSMenuDelegate {
   func menuNeedsUpdate(_ menu: NSMenu) {
     guard tableView.clickedRow >= 0 else { return }
-    let entry = entries[tableView.clickedRow]
     menu.removeAllItems()
+    menu.addItem(.init(
+      title: "Copy Key",
+      action: #selector(copyKey(_:)),
+      keyEquivalent: ""
+    ))
+    menu.addItem(.init(
+      title: "Copy Value",
+      action: #selector(copy(_:)),
+      keyEquivalent: "c"
+    ))
+    let entry = entries[tableView.clickedRow]
     guard entry.isSensitive else { return }
+    menu.addItem(.separator())
     menu.addItem(.init(
       title: entry.isRevealed ? "Hide" : "Reveal",
       action: #selector(didPressRevealEntryItem(_:)),
       keyEquivalent: ""))
   }
 
-  @objc func didPressRevealEntryItem(_ sender: AnyObject) {
+  @objc func didPressRevealEntryItem(_ sender: Any) {
     guard tableView.clickedRow >= 0 else { return }
     let row = tableView.clickedRow
     let entry = entries[row]
     guard entry.isSensitive else { return }
     entry.isRevealed.toggle()
     tableView.reloadData(forRowIndexes: [row], columnIndexes: [0, 1])
+  }
+
+  @objc func copyKey(_ sender: Any) {
+    guard let entry = currentEntry else { return }
+    Pasteboard.put(entry.name)
+  }
+
+  @objc func copy(_ sender: Any) {
+    guard let entry = currentEntry else { return }
+    Pasteboard.put(entry.value)
+  }
+
+  private var currentEntry: ResourceConfigEntry? {
+    let row = (tableView.clickedRow >= 0
+               ? tableView.clickedRow
+               : tableView.selectedRow)
+    guard row >= 0 else { return nil }
+    return entries[row]
+  }
+}
+
+// MARK: - NSMenuItemValidation
+extension ResourceConfigTableViewController: NSMenuItemValidation {
+  func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
+    if menuItem.action == #selector(copy(_:)) {
+      return tableView.clickedRow >= 0 || tableView.selectedRow >= 0
+    }
+    return true
   }
 }
 
