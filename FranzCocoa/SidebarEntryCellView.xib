@@ -18,8 +18,8 @@
                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSActionTemplate" id="AMB-I0-GbU"/>
                 </imageView>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="749" id="vG3-yg-FU3">
-                    <rect key="frame" x="30" y="8" width="206" height="16"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                    <rect key="frame" x="30" y="8" width="219" height="16"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="truncatingTail" title="Topic Name" usesSingleLineMode="YES" id="Rov-3c-x8m">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -27,8 +27,11 @@
                     </textFieldCell>
                 </textField>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="gk0-a1-1Ex">
-                    <rect key="frame" x="257" y="9" width="20" height="14"/>
-                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="12" id="mwW-kM-o77">
+                    <rect key="frame" x="241" y="9" width="36" height="14"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="32" id="me6-rB-yjG"/>
+                    </constraints>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="12" id="mwW-kM-o77">
                         <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
