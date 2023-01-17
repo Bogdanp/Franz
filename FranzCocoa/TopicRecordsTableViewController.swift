@@ -716,7 +716,7 @@ extension TopicRecordsTableViewController: NSTableViewDelegate {
 
   private func setTextFieldData(_ textField: NSTextField, data: Data?) {
     if let data {
-      if let string = String.text(from: data, withMaxLength: 300) {
+      if let string = String.text(from: data, withMaxLength: 4096) {
         textField.stringValue = string
         return
       }
