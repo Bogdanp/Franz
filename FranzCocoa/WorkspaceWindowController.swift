@@ -141,8 +141,14 @@ class WorkspaceWindowController: NSWindowController {
   }
 
   private func loadMetadata(andSelectTopic name: String) {
-    loadMetadata {
-      self.sidebarCtl.selectEntry(withKind: .topic, andLabel: name)
+    loadMetadata { [weak self] in
+      self?.sidebarCtl.selectEntry(withKind: .topic, andLabel: name)
+    }
+  }
+
+  private func loadMetadata(andSelectGroup name: String) {
+    loadMetadata { [weak self] in
+      self?.sidebarCtl.selectEntry(withKind: .group, andLabel: name)
     }
   }
 
@@ -375,11 +381,19 @@ extension WorkspaceWindowController: WorkspaceDetailDelegate {
   }
 
   func request(topicNamed name: String) {
-    loadMetadata(andSelectTopic: name)
+    if let metadata, metadata.topics.contains(where: { $0.name == name }) {
+      sidebarCtl.selectEntry(withKind: .topic, andLabel: name)
+    } else {
+      loadMetadata(andSelectTopic: name)
+    }
   }
 
   func request(groupNamed name: String) {
-    sidebarCtl.selectEntry(withKind: .consumerGroup, andLabel: name)
+    if let metadata, metadata.groups.contains(where: { $0.id == name }) {
+      sidebarCtl.selectEntry(withKind: .consumerGroup, andLabel: name)
+    } else {
+      loadMetadata(andSelectGroup: name)
+    }
   }
 }
 
