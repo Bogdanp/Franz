@@ -263,11 +263,11 @@ extension WorkspaceWindowController: NSToolbarDelegate {
   }
 
   func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-    return [.toggleSidebar, .statusBar, .reloadButton, .publishButton]
+    return [.toggleSidebar, .sidebarTrackingSeparator, .statusBar, .reloadButton, .publishButton]
   }
 
   func toolbarAllowedItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-    return [.toggleSidebar, .statusBar, .reloadButton, .publishButton]
+    return [.toggleSidebar, .sidebarTrackingSeparator, .statusBar, .reloadButton, .publishButton]
   }
 }
 
