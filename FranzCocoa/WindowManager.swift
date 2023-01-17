@@ -9,22 +9,30 @@ class WindowManager {
   private var preferencesWindowController: PreferencesWindowController?
   private var updatesWindowController: UpdatesWindowController?
   private var updatesProgressWindowController: UpdatesProgressWindowController?
-  private var workspaces = [UInt64: WorkspaceWindowController]() // conn id -> ctl
+  private var workspaces = [WorkspaceWindowController]()
   private var scripts = [ScriptWindowKey: ScriptWindowController]() // workspace id -> ctl
 
-  func launchWorkspace(withConn conn: ConnectionDetails, andPassword password: String?) {
+  @discardableResult
+  func launchWorkspace(
+    withConn conn: ConnectionDetails,
+    andPassword password: String?,
+    preferringExisting preferExisting: Bool = true
+  ) -> WorkspaceWindowController? {
     assert(Thread.isMainThread)
-    guard checkLicense() else { return }
+    guard checkLicense() else {
+      return nil
+    }
     guard let id = conn.id else {
       preconditionFailure()
     }
-    if let workspace = workspaces[id] {
+    if let workspace = workspaces.first(where: { $0.connectionId == id }), preferExisting {
       workspace.showWindow(self)
-      return
+      return workspace
     }
     let workspace = WorkspaceWindowController(withConn: conn, andPassword: password)
     workspace.showWindow(self)
-    workspaces[id] = workspace
+    workspaces.append(workspace)
+    return workspace
   }
 
   func removeAllWorkspaces() {
@@ -32,9 +40,13 @@ class WindowManager {
     workspaces.removeAll()
   }
 
-  func removeWorkspace(withId id: UInt64) -> Bool {
+  func removeWorkspace(_ workspace: WorkspaceWindowController) -> Bool {
     assert(Thread.isMainThread)
-    return workspaces.removeValue(forKey: id) != nil
+    if let index = workspaces.firstIndex(of: workspace) {
+      workspaces.remove(at: index)
+      return true
+    }
+    return false
   }
 
   func showWelcomeWindow() {

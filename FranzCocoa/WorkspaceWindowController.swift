@@ -30,6 +30,10 @@ class WorkspaceWindowController: NSWindowController {
   private var statusMu = DispatchSemaphore(value: 1)
   private var statusCookie = 0
 
+  var connectionId: UVarint? {
+    conn?.id
+  }
+
   convenience init(withConn conn: ConnectionDetails, andPassword password: String?) {
     self.init(windowNibName: "WorkspaceWindowController")
     self.conn = conn
@@ -57,15 +61,19 @@ class WorkspaceWindowController: NSWindowController {
     splitCtl.addSplitViewItem(detailItem)
     splitCtl.splitView.dividerStyle = .thin
 
+    resetTitle()
     shouldCascadeWindows = false
     window?.delegate = self
-    window?.title = "\(conn.name) : \(conn.bootstrapAddress)"
     window?.contentViewController = splitCtl
     window?.setFrameAutosaveName("Franz:\(conn.name)")
     if let didSet = window?.setFrameUsingName(window!.frameAutosaveName), !didSet {
       window?.setFrame(NSRect(x: 0, y: 0, width: 960, height: 600), display: true)
       window?.center()
     }
+  }
+
+  private func resetTitle(subtitle: String? = nil) {
+    window?.title = "\(conn.name) — \(subtitle ?? conn.bootstrapAddress)"
   }
 
   private func connect() {
@@ -196,6 +204,26 @@ class WorkspaceWindowController: NSWindowController {
       userInfo: ["ID": id]
     )
   }
+
+  private func duplicateWorkspace() -> WorkspaceWindowController? {
+    return WindowManager.shared.launchWorkspace(
+      withConn: conn,
+      andPassword: pass,
+      preferringExisting: false
+    )
+  }
+
+  @objc func newWindow(_ sender: Any) {
+    duplicateWorkspace()?.window?.makeKeyAndOrderFront(self)
+  }
+
+  @objc override func newWindowForTab(_ sender: Any?) {
+    guard let tab = duplicateWorkspace()?.window else {
+      return
+    }
+    window?.addTabbedWindow(tab, ordered: .above)
+    tab.makeKeyAndOrderFront(self)
+  }
 }
 
 // MARK: NSMenuItemValidation
@@ -213,7 +241,7 @@ extension WorkspaceWindowController: NSMenuItemValidation {
 // MARK: NSWindowDelegate
 extension WorkspaceWindowController: NSWindowDelegate {
   func windowWillClose(_ notification: Notification) {
-    if WindowManager.shared.removeWorkspace(withId: conn.id!), let id {
+    if WindowManager.shared.removeWorkspace(self), let id {
       WindowManager.shared.closeScriptWindows(forWorkspace: id)
       Error.wait(Backend.shared.closeWorkspace(id))
     }
@@ -400,16 +428,30 @@ extension WorkspaceWindowController: WorkspaceDetailDelegate {
 // MARK: - WorkspaceSidebarDelegate
 extension WorkspaceWindowController: WorkspaceSidebarDelegate {
   func sidebar(didSelectEntry entry: Any, withKind kind: SidebarEntryKind) {
-    if kind == .topic, let t = entry as? Topic {
-      topic = t.name
-    } else {
-      topic = nil
+    topic = nil
+    switch kind {
+    case .broker:
+      resetTitle(subtitle: (entry as? Broker)?.address)
+    case .topic:
+      if let t = entry as? Topic {
+        topic = t.name
+        resetTitle(subtitle: t.name)
+      } else {
+        resetTitle()
+      }
+    case .consumerGroup:
+      resetTitle(subtitle: (entry as? Group)?.id)
+    case .schema:
+      resetTitle(subtitle: (entry as? Schema)?.name)
+    default:
+      resetTitle()
     }
     detailCtl.show(entry: entry, withKind: kind)
   }
 
   func sidebar(didDeselectEntry entry: Any?) {
     detailCtl.clear()
+    resetTitle()
   }
 
   func sidebar(didDeleteTopic topic: Topic) {
