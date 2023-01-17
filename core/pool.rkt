@@ -72,7 +72,7 @@
                    [`(open ,res-ch ,nack ,client)
                     (define-values (client-id next-state)
                       (state-add-client s client))
-                    (log-franz-debug "pool: openend client ~a" client-id)
+                    (log-franz-debug "pool: opened client ~a" client-id)
                     (state-add-req next-state (req client-id res-ch nack))]
 
                    [`(close ,res-ch ,nack ,id)

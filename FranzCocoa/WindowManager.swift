@@ -27,15 +27,6 @@ class WindowManager {
     workspaces[id] = workspace
   }
 
-  func closeWorkspace(withId id: UInt64) {
-    assert(Thread.isMainThread)
-    guard let workspace = workspaces[id] else {
-      return
-    }
-    workspaces.removeValue(forKey: id)
-    workspace.close()
-  }
-
   func removeAllWorkspaces() {
     assert(Thread.isMainThread)
     workspaces.removeAll()
