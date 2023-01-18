@@ -74,6 +74,7 @@
 		43CD623F28CE289F00095144 /* WelcomeWindowContentViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43CD623C28CE282400095144 /* WelcomeWindowContentViewController.xib */; };
 		43CD624828CE3B5D00095144 /* ConnectionDetailsFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CD624628CE3B5D00095144 /* ConnectionDetailsFormViewController.swift */; };
 		43CD624928CE3B5D00095144 /* ConnectionDetailsFormViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43CD624728CE3B5D00095144 /* ConnectionDetailsFormViewController.xib */; };
+		43CF3BC32977FC90004ED332 /* AppStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CF3BC22977FC90004ED332 /* AppStore.swift */; };
 		43D03DD428FAC6030049D44D /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D03DD328FAC6030049D44D /* Keychain.swift */; };
 		43D03DD628FAFE3B0049D44D /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D03DD528FAFE3B0049D44D /* Notifications.swift */; };
 		43D03DD828FB03940049D44D /* Identifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D03DD728FB03940049D44D /* Identifiers.swift */; };
@@ -167,6 +168,7 @@
 		43CD623D28CE282400095144 /* WelcomeWindowContentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeWindowContentViewController.swift; sourceTree = "<group>"; };
 		43CD624628CE3B5D00095144 /* ConnectionDetailsFormViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionDetailsFormViewController.swift; sourceTree = "<group>"; };
 		43CD624728CE3B5D00095144 /* ConnectionDetailsFormViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ConnectionDetailsFormViewController.xib; sourceTree = "<group>"; };
+		43CF3BC22977FC90004ED332 /* AppStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStore.swift; sourceTree = "<group>"; };
 		43D03DD328FAC6030049D44D /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
 		43D03DD528FAFE3B0049D44D /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
 		43D03DD728FB03940049D44D /* Identifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Identifiers.swift; sourceTree = "<group>"; };
@@ -236,6 +238,7 @@
 			isa = PBXGroup;
 			children = (
 				43CD621828CE24B000095144 /* AppDelegate.swift */,
+				43CF3BC22977FC90004ED332 /* AppStore.swift */,
 				43CD621A28CE24B100095144 /* Assets.xcassets */,
 				43F987A5292A81D400E5E1DE /* AutoUpdater.swift */,
 				43CD622E28CE258100095144 /* Backend.swift */,
@@ -528,6 +531,7 @@
 				43F987A8292A867B00E5E1DE /* UpdatesWindowController.swift in Sources */,
 				4322BBD92924DED8002358C3 /* Editor.swift in Sources */,
 				43453F3D291505A6000CE90E /* Timed.swift in Sources */,
+				43CF3BC32977FC90004ED332 /* AppStore.swift in Sources */,
 				4342530F2964A8C300CC05BC /* HeadersTableViewController.swift in Sources */,
 				43E5AE8C291245E000C74966 /* DispatchQueue.swift in Sources */,
 				43CD624828CE3B5D00095144 /* ConnectionDetailsFormViewController.swift in Sources */,
