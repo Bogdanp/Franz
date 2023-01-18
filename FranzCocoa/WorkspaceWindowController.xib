@@ -38,15 +38,15 @@
             </connections>
             <point key="canvasLocation" x="108" y="133"/>
         </window>
-        <customView misplaced="YES" id="8en-9O-LIY" userLabel="Status Bar">
-            <rect key="frame" x="0.0" y="0.0" width="420" height="23"/>
+        <customView id="8en-9O-LIY" userLabel="Status Bar">
+            <rect key="frame" x="0.0" y="0.0" width="420" height="22"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
             <subviews>
                 <box borderType="line" title="Box" titlePosition="noTitle" id="IS8-OA-uNO">
-                    <rect key="frame" x="-3" y="-4" width="426" height="29"/>
+                    <rect key="frame" x="-3" y="-4" width="426" height="28"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <view key="contentView" id="Srx-n6-Dqq">
-                        <rect key="frame" x="4" y="5" width="418" height="21"/>
+                        <rect key="frame" x="4" y="5" width="418" height="20"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" verticalCompressionResistancePriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="T4q-IH-Z6t">
@@ -67,12 +67,10 @@
                             </textField>
                         </subviews>
                         <constraints>
-                            <constraint firstItem="T4q-IH-Z6t" firstAttribute="top" secondItem="Srx-n6-Dqq" secondAttribute="top" constant="2" id="ICJ-Z6-rGe"/>
+                            <constraint firstItem="iNm-gp-3aO" firstAttribute="centerY" secondItem="Srx-n6-Dqq" secondAttribute="centerY" id="5JI-KU-hWI"/>
+                            <constraint firstItem="T4q-IH-Z6t" firstAttribute="centerY" secondItem="Srx-n6-Dqq" secondAttribute="centerY" id="9qY-5V-dkB"/>
                             <constraint firstItem="T4q-IH-Z6t" firstAttribute="leading" secondItem="Srx-n6-Dqq" secondAttribute="leading" constant="5" id="Oh9-9H-LmU"/>
                             <constraint firstAttribute="trailing" secondItem="iNm-gp-3aO" secondAttribute="trailing" constant="5" id="fW0-m6-P1z"/>
-                            <constraint firstAttribute="bottom" secondItem="T4q-IH-Z6t" secondAttribute="bottom" constant="2" id="hfJ-83-jyb"/>
-                            <constraint firstItem="iNm-gp-3aO" firstAttribute="top" secondItem="Srx-n6-Dqq" secondAttribute="top" constant="3" id="jfG-Si-z5K"/>
-                            <constraint firstAttribute="bottom" secondItem="iNm-gp-3aO" secondAttribute="bottom" constant="3" id="vuf-RG-8ix"/>
                         </constraints>
                     </view>
                 </box>
