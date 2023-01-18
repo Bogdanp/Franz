@@ -284,6 +284,16 @@ See @registry-yt{this YouTube video} for a live demo.
   Within a @tech{Workspace Window}, reloads the connection metadata.
 }
 
+@defkbd[(cmd T)]{
+  Within a @tech{Workspace Window}, duplicates the Workspace in a new
+  tab.
+}
+
+@defkbd[(shift cmd T)]{
+  Within a @tech{Workspace Window}, duplicates the Workspace in a new
+  window.
+}
+
 @defkbd[(cmd return)]{
   Within a @tech{Scripting Window}, activates or deactivates the
   script.
