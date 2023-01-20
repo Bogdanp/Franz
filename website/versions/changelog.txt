@@ -1,4 +1,4 @@
-# 2023.01.23 (Build 5)
+# 2023.01.20 (Build 5)
 ## Added
 
 * The Consumer Groups tab to the Topic Detail view.

@@ -12,6 +12,7 @@ deploy: manual/index.html
 		--exclude api \
 		--exclude api.rkt \
 		--exclude api_dist \
+		--exclude feed.rkt \
 		-avh . franz:~/www/
 
 .PHONY: deploy_api
