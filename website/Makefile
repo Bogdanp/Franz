@@ -6,7 +6,7 @@ serve:
 	python -m http.server
 
 .PHONY: deploy
-deploy: manual/index.html
+deploy: atom.xml manual/index.html
 	rsync \
 		--exclude Makefile \
 		--exclude api \
@@ -22,6 +22,9 @@ deploy_api: api_dist/bin/api
 
 manual/index.html: ../manual/*.scrbl
 	raco scribble --html --dest manual +m ../manual/index.scrbl
+
+atom.xml: versions/changelog.txt
+	racket feed.rkt
 
 .PHONY: cross_setup
 cross_setup:
