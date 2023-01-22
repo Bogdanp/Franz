@@ -14,4 +14,10 @@ assert(offset.partition_id == 1, "wrong partition id")
 assert(offset.offset == 5, "wrong offset")
 assert(tostring(offset) == "<OffsetCommit group=\"ABC\" topic=\"BCD\" partition_id=1 offset=5>")
 
+assert(kafka.record_size({}) == 0, "bad size for empty record")
+assert(kafka.record_size({key = "hello"}) == 5, "bad size for record with key")
+assert(kafka.record_size({value = "hello"}) == 5, "bad size for record with value")
+assert(kafka.record_size({key = "hello", value = "world"}) == 10, "bad size for record with key & value")
+assert(kafka.record_size({key = "hello", value = "world", headers = {["Content-Type"] = "text/plain"}}) == 32, "bad size for record with key & value")
+
 return true

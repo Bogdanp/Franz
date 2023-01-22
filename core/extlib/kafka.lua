@@ -107,4 +107,23 @@ function kafka.parse_committed_offset(record)
     end
 end
 
+function kafka.record_size(record)
+    local size = 0
+    if record.key then
+        size = size + #record.key
+    end
+    if record.value then
+        size = size + #record.value
+    end
+    if record.headers then
+        for k, v in pairs(record.headers) do
+            size = size + #k
+            if v then
+                size = size + #v
+            end
+        end
+    end
+    return size
+end
+
 return kafka

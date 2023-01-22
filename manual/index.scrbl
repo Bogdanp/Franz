@@ -392,6 +392,10 @@ supported.
   }|
 }
 
+@deflua[kafka.record_size (record) number]{
+  Returns the size in bytes of the given record.
+}
+
 @deflua[math.abs (n) number]{
   Returns the absolute value of @tt{n}.
 }
