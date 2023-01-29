@@ -134,7 +134,7 @@ fileprivate struct ConnectionsView: View {
   @State private var options: TopicRecordsOptions?
 
   var body: some View {
-    HStack {
+    HStack(alignment: .top) {
       Table(connections, selection: $selectedId) {
         TableColumn("Connection", value: \.name)
       }
@@ -151,11 +151,18 @@ fileprivate struct ConnectionsView: View {
       }
       VStack {
         if let optionsKey, let options {
-          TopicRecordsOptionsForm(model: options) {
-            try? Defaults.shared.set(codable: options, forKey: optionsKey)
+          GroupBox("Defaults") {
+            TopicRecordsOptionsForm(model: options) {
+              try? Defaults.shared.set(codable: options, forKey: optionsKey)
+            }
+            Spacer()
           }
         } else {
-          Text("Please select a connection.")
+          VStack {
+            Spacer()
+            Text("Please select a connection.")
+            Spacer()
+          }
         }
       }
       .frame(maxWidth: .greatestFiniteMagnitude)
