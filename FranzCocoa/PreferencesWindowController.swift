@@ -8,10 +8,11 @@ fileprivate let logger = Logger(
   category: "Preferences"
 )
 
-enum PreferencesTab {
-  case general
-  case license
-  case updates
+enum PreferencesTab: Int {
+  case general = 0
+  case connections = 1
+  case license = 2
+  case updates = 3
 }
 
 class PreferencesWindowController: NSWindowController {
@@ -29,6 +30,11 @@ class PreferencesWindowController: NSWindowController {
     generalItem.label = "General"
     generalItem.viewController = NSHostingController(rootView: GeneralView())
 
+    let connectionsItem = NSTabViewItem()
+    connectionsItem.image = .init(systemSymbolName: "network", accessibilityDescription: "Connections Tab")
+    connectionsItem.label = "Connections"
+    connectionsItem.viewController = NSHostingController(rootView: ConnectionsView())
+
     let licenseItem = NSTabViewItem()
     licenseItem.image = .init(systemSymbolName: "checkmark.seal", accessibilityDescription: "License Tab")
     licenseItem.label = "License"
@@ -42,6 +48,7 @@ class PreferencesWindowController: NSWindowController {
     tabController.delegate = self
     tabController.tabStyle = .toolbar
     tabController.addTabViewItem(generalItem)
+    tabController.addTabViewItem(connectionsItem)
     tabController.addTabViewItem(licenseItem)
     tabController.addTabViewItem(updatesItem)
 
@@ -51,34 +58,32 @@ class PreferencesWindowController: NSWindowController {
   }
 
   func display(tab: PreferencesTab) {
-    var index: Int!
-    switch tab {
-    case .general:
-      index = 0
-    case .license:
-      index = 1
-    case .updates:
-      index = 2
-    }
-    tabController.selectedTabViewItemIndex = index
+    tabController.selectedTabViewItemIndex = tab.rawValue
   }
 }
 
 // MARK: - PreferencesTabViewDelegate
 extension PreferencesWindowController: PreferencesTabViewDelegate {
   func preferencesTabView(didSelectItem item: NSTabViewItem) {
-    guard let window else { return }
-    window.title = item.label
-    switch item.label {
-    case "General":
-      window.setContentSize(.init(width: 500, height: 170))
-    case "License":
-      window.setContentSize(.init(width: 500, height: 250))
-    case "Updates":
-      window.setContentSize(.init(width: 500, height: 150))
-    default:
-      ()
+    let index = tabController.tabView.indexOfTabViewItem(item)
+    guard let window, let tab = PreferencesTab(rawValue: index) else {
+      return
     }
+
+    var size: NSSize!
+    switch tab {
+    case .general:
+      size = .init(width: 500, height: 170)
+    case .connections:
+      size = .init(width: 500, height: 400)
+    case .license:
+      size = .init(width: 500, height: 250)
+    case .updates:
+      size = .init(width: 500, height: 150)
+    }
+
+    window.title = item.label
+    window.setContentSize(size)
   }
 }
 
@@ -116,6 +121,44 @@ fileprivate struct GeneralView: View {
         Text(reloadIvl > 1 ? "Every \(Int(reloadIvl)) seconds." : "Every second.")
       }
       Spacer()
+    }
+    .padding()
+  }
+}
+
+// MARK: - ConnectionsView
+fileprivate struct ConnectionsView: View {
+  @State private var connections = Error.wait(Backend.shared.getConnections()) ?? []
+  @State private var selectedId: UVarint??
+  @State private var optionsKey: String?
+  @State private var options: TopicRecordsOptions?
+
+  var body: some View {
+    HStack {
+      Table(connections, selection: $selectedId) {
+        TableColumn("Connection", value: \.name)
+      }
+      .frame(width: 200)
+      .onChange(of: selectedId) { id in
+        guard let connection = connections.first(where: { $0.id == id }) else {
+          optionsKey = nil
+          options = nil
+          return
+        }
+
+        optionsKey = "Franz:\(connection.name):TopicRecordsOptions"
+        options = Defaults.shared.get(codable: optionsKey!) ?? TopicRecordsOptions()
+      }
+      VStack {
+        if let optionsKey, let options {
+          TopicRecordsOptionsForm(model: options) {
+            try? Defaults.shared.set(codable: options, forKey: optionsKey)
+          }
+        } else {
+          Text("Please select a connection.")
+        }
+      }
+      .frame(maxWidth: .greatestFiniteMagnitude)
     }
     .padding()
   }

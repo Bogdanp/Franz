@@ -42,6 +42,8 @@ extension ConnectionDetails {
   }
 }
 
+extension ConnectionDetails: Identifiable {}
+
 // MARK: - GroupPartitionOffset
 extension GroupPartitionOffset {
   var lag: Varint {

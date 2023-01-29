@@ -123,8 +123,14 @@ class TopicRecordsTableViewController: NSViewController {
 
     self.id = id
     self.topic = topic
-    self.optionsDefaultsKey = "Franz:\(delegate.getConnectionName()):TopicRecordsOptions:\(topic)"
-    self.options = Defaults.shared.get(codable: self.optionsDefaultsKey!) ?? TopicRecordsOptions()
+
+    let connectionOptionsKey = "Franz:\(delegate.getConnectionName()):TopicRecordsOptions"
+    self.optionsDefaultsKey = "\(connectionOptionsKey):\(topic)"
+    self.options = (
+      Defaults.shared.get(codable: self.optionsDefaultsKey!) ??
+      Defaults.shared.get(codable: connectionOptionsKey) ??
+      TopicRecordsOptions()
+    )
 
     let status = delegate.makeStatusProc()
     status("Opening Iterator")
@@ -886,170 +892,6 @@ struct TopicRecordsTable: NSViewControllerRepresentable {
   }
 
   func updateNSViewController(_ nsViewController: TopicRecordsTableViewController, context: Context) {
-  }
-}
-
-// MARK: - TopicRecordsOptions+Form
-fileprivate enum ContentType: Codable {
-  case binary
-  case json
-  case text
-
-  var utType: UTType {
-    switch self {
-    case .binary:
-      return .data
-    case .json:
-      return .json
-    case .text:
-      return .plainText
-    }
-  }
-
-  var dataFormat: DataFormat {
-    switch self {
-    case .binary:
-      return .binary
-    case .json:
-      return .json
-    case .text:
-      return .text
-    }
-  }
-}
-
-fileprivate enum SortDirection: Codable {
-  case asc
-  case desc
-}
-
-fileprivate final class TopicRecordsOptions: ObservableObject, Codable {
-  @Published var keyFormat = ContentType.binary
-  @Published var valueFormat = ContentType.binary
-  @Published var sortDirection = SortDirection.desc
-  @Published var maxMBScaled = 0.0
-  @Published var keepMBScaled = 1.0
-
-  var maxBytes: UVarint {
-    Self.descale(maxMBScaled)*1024*1024
-  }
-
-  var keepBytes: UVarint {
-    Self.descale(keepMBScaled)*1024*1024
-  }
-
-  struct Data: Codable {
-    let keyFormat: ContentType
-    let valueFormat: ContentType
-    let sortDirection: SortDirection
-    let maxMBScaled: Double
-    let keepMBScaled: Double
-  }
-
-  init() {
-
-  }
-
-  init(from decoder: Decoder) throws {
-    let data = try Data(from: decoder)
-    self.keyFormat = data.keyFormat
-    self.valueFormat = data.valueFormat
-    self.sortDirection = data.sortDirection
-    self.maxMBScaled = data.maxMBScaled
-    self.keepMBScaled = data.keepMBScaled
-  }
-
-  func encode(to encoder: Encoder) throws {
-    let data = Data(
-      keyFormat: keyFormat,
-      valueFormat: valueFormat,
-      sortDirection: sortDirection,
-      maxMBScaled: maxMBScaled,
-      keepMBScaled: keepMBScaled
-    )
-    try data.encode(to: encoder)
-  }
-
-  static func descale(_ mbScaled: Double) -> UVarint {
-    return UVarint(pow(2, mbScaled))
-  }
-}
-
-fileprivate struct TopicRecordsOptionsForm: View {
-  @StateObject var model: TopicRecordsOptions
-
-  let saveAction: () -> Void
-  let jumpAction: () -> Void
-
-  var bytesFmt: ByteCountFormatter = {
-    let fmt = ByteCountFormatter()
-    fmt.countStyle = .memory
-    return fmt
-  }()
-  var formattedMaxMB: String {
-    bytesFmt.string(fromByteCount: Int64(model.maxBytes))
-  }
-  var formattedKeepMB: String {
-    bytesFmt.string(fromByteCount: Int64(model.keepBytes))
-  }
-
-  var body: some View {
-    Form {
-      Picker("Key Format:", selection: $model.keyFormat) {
-        Text("Binary").tag(ContentType.binary)
-        Text("JSON").tag(ContentType.json)
-        Text("Text").tag(ContentType.text)
-      }
-      Picker("Value Format:", selection: $model.valueFormat) {
-        Text("Binary").tag(ContentType.binary)
-        Text("JSON").tag(ContentType.json)
-        Text("Text").tag(ContentType.text)
-      }
-      Picker("Sort:", selection: $model.sortDirection) {
-        Text("Ascending").tag(SortDirection.asc)
-        Text("Descending").tag(SortDirection.desc)
-      }
-      VStack(alignment: .trailing, spacing: 0) {
-        Slider(value: $model.maxMBScaled, in: 0...7, step: 1) {
-          Text("Request Size:")
-        }
-        HStack(spacing: 2) {
-          Text(formattedMaxMB)
-            .font(.system(size: 10).monospacedDigit())
-            .foregroundColor(.secondary)
-          Image(systemName: "info.circle")
-            .font(.system(size: 10))
-            .foregroundColor(.secondary)
-            .help("The maximum amount of data that will be retrieved per partition.")
-        }
-      }
-      VStack(alignment: .trailing, spacing: 0) {
-        Slider(value: $model.keepMBScaled, in: 0...10, step: 1) {
-          Text("Buffer Size:")
-        }
-        HStack(spacing: 2) {
-          Text(formattedKeepMB)
-            .font(.system(size: 10).monospacedDigit())
-            .foregroundColor(.secondary)
-          Image(systemName: "info.circle")
-            .font(.system(size: 10))
-            .foregroundColor(.secondary)
-            .help("The maximum amount of data that will be buffered in memory.")
-        }
-      }
-      HStack {
-        Button("Save") {
-          saveAction()
-        }
-        .buttonStyle(.borderedProminent)
-        .keyboardShortcut(.defaultAction)
-
-        Button("Jump...") {
-          jumpAction()
-        }
-      }
-    }
-    .padding()
   }
 }
 

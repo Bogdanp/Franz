@@ -32,6 +32,7 @@
 		436E720728D75B0500ECBF49 /* WorkspaceDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 436E720528D75B0500ECBF49 /* WorkspaceDetailViewController.xib */; };
 		436E720D28D760BF00ECBF49 /* SidebarEntryCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436E720C28D760BF00ECBF49 /* SidebarEntryCellView.swift */; };
 		436E720F28D760D400ECBF49 /* SidebarEntryCellView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 436E720E28D760D400ECBF49 /* SidebarEntryCellView.xib */; };
+		437669F22986B10B00307CFE /* TopicRecordsOptionsForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 437669F12986B10B00307CFE /* TopicRecordsOptionsForm.swift */; };
 		437887F628E9FE5900D0B263 /* BrokerDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 437887F528E9FE5900D0B263 /* BrokerDetailView.swift */; };
 		437A77DF290D5AA1001965B0 /* TopicRecordsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 437A77DD290D5AA1001965B0 /* TopicRecordsTableViewController.swift */; };
 		437A77E0290D5AA1001965B0 /* TopicRecordsTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 437A77DE290D5AA1001965B0 /* TopicRecordsTableViewController.xib */; };
@@ -125,6 +126,7 @@
 		436E720528D75B0500ECBF49 /* WorkspaceDetailViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WorkspaceDetailViewController.xib; sourceTree = "<group>"; };
 		436E720C28D760BF00ECBF49 /* SidebarEntryCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarEntryCellView.swift; sourceTree = "<group>"; };
 		436E720E28D760D400ECBF49 /* SidebarEntryCellView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SidebarEntryCellView.xib; sourceTree = "<group>"; };
+		437669F12986B10B00307CFE /* TopicRecordsOptionsForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopicRecordsOptionsForm.swift; sourceTree = "<group>"; };
 		437887F528E9FE5900D0B263 /* BrokerDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrokerDetailView.swift; sourceTree = "<group>"; };
 		437A77DD290D5AA1001965B0 /* TopicRecordsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopicRecordsTableViewController.swift; sourceTree = "<group>"; };
 		437A77DE290D5AA1001965B0 /* TopicRecordsTableViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TopicRecordsTableViewController.xib; sourceTree = "<group>"; };
@@ -294,6 +296,7 @@
 				4396EAE02905B0D200A15D25 /* Tabs.swift */,
 				43453F3C291505A6000CE90E /* Timed.swift */,
 				43196F8928F1DAB2003C793B /* TopicDetailView.swift */,
+				437669F12986B10B00307CFE /* TopicRecordsOptionsForm.swift */,
 				437A77DD290D5AA1001965B0 /* TopicRecordsTableViewController.swift */,
 				437A77DE290D5AA1001965B0 /* TopicRecordsTableViewController.xib */,
 				439D6EAF292F7741005C9935 /* UpdatesProgressWindowController.swift */,
@@ -523,6 +526,7 @@
 				431C697F28F2C1A70082986A /* StringExtensions.swift in Sources */,
 				436E720228D759F400ECBF49 /* WorkspaceSidebarViewController.swift in Sources */,
 				43804AB728D1A014002880FE /* ConnectionTableCellView.swift in Sources */,
+				437669F22986B10B00307CFE /* TopicRecordsOptionsForm.swift in Sources */,
 				43E64A082928F2BF00FDBF29 /* ScriptWindowController.swift in Sources */,
 				436E720628D75B0500ECBF49 /* WorkspaceDetailViewController.swift in Sources */,
 				4396EADA290576A300A15D25 /* ResourceConfigTableViewController.swift in Sources */,
