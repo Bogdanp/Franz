@@ -1,7 +1,7 @@
 #lang info
 
 (define collection "franz")
-(define version "1.0")
+(define version "1.1")
 (define deps '(["amazon-msk-sasl-lib" #:version "0.2"]
                ["avro-lib" #:version "1.1"]
                "base"
