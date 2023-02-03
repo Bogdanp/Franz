@@ -1,6 +1,7 @@
 #lang racket/base
 
 (require (only-in db sqlite3-connect)
+         (prefix-in http: net/http-easy)
          noise/backend
          noise/serde
          racket/file
@@ -8,10 +9,14 @@
          "appdata.rkt"
          "logger.rkt"
          "metadata.rkt"
+         "platform.rkt"
+         "version.rkt"
 
          ;; For RPC:
+         "auto-update.rkt"
          "connection-details.rkt"
          "lexer.rkt"
+         "release.rkt"
          "schema-registry.rkt"
          "script.rkt"
          "workspace.rkt")
@@ -21,6 +26,12 @@
 
 (define-rpc (ping : String)
   "pong")
+
+(define user-agent
+  (format "Franz ~a (Racket ~a; net/http-easy; macOS ~a)"
+          (get-version)
+          (version)
+          (os-version)))
 
 (define (main in-fd out-fd)
   (module-cache-clear!)
@@ -38,7 +49,8 @@
        (build-application-path "metadata.sqlite3")]))
   (log-franz-debug "database path: ~a" database-path)
   (define stop
-    (parameterize ([current-connection
+    (parameterize ([http:current-user-agent user-agent]
+                   [current-connection
                     (sqlite3-connect
                      #:use-place 'os-thread
                      #:database database-path

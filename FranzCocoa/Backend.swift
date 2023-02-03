@@ -533,6 +533,36 @@ public struct Metadata: Readable, Writable {
   }
 }
 
+public struct Release: Readable, Writable {
+  public let arch: Symbol
+  public let version: String
+  public let macURL: String
+
+  public init(
+    arch: Symbol,
+    version: String,
+    macURL: String
+  ) {
+    self.arch = arch
+    self.version = version
+    self.macURL = macURL
+  }
+
+  public static func read(from inp: InputPort, using buf: inout Data) -> Release {
+    return Release(
+      arch: Symbol.read(from: inp, using: &buf),
+      version: String.read(from: inp, using: &buf),
+      macURL: String.read(from: inp, using: &buf)
+    )
+  }
+
+  public func write(to out: OutputPort) {
+    arch.write(to: out)
+    version.write(to: out)
+    macURL.write(to: out)
+  }
+}
+
 public struct ResourceConfig: Readable, Writable {
   public let name: String
   public let value: String?
@@ -778,6 +808,31 @@ public struct TopicPartition: Readable, Writable {
   }
 }
 
+public struct UpdateAvailable: Readable, Writable {
+  public let changelog: String
+  public let release: Release
+
+  public init(
+    changelog: String,
+    release: Release
+  ) {
+    self.changelog = changelog
+    self.release = release
+  }
+
+  public static func read(from inp: InputPort, using buf: inout Data) -> UpdateAvailable {
+    return UpdateAvailable(
+      changelog: String.read(from: inp, using: &buf),
+      release: Release.read(from: inp, using: &buf)
+    )
+  }
+
+  public func write(to out: OutputPort) {
+    changelog.write(to: out)
+    release.write(to: out)
+  }
+}
+
 public class Backend {
   let impl: NoiseBackend.Backend!
 
@@ -821,26 +876,27 @@ public class Backend {
     )
   }
 
-  public func closeAllWorkspaces() -> Future<String, Void> {
+  public func checkForUpdates() -> Future<String, UpdateAvailable?> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0003).write(to: out)
+      },
+      readProc: { (inp: InputPort, buf: inout Data) -> UpdateAvailable? in
+        return UpdateAvailable?.read(from: inp, using: &buf)
+      }
+    )
+  }
+
+  public func closeAllWorkspaces() -> Future<String, Void> {
+    return impl.send(
+      writeProc: { (out: OutputPort) in
+        UVarint(0x0004).write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> Void in }
     )
   }
 
   public func closeIterator(withId id: UVarint) -> Future<String, Void> {
-    return impl.send(
-      writeProc: { (out: OutputPort) in
-        UVarint(0x0004).write(to: out)
-        id.write(to: out)
-      },
-      readProc: { (inp: InputPort, buf: inout Data) -> Void in }
-    )
-  }
-
-  public func closeWorkspace(_ id: UVarint) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0005).write(to: out)
@@ -850,10 +906,20 @@ public class Backend {
     )
   }
 
-  public func createTopic(named name: String, withPartitions partitions: UVarint, andReplicationFactor replicationFactor: UVarint, andOptions options: [TopicOption], inWorkspace id: UVarint) -> Future<String, Void> {
+  public func closeWorkspace(_ id: UVarint) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0006).write(to: out)
+        id.write(to: out)
+      },
+      readProc: { (inp: InputPort, buf: inout Data) -> Void in }
+    )
+  }
+
+  public func createTopic(named name: String, withPartitions partitions: UVarint, andReplicationFactor replicationFactor: UVarint, andOptions options: [TopicOption], inWorkspace id: UVarint) -> Future<String, Void> {
+    return impl.send(
+      writeProc: { (out: OutputPort) in
+        UVarint(0x0007).write(to: out)
         name.write(to: out)
         partitions.write(to: out)
         replicationFactor.write(to: out)
@@ -867,7 +933,7 @@ public class Backend {
   public func deactivateSchemaRegistry(inWorkspace id: UVarint) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0007).write(to: out)
+        UVarint(0x0008).write(to: out)
         id.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> Void in }
@@ -877,7 +943,7 @@ public class Backend {
   public func deactivateScript(forTopic topic: String, inWorkspace id: UVarint) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0008).write(to: out)
+        UVarint(0x0009).write(to: out)
         topic.write(to: out)
         id.write(to: out)
       },
@@ -888,7 +954,7 @@ public class Backend {
   public func deleteConnection(_ c: ConnectionDetails) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0009).write(to: out)
+        UVarint(0x000a).write(to: out)
         c.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> Void in }
@@ -898,7 +964,7 @@ public class Backend {
   public func deleteGroup(named groupId: String, inWorkspace id: UVarint) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x000a).write(to: out)
+        UVarint(0x000b).write(to: out)
         groupId.write(to: out)
         id.write(to: out)
       },
@@ -909,7 +975,7 @@ public class Backend {
   public func deleteSchemaRegistry(_ id: UVarint) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x000b).write(to: out)
+        UVarint(0x000c).write(to: out)
         id.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> Void in }
@@ -919,7 +985,7 @@ public class Backend {
   public func deleteTopic(named name: String, inWorkspace id: UVarint) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x000c).write(to: out)
+        UVarint(0x000d).write(to: out)
         name.write(to: out)
         id.write(to: out)
       },
@@ -930,7 +996,7 @@ public class Backend {
   public func fetchOffsets(forGroupNamed groupId: String, inWorkspace id: UVarint) -> Future<String, GroupOffsets> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x000d).write(to: out)
+        UVarint(0x000e).write(to: out)
         groupId.write(to: out)
         id.write(to: out)
       },
@@ -943,7 +1009,7 @@ public class Backend {
   public func findTopicGroups(forTopic topic: String, inWorkspace id: UVarint) -> Future<String, [String]> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x000e).write(to: out)
+        UVarint(0x000f).write(to: out)
         topic.write(to: out)
         id.write(to: out)
       },
@@ -956,7 +1022,18 @@ public class Backend {
   public func generatePasswordId() -> Future<String, String> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x000f).write(to: out)
+        UVarint(0x0010).write(to: out)
+      },
+      readProc: { (inp: InputPort, buf: inout Data) -> String in
+        return String.read(from: inp, using: &buf)
+      }
+    )
+  }
+
+  public func getChangelog() -> Future<String, String> {
+    return impl.send(
+      writeProc: { (out: OutputPort) in
+        UVarint(0x0011).write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> String in
         return String.read(from: inp, using: &buf)
@@ -967,7 +1044,7 @@ public class Backend {
   public func getConnections() -> Future<String, [ConnectionDetails]> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0010).write(to: out)
+        UVarint(0x0012).write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> [ConnectionDetails] in
         return [ConnectionDetails].read(from: inp, using: &buf)
@@ -975,10 +1052,22 @@ public class Backend {
     )
   }
 
+  public func getLatestRelease(forArch arch: Symbol) -> Future<String, Release?> {
+    return impl.send(
+      writeProc: { (out: OutputPort) in
+        UVarint(0x0013).write(to: out)
+        arch.write(to: out)
+      },
+      readProc: { (inp: InputPort, buf: inout Data) -> Release? in
+        return Release?.read(from: inp, using: &buf)
+      }
+    )
+  }
+
   public func getLicense() -> Future<String, String?> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0011).write(to: out)
+        UVarint(0x0014).write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> String? in
         return String?.read(from: inp, using: &buf)
@@ -989,7 +1078,7 @@ public class Backend {
   public func getMetadata(forcingReload reload: Bool, inWorkspace id: UVarint) -> Future<String, Metadata> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0012).write(to: out)
+        UVarint(0x0015).write(to: out)
         reload.write(to: out)
         id.write(to: out)
       },
@@ -1002,7 +1091,7 @@ public class Backend {
   public func getRecords(_ id: UVarint, withMaxBytes maxBytes: UVarint) -> Future<String, [IteratorRecord]> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0013).write(to: out)
+        UVarint(0x0016).write(to: out)
         id.write(to: out)
         maxBytes.write(to: out)
       },
@@ -1012,10 +1101,22 @@ public class Backend {
     )
   }
 
+  public func getReleases(forArch arch: Symbol) -> Future<String, [Release]> {
+    return impl.send(
+      writeProc: { (out: OutputPort) in
+        UVarint(0x0017).write(to: out)
+        arch.write(to: out)
+      },
+      readProc: { (inp: InputPort, buf: inout Data) -> [Release] in
+        return [Release].read(from: inp, using: &buf)
+      }
+    )
+  }
+
   public func getResourceConfigs(forResourceNamed name: String, resourceType type: Symbol, inWorkspace id: UVarint) -> Future<String, [ResourceConfig]> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0014).write(to: out)
+        UVarint(0x0018).write(to: out)
         name.write(to: out)
         type.write(to: out)
         id.write(to: out)
@@ -1029,7 +1130,7 @@ public class Backend {
   public func getSchema(named name: String, inWorkspace id: UVarint) -> Future<String, Schema> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0015).write(to: out)
+        UVarint(0x0019).write(to: out)
         name.write(to: out)
         id.write(to: out)
       },
@@ -1042,7 +1143,7 @@ public class Backend {
   public func getSchemaRegistry(_ id: UVarint) -> Future<String, SchemaRegistry> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0016).write(to: out)
+        UVarint(0x001a).write(to: out)
         id.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> SchemaRegistry in
@@ -1054,7 +1155,7 @@ public class Backend {
   public func getScript(forTopic topic: String, inWorkspace id: UVarint) -> Future<String, String> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0017).write(to: out)
+        UVarint(0x001b).write(to: out)
         topic.write(to: out)
         id.write(to: out)
       },
@@ -1067,7 +1168,7 @@ public class Backend {
   public func getTrialDeadline() -> Future<String, Varint> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0018).write(to: out)
+        UVarint(0x001c).write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> Varint in
         return Varint.read(from: inp, using: &buf)
@@ -1075,10 +1176,21 @@ public class Backend {
     )
   }
 
+  public func installCallback(internalWithId id: UVarint, andAddr addr: Varint) -> Future<String, Void> {
+    return impl.send(
+      writeProc: { (out: OutputPort) in
+        UVarint(0x001d).write(to: out)
+        id.write(to: out)
+        addr.write(to: out)
+      },
+      readProc: { (inp: InputPort, buf: inout Data) -> Void in }
+    )
+  }
+
   public func isLicenseValid() -> Future<String, Bool> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0019).write(to: out)
+        UVarint(0x001e).write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> Bool in
         return Bool.read(from: inp, using: &buf)
@@ -1089,7 +1201,7 @@ public class Backend {
   public func lex(_ code: String, using lexer: Lexer) -> Future<String, [Token]> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x001a).write(to: out)
+        UVarint(0x001f).write(to: out)
         code.write(to: out)
         lexer.write(to: out)
       },
@@ -1102,7 +1214,7 @@ public class Backend {
   public func openIterator(forTopic topic: String, andOffset offset: IteratorOffset, inWorkspace id: UVarint) -> Future<String, UVarint> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x001b).write(to: out)
+        UVarint(0x0020).write(to: out)
         topic.write(to: out)
         offset.write(to: out)
         id.write(to: out)
@@ -1116,7 +1228,7 @@ public class Backend {
   public func openWorkspace(withConn conn: ConnectionDetails, andPassword password: String?) -> Future<String, UVarint> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x001c).write(to: out)
+        UVarint(0x0021).write(to: out)
         conn.write(to: out)
         password.write(to: out)
       },
@@ -1129,7 +1241,7 @@ public class Backend {
   public func ping() -> Future<String, String> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x001d).write(to: out)
+        UVarint(0x0022).write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> String in
         return String.read(from: inp, using: &buf)
@@ -1140,7 +1252,7 @@ public class Backend {
   public func ppJson(_ code: String) -> Future<String, String> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x001e).write(to: out)
+        UVarint(0x0023).write(to: out)
         code.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> String in
@@ -1152,7 +1264,7 @@ public class Backend {
   public func publishRecord(toTopic topic: String, andPartition pid: UVarint, withKey key: Data?, andValue value: Data?, inWorkspace id: UVarint) -> Future<String, IteratorRecord> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x001f).write(to: out)
+        UVarint(0x0024).write(to: out)
         topic.write(to: out)
         pid.write(to: out)
         key.write(to: out)
@@ -1168,7 +1280,7 @@ public class Backend {
   public func resetIterator(withId id: UVarint, toOffset offset: IteratorOffset) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0020).write(to: out)
+        UVarint(0x0025).write(to: out)
         id.write(to: out)
         offset.write(to: out)
       },
@@ -1179,7 +1291,7 @@ public class Backend {
   public func resetPartitionOffset(forGroupNamed groupId: String, andTopic topic: String, andPartitionId pid: UVarint, andTarget target: Symbol, andOffset offset: UVarint?, inWorkspace id: UVarint) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0021).write(to: out)
+        UVarint(0x0026).write(to: out)
         groupId.write(to: out)
         topic.write(to: out)
         pid.write(to: out)
@@ -1194,7 +1306,7 @@ public class Backend {
   public func resetTopicOffsets(forGroupNamed groupId: String, andTopic topic: String, andTarget target: Symbol, inWorkspace id: UVarint) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0022).write(to: out)
+        UVarint(0x0027).write(to: out)
         groupId.write(to: out)
         topic.write(to: out)
         target.write(to: out)
@@ -1207,7 +1319,7 @@ public class Backend {
   public func saveConnection(_ c: ConnectionDetails) -> Future<String, ConnectionDetails> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0023).write(to: out)
+        UVarint(0x0028).write(to: out)
         c.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> ConnectionDetails in
@@ -1219,7 +1331,7 @@ public class Backend {
   public func saveSchemaRegistry(_ r: SchemaRegistry) -> Future<String, SchemaRegistry> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0024).write(to: out)
+        UVarint(0x0029).write(to: out)
         r.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> SchemaRegistry in
@@ -1228,10 +1340,31 @@ public class Backend {
     )
   }
 
+  public func startAutoUpdater(withFrequency frequency: UVarint?, andArch arch: Symbol, andVersion version: String) -> Future<String, Void> {
+    return impl.send(
+      writeProc: { (out: OutputPort) in
+        UVarint(0x002a).write(to: out)
+        frequency.write(to: out)
+        arch.write(to: out)
+        version.write(to: out)
+      },
+      readProc: { (inp: InputPort, buf: inout Data) -> Void in }
+    )
+  }
+
+  public func stopAutoUpdater() -> Future<String, Void> {
+    return impl.send(
+      writeProc: { (out: OutputPort) in
+        UVarint(0x002b).write(to: out)
+      },
+      readProc: { (inp: InputPort, buf: inout Data) -> Void in }
+    )
+  }
+
   public func touchConnection(_ c: ConnectionDetails) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0025).write(to: out)
+        UVarint(0x002c).write(to: out)
         c.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> Void in }
@@ -1241,7 +1374,7 @@ public class Backend {
   public func updateConnection(_ c: ConnectionDetails) -> Future<String, ConnectionDetails> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0026).write(to: out)
+        UVarint(0x002d).write(to: out)
         c.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> ConnectionDetails in
@@ -1253,12 +1386,22 @@ public class Backend {
   public func updateSchemaRegistry(_ r: SchemaRegistry) -> Future<String, SchemaRegistry> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0027).write(to: out)
+        UVarint(0x002e).write(to: out)
         r.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> SchemaRegistry in
         return SchemaRegistry.read(from: inp, using: &buf)
       }
     )
+  }
+
+  public func installCallback(announceUpdate proc: @escaping (String, Release) -> Void) -> Future<String, Void> {
+    return NoiseBackend.installCallback(id: 0, rpc: self.installCallback(internalWithId:andAddr:)) { inp in
+      var buf = Data(count: 8*1024)
+      proc(
+        String.read(from: inp, using: &buf),
+        Release.read(from: inp, using: &buf)
+      )
+    }
   }
 }

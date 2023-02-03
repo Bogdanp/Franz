@@ -276,13 +276,9 @@ fileprivate struct UpdatesView: View {
   }
 
   private func reset() {
-    if !checkForUpdates {
-      AutoUpdater.shared.stop()
-      return
-    }
-
+    AutoUpdater.shared.stop()
     AutoUpdater.shared.start(
-      withInterval: Double(interval.seconds),
+      withInterval: checkForUpdates ? interval.seconds * 1000 : nil,
       checkingImmediately: false
     ) { changes, version in
       WindowManager.shared.showUpdatesWindow(withChangelog: changes, andRelease: version)

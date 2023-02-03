@@ -23,15 +23,13 @@ class UpdatesWindowController: NSWindowController {
 fileprivate class UpdatesStore: ObservableObject {
   @Published var updating = false
 
-  private let updater = AutoUpdater()
-
   func performUpdate(toRelease release: Release) {
     if updating {
       return
     }
 
     updating = true
-    updater.performUpdate(toRelease: release) { res in
+    AutoUpdater.shared.performUpdate(toRelease: release) { res in
       RunLoop.main.schedule {
         defer {
           self.updating = false
