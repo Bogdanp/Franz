@@ -138,6 +138,7 @@ fileprivate struct ConnectionsView: View {
       Table(connections, selection: $selectedId) {
         TableColumn("Connection", value: \.name)
       }
+      .tableStyle(.bordered)
       .frame(width: 200)
       .onChange(of: selectedId) { id in
         guard let connection = connections.first(where: { $0.id == id }) else {
