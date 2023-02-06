@@ -3,13 +3,16 @@
 (require (prefix-in http: net/http-easy)
          noise/backend
          noise/serde
-         racket/format)
+         racket/file
+         racket/format
+         racket/port)
 
 (provide
  (record-out Release)
  get-changelog
  get-releases
- get-latest-release)
+ get-latest-release
+ fetch-release)
 
 (define versions-service-url
   "https://franz.defn.io/versions/")
@@ -17,7 +20,7 @@
 (define-record Release
   [arch : Symbol]
   [version : String]
-  [macURL : String])
+  [mac-url : String])
 
 (define-rpc (get-changelog : String)
   (bytes->string/utf-8
@@ -34,7 +37,7 @@
       (make-Release
        #:arch release-arch
        #:version (hash-ref release-data 'version)
-       #:macURL (hash-ref release-data 'macURL))))
+       #:mac-url (hash-ref release-data 'macURL))))
   (sort releases string>? #:key Release-version))
 
 (define-rpc (get-latest-release [for-arch arch : Symbol] : (Optional Release))
@@ -42,3 +45,14 @@
     (get-releases arch))
   (and (not (null? releases))
        (car releases)))
+
+(define-rpc (fetch-release [release r : Release] : String)
+  (define release-path (make-temporary-file "Franz ~a.dmg"))
+  (call-with-output-file release-path
+    #:exists 'replace
+    (lambda (out)
+      (define res (http:get #:stream? #t (Release-mac-url r)))
+      (unless (= (http:response-status-code res) 200)
+        (error 'fetch-release "unexpected response from server: ~a" (http:response-body res)))
+      (copy-port (http:response-output res) out)))
+  (path->string release-path))
