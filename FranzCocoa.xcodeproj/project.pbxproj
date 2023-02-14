@@ -86,6 +86,7 @@
 		43E5AE8C291245E000C74966 /* DispatchQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43E5AE8B291245E000C74966 /* DispatchQueue.swift */; };
 		43E64A082928F2BF00FDBF29 /* ScriptWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43E64A062928F2BF00FDBF29 /* ScriptWindowController.swift */; };
 		43E64A092928F2BF00FDBF29 /* ScriptWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43E64A072928F2BF00FDBF29 /* ScriptWindowController.xib */; };
+		43EE0EDF299BD276001A973A /* SidebarOptionsForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43EE0EDE299BD276001A973A /* SidebarOptionsForm.swift */; };
 		43F987A6292A81D400E5E1DE /* AutoUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43F987A5292A81D400E5E1DE /* AutoUpdater.swift */; };
 		43F987A8292A867B00E5E1DE /* UpdatesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43F987A7292A867B00E5E1DE /* UpdatesWindowController.swift */; };
 /* End PBXBuildFile section */
@@ -181,6 +182,7 @@
 		43E5AE8B291245E000C74966 /* DispatchQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DispatchQueue.swift; sourceTree = "<group>"; };
 		43E64A062928F2BF00FDBF29 /* ScriptWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptWindowController.swift; sourceTree = "<group>"; };
 		43E64A072928F2BF00FDBF29 /* ScriptWindowController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ScriptWindowController.xib; sourceTree = "<group>"; };
+		43EE0EDE299BD276001A973A /* SidebarOptionsForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarOptionsForm.swift; sourceTree = "<group>"; };
 		43F987A5292A81D400E5E1DE /* AutoUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoUpdater.swift; sourceTree = "<group>"; };
 		43F987A7292A867B00E5E1DE /* UpdatesWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdatesWindowController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -292,6 +294,7 @@
 				436E720E28D760D400ECBF49 /* SidebarEntryCellView.xib */,
 				4314EDF728D85E0E00431770 /* SidebarGroupCellView.swift */,
 				4314EDF528D85DD800431770 /* SidebarGroupCellView.xib */,
+				43EE0EDE299BD276001A973A /* SidebarOptionsForm.swift */,
 				431C697E28F2C1A70082986A /* StringExtensions.swift */,
 				4396EAE02905B0D200A15D25 /* Tabs.swift */,
 				43453F3C291505A6000CE90E /* Timed.swift */,
@@ -526,6 +529,7 @@
 				431C697F28F2C1A70082986A /* StringExtensions.swift in Sources */,
 				436E720228D759F400ECBF49 /* WorkspaceSidebarViewController.swift in Sources */,
 				43804AB728D1A014002880FE /* ConnectionTableCellView.swift in Sources */,
+				43EE0EDF299BD276001A973A /* SidebarOptionsForm.swift in Sources */,
 				437669F22986B10B00307CFE /* TopicRecordsOptionsForm.swift in Sources */,
 				43E64A082928F2BF00FDBF29 /* ScriptWindowController.swift in Sources */,
 				436E720628D75B0500ECBF49 /* WorkspaceDetailViewController.swift in Sources */,

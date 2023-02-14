@@ -130,8 +130,10 @@ fileprivate struct GeneralView: View {
 fileprivate struct ConnectionsView: View {
   @State private var connections = Error.wait(Backend.shared.getConnections()) ?? []
   @State private var selectedId: UVarint??
-  @State private var optionsKey: String?
-  @State private var options: TopicRecordsOptions?
+  @State private var sidebarOptionsKey: String?
+  @State private var sidebarOptions: SidebarOptions?
+  @State private var topicRecordsOptionsKey: String?
+  @State private var topicRecordsOptions: TopicRecordsOptions?
 
   var body: some View {
     HStack(alignment: .top) {
@@ -142,21 +144,43 @@ fileprivate struct ConnectionsView: View {
       .frame(width: 200)
       .onChange(of: selectedId) { id in
         guard let connection = connections.first(where: { $0.id == id }) else {
-          optionsKey = nil
-          options = nil
+          sidebarOptionsKey = nil
+          sidebarOptions = nil
+          topicRecordsOptionsKey = nil
+          topicRecordsOptions = nil
           return
         }
 
-        optionsKey = "Franz:\(connection.name):TopicRecordsOptions"
-        options = Defaults.shared.get(codable: optionsKey!) ?? TopicRecordsOptions()
+        let optionsRoot = "Franz:\(connection.name)"
+
+        sidebarOptionsKey = "\(optionsRoot):SidebarOptions"
+        sidebarOptions = Defaults.shared.get(codable: sidebarOptionsKey!) ?? SidebarOptions()
+        topicRecordsOptionsKey = "\(optionsRoot):TopicRecordsOptions"
+        topicRecordsOptions = Defaults.shared.get(codable: topicRecordsOptionsKey!) ?? TopicRecordsOptions()
       }
       VStack {
-        if let optionsKey, let options {
-          GroupBox("Defaults") {
-            TopicRecordsOptionsForm(model: options) {
-              try? Defaults.shared.set(codable: options, forKey: optionsKey)
+        if let sidebarOptionsKey, let sidebarOptions,
+           let topicRecordsOptionsKey, let topicRecordsOptions {
+          TabView {
+            VStack {
+              SidebarOptionsForm(model: sidebarOptions) {
+                try? Defaults.shared.set(codable: sidebarOptions, forKey: sidebarOptionsKey)
+              }
+              Spacer()
             }
-            Spacer()
+            .tabItem {
+              Label("Sidebar", systemImage: "sidebar.left")
+            }
+
+            VStack {
+              TopicRecordsOptionsForm(model: topicRecordsOptions) {
+                try? Defaults.shared.set(codable: topicRecordsOptions, forKey: topicRecordsOptionsKey)
+              }
+              Spacer()
+            }
+            .tabItem {
+              Label("Defaults", systemImage: "gearshape")
+            }
           }
         } else {
           VStack {

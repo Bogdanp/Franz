@@ -100,6 +100,8 @@ class WorkspaceSidebarViewController: NSViewController {
       }
     }
 
+    let options = Defaults.shared.get(codable: "Franz:\(conn.name):SidebarOptions") ?? SidebarOptions()
+
     entries.append(SidebarEntry(
       withKind: .group,
       label: "Topics",
@@ -107,14 +109,21 @@ class WorkspaceSidebarViewController: NSViewController {
       andCollapsed: state.groupCollapsedStates[.topics] ?? false
     ))
     for t in metadata.topics {
-      if let e = oldTopics[t.name] {
-        e.data = t
-        e.count = "\(t.partitions.count)"
-        entries.append(e)
-      } else {
-        let e = SidebarEntry(withKind: .topic, label: t.name, count: "\(t.partitions.count)", andData: t)
-        entries.append(e)
+      var e: SidebarEntry = oldTopics[t.name] ?? SidebarEntry(withKind: .topic, label: t.name)
+      e.data = t
+      switch options.topicStat {
+      case .none:
+        e.count = nil
+      case .partitionCount:
+        e.count = format(stat: Int64(t.partitions.count))
+      case .minLag:
+        e.count = format(stat: t.stats.minLag)
+      case .maxLag:
+        e.count = format(stat: t.stats.maxLag)
+      case .sumLag:
+        e.count = format(stat: t.stats.sumLag)
       }
+      entries.append(e)
     }
 
     entries.append(SidebarEntry(
@@ -124,13 +133,19 @@ class WorkspaceSidebarViewController: NSViewController {
       andCollapsed: state.groupCollapsedStates[.consumerGroups] ?? false
     ))
     for g in metadata.groups {
-      if let e = oldConsumerGroups[g.id] {
-        e.data = g
-        entries.append(e)
-      } else {
-        let e = SidebarEntry(withKind: .consumerGroup, label: g.id, andData: g)
-        entries.append(e)
+      var e = oldConsumerGroups[g.id] ?? SidebarEntry(withKind: .consumerGroup, label: g.id)
+      e.data = g
+      switch options.groupStat {
+      case .none:
+        e.count = nil
+      case .minLag:
+        e.count = format(stat: g.stats.minLag)
+      case .maxLag:
+        e.count = format(stat: g.stats.maxLag)
+      case .sumLag:
+        e.count = format(stat: g.stats.sumLag)
       }
+      entries.append(e)
     }
 
     if conn?.schemaRegistryId != nil {
@@ -470,4 +485,16 @@ extension WorkspaceSidebarViewController: SidebarGroupCellViewDelegate {
 // MARK: - WorkspaceSidebarState
 struct WorkspaceSidebarState: Codable {
   var groupCollapsedStates = [SidebarGroup: Bool]()
+}
+
+// MARK: - format
+fileprivate func format(stat amount: Int64) -> String {
+  if amount >= 1_000_000_000 {
+    return "\(amount / 1_000_000_000)B"
+  } else if amount >= 1_000_000 {
+    return "\(amount / 1_000_000)M"
+  } else if amount >= 1_000 {
+    return "\(amount / 1_000)K"
+  }
+  return "\(amount)"
 }

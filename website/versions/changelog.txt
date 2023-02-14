@@ -1,3 +1,12 @@
+# 2023.03.03 (Build 6)
+## Added
+
+* Support for configuring per-connection defaults from Preferences.
+
+## Changed
+
+* Total group lag is now displayed in the Workspace sidebar.
+
 # 2023.01.20 (Build 5)
 ## Added
 
