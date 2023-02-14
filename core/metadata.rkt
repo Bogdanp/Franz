@@ -33,6 +33,8 @@
  update-schema-registry!
  delete-schema-registry!
 
+ is-license-valid
+ get-trial-deadline
  reset-trial-deadline!
 
  get-buid)

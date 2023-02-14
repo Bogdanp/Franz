@@ -45,6 +45,7 @@
   (define stop
     (parameterize ([current-connection (make-database database-path)])
       (migrate!)
+      (maybe-adjust-trial-deadline)
       (parameterize ([http:current-user-agent (make-user-agent)])
         (serve in-fd out-fd))))
   (with-handlers ([exn:break? void])
@@ -63,3 +64,12 @@
           (version)
           (os-version)
           (get-buid)))
+
+(define (maybe-adjust-trial-deadline)
+  (unless (is-license-valid)
+    (define delta
+      (- (current-seconds)
+         (get-trial-deadline)))
+    (when (>= delta (* 30 86400))
+      (define d (seconds->date (+ (current-seconds) (* 30 86400))))
+      (reset-trial-deadline! (date-year d) (date-month d) (date-day d)))))
