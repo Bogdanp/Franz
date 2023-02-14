@@ -122,10 +122,18 @@
                             #:name (k:TopicMetadata-name t)
                             #:partitions (sort parts < #:key TopicPartition-id)
                             #:is-internal (k:TopicMetadata-internal? t))))
+                       (define-values (stats-by-topic stats-by-group)
+                         (compute-stats c topics groups))
+                       (define topics-with-stats
+                         (for/list ([t (in-list topics)])
+                           (set-Topic-stats t (hash-ref stats-by-topic (Topic-name t) make-Stats))))
+                       (define groups-with-stats
+                         (for/list ([g (in-list groups)])
+                           (set-Group-stats g (hash-ref stats-by-group (Group-id g) make-Stats))))
                        (make-Metadata
                         #:brokers (sort brokers < #:key Broker-id)
-                        #:topics (sort topics string<? #:key Topic-name)
-                        #:groups (sort groups string<? #:key Group-id)
+                        #:topics (sort topics-with-stats string<? #:key Topic-name)
+                        #:groups (sort groups-with-stats string<? #:key Group-id)
                         #:schemas (sort (force schemas) string<? #:key sr:Schema-name))))
                     (state-add-req s (req metadata res-ch nack))]
 
@@ -562,6 +570,60 @@
   (findf
    (λ (t) (string=? (k:TopicMetadata-name t) name))
    (k:Metadata-topics (k:client-metadata c))))
+
+(define (compute-stats c topics groups)
+  (define partition-offsets-promise
+    (delay/thread
+     (k:list-offsets c (for*/hash ([t (in-list topics)]
+                                   [p (in-list (Topic-partitions t))])
+                         (define t&p (cons (Topic-name t)
+                                           (TopicPartition-id p)))
+                         (values t&p 'latest)))))
+  (define topics-by-name
+    (for/hash ([t (in-list topics)])
+      (values (Topic-name t) t)))
+  (define topics-by-group
+    (for*/fold ([res (hash)])
+               ([g (in-list (apply k:describe-groups c (map Group-id groups)))]
+                [t (in-list (k:Group-topics g))])
+      (hash-update res (k:Group-id g) (λ (ts) (cons t ts)) null)))
+  (define group-offsets
+    (for/list/concurrent ([(g topics) (in-hash topics-by-group)])
+      (define topics&partitions
+        (for*/hash ([name (in-list topics)]
+                    [t (in-value (hash-ref topics-by-name name #f))]
+                    #:when t)
+          (values name (map TopicPartition-id (Topic-partitions t)))))
+      (and (not (hash-empty? topics&partitions))
+           (cons g (k:fetch-offsets c g topics&partitions)))))
+  (define partition-offsets
+    (force partition-offsets-promise))
+  (for*/fold ([stats-by-topic (hash)]
+              [stats-by-group (hash)])
+             ([pair (in-list group-offsets)]
+              #:when pair
+              [g (in-value (car pair))]
+              [r (in-value (cdr pair))]
+              [(t gos) (in-hash (k:GroupOffsets-topics r))]
+              [go (in-list gos)]
+              #:when (>= (k:GroupPartitionOffset-offset go) 0)
+              [po (in-value (hash-ref partition-offsets (cons t (k:GroupPartitionOffset-id go)) #f))]
+              #:when (and po (>= (k:PartitionOffset-offset po) 0)))
+    (define lag
+      (max 0 (- (k:PartitionOffset-offset po)
+                (k:GroupPartitionOffset-offset go))))
+    (values
+     (hash-update stats-by-topic t (λ (s) (Stats+ s lag)) make-Stats)
+     (hash-update stats-by-group g (λ (s) (Stats+ s lag)) make-Stats))))
+
+(define (Stats+ s lag)
+  (define min-lag (Stats-min-lag s))
+  (define max-lag (Stats-max-lag s))
+  (define sum-lag (Stats-sum-lag s))
+  (make-Stats
+   #:min-lag (min (if (< min-lag 0) lag min-lag) lag)
+   #:max-lag (max max-lag lag)
+   #:sum-lag (+ sum-lag lag)))
 
 
 ;; tests ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

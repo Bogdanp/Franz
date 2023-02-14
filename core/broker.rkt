@@ -7,6 +7,7 @@
 (provide
  (record-out Broker)
  (record-out TopicPartition)
+ (record-out Stats)
  (record-out Topic)
  (record-out Group)
  (record-out Metadata)
@@ -23,13 +24,20 @@
 (define-record TopicPartition
   [id : UVarint #:contract exact-nonnegative-integer?])
 
+(define-record Stats
+  [(min-lag -1) : Varint]
+  [(max-lag 0) : Varint]
+  [(sum-lag 0) : Varint])
+
 (define-record Topic
   [name : String]
   [partitions : (Listof TopicPartition)]
-  [(is-internal #f) : Bool])
+  [(is-internal #f) : Bool]
+  [(stats (make-Stats)) : Stats])
 
 (define-record Group
-  [id : String])
+  [id : String]
+  [(stats (make-Stats)) : Stats])
 
 (define-record Metadata
   [brokers : (Listof Broker)]

@@ -335,21 +335,26 @@ public struct ConnectionDetails: Readable, Writable {
 
 public struct Group: Readable, Writable {
   public let id: String
+  public let stats: Stats
 
   public init(
-    id: String
+    id: String,
+    stats: Stats
   ) {
     self.id = id
+    self.stats = stats
   }
 
   public static func read(from inp: InputPort, using buf: inout Data) -> Group {
     return Group(
-      id: String.read(from: inp, using: &buf)
+      id: String.read(from: inp, using: &buf),
+      stats: Stats.read(from: inp, using: &buf)
     )
   }
 
   public func write(to out: OutputPort) {
     id.write(to: out)
+    stats.write(to: out)
   }
 }
 
@@ -683,6 +688,36 @@ public struct SchemaRegistry: Readable, Writable {
   }
 }
 
+public struct Stats: Readable, Writable {
+  public let minLag: Varint
+  public let maxLag: Varint
+  public let sumLag: Varint
+
+  public init(
+    minLag: Varint,
+    maxLag: Varint,
+    sumLag: Varint
+  ) {
+    self.minLag = minLag
+    self.maxLag = maxLag
+    self.sumLag = sumLag
+  }
+
+  public static func read(from inp: InputPort, using buf: inout Data) -> Stats {
+    return Stats(
+      minLag: Varint.read(from: inp, using: &buf),
+      maxLag: Varint.read(from: inp, using: &buf),
+      sumLag: Varint.read(from: inp, using: &buf)
+    )
+  }
+
+  public func write(to out: OutputPort) {
+    minLag.write(to: out)
+    maxLag.write(to: out)
+    sumLag.write(to: out)
+  }
+}
+
 public struct Token: Readable, Writable {
   public let type: TokenType
   public let span: TokenSpan
@@ -737,22 +772,26 @@ public struct Topic: Readable, Writable {
   public let name: String
   public let partitions: [TopicPartition]
   public let isInternal: Bool
+  public let stats: Stats
 
   public init(
     name: String,
     partitions: [TopicPartition],
-    isInternal: Bool
+    isInternal: Bool,
+    stats: Stats
   ) {
     self.name = name
     self.partitions = partitions
     self.isInternal = isInternal
+    self.stats = stats
   }
 
   public static func read(from inp: InputPort, using buf: inout Data) -> Topic {
     return Topic(
       name: String.read(from: inp, using: &buf),
       partitions: [TopicPartition].read(from: inp, using: &buf),
-      isInternal: Bool.read(from: inp, using: &buf)
+      isInternal: Bool.read(from: inp, using: &buf),
+      stats: Stats.read(from: inp, using: &buf)
     )
   }
 
@@ -760,6 +799,7 @@ public struct Topic: Readable, Writable {
     name.write(to: out)
     partitions.write(to: out)
     isInternal.write(to: out)
+    stats.write(to: out)
   }
 }
 
