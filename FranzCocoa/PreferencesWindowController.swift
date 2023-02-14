@@ -225,7 +225,7 @@ fileprivate struct LicenseView: View {
           .font(.largeTitle)
         Text("""
         Your trial has ended.  Please [purchase a license](https://franz.defn.io) \
-        to continue using the software.
+        to continue using Franz.
         """)
         Form {
           TextField("License Key:", text: $license)

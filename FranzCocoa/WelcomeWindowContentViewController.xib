@@ -10,6 +10,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="WelcomeWindowContentViewController" customModule="Franz" customModuleProvider="target">
             <connections>
+                <outlet property="trialButton" destination="rmh-xI-JLK" id="vr6-3Q-YL6"/>
                 <outlet property="versionLabel" destination="dRy-B7-EOO" id="bXP-UJ-5YR"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>
@@ -129,11 +130,25 @@
                         <action selector="didPushNewConnectionButton:" target="-2" id="OC6-wg-ska"/>
                     </connections>
                 </button>
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="rmh-xI-JLK">
+                    <rect key="frame" x="150" y="70" width="160" height="15"/>
+                    <buttonCell key="cell" type="bevel" title="30 Days Remaining in Trial" bezelStyle="rounded" alignment="center" imageScaling="proportionallyDown" inset="2" id="6OL-uY-sC8">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="systemSemibold" size="12"/>
+                        <string key="keyEquivalent">n</string>
+                        <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="didPushTrialButton:" target="-2" id="EdH-NN-o1Q"/>
+                    </connections>
+                </button>
             </subviews>
             <constraints>
+                <constraint firstItem="rmh-xI-JLK" firstAttribute="top" secondItem="ujh-Zs-h45" secondAttribute="bottom" constant="20" symbolic="YES" id="2Hj-qI-r97"/>
                 <constraint firstItem="ujh-Zs-h45" firstAttribute="top" secondItem="dRy-B7-EOO" secondAttribute="bottom" constant="15" id="2z0-uG-Mwm"/>
                 <constraint firstItem="b2Y-Vs-r0i" firstAttribute="centerX" secondItem="Hz6-mo-xeY" secondAttribute="centerX" id="6qx-8g-DiR"/>
                 <constraint firstItem="b2Y-Vs-r0i" firstAttribute="centerY" secondItem="Hz6-mo-xeY" secondAttribute="centerY" id="8Pm-C9-NLO"/>
+                <constraint firstItem="rmh-xI-JLK" firstAttribute="centerX" secondItem="Hz6-mo-xeY" secondAttribute="centerX" id="ES6-o7-wOO"/>
                 <constraint firstItem="dRy-B7-EOO" firstAttribute="centerX" secondItem="Hz6-mo-xeY" secondAttribute="centerX" id="hBU-gb-0ld"/>
                 <constraint firstItem="dRy-B7-EOO" firstAttribute="top" secondItem="b2Y-Vs-r0i" secondAttribute="bottom" constant="5" id="xIT-nY-vKH"/>
             </constraints>

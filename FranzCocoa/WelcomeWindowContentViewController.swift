@@ -3,6 +3,7 @@ import SwiftUI
 
 class WelcomeWindowContentViewController: NSViewController {
   @IBOutlet weak var versionLabel: NSTextField!
+  @IBOutlet weak var trialButton: NSButton!
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -10,6 +11,21 @@ class WelcomeWindowContentViewController: NSViewController {
     let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") ?? "1"
     let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") ?? "Unknown"
     versionLabel.stringValue = "Version \(version) (Build \(build))"
+
+    trialButton.isHidden = true
+    if let valid = Error.wait(Backend.shared.isLicenseValid()), !valid {
+      trialButton.isHidden = false
+      if let deadlineSeconds =  Error.wait(Backend.shared.getTrialDeadline()) {
+        let now = Date()
+        let deadline = Date(timeIntervalSince1970: TimeInterval(Int(deadlineSeconds)))
+        let remaining = Int(deadline.timeIntervalSince(now)) / 86400
+        if remaining <= 0 {
+          trialButton.title = "Trial Expired!"
+        } else {
+          trialButton.title = "\(remaining) Days Remaining in Trial"
+        }
+      }
+    }
   }
 
   func newConnection() {
@@ -44,5 +60,10 @@ class WelcomeWindowContentViewController: NSViewController {
 
   @IBAction func didPushMastodonButton(_ sender: Any) {
     NSWorkspace.shared.open(URL(string: "https://hachyderm.io/@franz_app")!)
+  }
+
+  @IBAction func didPushTrialButton(_ sender: Any) {
+    WindowManager.shared.closeWelcomeWindow()
+    WindowManager.shared.showPreferencesWindow(selectingTab: .license)
   }
 }
