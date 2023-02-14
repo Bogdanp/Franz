@@ -1,7 +1,8 @@
 #lang racket/base
 
 (require ffi/unsafe/nsstring
-         ffi/unsafe/objc)
+         ffi/unsafe/objc
+         racket/format)
 
 (provide
  os-version)
@@ -9,4 +10,4 @@
 (import-class NSProcessInfo)
 
 (define (os-version)
-  (tell #:type _NSString (tell NSProcessInfo processInfo) operatingSystemVersionString))
+  (~a "macOS " (tell #:type _NSString (tell NSProcessInfo processInfo) operatingSystemVersionString)))

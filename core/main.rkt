@@ -27,12 +27,6 @@
 (define-rpc (ping : String)
   "pong")
 
-(define user-agent
-  (format "Franz ~a (Racket ~a; net/http-easy; macOS ~a)"
-          (get-version)
-          (version)
-          (os-version)))
-
 (define (main in-fd out-fd)
   (module-cache-clear!)
   (collect-garbage)
@@ -49,14 +43,23 @@
        (build-application-path "metadata.sqlite3")]))
   (log-franz-debug "database path: ~a" database-path)
   (define stop
-    (parameterize ([http:current-user-agent user-agent]
-                   [current-connection
-                    (sqlite3-connect
-                     #:use-place 'os-thread
-                     #:database database-path
-                     #:mode 'create)])
+    (parameterize ([current-connection (make-database database-path)])
       (migrate!)
-      (serve in-fd out-fd)))
+      (parameterize ([http:current-user-agent (make-user-agent)])
+        (serve in-fd out-fd))))
   (with-handlers ([exn:break? void])
     (sync never-evt))
   (stop))
+
+(define (make-database database-path)
+  (sqlite3-connect
+   #:use-place 'os-thread
+   #:database database-path
+   #:mode 'create))
+
+(define (make-user-agent)
+  (format "Franz ~a (Racket ~a; ~a; ~a)"
+          (get-version)
+          (version)
+          (os-version)
+          (get-buid)))

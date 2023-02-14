@@ -1,6 +1,7 @@
 #lang racket/base
 
 (require (for-syntax racket/base)
+         buid
          db
          deta
          noise/backend
@@ -32,7 +33,9 @@
  update-schema-registry!
  delete-schema-registry!
 
- reset-trial-deadline!)
+ reset-trial-deadline!
+
+ get-buid)
 
 (define-logger metadata)
 
@@ -289,6 +292,9 @@
   (and (parse-license key)
        (put-metadata! 'license key)
        #t))
+
+(define (get-buid)
+  (get-metadata 'buid (lambda () (buid))))
 
 (module+ test
   (test-case "get-trial-deadline"
