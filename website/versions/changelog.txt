@@ -5,7 +5,8 @@
 
 ## Changed
 
-* Total group lag is now displayed in the Workspace sidebar.
+* Total group lag is now displayed in the Workspace sidebar.  It's
+  possible to customize these stats from the Preferences Window.
 
 # 2023.01.20 (Build 5)
 ## Added
