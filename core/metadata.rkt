@@ -33,8 +33,7 @@
  update-schema-registry!
  delete-schema-registry!
 
- is-license-valid
- get-trial-deadline
+ maybe-adjust-trial-deadline
  reset-trial-deadline!
 
  get-buid)
@@ -230,6 +229,9 @@
 
 ;; license ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(define trial-duration (* 30 86400))
+(define trial-grace-period (* 30 86400))
+
 (define-schema metadata
   #:table "metadata"
   ([key symbol/f #:primary-key]
@@ -283,7 +285,7 @@
     'trial-deadline
     (lambda ()
       (number->string
-       (+ (current-seconds) (* 30 86400)))))))
+       (+ (current-seconds) trial-duration))))))
 
 (define-rpc (get-license : (Optional String))
   (and~> (get-metadata 'license)
@@ -295,8 +297,14 @@
        (put-metadata! 'license key)
        #t))
 
-(define (get-buid)
-  (get-metadata 'buid (lambda () (buid))))
+(define (maybe-adjust-trial-deadline)
+  (unless (is-license-valid)
+    (define delta
+      (- (current-seconds)
+         (get-trial-deadline)))
+    (when (>= delta trial-grace-period)
+      (define d (seconds->date (+ (current-seconds) trial-duration)))
+      (reset-trial-deadline! (date-year d) (date-month d) (date-day d)))))
 
 (module+ test
   (test-case "get-trial-deadline"
@@ -328,4 +336,25 @@
          (check-not-false (activate-license key))
          (define the-license (get-license))
          (check-not-false the-license)
-         (check-equal? the-license key))))))
+         (check-equal? the-license key)))))
+
+  (test-case "deadline adjustment"
+    (test-case "not necessary"
+      (call-with-test-connection
+       (lambda (_)
+         (define deadline (get-trial-deadline))
+         (maybe-adjust-trial-deadline)
+         (check-equal? deadline (get-trial-deadline)))))
+    (test-case "necessary"
+      (call-with-test-connection
+       (lambda (_)
+         (define d (seconds->date (- (current-seconds) trial-grace-period)))
+         (reset-trial-deadline! (date-year d) (date-month d) (date-day d))
+         (maybe-adjust-trial-deadline)
+         (check-true (> (get-trial-deadline) (current-seconds))))))))
+
+
+;; buids ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define (get-buid)
+  (get-metadata 'buid (lambda () (buid))))

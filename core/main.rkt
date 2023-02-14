@@ -64,12 +64,3 @@
           (version)
           (os-version)
           (get-buid)))
-
-(define (maybe-adjust-trial-deadline)
-  (unless (is-license-valid)
-    (define delta
-      (- (current-seconds)
-         (get-trial-deadline)))
-    (when (>= delta (* 30 86400))
-      (define d (seconds->date (+ (current-seconds) (* 30 86400))))
-      (reset-trial-deadline! (date-year d) (date-month d) (date-day d)))))
