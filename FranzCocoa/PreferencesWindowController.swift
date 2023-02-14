@@ -179,7 +179,7 @@ fileprivate struct ConnectionsView: View {
               Spacer()
             }
             .tabItem {
-              Label("Defaults", systemImage: "gearshape")
+              Label("Iterators", systemImage: "gearshape")
             }
           }
         } else {
