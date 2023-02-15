@@ -27,9 +27,9 @@
                     </textFieldCell>
                 </textField>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="gk0-a1-1Ex">
-                    <rect key="frame" x="241" y="9" width="36" height="14"/>
+                    <rect key="frame" x="225" y="9" width="52" height="14"/>
                     <constraints>
-                        <constraint firstAttribute="width" constant="32" id="me6-rB-yjG"/>
+                        <constraint firstAttribute="width" constant="48" id="me6-rB-yjG"/>
                     </constraints>
                     <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="12" id="mwW-kM-o77">
                         <font key="font" metaFont="smallSystem"/>
