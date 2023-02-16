@@ -15,7 +15,8 @@
  fetch-release)
 
 (define versions-service-url
-  "https://franz.defn.io/versions/")
+  (or (getenv "FRANZ_VERSIONS_SERVICE_URL")
+      "https://franz.defn.io/versions/"))
 
 (define-record Release
   [arch : Symbol]
