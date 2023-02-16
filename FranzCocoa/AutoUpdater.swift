@@ -54,7 +54,7 @@ class AutoUpdater {
   ) {
     Backend.shared.fetchRelease(release: release).onComplete { path in
       let downloadsURL = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask)[0]
-      let srcURL = URL(string: path)!
+      let srcURL = URL(fileURLWithPath: path)
       let dstURL = downloadsURL.appendingPathComponent("Franz \(release.version).dmg")
       do {
         try FileManager.default.copyItem(at: srcURL, to: dstURL)
