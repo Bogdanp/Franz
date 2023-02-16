@@ -35,7 +35,12 @@ class AutoUpdater {
       andVersion: currentVersion
     ))
     if immediate {
-      Error.wait(Backend.shared.checkForUpdates())
+      Backend.shared.checkForUpdates().onComplete { update in
+        guard let update else { return }
+        DispatchQueue.main.async {
+          handler(update.changelog, update.release)
+        }
+      }
     }
   }
 
