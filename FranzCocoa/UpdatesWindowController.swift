@@ -3,6 +3,10 @@ import SwiftUI
 
 class UpdatesWindowController: NSWindowController {
   override func showWindow(_ sender: Any?) {
+    guard window == nil else {
+      window?.makeKeyAndOrderFront(self)
+      return
+    }
     window = NSWindow(
       contentRect: NSRect(x: 0, y: 0, width: 640, height: 600),
       styleMask: [.closable, .titled],

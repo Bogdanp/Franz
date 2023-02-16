@@ -2,6 +2,12 @@ import AppKit
 import Dispatch
 import Foundation
 import NoiseSerde
+import OSLog
+
+fileprivate let logger = Logger(
+  subsystem: Bundle.main.bundleIdentifier!,
+  category: "AutoUpdater"
+)
 
 enum UpdateResult {
   case ok
@@ -26,6 +32,7 @@ class AutoUpdater {
   ) {
     Error.wait(Backend.shared.installCallback(announceUpdate: { changelog, release in
       DispatchQueue.main.async {
+        logger.debug("executing announceUpdate handler")
         handler(changelog, release)
       }
     }))
