@@ -85,6 +85,11 @@
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
+            key = "FRANZ_VERSIONS_SERVICE_URL"
+            value = "http://local.franz/versions/"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
             key = "FRANZ_DEBUG"
             value = "yes"
             isEnabled = "YES">
