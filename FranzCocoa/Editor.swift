@@ -99,7 +99,7 @@ class EditorViewController: NSViewController {
   private func scheduleHighlight() {
     highlightPending = true
     if timer == nil {
-      timer = Timer.scheduledTimer(withTimeInterval: 1.0/30, repeats: true) { [weak self] _ in
+      timer = Timer.scheduledTimer(withTimeInterval: 1.0/60, repeats: true) { [weak self] _ in
         guard let self else { return }
         DispatchQueue.main.async {
           if self.highlightPending {
