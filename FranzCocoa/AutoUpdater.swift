@@ -10,7 +10,7 @@ fileprivate let logger = Logger(
 )
 
 enum UpdateResult {
-  case ok
+  case ok(URL)
   case error(String)
 }
 
@@ -70,8 +70,7 @@ class AutoUpdater {
         return
       }
 
-      NSWorkspace.shared.open(dstURL)
-      handler(.ok)
+      handler(.ok(dstURL))
     }
   }
 

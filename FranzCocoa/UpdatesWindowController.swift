@@ -40,12 +40,11 @@ fileprivate class UpdatesStore: ObservableObject {
         }
 
         switch res {
-        case .ok:
+        case .ok(let url):
+          NSWorkspace.shared.open(url)
           NSApp.terminate(nil)
         case .error(let message):
-          let alert = NSAlert()
-          alert.messageText = message
-          alert.runModal()
+          Error.alert(withError: message)
         }
       }
     }
