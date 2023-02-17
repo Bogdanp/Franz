@@ -33,7 +33,8 @@
                      (lambda (e)
                        (log-auto-updater-error
                         "failed to check for updates: ~a"
-                        (exn-message e)))])
+                        (exn-message e))
+                       (values #f #f))])
       (define release (get-latest-release arch))
       (if (and release (string>? (Release-version release) sw-version))
           (values (get-changelog) release)
