@@ -21,6 +21,7 @@ class EditorViewController: NSViewController {
   var delegate: EditorViewControllerDelegate?
 
   private var timer: Timer?
+  private var highlightPending = true
   private var observation: NSKeyValueObservation?
   fileprivate var theme: Theme = {
     return darkModeOn() ? DarkTheme() as Theme : LightTheme() as Theme
@@ -96,10 +97,16 @@ class EditorViewController: NSViewController {
   }
 
   private func scheduleHighlight() {
-    timer?.invalidate()
-    timer = Timer.scheduledTimer(withTimeInterval: 1.0/30, repeats: false) { [weak self] _ in
-      DispatchQueue.main.async {
-        self?.highlight()
+    highlightPending = true
+    if timer == nil {
+      timer = Timer.scheduledTimer(withTimeInterval: 1.0/30, repeats: true) { [weak self] _ in
+        guard let self else { return }
+        DispatchQueue.main.async {
+          if self.highlightPending {
+            self.highlight()
+            self.highlightPending = false
+          }
+        }
       }
     }
   }
