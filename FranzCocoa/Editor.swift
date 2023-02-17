@@ -176,6 +176,8 @@ extension EditorViewController: NSTextViewDelegate {
 
 // MARK: - EditorTextView
 class EditorTextView: NSTextView {
+  private var regexps = [String: NSRegularExpression]()
+
   override func keyDown(with event: NSEvent) {
     if event.keyCode == 36 { // RET
       insertNewlineAndIndent()
@@ -392,13 +394,17 @@ extension EditorTextView {
 
   private func match(regexp re: String, in range: NSRange) -> NSTextCheckingResult? {
     guard let str = textStorage?.string else { return nil }
-    do {
-      let re = try NSRegularExpression(pattern: re)
-      return re.firstMatch(in: str, range: range)
-    } catch {
-      logger.error("invalid re. during match: \(error)")
-      return nil
+    var regexp = regexps[re]
+    if regexp == nil {
+      do {
+        regexp = try NSRegularExpression(pattern: re)
+        regexps[re] = regexp
+      } catch {
+        logger.error("invalid re. during match: \(error)")
+        return nil
+      }
     }
+    return regexp!.firstMatch(in: str, range: range)
   }
 }
 
