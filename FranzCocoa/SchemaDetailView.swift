@@ -68,7 +68,7 @@ struct SchemaDetailView: View {
             case .schema:
               Editor(
                 code: code,
-                language: .json,
+                language: schema.type == .protobuf ? .protobuf : .json,
                 border: .bezelBorder,
                 isEditable: false
               )

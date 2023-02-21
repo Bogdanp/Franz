@@ -92,6 +92,7 @@ public enum IteratorOffset: Readable, Writable {
 public enum Lexer: Readable, Writable {
   case json
   case lua
+  case protobuf
 
   public static func read(from inp: InputPort, using buf: inout Data) -> Lexer {
     let tag = UVarint.read(from: inp, using: &buf)
@@ -100,6 +101,8 @@ public enum Lexer: Readable, Writable {
       return .json
     case 0x0001:
       return .lua
+    case 0x0002:
+      return .protobuf
     default:
       preconditionFailure("Lexer: unexpected tag \(tag)")
     }
@@ -111,6 +114,8 @@ public enum Lexer: Readable, Writable {
       UVarint(0x0000).write(to: out)
     case .lua:
       UVarint(0x0001).write(to: out)
+    case .protobuf:
+      UVarint(0x0002).write(to: out)
     }
   }
 }

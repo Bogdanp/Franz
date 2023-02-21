@@ -119,6 +119,8 @@ class EditorViewController: NSViewController {
       return Error.wait(Backend.shared.lex(code, using: .json)) ?? []
     case .lua:
       return Error.wait(Backend.shared.lex(code, using: .lua)) ?? []
+    case .protobuf:
+      return Error.wait(Backend.shared.lex(code, using: .protobuf)) ?? []
     }
   }
 
@@ -435,6 +437,7 @@ enum Language {
   case plain
   case json
   case lua
+  case protobuf
 }
 
 // MARK: - Theme
