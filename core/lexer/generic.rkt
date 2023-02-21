@@ -47,7 +47,8 @@
 
 (define-enum Lexer
   [json]
-  [lua])
+  [lua]
+  [protobuf])
 
 (define-generics lexer
   {lexer-take lexer})

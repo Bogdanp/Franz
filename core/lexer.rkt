@@ -7,7 +7,8 @@
          racket/port
          "lexer/generic.rkt"
          "lexer/json.rkt"
-         "lexer/lua.rkt")
+         "lexer/lua.rkt"
+         "lexer/protobuf.rkt")
 
 (define-rpc (pp-json [code : String] : String)
   (call-with-output-string
@@ -21,9 +22,11 @@
   (define in
     (open-input-string code))
   (define l
-    (match lexer
-      [(Lexer.json) (make-json-lexer in)]
-      [(Lexer.lua) (make-lua-lexer in)]))
+    ((match lexer
+       [(Lexer.json)     make-json-lexer]
+       [(Lexer.lua)      make-lua-lexer]
+       [(Lexer.protobuf) make-protobuf-lexer])
+     in))
   (let loop ([tokens null])
     (define token
       (let retry ()
