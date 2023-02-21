@@ -1,13 +1,15 @@
 #lang racket/base
 
-(require avro
+(require (prefix-in avro: avro)
          (prefix-in impl: confluent/schema-registry)
          json
          kafka/consumer
+         (prefix-in protobuf: protocol-buffers)
          racket/match
          racket/port
          "generic.rkt"
-         "schema.rkt")
+         "schema.rkt"
+         "varint.rkt")
 
 (provide
  make-confluent-registry)
@@ -53,6 +55,7 @@
            (hash-ref! codecs id (λ () (get-codec client id))))
          (proc bs))))
 
+;; https://docs.confluent.io/platform/current/schema-registry/serdes-develop/index.html#wire-format
 (define (get-codec client id)
   (with-handlers ([(λ (e)
                      (and (impl:exn:fail:schema-registry:client? e)
@@ -64,14 +67,54 @@
     (case (impl:Schema-type schema)
       [(avro)
        (define c
-         (make-codec (impl:Schema-schema schema)))
+         (avro:make-codec (impl:Schema-schema schema)))
        (λ (bs)
          (call-with-input-bytes bs
            (lambda (in)
              (void (read-bytes 5 in))
-             (jsexpr->bytes (codec-read c in)))))]
+             (jsexpr->bytes (avro:codec-read c in)))))]
       [(json)
        (λ (bs)
          (subbytes bs 5))]
+      [(protobuf)
+       (define mod
+         (call-with-input-string (impl:Schema-schema schema)
+           protobuf:read-protobuf))
+       (λ (bs)
+         (call-with-input-bytes bs
+           (lambda (in)
+             (void (read-bytes 5 in))
+             (define msg
+               (let ([len (read-varint in)])
+                 (cond
+                   [(zero? len)
+                    (car (protobuf:mod-messages mod))]
+                   [else
+                    (let loop ([len len] [thing mod])
+                      (cond
+                        [(zero? len) thing]
+                        [else
+                         (define messages
+                           ((cond
+                              [(protobuf:mod? thing) protobuf:mod-messages mod]
+                              [(protobuf:message? thing) protobuf:message-messages]
+                              [else (error 'decode "unreachable")])
+                            thing))
+                         (loop (sub1 len) (list-ref messages (read-varint in)))]))])))
+             ;; Protocol buffer map keys can be things other than
+             ;; symbols, so we have to convert those values into
+             ;; jsexprs.
+             (jsexpr->bytes
+              (let loop ([v (protobuf:read-message msg in)])
+                (cond
+                  [(hash? v)
+                   (if (hash-eq? v)
+                       (for/hasheq ([(k v) (in-hash v)])
+                         (values k (loop v)))
+                       (for/list ([(k v) (in-hash v)])
+                         (hasheq 'key k 'value v)))]
+                  [(list? v)
+                   (map loop v)]
+                  [else v]))))))]
       [else
        (error 'decode "unsupported schema type: ~a" (impl:Schema-type schema))])))
