@@ -1,6 +1,7 @@
-# 2023.03.10 (Build 7)
+# 2023.06.01 (Build 7)
 ## Added
 
+* Support for Snappy decompression.
 * Schema Registry support for Protocol Buffers.
 
 # 2023.02.17 (Build 6)

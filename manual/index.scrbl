@@ -311,8 +311,8 @@ at @tt{bogdan@"@"defn.io} and let me know.
 
 @subsection{Compression}
 
-The only compression formats currently supported are @tt{gzip} and
-@tt{lz4}.
+The only compression formats currently supported are @tt{gzip},
+@tt{lz4} and @tt{snappy}.
 
 @subsection[#:tag "limitations-schema-registry"]{Schema Registry}
 
