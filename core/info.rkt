@@ -11,7 +11,7 @@
                ["deta-lib" #:version "0.11"]
                "http-easy-lib"
                ["json-lexer-lib" #:version "0.1.1"]
-               ["kafka-lib" #:version "0.7"]
+               ["kafka-lib" #:version "0.8"]
                "libsqlite3"
                ["lua-lib" #:version "0.1.2"]
                "messagepack-lib"
