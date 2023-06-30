@@ -2,9 +2,15 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
+	"log"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
+)
+
+var (
+	formatFlag = flag.String("format", "lz4", "the compression format")
 )
 
 const N = 1000
@@ -16,9 +22,25 @@ type person struct {
 }
 
 func main() {
+	flag.Parse()
+	var topic, codec string
+	switch *formatFlag {
+	case "lz4":
+		topic = "lz4-data"
+		codec = "lz4"
+	case "snappy":
+		topic = "snappy-data"
+		codec = "snappy"
+	case "zstandard":
+		topic = "zstd-data"
+		codec = "zstd"
+	default:
+		log.Fatalf("error: unsupported --format: %s", *formatFlag)
+	}
+
 	p, err := kafka.NewProducer(&kafka.ConfigMap{
 		"bootstrap.servers": "127.0.0.1",
-		"compression.codec": "lz4",
+		"compression.codec": codec,
 	})
 	if err != nil {
 		panic(err)
@@ -36,7 +58,6 @@ func main() {
 		}
 	}()
 
-	topic := "lz4-data"
 	value, err := json.Marshal(person{"Bogdan", 30})
 	if err != nil {
 		panic(err)
