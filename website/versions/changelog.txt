@@ -1,7 +1,9 @@
-# 2023.06.01 (Build 7)
+# 2023.07.14 (Build 7)
 ## Added
 
+* Support for LZ4 decompression.
 * Support for Snappy decompression.
+* Support for Zstandard decompression.
 * Schema Registry support for Protocol Buffers.
 
 # 2023.02.17 (Build 6)
