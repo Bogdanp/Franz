@@ -13,6 +13,7 @@
                ["json-lexer-lib" #:version "0.1.1"]
                ["kafka-lib" #:version "0.8"]
                "libsqlite3"
+               "libzstd"
                ["lua-lib" #:version "0.1.2"]
                "messagepack-lib"
                ["noise-serde-lib" #:version "0.4"]
