@@ -410,7 +410,10 @@ extension WorkspaceWindowController: WorkspaceDetailDelegate {
 
   func request(topicNamed name: String) {
     if let metadata, metadata.topics.contains(where: { $0.name == name }) {
-      sidebarCtl.selectEntry(withKind: .topic, andLabel: name)
+      if !sidebarCtl.selectEntry(withKind: .topic, andLabel: name) {
+        sidebarCtl.clearFilter()
+        sidebarCtl.selectEntry(withKind: .topic, andLabel: name)
+      }
     } else {
       loadMetadata(andSelectTopic: name)
     }

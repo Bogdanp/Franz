@@ -109,7 +109,7 @@ class WorkspaceSidebarViewController: NSViewController {
       andCollapsed: state.groupCollapsedStates[.topics] ?? false
     ))
     for t in metadata.topics {
-      var e: SidebarEntry = oldTopics[t.name] ?? SidebarEntry(withKind: .topic, label: t.name)
+      let e: SidebarEntry = oldTopics[t.name] ?? SidebarEntry(withKind: .topic, label: t.name)
       e.data = t
       switch options.topicStat {
       case .none:
@@ -133,7 +133,7 @@ class WorkspaceSidebarViewController: NSViewController {
       andCollapsed: state.groupCollapsedStates[.consumerGroups] ?? false
     ))
     for g in metadata.groups {
-      var e = oldConsumerGroups[g.id] ?? SidebarEntry(withKind: .consumerGroup, label: g.id)
+      let e = oldConsumerGroups[g.id] ?? SidebarEntry(withKind: .consumerGroup, label: g.id)
       e.data = g
       switch options.groupStat {
       case .none:
@@ -239,13 +239,20 @@ class WorkspaceSidebarViewController: NSViewController {
     }
   }
 
-  func selectEntry(withKind kind: SidebarEntryKind, andLabel label: String) {
+  func clearFilter() {
+    filterField.stringValue = ""
+    updateEntries()
+  }
+
+  @discardableResult
+  func selectEntry(withKind kind: SidebarEntryKind, andLabel label: String) -> Bool {
     for (i, e) in filteredEntries.enumerated() {
       if e.kind == kind && e.label == label {
         tableView.selectRowIndexes([i], byExtendingSelection: false)
-        return
+        return true
       }
     }
+    return false
   }
 
   @IBAction func didPressNewTopicButton(_ sender: Any) {
