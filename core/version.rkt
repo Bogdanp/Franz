@@ -4,7 +4,7 @@
                      setup/getinfo))
 
 (provide
- get-version)
+ franz-version)
 
 (begin-for-syntax
   (define (info-ref id)
@@ -12,3 +12,6 @@
 
 (define-syntax (get-version stx)
   (datum->syntax stx (info-ref 'version)))
+
+(define franz-version
+  (get-version))

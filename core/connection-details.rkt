@@ -159,3 +159,8 @@
        (when (< b 16)
          (write-string "0" out))
        (write-string (number->string b 16) out)))))
+
+(module+ rpc
+  (provide
+   get-connections
+   save-connection))

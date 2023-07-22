@@ -22,12 +22,13 @@
          "workspace.rkt")
 
 (provide
+ call-with-main-parameterization
  main)
 
 (define-rpc (ping : String)
   "pong")
 
-(define (main in-fd out-fd)
+(define (call-with-main-parameterization proc)
   (module-cache-clear!)
   (collect-garbage)
   (define database-path
@@ -42,15 +43,20 @@
       [else
        (build-application-path "metadata.sqlite3")]))
   (log-franz-debug "database path: ~a" database-path)
-  (define stop
-    (parameterize ([current-connection (make-database database-path)])
-      (migrate!)
-      (maybe-adjust-trial-deadline)
-      (parameterize ([http:current-user-agent (make-user-agent)])
-        (serve in-fd out-fd))))
-  (with-handlers ([exn:break? void])
-    (sync never-evt))
-  (stop))
+  (parameterize ([current-connection (make-database database-path)])
+    (migrate!)
+    (maybe-adjust-trial-deadline)
+    (parameterize ([http:current-user-agent (make-user-agent)])
+      (proc))))
+
+(define (main in-fd out-fd)
+  (call-with-main-parameterization
+   (lambda ()
+     (define stop
+       (serve in-fd out-fd))
+     (with-handlers ([exn:break? void])
+       (sync never-evt))
+     (stop))))
 
 (define (make-database database-path)
   (sqlite3-connect
@@ -60,7 +66,7 @@
 
 (define (make-user-agent)
   (format "Franz ~a (Racket ~a; ~a; ~a)"
-          (get-version)
+          franz-version
           (version)
           (os-version)
           (get-buid)))
