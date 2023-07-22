@@ -6,28 +6,40 @@
          "connection-dialog.rkt"
          "welcome-window.rkt")
 
+(define (new-connection-dialog action)
+  (connection-dialog
+   #:title "New Connection"
+   #:save-action (λ (conn close!)
+                   (action conn)
+                   (close!))
+   (make-ConnectionDetails
+    #:name "New Connection")))
+
 (define (main)
-  (call-with-main-parameterization
-   (lambda ()
-     (parameterize ([gui:current-eventspace (gui:make-eventspace)])
-       (define/obs @connections
-         (get-connections))
-       (define the-renderer
-        (render
-         (welcome-window
-          #:new-action (λ ()
-                         (render
-                          (connection-dialog
-                           #:title "New Connection"
-                           #:save-action (λ (conn close!)
-                                           (save-connection conn)
-                                           (@connections . := . (get-connections))
-                                           (close!))
-                           (make-ConnectionDetails
-                            #:name "New Connection"))
-                          the-renderer))
-          @connections)))
-       (void)))))
+  (define/obs @connections
+    (get-connections))
+  (define the-renderer
+    (render
+     (welcome-window
+      #:new-action (λ ()
+                     (render
+                      (new-connection-dialog
+                       (λ (conn)
+                         (save-connection conn)
+                         (@connections . := . (get-connections))))
+                      the-renderer))
+      @connections)))
+  (void))
 
 (module+ main
-  (main))
+  (gui:application-quit-handler
+   (lambda ()
+     (exit 0)))
+
+  (call-with-main-parameterization
+   (lambda ()
+     (define eventspace (gui:make-eventspace))
+     (parameterize ([gui:current-eventspace eventspace])
+       (main))
+     (gui:yield eventspace)
+     (void))))
