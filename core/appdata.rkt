@@ -17,6 +17,12 @@
       "Application Support"
       app-id)]
 
+    [(unix)
+     (build-path
+      (or (getenv "XDG_CONFIG_HOME")
+          (expand-user-path "~/.config"))
+      app-id)]
+
     [else
      (error 'current-application-data-directory "not implemented")]))
 
