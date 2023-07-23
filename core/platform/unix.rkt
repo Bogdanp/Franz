@@ -9,17 +9,16 @@
 ;; https://man.freebsd.org/cgi/man.cgi?query=uname&apropos=0&sektion=2&manpath=FreeBSD%201.1-RELEASE&arch=default&format=html
 
 ;; struct utsname {
-;;  char	 sysname[SYS_NMLN];
-;;  char	 nodename[SYS_NMLN];
-;;  char	 release[SYS_NMLN];
-;;  char	 version[SYS_NMLN];
-;;  char	 machine[SYS_NMLN];
+;;  char sysname[SYS_NMLN];
+;;  char nodename[SYS_NMLN];
+;;  char release[SYS_NMLN];
+;;  char version[SYS_NMLN];
+;;  char machine[SYS_NMLN];
 ;; };
 
-;; In Racket, we don't have access to the SYS_NMLN constant, so we
-;; can't define our own utsname cstruct.  Instead, we allocate a slab
-;; of raw bytes that we pass to uname instead, then parse out the
-;; fields manually.
+;; In Racket, we don't have access to the SYS_NMLN constant, so we can't
+;; define our own utsname cstruct. Instead, we allocate a slab of raw
+;; bytes that we pass to uname, then parse out the fields manually.
 
 (define the-os-version
   (let* ([len (* 1024 1024)]
