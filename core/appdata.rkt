@@ -23,6 +23,12 @@
           (expand-user-path "~/.config"))
       app-id)]
 
+    [(windows)
+     (build-path
+      (or (getenv "APPDATA")
+          (expand-user-path "~/AppData/Roaming"))
+      app-id)]
+
     [else
      (error 'current-application-data-directory "not implemented")]))
 
