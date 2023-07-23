@@ -11,8 +11,9 @@
  system-mono-font)
 
 (define-values (system-font system-mono-font)
-  (case (system-type 'os)
+  (case (system-type 'os*)
     [(macosx) (values "SF Pro Display" "SF Mono")]
+    [(linux) (values "Ubuntu" "Ubuntu Monospace")]
     [else (values "Segoe UI" "Consolas")]))
 
 
