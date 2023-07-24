@@ -2,7 +2,6 @@
 
 (require franz/connection-details
          racket/gui/easy
-         racket/gui/easy/operator
          racket/match
          "combinator.rkt"
          "mixin.rkt"
@@ -21,7 +20,7 @@
   (define-observables
     [@name (ConnectionDetails-name details)]
     [@host (ConnectionDetails-bootstrap-host details)]
-    [@port (number->string (ConnectionDetails-bootstrap-port details))]
+    [@port (ConnectionDetails-bootstrap-port details)]
     [@mechanism (ConnectionDetails-auth-mechanism details)]
     [@username (~optional-str (ConnectionDetails-username details))]
     [@password (~optional-str (ConnectionDetails-password details))]
@@ -41,7 +40,7 @@
     (labeled "Name:" (input @name (drop1 @name:=)))
     (hpanel
      (labeled "Bootstrap Host:" (input @host (drop1 @host:=)))
-     (labeled "Port:" (input @port (drop1 @port:=)) #:width #f))
+     (labeled "Port:" (validated @port (drop1 @port:=) #:valid? valid-port?) #:width #f))
     (labeled
      "Auth Mechanism:"
      (choice
@@ -111,6 +110,10 @@
 
 (define (->optional-str v)
   (if (string=? v "") #f v))
+
+(define (valid-port? v)
+  (define n (string->number v))
+  (and n (>= n 0) (<= n 65535)))
 
 (module+ main
   (render
