@@ -41,5 +41,6 @@
      (define eventspace (gui:make-eventspace))
      (parameterize ([gui:current-eventspace eventspace])
        (main))
-     (gui:yield eventspace)
+     (with-handlers ([exn:break? void])
+       (gui:yield eventspace))
      (void))))
