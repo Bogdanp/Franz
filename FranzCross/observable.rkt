@@ -3,17 +3,34 @@
 (require (for-syntax racket/base
                      racket/syntax
                      syntax/parse)
+         racket/gui/easy
          racket/gui/easy/operator)
 
 (provide
- define-observable-fields)
+ define-observables)
 
-(define-syntax (define-observable-fields stx)
+(define-syntax (define-observables stx)
   (syntax-parse stx
-    [(_ obs-id:id [fld-id:id accessor-expr:expr setter-expr:expr] ...+)
-     #:with (set-fld-id ...) (for/list ([fld-id-stx (in-list (syntax-e #'(fld-id ...)))])
-                               (format-id fld-id-stx "~a:=" fld-id-stx))
+    [(_ [id:id init-expr:expr {~optional setter-expr:expr}] ...+)
+     #:with (peeker-id ...) (for/list ([id-stx (in-list (syntax-e #'(id ...)))])
+                              (format-id id-stx "^~a" id-stx))
+     #:with (setter-id ...) (for/list ([id-stx (in-list (syntax-e #'(id ...)))])
+                              (format-id id-stx "~a:=" id-stx))
      #'(begin
-         (begin
-           (define fld-id (obs-id . ~> . accessor-expr))
-           (define set-fld-id (λ (v) (obs-id . <~ . (λ (o) (setter-expr o v)))))) ...)]))
+         (define/obs id init-expr) ...
+         (define (setter-id v)
+           (id . := . {~? (setter-expr v) v})) ...
+         (define-syntax (peeker-id v)
+           #'(obs-peek id)) ...)]))
+
+(module+ test
+  (require rackunit)
+
+  (define-observables
+    [@host "127.0.0.1"]
+    [@port 80 (λ (s) (or (string->number s) 80))])
+
+  (check-equal? ^@host "127.0.0.1")
+  (check-equal? ^@port 80)
+  (@port:= "9000")
+  (check-equal? ^@port 9000))
