@@ -31,9 +31,9 @@
     (define bs
       (list->bytes
        (cast buf _pointer (_list o _byte len))))
-    (match-define (list* sysname _nodename release _version machine _)
+    (match-define (list* sysname _nodename release _version _machine _)
       (map bytes->string/utf-8 (regexp-split #rx#"\0+" bs)))
-    (begin0 (format "~a Version ~a (~a)" sysname release machine)
+    (begin0 (format "~a Version ~a" sysname release)
       (collect-garbage))))
 
 (define (os-version)
