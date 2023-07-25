@@ -1,6 +1,7 @@
 #lang racket/base
 
-(require franz/connection-details
+(require (for-syntax racket/base)
+         franz/connection-details
          racket/gui/easy
          racket/match
          "combinator.rkt"
@@ -40,7 +41,7 @@
     (labeled "Name:" (input @name (drop1 @name:=)))
     (hpanel
      (labeled "Bootstrap Host:" (input @host (drop1 @host:=)))
-     (labeled "Port:" (validated @port (drop1 @port:=) #:valid? valid-port?) #:width #f))
+     (labeled "Port:" (validated-input @port (drop1 @port:=) #:text->value string->port) #:width #f))
     (labeled
      "Auth Mechanism:"
      (choice
@@ -52,22 +53,19 @@
       #:choice->label ~AuthMechanism
       #:selection @mechanism
       @mechanism:=))
-    (observable-view
-     @mechanism
-     (λ (mechanism)
-       (match mechanism
-         [(or (AuthMechanism.plain)
-              (AuthMechanism.scramSHA256)
-              (AuthMechanism.scramSHA512))
-          (hpanel
-           (labeled "Username:" (input @username (drop1 @username:=)))
-           (labeled "Password:" (password @password (drop1 @password:=)) #:width #f))]
-         [(AuthMechanism.aws)
-          (vpanel
-           (hpanel
-            (labeled "Region:" (input @aws-region (drop1 @aws-region:=)))
-            (labeled "Access Key:" (input @aws-access-key-id (drop1 @aws-access-key-id:=)) #:width #f))
-           (labeled "Secret Key:" (password @password (drop1 @password:=))))])))
+    (match-view @mechanism
+      [(or (AuthMechanism.plain)
+           (AuthMechanism.scramSHA256)
+           (AuthMechanism.scramSHA512))
+       (hpanel
+        (labeled "Username:" (input @username (drop1 @username:=)))
+        (labeled "Password:" (password @password (drop1 @password:=)) #:width #f))]
+      [(AuthMechanism.aws)
+       (vpanel
+        (hpanel
+         (labeled "Region:" (input @aws-region (drop1 @aws-region:=)))
+         (labeled "Access Key:" (input @aws-access-key-id (drop1 @aws-access-key-id:=)) #:width #f))
+        (labeled "Secret Key:" (password @password (drop1 @password:=))))])
     (labeled
      ""
      (checkbox
@@ -78,18 +76,18 @@
      #:alignment '(right center)
      (button
       "Cancel"
-      (λ ()
+      (lambda ()
         (cancel)
         (close!)))
      (button
       #:style '(border)
       save-label
-      (λ ()
+      (lambda ()
         (define saved-details
           (make-ConnectionDetails
            #:name (or (->optional-str ^@name) "Unnamed Connection")
            #:bootstrap-host ^@host
-           #:bootstrap-port (or (string->number ^@port) 9092)
+           #:bootstrap-port ^@port
            #:auth-mechanism ^@mechanism
            #:username (->optional-str ^@username)
            #:password (->optional-str ^@password)
@@ -111,9 +109,9 @@
 (define (->optional-str v)
   (if (string=? v "") #f v))
 
-(define (valid-port? v)
+(define (string->port v)
   (define n (string->number v))
-  (and n (>= n 0) (<= n 65535)))
+  (and n (>= n 0) (<= n 65535) n))
 
 (module+ main
   (render

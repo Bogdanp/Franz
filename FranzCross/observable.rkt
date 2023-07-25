@@ -32,5 +32,7 @@
 
   (check-equal? ^@host "127.0.0.1")
   (check-equal? ^@port 80)
-  (@port:= "9000")
-  (check-equal? ^@port 9000))
+  (void (@port:= "9000"))
+  (check-equal? ^@port 9000)
+  (void (@port:= "blah"))
+  (check-equal? ^@port 80))
