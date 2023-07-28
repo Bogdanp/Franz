@@ -1,7 +1,6 @@
 #lang racket/base
 
-(require (for-syntax racket/base)
-         franz/connection-details
+(require franz/connection-details
          racket/gui/easy
          racket/match
          "combinator.rkt"
