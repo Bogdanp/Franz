@@ -35,18 +35,79 @@
 (define-style number-style base-style
   (set-delta-foreground (color #x1C #x04 #xCE)))
 
-(define (make-code-editor% highlight-proc change-proc)
+(define indent-re
+  #px"[[:space:]]*(function|local function|if|elseif|else|[\\(\\[{])")
+
+(define dedent-re
+  #px"[[:space:]]{2,}(elseif|else|end|[)}\\]])")
+
+(define (save-excursion editor proc)
+  (define pos #f)
+  (dynamic-wind
+    (lambda ()
+      (send editor begin-edit-sequence #f)
+      (set! pos (send editor get-start-position)))
+    (lambda ()
+      (proc editor))
+    (lambda ()
+      (send editor set-position pos)
+      (send editor end-edit-sequence))))
+
+(define (get-line-span editor)
+  (define pos (send editor get-start-position))
+  (define line (send editor position-line pos))
+  (define start-pos (send editor line-start-position line))
+  (define end-pos (send editor line-end-position line))
+  (values start-pos end-pos))
+
+(define (get-line-text editor)
+  (define-values (start-pos end-pos)
+    (get-line-span editor))
+  (send editor get-text start-pos end-pos))
+
+(define (get-indent editor event)
+  (save-excursion
+   editor
+   (lambda (_)
+     (previous-line editor event)
+     (define line (get-line-text editor))
+     (define prev-indent
+       (string-length (car (regexp-match #px"[[:space:]]*" line))))
+     (if (regexp-match? indent-re line)
+         (+ prev-indent 2)
+         prev-indent))))
+
+(define (newline-and-indent editor event)
+  (send editor insert "\n")
+  (define indent (get-indent editor event))
+  (unless (zero? indent)
+    (send editor insert (make-string indent #\space))))
+
+(define (maybe-dedent editor)
+  (define line-text (get-line-text editor))
+  (when (regexp-match-exact? dedent-re line-text)
+    (define-values (start-pos _end-pos)
+      (get-line-span editor))
+    (send editor delete start-pos (+ start-pos 2))))
+
+(define keymap
+  (let ([keymap (new gui:keymap%)])
+    (begin0 keymap
+      (send keymap add-function "newline-and-indent" newline-and-indent)
+      (send keymap map-function "c:j" "newline-and-indent")
+      (send keymap map-function "return" "newline-and-indent")
+      (send keymap chain-to-keymap the-default-keymap #f))))
+
+(define (make-code-editor% highlight-proc action-proc)
   (class gui:text%
     (super-new)
 
-    (define/augment (on-delete _start _len)
-      (queue-highlight this))
-    (define/augment (on-insert _start _len)
-      (queue-highlight this))
-    (define/augment (after-delete _start _len)
-      (change-proc (send this get-text)))
+    (define/augment (on-change)
+      (queue-highlight this)
+      (action-proc (send this get-text)))
+
     (define/augment (after-insert _start _len)
-      (change-proc (send this get-text)))
+      (maybe-dedent this))
 
     (define pending? #f)
     (define (queue-highlight editor)
@@ -62,7 +123,7 @@
 
 (define editor%
   (class* object% (view<%>)
-    (init-field @code @lang change-proc)
+    (init-field @code @lang action)
     (super-new)
 
     (define/public (dependencies)
@@ -71,16 +132,17 @@
     (define/public (create parent)
       (define the-editor
         (new (context-mixin
-              (make-code-editor% highlight change-proc))))
+              (make-code-editor% highlight action))))
       (define the-canvas
         (new gui:editor-canvas%
              [parent parent]
              [editor the-editor]
              [style '(no-border)]))
-      (send the-editor set-style-list gui:the-style-list)
-      (send the-editor change-style base-style)
-      (send the-editor set-keymap the-default-keymap)
-      (send the-editor set-context 'lang (obs-peek @lang))
+      (send* the-editor
+        (set-keymap keymap)
+        (set-style-list gui:the-style-list)
+        (set-max-undo-history 1000)
+        (set-context 'lang (obs-peek @lang)))
       (replace the-editor (obs-peek @code))
       the-canvas)
 
@@ -95,9 +157,12 @@
       (send (send v get-editor) clear-context))
 
     (define (replace editor code)
-      (send editor erase)
-      (send editor change-style base-style)
-      (send editor insert code 0))
+      (send* editor
+        (begin-edit-sequence)
+        (erase)
+        (change-style base-style)
+        (insert code 0)
+        (end-edit-sequence)))
 
     (define (highlight editor)
       (define text (send editor get-text))
@@ -107,6 +172,7 @@
           [(lua) (Lexer.lua)]
           [(protobuf) (Lexer.protobuf)]
           [else (error 'highlight "unexpected lang")]))
+      (send editor begin-edit-sequence #f)
       (for ([token (in-list (lex text lexer))])
         (define span (Token-span token))
         (define pos (TokenSpan-pos span))
@@ -118,7 +184,8 @@
             [(TokenType.string) string-style]
             [(TokenType.number) number-style]
             [_ base-style]))
-        (send editor change-style style pos (+ pos len))))))
+        (send editor change-style style pos (+ pos len)))
+      (send editor end-edit-sequence))))
 
 (define (editor code
                 [action void]
@@ -126,7 +193,7 @@
   (new editor%
        [@code (@ code)]
        [@lang (@ lang)]
-       [change-proc action]))
+       [action action]))
 
 (module+ main
   (define json-example #<<JSON
@@ -189,14 +256,9 @@ PROTOBUF
        #:selection @lang
        '(json lua protobuf)
        (lambda (choice)
-         (case choice
-           [(json)
-            (@lang . := . 'json)
-            (@code . := . json-example)]
-           [(lua)
-            (@lang . := . 'lua)
-            (@code . := . lua-example)]
-           [(protobuf)
-            (@lang . := . 'protobuf)
-            (@code . := . protobuf-example)]))))
+         (@lang . := . choice)
+         (@code . := . (case choice
+                         [(json) json-example]
+                         [(lua) lua-example]
+                         [(protobuf) protobuf-example])))))
      (editor #:lang @lang @code)))))
