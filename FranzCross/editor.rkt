@@ -103,23 +103,32 @@
     (super-new)
 
     (define/augment (on-change)
-      (queue-highlight this)
+      (queue-highlight)
       (action-proc (send this get-text)))
+
+    (define/augment (on-display-size)
+      (queue-highlight))
 
     (define/augment (after-insert _start _len)
       (maybe-dedent this))
 
+    (define/override (after-scroll-to)
+      (super after-scroll-to)
+      (queue-highlight))
+
     (define pending? #f)
-    (define (queue-highlight editor)
+    (define (queue-highlight)
       (unless pending?
         (set! pending? #t)
+        (define deadline-evt
+          (alarm-evt (+ (current-inexact-monotonic-milliseconds) 16) #t))
         (thread
          (lambda ()
-           (sleep (/ 1.0 30.0))
+           (sync deadline-evt)
            (gui:queue-callback
             (lambda ()
-              (highlight-proc editor)
-              (set! pending? #f)))))))))
+              (set! pending? #f)
+              (highlight-proc this)))))))))
 
 (define editor%
   (class* object% (view<%>)
@@ -138,6 +147,7 @@
              [parent parent]
              [editor the-editor]
              [style '(no-border)]))
+      (send the-canvas set-scroll-via-copy #t)
       (send* the-editor
         (set-keymap keymap)
         (set-style-list gui:the-style-list)
@@ -173,18 +183,27 @@
           [(protobuf) (Lexer.protobuf)]
           [else (error 'highlight "unexpected lang")]))
       (send editor begin-edit-sequence #f)
+      (define-values (start-pos end-pos)
+        (let ([sb (box #f)]
+              [eb (box #f)])
+          (send editor get-visible-position-range sb eb)
+          (values (unbox sb) (unbox eb))))
       (for ([token (in-list (lex text lexer))])
         (define span (Token-span token))
-        (define pos (TokenSpan-pos span))
-        (define len (TokenSpan-len span))
-        (define style
-          (match (Token-type token)
-            [(TokenType.comment) comment-style]
-            [(TokenType.keyword) keyword-style]
-            [(TokenType.string) string-style]
-            [(TokenType.number) number-style]
-            [_ base-style]))
-        (send editor change-style style pos (+ pos len)))
+        (define token-start-pos (TokenSpan-pos span))
+        (define token-end-pos (+ token-start-pos (TokenSpan-len span)))
+        (when (or (and (>= token-start-pos start-pos)
+                       (<= token-start-pos end-pos))
+                  (and (>= token-end-pos start-pos)
+                       (<= token-end-pos end-pos)))
+          (define style
+            (match (Token-type token)
+              [(TokenType.comment) comment-style]
+              [(TokenType.keyword) keyword-style]
+              [(TokenType.string) string-style]
+              [(TokenType.number) number-style]
+              [_ base-style]))
+          (send editor change-style style token-start-pos token-end-pos)))
       (send editor end-edit-sequence))))
 
 (define (editor code
