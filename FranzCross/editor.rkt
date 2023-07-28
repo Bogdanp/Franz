@@ -36,10 +36,10 @@
   (set-delta-foreground (color #x1C #x04 #xCE)))
 
 (define indent-re
-  #px"[[:space:]]*(function|local function|if|elseif|else|[\\(\\[{])")
+  #px"[[:space:]]*(function|local function|if|elseif|else|for|while|do|repeat|[\\(\\[{])")
 
 (define dedent-re
-  #px"[[:space:]]{2,}(elseif|else|end|[)}\\]])")
+  #px"[[:space:]]{2,}(elseif|else|end|until|[)}\\]])")
 
 (define (save-excursion editor proc)
   (define pos #f)
