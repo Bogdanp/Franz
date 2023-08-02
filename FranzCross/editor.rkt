@@ -6,6 +6,7 @@
          racket/class
          racket/gui/easy/private/view/keymap
          racket/match
+         racket/string
          "common.rkt")
 
 (define-syntax-rule (define-style id base [meth arg ...] ...)
@@ -35,11 +36,20 @@
 (define-style number-style base-style
   (set-delta-foreground (color #x1C #x04 #xCE)))
 
-(define indent-re
-  #px"[[:space:]]*(function|local function|if|elseif|else|for|while|do|repeat|[\\(\\[{])")
+(define indent-phrase-re
+  (let ([phrases '("function" "local function" "if" "elseif" "else" "for" "while" "do" "repeat")])
+    (pregexp (string-append "[[:space:]]*" "(" (string-join (map regexp-quote phrases) "|") ")"))))
+
+(define indent-sym-re
+  (regexp (string-append "[" (regexp-quote (string #\( #\[ #\{)) "]$")))
 
 (define dedent-re
-  #px"[[:space:]]{2,}(elseif|else|end|until|[)}\\]])")
+  #px"[[:space:]]{2,}(elseif|else|end|until|[)}\\]])[[:space:]]*")
+
+(define tab-size 2)
+(define indent-str
+  (string->immutable-string
+   (make-string tab-size #\space)))
 
 (define (save-excursion editor proc)
   (define pos #f)
@@ -65,30 +75,51 @@
     (get-line-span editor))
   (send editor get-text start-pos end-pos))
 
-(define (get-indent editor event)
+(define (get-indent line)
+  (string-length (car (regexp-match #px"[[:space:]]*" line))))
+
+(define (get-next-indent editor event)
   (save-excursion
    editor
    (lambda (_)
      (previous-line editor event)
      (define line (get-line-text editor))
-     (define prev-indent
-       (string-length (car (regexp-match #px"[[:space:]]*" line))))
-     (if (regexp-match? indent-re line)
-         (+ prev-indent 2)
+     (define prev-indent (get-indent line))
+     (if (or (regexp-match? indent-phrase-re line)
+             (regexp-match? indent-sym-re line))
+         (+ prev-indent tab-size)
          prev-indent))))
 
 (define (newline-and-indent editor event)
   (send editor insert "\n")
-  (define indent (get-indent editor event))
+  (define indent (get-next-indent editor event))
   (unless (zero? indent)
     (send editor insert (make-string indent #\space))))
+
+(define (indent editor _event)
+  (define line-text (get-line-text editor))
+  (cond
+    [(regexp-match-exact? #px"[[:space:]]*" line-text)
+     (send editor insert indent-str)]
+    [else
+     (define-values (start-pos _end-pos)
+       (get-line-span editor))
+     (send editor insert indent-str start-pos)]))
+
+(define (dedent editor _event)
+  (define line-text (get-line-text editor))
+  (when (>= (get-indent line-text) tab-size)
+    (do-dedent editor)))
 
 (define (maybe-dedent editor)
   (define line-text (get-line-text editor))
   (when (regexp-match-exact? dedent-re line-text)
-    (define-values (start-pos _end-pos)
-      (get-line-span editor))
-    (send editor delete start-pos (+ start-pos 2))))
+    (do-dedent editor)))
+
+(define (do-dedent editor)
+  (define-values (start-pos _end-pos)
+    (get-line-span editor))
+  (send editor delete start-pos (+ start-pos tab-size)))
 
 (define keymap
   (let ([keymap (new gui:keymap%)])
@@ -96,6 +127,10 @@
       (send keymap add-function "newline-and-indent" newline-and-indent)
       (send keymap map-function "c:j" "newline-and-indent")
       (send keymap map-function "return" "newline-and-indent")
+      (send keymap add-function "indent" indent)
+      (send keymap map-function "tab" "indent")
+      (send keymap add-function "dedent" dedent)
+      (send keymap map-function "s:tab" "dedent")
       (send keymap chain-to-keymap the-default-keymap #f))))
 
 (define (make-code-editor% highlight-proc action-proc)
