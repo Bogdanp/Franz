@@ -28,7 +28,18 @@
                               (callback 'dbclick item event))]
            [selection-callback (λ (_self item event)
                                  (callback 'select item event))]
-           [context-action-callback (λ (_self item event)
+           [context-action-callback (λ (self item event)
+                                      (define-values (x-pos y-pos)
+                                        (let loop ([x 0] [y 0] [w self])
+                                          (define w-parent
+                                            (send w get-parent))
+                                          (if w-parent
+                                              (loop (+ x (send w get-x))
+                                                    (+ y (send w get-y))
+                                                    w-parent)
+                                              (values x y))))
+                                      (send event set-x (+ x-pos (send event get-x)))
+                                      (send event set-y (+ y-pos (send event get-y)))
                                       (callback 'context item event))]))
 
     (define/public (update v what val)
