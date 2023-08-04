@@ -25,7 +25,7 @@
 
 (define-values (font-size-s font-size-m font-size-l font-size-xl)
   (case (system-type 'os*)
-    [(macosx) (values 12 14 16 28)]
+    [(macosx) (values 14 18 20 28)]
     [else (values 10 12 14 18)]))
 
 (provide
