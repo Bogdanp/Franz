@@ -10,6 +10,8 @@
 (define (main)
   (define/obs @connections
     (get-connections))
+  (define (reload-connections)
+    (@connections . := . (get-connections)))
   (define (render-connection-dialog conn action
                                     #:title [title "New Connection"])
     (render
@@ -17,6 +19,7 @@
       #:title title
       #:save-action (λ (saved-conn close!)
                       (action saved-conn)
+                      (reload-connections)
                       (close!))
       conn)
      the-renderer))
@@ -49,7 +52,7 @@
                                  "Delete"
                                  (λ ()
                                    (delete-connection item)
-                                   (@connections . := . (get-connections)))))
+                                   (reload-connections))))
                                (send event get-x)
                                (send event get-y)))
                             #f)))
