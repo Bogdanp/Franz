@@ -3,31 +3,56 @@
 (require franz/connection-details
          (submod franz/connection-details rpc)
          franz/main
+         racket/class
          "connection-dialog.rkt"
          "welcome-window.rkt")
-
-(define (new-connection-dialog action)
-  (connection-dialog
-   #:title "New Connection"
-   #:save-action (λ (conn close!)
-                   (action conn)
-                   (close!))
-   (make-ConnectionDetails
-    #:name "New Connection")))
 
 (define (main)
   (define/obs @connections
     (get-connections))
+  (define (render-connection-dialog conn action
+                                    #:title [title "New Connection"])
+    (render
+     (connection-dialog
+      #:title title
+      #:save-action (λ (saved-conn close!)
+                      (action saved-conn)
+                      (close!))
+      conn)
+     the-renderer))
   (define the-renderer
     (render
      (welcome-window
       #:new-action (λ ()
-                     (render
-                      (new-connection-dialog
-                       (λ (conn)
-                         (save-connection conn)
-                         (@connections . := . (get-connections))))
-                      the-renderer))
+                     (render-connection-dialog
+                      (make-ConnectionDetails
+                       #:name "New Connection")
+                      save-connection))
+      #:context-action (λ (item event)
+                         ;; Enqueue a low-priority callback to allow
+                         ;; other events to be handled before we block
+                         ;; the eventspace.
+                         (when item
+                           (gui:queue-callback
+                            (lambda ()
+                              (render-popup-menu
+                               the-renderer
+                               (popup-menu
+                                (menu-item
+                                 "Edit..."
+                                 (λ ()
+                                   (render-connection-dialog
+                                    #:title "Edit Connection"
+                                    item update-connection)))
+                                (menu-item-separator)
+                                (menu-item
+                                 "Delete"
+                                 (λ ()
+                                   (delete-connection item)
+                                   (@connections . := . (get-connections)))))
+                               (send event get-x)
+                               (send event get-y)))
+                            #f)))
       @connections)))
   (void))
 

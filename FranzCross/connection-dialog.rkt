@@ -84,6 +84,7 @@
       (lambda ()
         (define saved-details
           (make-ConnectionDetails
+           #:id (ConnectionDetails-id details)
            #:name (or (->optional-str ^@name) "Unnamed Connection")
            #:bootstrap-host ^@host
            #:bootstrap-port ^@port
