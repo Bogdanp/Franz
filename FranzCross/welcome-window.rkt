@@ -28,10 +28,11 @@
       #:size '(128 128)
       icon_512x512.png)
      (text
-      #:font (font system-font 28)
+      #:font system-font-xl
       "Welcome to Franz")
      (text
       #:color secondary-color
+      #:font system-font-s
       (format "Version ~a" franz-version))
      (button "New Connection..." new-action))
     (vpanel
@@ -58,20 +59,20 @@
      w h))
   (define title
     (t:~> (ConnectionDetails-name c)
-          (p:text (font #:weight 500 system-font 16))
+          (p:text (font #:weight 500 system-font font-size-m))
           (p:colorize (case state
                         [(selected) selection-primary-color]
                         [else primary-color]))))
   (define subtitle
     (t:~> (~address c)
-          (p:text (font system-font 12))
+          (p:text system-font-s)
           (p:colorize (case state
                         [(selected) selection-secondary-color]
                         [else secondary-color]))))
   (p:lt-superimpose
    background
    (t:~> (p:vl-append 3 title subtitle)
-         (p:inset 10 12))))
+         (p:inset 5 6))))
 
 (define (~address c)
   (format "~a:~a"

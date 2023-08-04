@@ -2,6 +2,7 @@
 
 (require racket/class
          (prefix-in gui: racket/gui)
+         racket/gui/easy/font
          racket/runtime-path)
 
 ;; fonts ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -15,6 +16,28 @@
     [(macosx) (values "SF Pro Display" "SF Mono")]
     [(linux) (values "Ubuntu" "Ubuntu Monospace")]
     [else (values "Segoe UI" "Consolas")]))
+
+(provide
+ font-size-s
+ font-size-m
+ font-size-l
+ font-size-xl)
+
+(define-values (font-size-s font-size-m font-size-l font-size-xl)
+  (case (system-type 'os*)
+    [(macosx) (values 12 14 16 28)]
+    [else (values 10 12 14 18)]))
+
+(provide
+ system-font-s
+ system-font-m
+ system-font-l
+ system-font-xl)
+
+(define system-font-s (font system-font font-size-s))
+(define system-font-m (font system-font font-size-m))
+(define system-font-l (font system-font font-size-l))
+(define system-font-xl (font system-font font-size-xl))
 
 
 ;; colors ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
