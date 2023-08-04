@@ -39,9 +39,6 @@
         (loop (cons token tokens))
         (reverse tokens))))
 
-(module+ rpc
-  (provide lex))
-
 (define (skip-to-next-whitespace in)
   (void (regexp-match #rx"[\r\t\n ]" in)))
 
