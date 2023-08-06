@@ -4,7 +4,6 @@
          franz/version
          (prefix-in p: pict)
          racket/gui/easy
-         racket/gui/easy/font
          racket/gui/easy/operator
          (prefix-in t: threading)
          "canvas-list.rkt"
