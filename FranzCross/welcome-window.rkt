@@ -59,7 +59,7 @@
      w h))
   (define title
     (t:~> (ConnectionDetails-name c)
-          (p:text (font #:weight 500 system-font font-size-m))
+          (p:text system-font-m)
           (p:colorize (case state
                         [(selected) selection-primary-color]
                         [else primary-color]))))
