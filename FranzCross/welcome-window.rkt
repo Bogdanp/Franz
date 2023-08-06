@@ -5,7 +5,7 @@
          (prefix-in p: pict)
          racket/gui/easy
          racket/gui/easy/operator
-         (prefix-in t: threading)
+         (prefix-in ~ threading)
          "canvas-list.rkt"
          "common.rkt")
 
@@ -57,21 +57,20 @@
                [else white])
      w h))
   (define title
-    (t:~> (ConnectionDetails-name c)
-          (p:text system-font-m)
-          (p:colorize (case state
-                        [(selected) selection-primary-color]
-                        [else primary-color]))))
+    (~~> (ConnectionDetails-name c)
+         (p:text system-font-m)
+         (p:colorize (case state
+                       [(selected) selection-primary-color]
+                       [else primary-color]))))
   (define subtitle
-    (t:~> (~address c)
-          (p:text system-font-s)
-          (p:colorize (case state
-                        [(selected) selection-secondary-color]
-                        [else secondary-color]))))
-  (p:lt-superimpose
-   background
-   (t:~> (p:vl-append 3 title subtitle)
-         (p:inset 5 6))))
+    (~~> (~address c)
+         (p:text system-font-s)
+         (p:colorize (case state
+                       [(selected) selection-secondary-color]
+                       [else secondary-color]))))
+  (~~> (p:vl-append 2 title subtitle)
+       (p:inset 8 0)
+       (p:lc-superimpose background _)))
 
 (define (~address c)
   (format "~a:~a"
