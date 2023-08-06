@@ -35,7 +35,7 @@
      "Cancel"
      #f
      (renderer-root (current-renderer))
-     '(caution default=1)))
+     '(caution default=2)))
   (eqv? res 1))
 
 (define (main)
