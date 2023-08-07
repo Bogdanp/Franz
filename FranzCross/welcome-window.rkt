@@ -2,6 +2,7 @@
 
 (require franz/connection-details
          franz/version
+         net/sendurl
          (prefix-in p: pict)
          racket/gui/easy
          racket/gui/easy/operator
@@ -33,7 +34,16 @@
       #:color secondary-color
       #:font system-font-s
       (format "Version ~a" franz-version))
-     (button "New Connection..." new-action))
+     (button "New Connection..." new-action)
+     (hpanel
+      #:stretch '(#t #f)
+      #:min-size '(#f 20))
+     (hpanel
+      #:stretch '(#t #f)
+      #:alignment '(center center)
+      (button "Documentation" (λ () (send-url "https://franz.defn.io/manual/")))
+      (button "Support" (λ () (send-url "mailto:bogdan@defn.io?subject=Franz%20Support")))
+      (button "Mastodon" (λ () (send-url "https://hachyderm.io/@franz_app")))))
     (vpanel
      #:min-size '(280 #f)
      #:stretch '(#f #t)
