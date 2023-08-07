@@ -1,6 +1,7 @@
 #lang racket/gui/easy
 
 (require franz/connection-details
+         racket/format
          racket/match
          (prefix-in ~ threading)
          "combinator.rkt"
@@ -27,8 +28,8 @@
     [@aws-region (~optional-str (ConnectionDetails-aws-region details))]
     [@aws-access-key-id (~optional-str (ConnectionDetails-aws-access-key-id details))]
     [@use-ssl? (ConnectionDetails-use-ssl details)]
-    [@ssl-key-path (~optional-str (ConnectionDetails-ssl-key-path details))]
-    [@ssl-cert-path (~optional-str (ConnectionDetails-ssl-cert-path details))])
+    [@ssl-key-path (ConnectionDetails-ssl-key-path details)]
+    [@ssl-cert-path (ConnectionDetails-ssl-cert-path details)])
   (dialog
    #:title title
    #:size '(520 #f)
@@ -75,30 +76,16 @@
        #:checked? @use-ssl?
        @use-ssl?:=))
      (button
-      "SSL Key..."
+      (make-browse-label @ssl-key-path "SSL Key")
       (lambda ()
         (define path
-          (gui:get-file
-           #f ; message
-           #f ; parent
-           #f ; directory
-           #f ; filename
-           #f ; extension
-           null ; style
-           '(("PKCS8 Private Key" "*.der; *.pem; *.key"))))
+          (get-file ^@ssl-key-path '(("PKCS8 Private Key" "*.der; *.pem; *.key"))))
         (@ssl-key-path . := . (~and~> path path->string))))
      (button
-      "SSL Cert..."
+      (make-browse-label @ssl-cert-path "SSL Cert")
       (lambda ()
         (define path
-          (gui:get-file
-           #f ; message
-           #f ; parent
-           #f ; directory
-           #f ; filename
-           #f ; extension
-           null ; style
-           '(("X.509 Certificate" "*.crt; *.pem"))))
+          (get-file ^@ssl-cert-path '(("X.509 Certificate" "*.crt; *.pem"))))
         (@ssl-cert-path . := . (~and~> path path->string)))))
     (hpanel
      #:alignment '(right center)
@@ -143,6 +130,23 @@
 (define (string->port v)
   (define n (string->number v))
   (and n (>= n 0) (<= n 65535) n))
+
+(define (make-browse-label o label)
+  (o . ~> . (λ (v) (~a (if v (~a label "*") label) "..."))))
+
+(define (get-file maybe-path filters)
+  (define-values (directory filename _must-be-dir?)
+    (if maybe-path
+        (split-path maybe-path)
+        (values #f #f #f)))
+  (gui:get-file
+   #f ;message
+   #f ;parent
+   directory
+   filename
+   #f ;extension
+   null ;style
+   filters))
 
 (module+ main
   (render
