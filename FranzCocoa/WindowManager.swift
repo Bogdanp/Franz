@@ -11,6 +11,7 @@ class WindowManager {
   private var updatesProgressWindowController: UpdatesProgressWindowController?
   private var workspaces = [WorkspaceWindowController]()
   private var scripts = [ScriptWindowKey: ScriptWindowController]() // workspace id -> ctl
+  private var secureURLs = [UVarint: [URL]]() // connection id -> URLs
 
   @discardableResult
   func launchWorkspace(
@@ -29,6 +30,23 @@ class WindowManager {
       workspace.showWindow(self)
       return workspace
     }
+    // If the connection has SSL key and cert paths, convert their
+    // bookmarks to paths in order for the Racket code to be able to
+    // read them.
+    var conn = conn
+    if conn.sslKeyPath != nil && conn.sslCertPath != nil {
+      guard let keyURL = bookmarkDataToURL(conn.sslKeyPath!) else {
+        Error.alert(withError: "Failed to access SSL key. Please edit this connection and pick a new key.")
+        return nil
+      }
+      guard let certURL = bookmarkDataToURL(conn.sslCertPath!) else {
+        Error.alert(withError: "Failed to access SSL certificate. Please edit this connection and pick a new cert.")
+        return nil
+      }
+      conn.sslKeyPath = keyURL.relativePath
+      conn.sslCertPath = certURL.relativePath
+      secureURLs[id] = [keyURL, certURL]
+    }
     let workspace = WorkspaceWindowController(withConn: conn, andPassword: password)
     workspace.showWindow(self)
     workspaces.append(workspace)
@@ -38,12 +56,18 @@ class WindowManager {
   func removeAllWorkspaces() {
     assert(Thread.isMainThread)
     workspaces.removeAll()
+    for connectionId in secureURLs.keys {
+      removeSecureURLs(forConnectionWithId: connectionId)
+    }
   }
 
   func removeWorkspace(_ workspace: WorkspaceWindowController) -> Bool {
     assert(Thread.isMainThread)
     if let index = workspaces.firstIndex(of: workspace) {
       workspaces.remove(at: index)
+      if let connectionId = workspace.connectionId {
+        removeSecureURLs(forConnectionWithId: connectionId)
+      }
       return true
     }
     return false
@@ -141,9 +165,37 @@ class WindowManager {
     showPreferencesWindow(selectingTab: .license)
     return false
   }
+
+  private func removeSecureURLs(forConnectionWithId id: UVarint) {
+    guard let urls = secureURLs[id] else { return }
+    for url in urls {
+      url.stopAccessingSecurityScopedResource()
+    }
+    secureURLs.removeValue(forKey: id)
+  }
 }
 
 fileprivate struct ScriptWindowKey: Hashable, Equatable {
   let workspaceId: UVarint
   let topic: String
+}
+
+fileprivate func bookmarkDataToURL(_ string: String) -> URL? {
+  var isStale = false
+  guard let base64Data = string.data(using: .utf8) else { return nil}
+  guard let bookmarkData = Data(base64Encoded: base64Data) else { return nil }
+  guard let url = try? URL(
+    resolvingBookmarkData: bookmarkData,
+    options: [.withSecurityScope],
+    bookmarkDataIsStale: &isStale
+  ) else {
+    return nil
+  }
+  if isStale {
+    return nil
+  }
+  if !url.startAccessingSecurityScopedResource() {
+    return nil
+  }
+  return url
 }

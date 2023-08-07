@@ -185,6 +185,26 @@ DQ
                         <real value="3.4028234663852886e+38"/>
                     </customSpacing>
                 </stackView>
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="30G-JG-nBc">
+                    <rect key="frame" x="378" y="47" width="99" height="32"/>
+                    <buttonCell key="cell" type="push" title="SSL Cert..." bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="mGa-yh-BTf">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="didPushSSLCertButton:" target="-2" id="kic-0X-9gu"/>
+                    </connections>
+                </button>
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="TxE-Zd-ZDB">
+                    <rect key="frame" x="284" y="47" width="94" height="32"/>
+                    <buttonCell key="cell" type="push" title="SSL Key..." bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="xdu-9l-IER">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="didPushSSLKeyButton:" target="-2" id="bdS-gE-Uq5"/>
+                    </connections>
+                </button>
             </subviews>
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="GMX-yE-1uu" secondAttribute="trailing" constant="20" symbolic="YES" id="3zT-wo-Qya"/>
@@ -193,15 +213,18 @@ DQ
                 <constraint firstItem="GMX-yE-1uu" firstAttribute="top" secondItem="Uiv-9V-Vbm" secondAttribute="bottom" constant="5" id="6Gb-aM-fs7"/>
                 <constraint firstAttribute="trailing" secondItem="UUR-Gw-led" secondAttribute="trailing" constant="20" symbolic="YES" id="7EJ-3N-OLP"/>
                 <constraint firstItem="Uiv-9V-Vbm" firstAttribute="leading" secondItem="SoO-GL-NXP" secondAttribute="trailing" constant="8" symbolic="YES" id="7JE-Cr-7O9"/>
+                <constraint firstItem="30G-JG-nBc" firstAttribute="leading" secondItem="TxE-Zd-ZDB" secondAttribute="trailing" constant="14" id="7su-ia-zWo"/>
                 <constraint firstItem="Uiv-9V-Vbm" firstAttribute="top" secondItem="UUR-Gw-led" secondAttribute="bottom" constant="5" id="896-oL-y7i"/>
                 <constraint firstItem="32Q-C8-1mr" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="20" symbolic="YES" id="AVY-Uc-VLr"/>
                 <constraint firstItem="GMX-yE-1uu" firstAttribute="top" secondItem="clO-aY-uLb" secondAttribute="bottom" constant="5" id="AhR-Dw-CD9"/>
                 <constraint firstItem="Yoe-rA-xrM" firstAttribute="top" secondItem="GMX-yE-1uu" secondAttribute="bottom" id="BI5-1a-2C8"/>
                 <constraint firstAttribute="trailing" secondItem="XGj-8J-9Np" secondAttribute="trailing" id="HsC-x7-wMd"/>
+                <constraint firstAttribute="trailing" secondItem="30G-JG-nBc" secondAttribute="trailing" constant="20" symbolic="YES" id="I1W-jv-KIT"/>
                 <constraint firstItem="11T-ax-bcq" firstAttribute="top" secondItem="Yoe-rA-xrM" secondAttribute="bottom" id="IHu-ab-PJg"/>
                 <constraint firstItem="11T-ax-bcq" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="135" id="JBF-DY-igu"/>
                 <constraint firstAttribute="trailing" secondItem="clO-aY-uLb" secondAttribute="trailing" constant="20" symbolic="YES" id="KJu-E3-uhc"/>
                 <constraint firstItem="UUR-Gw-led" firstAttribute="leading" secondItem="32Q-C8-1mr" secondAttribute="trailing" constant="8" symbolic="YES" id="Lvc-UQ-Eft"/>
+                <constraint firstItem="XGj-8J-9Np" firstAttribute="top" secondItem="TxE-Zd-ZDB" secondAttribute="bottom" constant="8" id="MDM-lM-2pe"/>
                 <constraint firstAttribute="trailing" secondItem="vKs-pU-SEx" secondAttribute="trailing" constant="20" symbolic="YES" id="NaN-KI-LQt"/>
                 <constraint firstItem="prk-zi-xs1" firstAttribute="top" secondItem="UUR-Gw-led" secondAttribute="bottom" constant="8" symbolic="YES" id="O9R-CF-uQ9"/>
                 <constraint firstAttribute="trailing" secondItem="Yoe-rA-xrM" secondAttribute="trailing" id="Obx-e6-nQS"/>
@@ -224,6 +247,7 @@ DQ
                 <constraint firstItem="clO-aY-uLb" firstAttribute="leading" secondItem="prk-zi-xs1" secondAttribute="trailing" constant="8" symbolic="YES" id="ocD-5u-l4e"/>
                 <constraint firstItem="UUR-Gw-led" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="20" symbolic="YES" id="sPu-ci-0AV"/>
                 <constraint firstItem="clO-aY-uLb" firstAttribute="leading" secondItem="prk-zi-xs1" secondAttribute="trailing" constant="8" symbolic="YES" id="tDE-9V-krd"/>
+                <constraint firstItem="XGj-8J-9Np" firstAttribute="top" secondItem="30G-JG-nBc" secondAttribute="bottom" constant="8" id="u52-B9-mJ0"/>
                 <constraint firstItem="XGj-8J-9Np" firstAttribute="top" secondItem="11T-ax-bcq" secondAttribute="bottom" constant="10" id="v4b-o3-jqD"/>
                 <constraint firstItem="prk-zi-xs1" firstAttribute="leading" secondItem="Uiv-9V-Vbm" secondAttribute="trailing" constant="8" symbolic="YES" id="wTI-en-qob"/>
                 <constraint firstItem="Uiv-9V-Vbm" firstAttribute="top" secondItem="UUR-Gw-led" secondAttribute="bottom" constant="5" id="zIV-i9-6wh"/>

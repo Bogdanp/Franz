@@ -4,9 +4,10 @@
          (prefix-in k: kafka)
          noise/backend
          noise/serde
-         (only-in openssl ssl-secure-client-context)
+         (only-in openssl ssl-make-client-context ssl-secure-client-context)
          racket/contract
          racket/match
+         racket/path
          racket/port
          racket/random
          racket/string
@@ -39,6 +40,8 @@
   [(aws-region #f) : (Optional String) #:contract (or/c #f string?)]
   [(aws-access-key-id #f) : (Optional String) #:contract (or/c #f string?)]
   [(use-ssl #f) : Bool #:contract boolean?]
+  [(ssl-key-path #f) : (Optional String) #:contract (or/c #f string?) #:mutable]
+  [(ssl-cert-path #f) : (Optional String) #:contract (or/c #f string?) #:mutable]
   [(schema-registry-id #f) : (Optional UVarint) #:mutable #:contract (or/c #f exact-nonnegative-integer?)])
 
 (define (meta->AuthMechanism m)
@@ -68,6 +71,8 @@
    #:aws-region (sql-null->false (meta:connection-details-aws-region c))
    #:aws-access-key-id (sql-null->false (meta:connection-details-aws-access-key-id c))
    #:use-ssl (meta:connection-details-ssl-on? c)
+   #:ssl-key-path (sql-null->false (meta:connection-details-ssl-key-path c))
+   #:ssl-cert-path (sql-null->false (meta:connection-details-ssl-cert-path c))
    #:schema-registry-id (sql-null->false (meta:connection-details-schema-registry-id c))))
 
 (define (ConnectionDetails->meta c)
@@ -82,6 +87,8 @@
      #:aws-region (or (ConnectionDetails-aws-region c) sql-null)
      #:aws-access-key-id (or (ConnectionDetails-aws-access-key-id c) sql-null)
      #:ssl-on? (ConnectionDetails-use-ssl c)
+     #:ssl-key-path (or (ConnectionDetails-ssl-key-path c) sql-null)
+     #:ssl-cert-path (or (ConnectionDetails-ssl-cert-path c) sql-null)
      #:schema-registry-id (or (ConnectionDetails-schema-registry-id c) sql-null)))
   (cond
     [(ConnectionDetails-id c)
@@ -128,7 +135,19 @@
                                                   #:secret-access-key secret-access-key
                                                   #:server-name host))))])
    #:ssl-ctx (and (ConnectionDetails-use-ssl c)
-                  (ssl-secure-client-context))))
+                  (cond
+                    [(and (ConnectionDetails-ssl-key-path c)
+                          (ConnectionDetails-ssl-cert-path c))
+                     (define fmt
+                       (case (path-get-extension (ConnectionDetails-ssl-key-path c))
+                         [(#".der") 'der]
+                         [else 'pem]))
+                     (ssl-make-client-context
+                      #:private-key (list fmt (ConnectionDetails-ssl-key-path c))
+                      #:certificate-chain (ConnectionDetails-ssl-cert-path c)
+                      'auto)]
+                    [else
+                     (ssl-secure-client-context)]))))
 
 (define-rpc (get-connections : (Listof ConnectionDetails))
   (map meta->ConnectionDetails (meta:get-connections)))

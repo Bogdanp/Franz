@@ -96,6 +96,8 @@
    [(aws-region sql-null) string/f #:nullable]
    [(aws-access-key-id sql-null) string/f #:nullable]
    [(ssl-on? #f) boolean/f]
+   [(ssl-key-path sql-null) string/f #:nullable]
+   [(ssl-cert-path sql-null) string/f #:nullable]
    [(schema-registry-id sql-null) integer/f #:nullable]
    [(created-at (current-seconds)) integer/f]
    [(updated-at (current-seconds)) integer/f]

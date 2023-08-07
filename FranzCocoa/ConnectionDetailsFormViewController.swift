@@ -30,6 +30,8 @@ class ConnectionDetailsFormViewController: NSViewController {
   private var actionProc: ((ConnectionDetails) -> Void)!
 
   private var details: ConnectionDetails?
+  private var sslKeyPath: String?
+  private var sslCertPath: String?
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -71,6 +73,8 @@ class ConnectionDetailsFormViewController: NSViewController {
         awsAccessKeyIdField.stringValue = accessKeyId
       }
       enableSSLCheckbox.state = details.useSsl ? .on : .off
+      sslKeyPath = details.sslKeyPath
+      sslCertPath = details.sslCertPath
     }
 
     resetAuth()
@@ -125,12 +129,13 @@ class ConnectionDetailsFormViewController: NSViewController {
     awsAuthView.removeFromSuperview()
     switch authMechanism {
     case .plain, .scramSHA256, .scramSHA512:
+      authView.setFrameSize(NSSize(width: 490, height: 38))
       authView.addSubview(plainAuthView)
-      authViewHeightConstraint.constant = 36
-      plainAuthView.setFrameOrigin(authView.bounds.origin)
+      authViewHeightConstraint.constant = 38
+      plainAuthView.setFrameOrigin(authView.bounds.origin.applying(.init(translationX: 0, y: 2)))
       view.window?.setContentSize(NSSize(width: 490, height: 200))
     case .aws:
-      authView.setFrameSize(NSSize(width: 490, height: 60))
+      authView.setFrameSize(NSSize(width: 490, height: 62))
       authView.addSubview(awsAuthView)
       awsAuthView.setFrameOrigin(authView.bounds.origin)
       authViewHeightConstraint.constant = 62
@@ -140,6 +145,46 @@ class ConnectionDetailsFormViewController: NSViewController {
 
   @IBAction func didChangeAuthMechanism(_ sender: Any) {
     resetAuth()
+  }
+
+  @IBAction func didPushSSLKeyButton(_ sender: Any) {
+    let panel = NSOpenPanel()
+    panel.title = "Find SSL Key (PEM Format)"
+    panel.canChooseFiles = true
+    panel.allowedContentTypes = [.pkcs12, .x509Certificate]
+    let res = panel.runModal()
+    switch res {
+    case .OK:
+      guard let url = panel.url else { return }
+      guard let bookmark = try? url.bookmarkData(
+        options: [.withSecurityScope, .securityScopeAllowOnlyReadAccess],
+        includingResourceValuesForKeys: nil,
+        relativeTo: nil
+      ) else { return }
+      sslKeyPath = bookmark.base64EncodedString()
+    default:
+      ()
+    }
+  }
+
+  @IBAction func didPushSSLCertButton(_ sender: Any) {
+    let panel = NSOpenPanel()
+    panel.title = "Find SSL Certificate"
+    panel.canChooseFiles = true
+    panel.allowedContentTypes = [.pkcs12, .x509Certificate]
+    let res = panel.runModal()
+    switch res {
+    case .OK:
+      guard let url = panel.url else { return }
+      guard let bookmark = try? url.bookmarkData(
+        options: [.withSecurityScope, .securityScopeAllowOnlyReadAccess],
+        includingResourceValuesForKeys: nil,
+        relativeTo: nil
+      ) else { return }
+      sslCertPath = bookmark.base64EncodedString()
+    default:
+      ()
+    }
   }
 
   @IBAction func didPushCancelButton(_ sender: Any) {
@@ -205,6 +250,8 @@ class ConnectionDetailsFormViewController: NSViewController {
       awsRegion: awsRegion,
       awsAccessKeyId: awsAccessKeyId,
       useSsl: enableSSLCheckbox.state == .on,
+      sslKeyPath: sslKeyPath,
+      sslCertPath: sslCertPath,
       schemaRegistryId: nil
     ))
   }

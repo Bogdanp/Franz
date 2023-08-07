@@ -275,6 +275,8 @@ public struct ConnectionDetails: Readable, Writable {
   public let awsRegion: String?
   public let awsAccessKeyId: String?
   public let useSsl: Bool
+  public var sslKeyPath: String?
+  public var sslCertPath: String?
   public var schemaRegistryId: UVarint?
 
   public init(
@@ -289,6 +291,8 @@ public struct ConnectionDetails: Readable, Writable {
     awsRegion: String?,
     awsAccessKeyId: String?,
     useSsl: Bool,
+    sslKeyPath: String?,
+    sslCertPath: String?,
     schemaRegistryId: UVarint?
   ) {
     self.id = id
@@ -302,6 +306,8 @@ public struct ConnectionDetails: Readable, Writable {
     self.awsRegion = awsRegion
     self.awsAccessKeyId = awsAccessKeyId
     self.useSsl = useSsl
+    self.sslKeyPath = sslKeyPath
+    self.sslCertPath = sslCertPath
     self.schemaRegistryId = schemaRegistryId
   }
 
@@ -318,6 +324,8 @@ public struct ConnectionDetails: Readable, Writable {
       awsRegion: String?.read(from: inp, using: &buf),
       awsAccessKeyId: String?.read(from: inp, using: &buf),
       useSsl: Bool.read(from: inp, using: &buf),
+      sslKeyPath: String?.read(from: inp, using: &buf),
+      sslCertPath: String?.read(from: inp, using: &buf),
       schemaRegistryId: UVarint?.read(from: inp, using: &buf)
     )
   }
@@ -334,6 +342,8 @@ public struct ConnectionDetails: Readable, Writable {
     awsRegion.write(to: out)
     awsAccessKeyId.write(to: out)
     useSsl.write(to: out)
+    sslKeyPath.write(to: out)
+    sslCertPath.write(to: out)
     schemaRegistryId.write(to: out)
   }
 }
