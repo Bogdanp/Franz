@@ -1,8 +1,8 @@
-#lang racket/base
+#lang racket/gui/easy
 
 (require franz/connection-details
-         racket/gui/easy
          racket/match
+         (prefix-in ~ threading)
          "combinator.rkt"
          "mixin.rkt"
          "observable.rkt"
@@ -26,7 +26,9 @@
     [@password (~optional-str (ConnectionDetails-password details))]
     [@aws-region (~optional-str (ConnectionDetails-aws-region details))]
     [@aws-access-key-id (~optional-str (ConnectionDetails-aws-access-key-id details))]
-    [@use-ssl? (ConnectionDetails-use-ssl details)])
+    [@use-ssl? (ConnectionDetails-use-ssl details)]
+    [@ssl-key-path (~optional-str (ConnectionDetails-ssl-key-path details))]
+    [@ssl-cert-path (~optional-str (ConnectionDetails-ssl-cert-path details))])
   (dialog
    #:title title
    #:size '(520 #f)
@@ -65,12 +67,39 @@
          (labeled "Region:" (input @aws-region (drop1 @aws-region:=)))
          (labeled "Access Key:" (input @aws-access-key-id (drop1 @aws-access-key-id:=)) #:width #f))
         (labeled "Secret Key:" (password @password (drop1 @password:=))))])
-    (labeled
-     ""
-     (checkbox
-      #:label "Use SSL"
-      #:checked? @use-ssl?
-      @use-ssl?:=))
+    (hpanel
+     (labeled
+      ""
+      (checkbox
+       #:label "Use SSL"
+       #:checked? @use-ssl?
+       @use-ssl?:=))
+     (button
+      "SSL Key..."
+      (lambda ()
+        (define path
+          (gui:get-file
+           #f ; message
+           #f ; parent
+           #f ; directory
+           #f ; filename
+           #f ; extension
+           null ; style
+           '(("PKCS8 Private Key" "*.der; *.pem; *.key"))))
+        (@ssl-key-path . := . (~and~> path path->string))))
+     (button
+      "SSL Cert..."
+      (lambda ()
+        (define path
+          (gui:get-file
+           #f ; message
+           #f ; parent
+           #f ; directory
+           #f ; filename
+           #f ; extension
+           null ; style
+           '(("X.509 Certificate" "*.crt; *.pem"))))
+        (@ssl-cert-path . := . (~and~> path path->string)))))
     (hpanel
      #:alignment '(right center)
      (button
@@ -93,7 +122,9 @@
            #:password (->optional-str ^@password)
            #:aws-region (->optional-str ^@aws-region)
            #:aws-access-key-id (->optional-str ^@aws-access-key-id)
-           #:use-ssl ^@use-ssl?))
+           #:use-ssl ^@use-ssl?
+           #:ssl-key-path ^@ssl-key-path
+           #:ssl-cert-path ^@ssl-cert-path))
         (save saved-details close!)))))))
 
 (define (~AuthMechanism v)
