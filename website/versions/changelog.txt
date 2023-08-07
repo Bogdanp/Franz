@@ -8,6 +8,10 @@
 * An issue with opening topics from the Consumer Group Detail view
   when filtering was applied.
 
+## Notes
+
+* As of the next version (Build 9), Franz will require macOS 13+.
+
 # 2023.07.14 (Build 7)
 ## Added
 
