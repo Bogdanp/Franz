@@ -23,6 +23,8 @@
                 <outlet property="nameField" destination="UUR-Gw-led" id="mzJ-k9-Znd"/>
                 <outlet property="passwordField" destination="0cc-2q-sDM" id="c5g-Rd-g2V"/>
                 <outlet property="plainAuthView" destination="wM9-Mi-j0v" id="Wn6-re-InM"/>
+                <outlet property="sslCertButton" destination="30G-JG-nBc" id="FM9-he-GUd"/>
+                <outlet property="sslKeyButton" destination="TxE-Zd-ZDB" id="Fn4-CY-wsI"/>
                 <outlet property="usernameField" destination="94v-KK-t4R" id="eBp-49-Hem"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>
