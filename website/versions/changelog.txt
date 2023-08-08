@@ -2,6 +2,7 @@
 ## Added
 
 * Support for providing custom SSL keys and certificates.
+* Topic partition replication information to the Topic Detail view.
 
 ## Fixed
 

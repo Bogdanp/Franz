@@ -22,7 +22,10 @@
   [is-controller : Bool])
 
 (define-record TopicPartition
-  [id : UVarint #:contract exact-nonnegative-integer?])
+  [id : UVarint #:contract exact-nonnegative-integer?]
+  [leader-id : UVarint]
+  [replica-node-ids : (Listof UVarint)]
+  [in-sync-replica-node-ids : (Listof UVarint)])
 
 (define-record Stats
   [(min-lag -1) : Varint]

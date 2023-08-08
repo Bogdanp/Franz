@@ -18,6 +18,17 @@ struct TopicDetailView: View {
   @State private var configs = [ResourceConfig]()
   @State private var currentTab = TabState.shared.get(.topicDetail) as? Tab ?? Tab.info
 
+  private var replicas: Int {
+    topic.partitions.reduce(0) { n, p in
+      n + p.replicaNodeIds.count
+    }
+  }
+  private var inSyncReplicas: Int {
+    topic.partitions.reduce(0) { n, p in
+      n + p.inSyncReplicaNodeIds.count
+    }
+  }
+
   var body: some View {
     VStack(alignment: .leading) {
       HStack(alignment: .top) {
@@ -41,10 +52,33 @@ struct TopicDetailView: View {
           ) { item in
             switch item.id {
             case .info:
-              Infos {
-                Info(label: "Partitions", description: String(topic.partitions.count))
-                Info(label: "Internal", description: topic.isInternal ? "yes" : "no", divider: false)
+              VStack(alignment: .leading) {
+                Infos {
+                  Info(label: "Partitions", description: String(topic.partitions.count))
+                  Info(label: "Replicas", description: String(replicas))
+                  Info(label: "In-sync Replicas", description: String(inSyncReplicas))
+                  Info(label: "Internal", description: topic.isInternal ? "yes" : "no", divider: false)
+                }
+
+                Spacer().frame(height: 15)
+                Text("Partitions").font(.headline)
+                Table(topic.partitions) {
+                  TableColumn("Partition ID") { part in
+                    Text(String(part.id))
+                  }
+                  TableColumn("Leader ID") { part in
+                    Text(String(part.leaderId))
+                  }
+                  TableColumn("Replica IDs") { part in
+                    Text(part.replicaNodeIds.map { String($0) }.joined(separator: ", "))
+                  }
+                  TableColumn("In-sync IDs") { part in
+                    Text(part.inSyncReplicaNodeIds.map { String($0) }.joined(separator: ", "))
+                  }
+                }
+                .tableStyle(BorderedTableStyle())
               }
+
             case .messages:
               TopicRecordsTable(
                 id: id,

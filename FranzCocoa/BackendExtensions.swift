@@ -44,6 +44,9 @@ extension ConnectionDetails {
 
 extension ConnectionDetails: Identifiable {}
 
+// MARK: - TopicPartition
+extension TopicPartition: Identifiable {}
+
 // MARK: - GroupPartitionOffset
 extension GroupPartitionOffset {
   var lag: Varint {

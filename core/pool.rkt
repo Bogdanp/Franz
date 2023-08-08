@@ -117,7 +117,10 @@
                            (define parts
                              (for/list ([p (in-list (k:TopicMetadata-partitions t))])
                                (make-TopicPartition
-                                #:id (k:PartitionMetadata-id p))))
+                                #:id (k:PartitionMetadata-id p)
+                                #:leader-id (k:PartitionMetadata-leader-id p)
+                                #:replica-node-ids (k:PartitionMetadata-replica-node-ids p)
+                                #:in-sync-replica-node-ids (k:PartitionMetadata-in-sync-replica-node-ids p))))
                            (make-Topic
                             #:name (k:TopicMetadata-name t)
                             #:partitions (sort parts < #:key TopicPartition-id)
