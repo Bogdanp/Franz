@@ -5,7 +5,8 @@
          racket/format
          racket/match
          racket/port
-         racket/random)
+         racket/random
+         (prefix-in s: "secret.rkt"))
 
 (provide
  generate-random-license
@@ -13,8 +14,7 @@
  ~license-key)
 
 (define license-secret
-  (string->bytes/utf-8
-   "***REMOVED***"))
+  (string->bytes/utf-8 s:license-secret))
 
 ;; license    ::= version '-' issue-date rand '-' checksum
 ;; version    ::= u8
