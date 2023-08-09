@@ -14,7 +14,7 @@ final class FranzCocoaUITests: XCTestCase {
     app.launch()
     try createLocalConnection(app)
 
-    app.windows["Local : 127.0.0.1:9092"].typeKey("w", modifierFlags: .command)
+    app.windows["Local — 127.0.0.1:9092"].typeKey("w", modifierFlags: .command)
     app.menuBarItems["Window"].menuItems["Welcome to Franz"].click()
     XCTAssertTrue(app.windows["Welcome to Franz"].staticTexts["Local"].exists)
     app.windows["Welcome to Franz"].typeKey("q", modifierFlags: .command)
@@ -34,7 +34,7 @@ final class FranzCocoaUITests: XCTestCase {
 
     let dialog = app.dialogs["alert"]
     dialog.buttons["OK"].click()
-    app.windows["Bad : 127.0.0.1:9099"].buttons[XCUIIdentifierCloseWindow].click()
+    app.windows["Bad — 127.0.0.1:9099"].buttons[XCUIIdentifierCloseWindow].click()
 
     app.menuBarItems["Window"].menuItems["Welcome to Franz"].click()
     window.tables["Connections Table"]
