@@ -23,7 +23,7 @@
 
 (define-record TopicPartition
   [id : UVarint #:contract exact-nonnegative-integer?]
-  [leader-id : UVarint]
+  [leader-id : Varint]
   [replica-node-ids : (Listof UVarint)]
   [in-sync-replica-node-ids : (Listof UVarint)])
 

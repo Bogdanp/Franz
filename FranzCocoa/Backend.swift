@@ -845,13 +845,13 @@ public struct TopicOption: Readable, Writable {
 
 public struct TopicPartition: Readable, Writable {
   public let id: UVarint
-  public let leaderId: UVarint
+  public let leaderId: Varint
   public let replicaNodeIds: [UVarint]
   public let inSyncReplicaNodeIds: [UVarint]
 
   public init(
     id: UVarint,
-    leaderId: UVarint,
+    leaderId: Varint,
     replicaNodeIds: [UVarint],
     inSyncReplicaNodeIds: [UVarint]
   ) {
@@ -864,7 +864,7 @@ public struct TopicPartition: Readable, Writable {
   public static func read(from inp: InputPort, using buf: inout Data) -> TopicPartition {
     return TopicPartition(
       id: UVarint.read(from: inp, using: &buf),
-      leaderId: UVarint.read(from: inp, using: &buf),
+      leaderId: Varint.read(from: inp, using: &buf),
       replicaNodeIds: [UVarint].read(from: inp, using: &buf),
       inSyncReplicaNodeIds: [UVarint].read(from: inp, using: &buf)
     )
