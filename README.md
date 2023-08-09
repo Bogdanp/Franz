@@ -7,15 +7,15 @@
   </h1>
 </p>
 
-Franz is a native macOS desktop client for Apache Kafka. This
-application is **not** Open Source. I'm providing the source code here
-because I want users to be able to see the code they're running and
-even change and build it for themselves if they want to. In that vein,
-you're free to read, build and run the application yourself, on your own
-devices, but please don't share any built artifacts with others. If you
-find Franz useful, please consider [buying a copy].
+Franz is a native macOS desktop client for Apache Kafka. It is **not**
+Open Source. I'm providing the source code here because I want users to
+be able to see the code they're running and even change and build it for
+themselves if they want to. You are free to read the code, and to build
+and run the application yourself, on your own devices, but please don't
+share any built artifacts with others. If you find Franz useful, please
+consider [purchasing a license].
 
-[buying a copy]: https://franz.defn.io
+[purchasing a license]: https://franz.defn.io
 
 ## Build
 
@@ -28,7 +28,7 @@ find Franz useful, please consider [buying a copy].
 ### First-time Setup
 
 1. Set up [Noise](https://github.com/Bogdanp/Noise).
-1. `$ raco pkg install --name franz core/`
+1. `raco pkg install --name franz core/`
 
 ### Building
 
