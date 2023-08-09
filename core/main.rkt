@@ -5,6 +5,7 @@
          noise/backend
          noise/serde
          racket/file
+         sentry
 
          "appdata.rkt"
          "logger.rkt"
@@ -19,6 +20,7 @@
          "release.rkt"
          "schema-registry.rkt"
          "script.rkt"
+         "secret.rkt"
          "workspace.rkt")
 
 (provide
@@ -43,7 +45,8 @@
       [else
        (build-application-path "metadata.sqlite3")]))
   (log-franz-debug "database path: ~a" database-path)
-  (parameterize ([current-connection (make-database database-path)])
+  (parameterize ([current-connection (make-database database-path)]
+                 [current-sentry (make-sentry sentry-dsn)])
     (migrate!)
     (maybe-adjust-trial-deadline)
     (parameterize ([http:current-user-agent (make-user-agent)])

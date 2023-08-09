@@ -19,6 +19,7 @@
                ["noise-serde-lib" #:version "0.4"]
                "protocol-buffers-lib"
                ["sasl-lib" #:version "1.3"]
+               "sentry-lib"
                "snappy-lib"
                "threading-lib"))
 (define build-deps '("rackunit-lib"))
