@@ -27,7 +27,8 @@ find Franz useful, please consider [buying a copy].
 
 ### First-time Setup
 
-    $ raco pkg install --name franz core/
+1. Set up [Noise](https://github.com/Bogdanp/Noise).
+1. `$ raco pkg install --name franz core/`
 
 ### Building
 
