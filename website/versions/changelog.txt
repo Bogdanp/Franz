@@ -8,6 +8,8 @@
 
 * An issue with opening topics from the Consumer Group Detail view
   when filtering was applied.
+* An issue with loading broker metadata for topics whose leader nodes
+  are unavailable.
 
 ## Notes
 
