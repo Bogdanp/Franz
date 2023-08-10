@@ -5,6 +5,7 @@
          racket/match
          (prefix-in ~ threading)
          "combinator.rkt"
+         "keychain.rkt"
          "mixin.rkt"
          "observable.rkt"
          "view.rkt")
@@ -107,6 +108,7 @@
            #:auth-mechanism ^@mechanism
            #:username (->optional-str ^@username)
            #:password (->optional-str ^@password)
+           #:password-id (ConnectionDetails-password-id details)
            #:aws-region (->optional-str ^@aws-region)
            #:aws-access-key-id (->optional-str ^@aws-access-key-id)
            #:use-ssl ^@use-ssl?
