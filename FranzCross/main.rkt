@@ -1,10 +1,12 @@
 #lang racket/gui/easy
 
-(require franz/connection-details
+(require franz/appdata
+         franz/connection-details
          (submod franz/connection-details rpc)
          franz/main
          racket/class
          "connection-dialog.rkt"
+         "keychain.rkt"
          "renderer.rkt"
          "welcome-window.rkt")
 
@@ -84,9 +86,12 @@
 
   (call-with-main-parameterization
    (lambda ()
-     (define eventspace (gui:make-eventspace))
-     (parameterize ([gui:current-eventspace eventspace])
-       (main))
-     (with-handlers ([exn:break? void])
-       (gui:yield eventspace))
-     (void))))
+     (parameterize ([current-keychain
+                     (make-filesystem-keychain
+                      (build-application-path "keychain.rktd"))])
+       (define eventspace (gui:make-eventspace))
+       (parameterize ([gui:current-eventspace eventspace])
+         (main))
+       (with-handlers ([exn:break? void])
+         (gui:yield eventspace))
+       (void)))))

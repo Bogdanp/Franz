@@ -1,6 +1,7 @@
 #lang racket/gui/easy
 
-(require franz/connection-details
+(require buid
+         franz/connection-details
          racket/format
          racket/match
          (prefix-in ~ threading)
@@ -19,13 +20,17 @@
                            #:save-action [save void]
                            #:cancel-action [cancel void])
   (define close! void)
+  (define keychain (current-keychain))
   (define-observables
     [@name (ConnectionDetails-name details)]
     [@host (ConnectionDetails-bootstrap-host details)]
     [@port (ConnectionDetails-bootstrap-port details)]
     [@mechanism (ConnectionDetails-auth-mechanism details)]
     [@username (~optional-str (ConnectionDetails-username details))]
-    [@password (~optional-str (ConnectionDetails-password details))]
+    [@password  (~optional-str
+                 (or (ConnectionDetails-password details)
+                     (and keychain (~and~> (ConnectionDetails-password-id details)
+                                           (get-password keychain _)))))]
     [@aws-region (~optional-str (ConnectionDetails-aws-region details))]
     [@aws-access-key-id (~optional-str (ConnectionDetails-aws-access-key-id details))]
     [@use-ssl? (ConnectionDetails-use-ssl details)]
@@ -99,6 +104,14 @@
       #:style '(border)
       save-label
       (lambda ()
+        (define password (->optional-str ^@password))
+        (define password-id
+          (or (ConnectionDetails-password-id details)
+              (buid)))
+        (when keychain
+          (if password
+              (put-password keychain password-id password)
+              (remove-password keychain password-id)))
         (define saved-details
           (make-ConnectionDetails
            #:id (ConnectionDetails-id details)
@@ -107,8 +120,7 @@
            #:bootstrap-port ^@port
            #:auth-mechanism ^@mechanism
            #:username (->optional-str ^@username)
-           #:password (->optional-str ^@password)
-           #:password-id (ConnectionDetails-password-id details)
+           #:password-id password-id
            #:aws-region (->optional-str ^@aws-region)
            #:aws-access-key-id (->optional-str ^@aws-access-key-id)
            #:use-ssl ^@use-ssl?
