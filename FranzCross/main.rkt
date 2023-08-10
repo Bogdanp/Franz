@@ -72,6 +72,9 @@
                "Delete"
                (λ ()
                  (when (confirm-deletion item)
+                   (remove-password
+                    (current-keychain)
+                    (ConnectionDetails-password-id item))
                    (delete-connection item)
                    (reload-connections)))))
              (send event get-x)
