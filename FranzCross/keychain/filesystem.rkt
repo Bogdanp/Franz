@@ -17,7 +17,6 @@
      (write-ht kc (hash-set (read-ht kc) id password)))
 
    (define (get-password kc id)
-     (eprintf "ht: ~s~n" (read-ht kc))
      (hash-ref (read-ht kc) id #f))
 
    (define (remove-password kc id)
