@@ -16,10 +16,13 @@
 (define (reload-connections)
   (@connections . := . (get-connections)))
 
-(define (render-connection-dialog conn action #:title [title "New Connection"])
+(define (render-connection-dialog conn action
+                                  #:title [title "New Connection"]
+                                  #:save-label [save-label "Connect"])
   (render
    (connection-dialog
     #:title title
+    #:save-label save-label
     #:save-action
     (λ (saved-conn close!)
       (action saved-conn)
@@ -70,6 +73,7 @@
                (λ ()
                  (render-connection-dialog
                   #:title "Edit Connection"
+                  #:save-label "Save"
                   item update-connection)))
               (menu-item-separator)
               (menu-item
