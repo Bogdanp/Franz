@@ -8,7 +8,8 @@
          "connection-dialog.rkt"
          "keychain.rkt"
          "renderer.rkt"
-         "welcome-window.rkt")
+         "welcome-window.rkt"
+         "window-manager.rkt")
 
 (define/obs @connections null)
 
@@ -45,6 +46,9 @@
   (current-renderer
    (render
     (welcome-window
+     #:open-action
+     (λ (item)
+       (open-workspace item))
      #:new-action
      (λ ()
        (render-connection-dialog
