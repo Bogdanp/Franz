@@ -26,8 +26,8 @@
        (p:lc-superimpose
         (p:filled-rounded-rectangle
          #:draw-border? #t
-         #:color (color #xD8D5DCFF)
-         #:border-color (color #xCBC8CFFF)
+         #:color (color #xDDDDDDFF)
+         #:border-color (color #xCCCCCCFF)
          #:border-width 1
          (- w 9)
          (- h 7)
