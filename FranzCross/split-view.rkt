@@ -64,7 +64,7 @@
        (define-values (w h)
          (send dc get-size))
        (send dc set-pen (send gui:the-pen-list find-or-create-pen "black" 0 'transparent))
-       (send dc set-brush (color #xED #xED #xED) 'solid)
+       (send dc set-brush (color #xEDEDEDFF) 'solid)
        (send dc draw-rectangle 0 0 w h))))
   (values @x divider))
 

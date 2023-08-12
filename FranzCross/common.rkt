@@ -2,6 +2,7 @@
 
 (require racket/class
          (prefix-in gui: racket/gui)
+         racket/gui/easy/color
          racket/gui/easy/font
          racket/runtime-path)
 
@@ -42,21 +43,18 @@
 
 ;; colors ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define (color r g b)
-  (make-object gui:color% r g b))
-
-(define-syntax-rule (define-colors [id r g b] ...)
+(define-syntax-rule (define-colors [id c] ...)
   (begin
     (provide id ...)
-    (define id (color r g b)) ...))
+    (define id (color c)) ...))
 
 (define-colors
-  [white #xFF #xFF #xFF]
-  [primary-color #x00 #x00 #x00]
-  [secondary-color #x50 #x50 #x50]
-  [selection-background-color #x08 #x4A #xDA]
-  [selection-primary-color #xFF #xFF #xFF]
-  [selection-secondary-color #xC3 #xDE #xFF])
+  [white #xFFFFFFFF]
+  [primary-color #x000000FF]
+  [secondary-color #x505050FF]
+  [selection-background-color #x084ADAFF]
+  [selection-primary-color #xFFFFFFFF]
+  [selection-secondary-color #xC3DEFFFF])
 
 
 ;; assets ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -22,19 +22,19 @@
   (set-face system-mono-font)
   (set-delta 'change-size 14)
   (set-delta 'change-weight 'normal)
-  (set-delta-foreground (color #x1D #x1D #x1D)))
+  (set-delta-foreground (color #x1D1D1DFF)))
 
 (define-style comment-style base-style
-  (set-delta-foreground (color #x4A #x56 #x60)))
+  (set-delta-foreground (color #x4A5660FF)))
 
 (define-style keyword-style base-style
-  (set-delta-foreground (color #x9B #x24 #x93)))
+  (set-delta-foreground (color #x9B2493FF)))
 
 (define-style string-style base-style
-  (set-delta-foreground (color #xC5 #x1B #x17)))
+  (set-delta-foreground (color #xC51B17FF)))
 
 (define-style number-style base-style
-  (set-delta-foreground (color #x1C #x04 #xCE)))
+  (set-delta-foreground (color #x1C04CEFF)))
 
 (define indent-phrase-re
   (let ([phrases '("function" "local function" "if" "elseif" "else" "for" "while" "do" "repeat")])
