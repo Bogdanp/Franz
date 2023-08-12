@@ -20,7 +20,7 @@
      (define-values (title-w _title-h _title-baseline _title-extra)
        (send dc get-text-extent title system-font-s))
      (define-values (status-w _status-h _status-baseline _status-extra)
-       (send dc get-text-extent status system-font-s))
+       (send dc get-text-extent status system-font-xs))
      (p:draw-pict
       (p:inset
        (p:lc-superimpose
@@ -42,7 +42,7 @@
            (p:rectangle
             (- w 10 2 5 title-w status-w) 0))
           (p:colorize
-           (p:text status system-font-s)
+           (p:text status system-font-xs)
            secondary-color))
          5 0))
        5 5)

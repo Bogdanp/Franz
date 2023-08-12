@@ -19,22 +19,25 @@
     [else (values "Segoe UI" "Consolas")]))
 
 (provide
+ font-size-xs
  font-size-s
  font-size-m
  font-size-l
  font-size-xl)
 
-(define-values (font-size-s font-size-m font-size-l font-size-xl)
+(define-values (font-size-xs font-size-s font-size-m font-size-l font-size-xl)
   (case (system-type 'os*)
-    [(macosx) (values 12 14 18 22)]
-    [else (values 10 12 14 18)]))
+    [(macosx) (values 10 12 14 18 22)]
+    [else (values 8 10 12 14 18)]))
 
 (provide
+ system-font-xs
  system-font-s
  system-font-m
  system-font-l
  system-font-xl)
 
+(define system-font-xs (font system-font font-size-xs))
 (define system-font-s (font system-font font-size-s))
 (define system-font-m (font system-font font-size-m))
 (define system-font-l (font system-font font-size-l))
