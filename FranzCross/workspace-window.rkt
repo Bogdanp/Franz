@@ -2,8 +2,10 @@
 
 (require franz/connection-details
          (submod franz/workspace rpc)
+         racket/format
          "keychain.rkt"
          "mixin.rkt"
+         "split-view.rkt"
          (prefix-in m: "window-manager.rkt"))
 
 (provide
@@ -13,6 +15,11 @@
   (define keychain (current-keychain))
   (define password (and keychain (get-password keychain (ConnectionDetails-password-id details))))
   (define id (open-workspace details password))
+  (define/obs @sidebar-visible? #t)
+  (define sidebar
+    (text "Sidebar"))
+  (define content
+    (text "Content"))
   (window
    #:title (~title details)
    #:mixin (mix-close-window
@@ -25,10 +32,16 @@
      "File")
     (menu
      "View"
-     (menu-item "Hide Sidebar"))
+     (menu-item
+      (@sidebar-visible? . ~> . (λ (visible?)
+                                  (~a (if visible? "Hide" "Show") " Sidebar")))
+      (λ<~ @sidebar-visible? not)))
     (menu
      "Help"))
-   (text "Hello")))
+   (if-view
+    @sidebar-visible?
+    (split-view sidebar content)
+    content)))
 
 (define (~title details)
   (format
