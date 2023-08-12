@@ -81,7 +81,8 @@
     (menu
      "Window"
      (menu-item
-      "Welcome to Franz"))
+      "Welcome to Franz"
+      m:render-welcome-window))
     (menu
      "Help"
      (menu-item

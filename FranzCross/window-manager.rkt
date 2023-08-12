@@ -1,14 +1,116 @@
-#lang racket/base
+#lang racket/gui/easy
 
 (require franz/connection-details
+         (prefix-in rpc: (submod franz/connection-details rpc))
          (prefix-in rpc: (submod franz/workspace rpc))
          racket/class
-         racket/gui/easy
          racket/lazy-require
-         "keychain.rkt")
+         "connection-dialog.rkt"
+         "keychain.rkt"
+         "welcome-window.rkt")
 
 (lazy-require
  ["workspace-window.rkt" (workspace-window)])
+
+;; welcome window ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(provide
+ render-welcome-window)
+
+(define the-welcome-renderer #f)
+
+(define (render-connection-dialog conn action
+                                  #:title [title "New Connection"]
+                                  #:save-label [save-label "Connect"])
+  (render
+   (connection-dialog
+    #:title title
+    #:save-label save-label
+    #:save-action
+    (λ (saved-conn close!)
+      (action saved-conn)
+      (close!))
+    conn)
+   the-welcome-renderer))
+
+(define (render-welcome-window)
+  (cond
+    [the-welcome-renderer
+     (define the-welcome-window
+       (renderer-root the-welcome-renderer))
+     (send the-welcome-window show #t)]
+    [else
+     (set! the-welcome-renderer (do-render-welcome-window))]))
+
+(define (do-render-welcome-window)
+  (define/obs @connections
+    (rpc:get-connections))
+  (render
+   (welcome-window
+    #:open-action
+    (λ (details)
+      (rpc:touch-connection details)
+      (open-workspace details)
+      (@connections . := . (rpc:get-connections)))
+    #:new-action
+    (λ ()
+      (render-connection-dialog
+       (make-ConnectionDetails
+        #:name "New Connection")
+       (λ (details)
+         (rpc:save-connection details)
+         (@connections . := . (rpc:get-connections))
+         (open-workspace details))))
+    #:context-action
+    (λ (details event)
+      ;; Enqueue a low-priority callback to allow other events to be
+      ;; handled before we block the eventspace.
+      (when details
+        (gui:queue-callback
+         (lambda ()
+           (render-popup-menu
+            the-welcome-renderer
+            (popup-menu
+             (menu-item
+              "Edit..."
+              (λ ()
+                (render-connection-dialog
+                 #:title "Edit Connection"
+                 #:save-label "Save"
+                 details
+                 (λ (updated-details)
+                   (rpc:update-connection updated-details)
+                   (@connections . := . (rpc:get-connections))))))
+             (menu-item-separator)
+             (menu-item
+              "Delete"
+              (λ ()
+                (when (confirm-deletion details)
+                  (remove-password
+                   (current-keychain)
+                   (ConnectionDetails-password-id details))
+                  (rpc:delete-connection details)
+                  (@connections . := . (rpc:get-connections))))))
+            (send event get-x)
+            (send event get-y)))
+         #f)))
+    @connections)))
+
+(define (confirm-deletion details)
+  (define res
+    (gui:message-box/custom
+     "Delete Connection"
+     (format "Delete ~a? This action cannot be undone."
+             (ConnectionDetails-name details))
+     "Delete"
+     "Cancel"
+     #f
+     (renderer-root the-welcome-renderer)
+     '(caution default=2)))
+  (eqv? res 1))
+
+
+;; workspaces ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide
  open-workspace

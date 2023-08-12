@@ -40,7 +40,7 @@
            secondary-color)
           (p:ghost
            (p:rectangle
-            (- w 10 2 5 title-w status-w) 0))
+            (- w 10 4 5 title-w status-w) 0))
           (p:colorize
            (p:text status system-font-xs)
            secondary-color))
