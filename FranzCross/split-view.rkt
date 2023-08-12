@@ -6,6 +6,9 @@
 (provide
  split-view)
 
+(define divider-background-color
+  (color #xEDEDEDFF))
+
 (define (make-divider [x-min 0])
   (define/obs @x x-min)
   (define divider
@@ -57,14 +60,15 @@
                 (sleep (/ 1.0 120))
                 (gui:queue-callback
                  (lambda ()
-                   (define dx (- dst src))
-                   (@x . <~ . (λ (x) (max (+ x dx) x-min)))
-                   (set! move-scheduled? #f)))))))))
+                   (when (and src dst)
+                     (define dx (- dst src))
+                     (@x . <~ . (λ (x) (max (+ x dx) x-min)))
+                     (set! move-scheduled? #f))))))))))
      (lambda (dc _)
        (define-values (w h)
          (send dc get-size))
        (send dc set-pen (send gui:the-pen-list find-or-create-pen "black" 0 'transparent))
-       (send dc set-brush (color #xEDEDEDFF) 'solid)
+       (send dc set-brush divider-background-color 'solid)
        (send dc draw-rectangle 0 0 w h))))
   (values @x divider))
 
