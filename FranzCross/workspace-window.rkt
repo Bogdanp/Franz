@@ -4,6 +4,7 @@
          racket/format
          "mixin.rkt"
          "split-view.rkt"
+         "status-bar.rkt"
          (prefix-in m: "window-manager.rkt"))
 
 (provide
@@ -11,10 +12,12 @@
 
 (define (workspace-window id details)
   (define/obs @sidebar-visible? #t)
+  (define/obs @status "Ready")
   (define sidebar
     (text "Sidebar"))
   (define content
-    (text "Content"))
+    (vpanel
+     (status-bar @status (ConnectionDetails-name details))))
   (window
    #:title (~title details)
    #:mixin (mix-close-window
