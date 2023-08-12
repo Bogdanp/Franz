@@ -1,8 +1,12 @@
 #lang racket/gui/easy
 
-(require franz/connection-details
+(require browser/external
+         franz/connection-details
+         (submod franz/workspace rpc)
          racket/format
+         racket/match
          "mixin.rkt"
+         "observable.rkt"
          "split-view.rkt"
          "status-bar.rkt"
          (prefix-in m: "window-manager.rkt"))
@@ -10,31 +14,79 @@
 (provide
  workspace-window)
 
+(struct state (id cookie status metadata))
+
+(define (make-state id)
+  (state id 0 "Ready" #f))
+
+(define (reload-metadata @state [force? #f])
+  (match-define (state id cookie _status _metadata)
+    (update-observable @state
+      (struct-copy state it
+                   [status "Fetching Metadata"]
+                   [cookie (add1 (state-cookie it))])))
+  (thread
+   (lambda ()
+     (define metadata
+       (get-metadata force? id))
+     (update-observable @state
+       (if (eqv? cookie (state-cookie it))
+           (struct-copy state it
+                        [status "Ready"]
+                        [metadata metadata])
+           it)))))
+
 (define (workspace-window id details)
+  (define/obs @state (make-state id))
   (define/obs @sidebar-visible? #t)
-  (define/obs @status "Ready")
+  (reload-metadata @state)
+  (define close! void)
   (define sidebar
     (text "Sidebar"))
   (define content
     (vpanel
-     (status-bar @status (ConnectionDetails-name details))))
+     (status-bar
+      (@state . ~> . state-status)
+      (ConnectionDetails-name details))))
   (window
    #:title (~title details)
    #:mixin (mix-close-window
             (lambda ()
-              (m:close-workspace id)))
+              (m:close-workspace id))
+            (lambda (close-proc)
+              (set! close! close-proc)))
    #:min-size '(800 600)
    (menu-bar
     (menu
-     "File")
+     "File"
+     (menu-item-separator)
+     (menu-item
+      "Exit"
+      (λ () ((gui:application-quit-handler)))))
+    (menu
+     "Connection"
+     (menu-item
+      "Reload"
+      (λ () (reload-metadata @state #t)))
+     (menu-item-separator)
+     (menu-item
+      "Close"
+      (λ () (close!))))
     (menu
      "View"
      (menu-item
-      (@sidebar-visible? . ~> . (λ (visible?)
-                                  (~a (if visible? "Hide" "Show") " Sidebar")))
+      (let-observable ([visible? @sidebar-visible?])
+        (~a (if visible? "Hide" "Show") " Sidebar"))
       (λ<~ @sidebar-visible? not)))
     (menu
-     "Help"))
+     "Window"
+     (menu-item
+      "Welcome to Franz"))
+    (menu
+     "Help"
+     (menu-item
+      "Franz Manual"
+      (λ () (send-url "https://franz.defn.io/manual/")))))
    (if-view
     @sidebar-visible?
     (split-view sidebar content)
@@ -57,5 +109,5 @@
    (make-ConnectionDetails
     #:id 1
     #:name "Example"
-    #:bootstrap-host "127.0.0.1"
+    #:bootstrap-host "kafka-1"
     #:bootstrap-port 9092)))

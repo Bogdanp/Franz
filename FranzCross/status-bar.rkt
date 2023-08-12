@@ -29,9 +29,9 @@
          #:color (color #xDDDDDDFF)
          #:border-color (color #xCCCCCCFF)
          #:border-width 1
-         (- w 9)
+         (- w 10)
          (- h 7)
-         6 ;radius
+         3 ;radius
          )
         (p:inset
          (p:hc-append
