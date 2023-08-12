@@ -19,18 +19,13 @@
 ;; workspace id -> workspace
 (define workspaces (make-hasheqv))
 
-;; ;; connection id -> workspace id
-;; (define workspaces (make-hasheqv))
-;; ;; workspace id -> renderer
-;; (define workspace-windows (make-hasheqv))
-
 (define (open-workspace details)
   (define connection-id
     (ConnectionDetails-id details))
   (define workspace-id
-    (for/first ([w (in-hash-values workspaces)]
+    (for/first ([(id w) (in-hash workspaces)]
                 #:when (= connection-id (ConnectionDetails-id (workspace-details w))))
-      w))
+      id))
   (cond
     [workspace-id
      (define w (hash-ref workspaces workspace-id))
