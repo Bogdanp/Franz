@@ -83,18 +83,31 @@
      @connections))))
 
 (module+ main
-  (gui:application-quit-handler
-   (lambda ()
-     (exit 0)))
+  (require racket/port)
 
-  (call-with-main-parameterization
-   (lambda ()
-     (parameterize ([current-keychain
-                     (make-filesystem-keychain
-                      (build-application-path "keychain.rktd"))])
-       (define eventspace (gui:make-eventspace))
-       (parameterize ([gui:current-eventspace eventspace])
-         (main))
-       (with-handlers ([exn:break? void])
-         (gui:yield eventspace))
-       (void)))))
+  (let/cc esc
+    (uncaught-exception-handler
+     (lambda (e)
+       (define message
+         (call-with-output-string
+          (lambda (out)
+            (parameterize ([current-error-port out])
+              ((error-display-handler) (exn-message e) e)))))
+       (gui:message-box "Error" message #f '(stop ok))
+       (esc)))
+
+    (gui:application-quit-handler
+     (lambda ()
+       (exit 0)))
+
+    (call-with-main-parameterization
+     (lambda ()
+       (parameterize ([current-keychain
+                       (make-filesystem-keychain
+                        (build-application-path "keychain.rktd"))])
+         (define eventspace (gui:make-eventspace))
+         (parameterize ([gui:current-eventspace eventspace])
+           (main))
+         (with-handlers ([exn:break? void])
+           (gui:yield eventspace))
+         (void))))))
