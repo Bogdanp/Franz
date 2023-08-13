@@ -45,13 +45,15 @@
 (define (do-render-welcome-window)
   (define/obs @connections
     (rpc:get-connections))
+  (define (reload-connections)
+    (@connections . := . (rpc:get-connections)))
   (render
    (welcome-window
     #:open-action
     (λ (details)
       (rpc:touch-connection details)
-      (open-workspace details)
-      (@connections . := . (rpc:get-connections)))
+      (reload-connections)
+      (open-workspace details))
     #:new-action
     (λ ()
       (render-connection-dialog
@@ -59,7 +61,7 @@
         #:name "New Connection")
        (λ (details)
          (rpc:save-connection details)
-         (@connections . := . (rpc:get-connections))
+         (reload-connections)
          (open-workspace details))))
     #:context-action
     (λ (details event)
@@ -80,7 +82,7 @@
                  details
                  (λ (updated-details)
                    (rpc:update-connection updated-details)
-                   (@connections . := . (rpc:get-connections))))))
+                   (reload-connections)))))
              (menu-item-separator)
              (menu-item
               "Delete"
@@ -90,7 +92,7 @@
                    (current-keychain)
                    (ConnectionDetails-password-id details))
                   (rpc:delete-connection details)
-                  (@connections . := . (rpc:get-connections))))))
+                  (reload-connections)))))
             (send event get-x)
             (send event get-y)))
          #f)))

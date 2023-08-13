@@ -58,35 +58,35 @@
    #:min-size '(800 600)
    (menu-bar
     (menu
-     "File"
+     "&File"
      (menu-item-separator)
      (menu-item
-      "Exit"
+      "E&xit"
       (λ () ((gui:application-quit-handler)))))
     (menu
-     "Connection"
+     "&Connection"
      (menu-item
-      "Reload"
+      "&Reload"
       (λ () (reload-metadata @state #t)))
      (menu-item-separator)
      (menu-item
-      "Close"
+      "&Close"
       (λ () (close!))))
     (menu
-     "View"
+     "&View"
      (menu-item
       (let-observable ([visible? @sidebar-visible?])
-        (~a (if visible? "Hide" "Show") " Sidebar"))
+        (~a (if visible? "Hide" "Show") " &Sidebar"))
       (λ<~ @sidebar-visible? not)))
     (menu
-     "Window"
+     "&Window"
      (menu-item
-      "Welcome to Franz"
+      "&Welcome to Franz"
       m:render-welcome-window))
     (menu
-     "Help"
+     "&Help"
      (menu-item
-      "Franz Manual"
+      "Franz &Manual"
       (λ () (send-url "https://franz.defn.io/manual/")))))
    (if-view
     @sidebar-visible?
