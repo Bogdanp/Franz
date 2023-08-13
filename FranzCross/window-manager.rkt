@@ -12,6 +12,16 @@
 (lazy-require
  ["workspace-window.rkt" (workspace-window)])
 
+(provide
+ close-all-windows)
+
+(define (close-all-windows)
+  (for-each try-close-renderer (cons the-welcome-renderer (map workspace-renderer (hash-values workspaces)))))
+
+(define (try-close-renderer r)
+  (when r (send (renderer-root r) show #f)))
+
+
 ;; welcome window ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide

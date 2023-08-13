@@ -62,7 +62,7 @@
      (menu-item-separator)
      (menu-item
       "E&xit"
-      (λ () ((gui:application-quit-handler)))))
+      (λ () (m:close-all-windows))))
     (menu
      "&Connection"
      (menu-item

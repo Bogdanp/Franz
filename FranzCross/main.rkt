@@ -3,6 +3,7 @@
 (module+ main
   (require franz/appdata
            franz/main
+           (prefix-in rpc: (submod franz/workspace rpc))
            racket/port
            "keychain.rkt"
            "window-manager.rkt")
@@ -19,10 +20,6 @@
        (gui:message-box "Error" message #f '(stop ok))
        (esc)))
 
-    (gui:application-quit-handler
-     (lambda ()
-       (exit 0)))
-
     (call-with-main-parameterization
      (lambda ()
        (parameterize ([current-keychain
@@ -33,4 +30,5 @@
            (render-welcome-window))))))
   (void
    (with-handlers ([exn:break? void])
-     (gui:yield eventspace))))
+     (gui:yield eventspace)))
+  (rpc:close-all-workspaces))
