@@ -7,7 +7,8 @@
          racket/match
          "canvas-list.rkt"
          "common.rkt"
-         "observable.rkt")
+         "observable.rkt"
+         "preference.rkt")
 
 (provide
  workspace-sidebar)
@@ -19,8 +20,15 @@
                            #:select-action [select-action void]
                            #:context-action [context-action void])
   (define/obs @collapse-states
-    (for/hasheq ([k (in-list '(brokers topics groups schemas))])
-      (values k #f)))
+    (get-preference
+     'workspace-sidebar:collapse-states
+     (lambda ()
+       (for/hasheq ([k (in-list '(brokers topics groups schemas))])
+         (values k #f)))))
+  (obs-observe!
+   @collapse-states
+   (lambda (states)
+     (put-preference 'workspace-sidebar:collapse-states states)))
   (define/obs @items
     (let-observable ([m @metadata]
                      [s @collapse-states])
