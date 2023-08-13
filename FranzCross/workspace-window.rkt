@@ -90,7 +90,9 @@
       (λ () (send-url "https://franz.defn.io/manual/")))))
    (if-view
     @sidebar-visible?
-    (split-view sidebar content)
+    (split-view
+     #:collapse-action (λ () (@sidebar-visible? . := . #f))
+     sidebar content)
     content)))
 
 (define (~title details)
