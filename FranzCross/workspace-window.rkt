@@ -59,6 +59,9 @@
    (menu-bar
     (menu
      "&File"
+     (menu-item
+      "New &Window"
+      (λ () (m:open-workspace details #t)))
      (menu-item-separator)
      (menu-item
       "E&xit"

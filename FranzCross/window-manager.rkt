@@ -133,7 +133,7 @@
 ;; workspace id -> workspace
 (define workspaces (make-hasheqv))
 
-(define (open-workspace details)
+(define (open-workspace details [force? #f])
   (define connection-id
     (ConnectionDetails-id details))
   (define workspace-id
@@ -141,7 +141,7 @@
                 #:when (= connection-id (ConnectionDetails-id (workspace-details w))))
       id))
   (cond
-    [workspace-id
+    [(and workspace-id (not force?))
      (define w (hash-ref workspaces workspace-id))
      (send (renderer-root (workspace-renderer w)) show #t)]
     [else
