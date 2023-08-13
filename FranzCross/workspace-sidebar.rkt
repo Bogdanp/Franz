@@ -16,6 +16,9 @@
 (struct Header (label collapsed?)
   #:transparent)
 
+(define chevron-e (p:bitmap (gui:read-bitmap #:try-@2x? #t chevron-e.png)))
+(define chevron-s (p:bitmap (gui:read-bitmap #:try-@2x? #t chevron-s.png)))
+
 (define (workspace-sidebar @metadata
                            #:select-action [select-action void]
                            #:context-action [context-action void])
@@ -86,7 +89,7 @@
        [else (void)]))))
 
 (define (Header-pict hdr state w h)
-  (match-define (Header label _collapsed?) hdr)
+  (match-define (Header label collapsed?) hdr)
   (define bg-color
     (case state
       [(hover selected) (color #xEEEEEEFF)]
@@ -97,6 +100,7 @@
     #:border-color bg-color
     #:border-width 1
     w h)
+   (p:inset (if collapsed? chevron-e chevron-s) 5)
    (p:inset
     (p:text
      (case label
@@ -105,7 +109,7 @@
        [(groups) "Consumer Groups"]
        [(schemas) "Schemas"])
      system-font-s)
-    5 0)))
+    26 0)))
 
 (define (Broker-pict b state w h)
   (standard-pict
@@ -146,7 +150,7 @@
     (p:colorize
      (p:text label system-font-s)
      fg-color)
-    15 0)))
+    26 0)))
 
 (module+ main
   (render

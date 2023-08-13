@@ -75,4 +75,6 @@
     (define-asset id) ...))
 
 (define-assets
+  chevron-s.png
+  chevron-e.png
   icon_512x512.png)
