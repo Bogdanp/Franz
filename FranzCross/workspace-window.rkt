@@ -1,6 +1,7 @@
 #lang racket/gui/easy
 
 (require browser/external
+         franz/broker
          franz/connection-details
          (submod franz/workspace rpc)
          racket/format
@@ -9,7 +10,8 @@
          "observable.rkt"
          "split-view.rkt"
          "status-bar.rkt"
-         (prefix-in m: "window-manager.rkt"))
+         (prefix-in m: "window-manager.rkt")
+         "workspace-sidebar.rkt")
 
 (provide
  workspace-window)
@@ -17,7 +19,11 @@
 (struct state (id cookie status metadata))
 
 (define (make-state id)
-  (state id 0 "Ready" #f))
+  (state id 0 "Ready" (make-Metadata
+                       #:brokers null
+                       #:topics null
+                       #:groups null
+                       #:schemas null)))
 
 (define (reload-metadata @state [force? #f])
   (match-define (state id cookie _status _metadata)
@@ -42,7 +48,8 @@
   (reload-metadata @state)
   (define close! void)
   (define sidebar
-    (text "Sidebar"))
+    (workspace-sidebar
+     (@state . ~> . state-metadata)))
   (define content
     (vpanel
      (status-bar

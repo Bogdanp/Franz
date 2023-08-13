@@ -10,7 +10,7 @@
 
 (define canvas-list%
   (class* object% (view<%>)
-    (init-field @items paint callback item-height)
+    (init-field @items paint callback item-height item=?)
     (super-new)
 
     (define/public (dependencies)
@@ -47,7 +47,7 @@
         [@items
          (define maybe-index
            (and~> (send v get-selected-item)
-                  (index-of val _)))
+                  (index-of val _ item=?)))
          (send v set-items val)
          (send v select-index maybe-index)]))
 
@@ -57,12 +57,14 @@
 (define (canvas-list @items
                      [paint #f]
                      #:action [callback void]
-                     #:item-height [item-height 20])
+                     #:item-height [item-height 20]
+                     #:item=? [item=? equal?])
   (new canvas-list%
        [@items @items]
        [paint paint]
        [callback callback]
-       [item-height item-height]))
+       [item-height item-height]
+       [item=? item=?]))
 
 (module+ main
   (require racket/gui/easy/operator)
