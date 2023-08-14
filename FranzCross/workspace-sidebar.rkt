@@ -77,7 +77,7 @@
               (Header-label b))
          (equal? a b)))
    #:action
-   (λ (type item _event)
+   (λ (type item event)
      (case type
        [(select)
         (unless (Header? item)
@@ -88,7 +88,7 @@
             (hash-update it (Header-label item) not)))]
        [(context)
         (unless (Header? item)
-          (context-action item))]
+          (context-action item event))]
        [else (void)]))))
 
 (define (Header-pict hdr state _dc w h)

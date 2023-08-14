@@ -6,6 +6,8 @@
          (submod franz/workspace rpc)
          racket/format
          racket/match
+         "alert.rkt"
+         "hacks.rkt"
          "mixin.rkt"
          "observable.rkt"
          "split-view.rkt"
@@ -25,7 +27,7 @@
                        #:groups null
                        #:schemas null)))
 
-(define (reload-metadata @state [force? #f])
+(define (reload-metadata @state #:force? [force? #t])
   (match-define (state id cookie _status _metadata)
     (update-observable @state
       (struct-copy state it
@@ -45,10 +47,42 @@
 (define (workspace-window id details)
   (define/obs @state (make-state id))
   (define/obs @sidebar-visible? #t)
-  (reload-metadata @state)
+  (reload-metadata #:force? #f @state)
   (define close! void)
   (define sidebar
     (workspace-sidebar
+     #:context-action
+     (λ (item event)
+       (define workspace-renderer
+         (m:get-workspace-renderer id))
+       (cond
+         [(Group? item)
+          (render-popup-menu*
+           workspace-renderer
+           (popup-menu
+            (menu-item
+             "Delete"
+             (lambda ()
+               (when (confirm #:title "Delete Group"
+                              #:message (format "Delete ~a? This action cannot be undone." (Group-id item))
+                              #:renderer workspace-renderer)
+                 (delete-group (Group-id item) id)
+                 (reload-metadata @state)))))
+           event)]
+         [(Topic? item)
+          (render-popup-menu*
+           workspace-renderer
+           (popup-menu
+            (menu-item
+             "Delete"
+             (lambda ()
+               (when (confirm #:title "Delete Topic"
+                              #:message (format "Delete ~a? This action cannot be undone." (Topic-name item))
+                              #:renderer workspace-renderer)
+                 (delete-topic (Topic-name item) id)
+                 (reload-metadata @state)))))
+           event)]
+         [else (void)]))
      (@state . ~> . state-metadata)))
   (define content
     (vpanel
@@ -77,11 +111,15 @@
      "&Connection"
      (menu-item
       "&Reload"
-      (λ () (reload-metadata @state #t)))
+      (λ () (reload-metadata @state)))
      (menu-item-separator)
      (menu-item
       "&Close"
       (λ () (close!))))
+    (menu
+     "&Topic"
+     (menu-item
+      "&New Topic..."))
     (menu
      "&View"
      (menu-item
