@@ -10,6 +10,7 @@
          "hacks.rkt"
          "mixin.rkt"
          "observable.rkt"
+         "new-topic-dialog.rkt"
          "split-view.rkt"
          "status-bar.rkt"
          (prefix-in m: "window-manager.rkt")
@@ -119,7 +120,15 @@
     (menu
      "&Topic"
      (menu-item
-      "&New Topic..."))
+      "&New Topic..."
+      (lambda ()
+        (render
+         (new-topic-dialog
+          #:create-action
+          (lambda (name partitions replication-factor options)
+            (create-topic name partitions replication-factor null id)
+            (reload-metadata @state)))
+         (m:get-workspace-renderer id)))))
     (menu
      "&View"
      (menu-item
