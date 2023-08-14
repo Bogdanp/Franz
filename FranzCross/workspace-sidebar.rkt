@@ -3,8 +3,11 @@
 (require franz/broker
          franz/schema-registry/schema
          (prefix-in p: pict)
+         racket/class
+         racket/format
          racket/list
          racket/match
+         racket/math
          "canvas-list.rkt"
          "common.rkt"
          "observable.rkt"
@@ -64,7 +67,7 @@
           [(Group? item) Group-pict]
           [(Schema? item) Schema-pict]
           [else (error 'workspace-sidebar "unexpected item: ~s" item)])
-        item state w h))
+        item state dc w h))
      (p:draw-pict pict dc 0 0))
    #:item=?
    (λ (a b)
@@ -88,7 +91,7 @@
           (context-action item))]
        [else (void)]))))
 
-(define (Header-pict hdr state w h)
+(define (Header-pict hdr state _dc w h)
   (match-define (Header label collapsed?) hdr)
   (define bg-color
     (case state
@@ -111,46 +114,92 @@
      system-font-s)
     26 0)))
 
-(define (Broker-pict b state w h)
+(define (Broker-pict b state dc w h)
+  (define label
+    (format
+     "~a:~a"
+     (Broker-host b)
+     (Broker-port b)))
   (standard-pict
-   (format
-    "~a:~a"
-    (Broker-host b)
-    (Broker-port b))
-   state w h))
+   #:label label
+   state dc w h))
 
-(define (Topic-pict t state w h)
+(define (Topic-pict t state dc w h)
   (standard-pict
-   (Topic-name t)
-   state w h))
+   #:label (Topic-name t)
+   #:count (Stats-sum-lag (Topic-stats t))
+   state dc w h))
 
-(define (Group-pict g state w h)
+(define (Group-pict g state dc w h)
   (standard-pict
-   (Group-id g)
-   state w h))
+   #:label (Group-id g)
+   #:count (Stats-sum-lag (Group-stats g))
+   state dc w h))
 
-(define (Schema-pict s state w h)
+(define (Schema-pict s state dc w h)
   (standard-pict
-   (Schema-name s)
-   state w h))
+   #:label (Schema-name s)
+   state dc w h))
 
-(define (standard-pict label state w h)
-  (define-values (bg-color fg-color)
+(define (standard-pict state dc w h
+                       #:label label
+                       #:count [count #f])
+  (define l-padding 26)
+  (define r-padding 7)
+  (define count-str (and count (~count count)))
+  (define-values (label-w _label-h _label-baseline _label-extra)
+    (send dc get-text-extent label system-font-s))
+  (define-values (count-w _count-h _count-baseline _count-extra)
+    (if count-str
+        (send dc get-text-extent count-str system-mono-font-s)
+        (values 0 0 0 0)))
+  (define-values (bg-color fg-color secondary-fg-color)
     (case state
-      [(hover) (values (color #xEEEEEEFF) primary-color)]
-      [(selected) (values selection-background-color selection-primary-color)]
-      [else (values white primary-color)]))
-  (p:lc-superimpose
-   (p:filled-rectangle
-    #:color bg-color
-    #:border-color bg-color
-    #:border-width 1
-    w h)
-   (p:inset
-    (p:colorize
-     (p:text label system-font-s)
-     fg-color)
-    26 0)))
+      [(hover) (values (color #xEEEEEEFF) primary-color secondary-color)]
+      [(selected) (values selection-background-color selection-primary-color selection-secondary-color)]
+      [else (values white primary-color secondary-color)]))
+  (define spacer-w
+    (max (- w label-w count-w l-padding r-padding) 0))
+  (cond
+    [(and (zero? spacer-w)
+          (> (string-length label) 3))
+     (standard-pict
+      #:label (~a (substring label 0 (- (string-length label) 3)) "…")
+      #:count count
+      state dc w h)]
+    [else
+     (define label-pict
+       (p:colorize
+        (p:text label system-font-s)
+        fg-color))
+     (define text-pict
+       (if count-str
+           (p:hc-append
+            label-pict
+            (p:ghost
+             (p:rectangle spacer-w h))
+            (p:colorize
+             (p:text count-str system-mono-font-s)
+             secondary-fg-color))
+           label-pict))
+     (p:lc-superimpose
+      (p:filled-rectangle
+       #:color bg-color
+       #:border-color bg-color
+       #:border-width 1
+       w h)
+      (p:inset text-pict l-padding 0 r-padding 0))]))
+
+(define (~count n)
+  (cond
+    [(>= n 1000000000)
+     (~a (exact-round (/ n 1000000000.0)) "B")]
+    [(>= n 1000000)
+     (~a (exact-round (/ n 1000000.0)) "M")]
+    [(>= n 1000)
+     (~a (exact-round (/ n 1000.0)) "k")]
+    [else
+     (~a n)]))
 
 (module+ main
   (render
@@ -179,7 +228,11 @@
                                    #:id 1
                                    #:leader-id 1
                                    #:replica-node-ids '(1)
-                                   #:in-sync-replica-node-ids '(1))))
+                                   #:in-sync-replica-node-ids '(1)))
+                    #:stats (make-Stats
+                             #:min-lag 0
+                             #:max-lag 100
+                             #:sum-lag 10000))
                    (make-Topic
                     #:name "Example Topic 2"
                     #:partitions (list
@@ -187,6 +240,18 @@
                                    #:id 1
                                    #:leader-id 1
                                    #:replica-node-ids '(1)
-                                   #:in-sync-replica-node-ids '(1)))))
+                                   #:in-sync-replica-node-ids '(1))))
+                   (make-Topic
+                    #:name "Supercalifragilisticexpialidocious"
+                    #:partitions (list
+                                  (make-TopicPartition
+                                   #:id 1
+                                   #:leader-id 1
+                                   #:replica-node-ids '(1)
+                                   #:in-sync-replica-node-ids '(1)))
+                    #:stats (make-Stats
+                             #:min-lag 0
+                             #:max-lag 100
+                             #:sum-lag 10000000000)))
          #:groups null
          #:schemas null))))))

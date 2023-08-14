@@ -43,6 +43,19 @@
 (define system-font-l (font system-font font-size-l))
 (define system-font-xl (font system-font font-size-xl))
 
+(provide
+ system-mono-font-xs
+ system-mono-font-s
+ system-mono-font-m
+ system-mono-font-l
+ system-mono-font-xl)
+
+(define system-mono-font-xs (font system-mono-font font-size-xs))
+(define system-mono-font-s (font system-mono-font font-size-s))
+(define system-mono-font-m (font system-mono-font font-size-m))
+(define system-mono-font-l (font system-mono-font font-size-l))
+(define system-mono-font-xl (font system-mono-font font-size-xl))
+
 
 ;; colors ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
