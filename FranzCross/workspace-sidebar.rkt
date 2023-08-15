@@ -179,26 +179,28 @@
                        #:label label
                        #:count [count #f])
   (define l-padding 26)
-  (define r-padding 7)
+  (define r-padding 10)
   (define count-str (and count (~count count)))
   (define-values (label-w _label-h _label-baseline _label-extra)
-    (send dc get-text-extent label system-font-s))
-  (define-values (count-w _count-h _count-baseline _count-extra)
+    (send dc get-text-extent label system-font-s #t))
+  (define-values (count-w count-h _count-baseline _count-extra)
     (if count-str
-        (send dc get-text-extent count-str system-mono-font-s)
+        (send dc get-text-extent count-str system-mono-font-s #t)
         (values 0 0 0 0)))
   (define-values (bg-color fg-color secondary-fg-color)
     (case state
       [(hover) (values (color #xEEEEEEFF) primary-color secondary-color)]
       [(selected) (values selection-background-color selection-primary-color selection-secondary-color)]
       [else (values white primary-color secondary-color)]))
-  (define spacer-w
-    (max (- w label-w count-w l-padding r-padding) 0))
+  (define content-w
+    (max (- w l-padding r-padding) 0))
+  (define space-w
+    (max (- content-w label-w count-w) 0))
   (cond
-    [(and (zero? spacer-w)
-          (> (string-length label) 3))
+    [(and (<= space-w 1)
+          (>= (string-length label) 4))
      (standard-pict
-      #:label (~a (substring label 0 (- (string-length label) 3)) "…")
+      #:label (~a (substring label 0 (- (string-length label) 4)) "…")
       #:count count
       state dc w h)]
     [else
@@ -208,10 +210,15 @@
         fg-color))
      (define text-pict
        (if count-str
-           (p:hc-append
-            label-pict
-            (p:ghost
-             (p:rectangle spacer-w h))
+           (p:pin-over
+            (p:lc-superimpose
+             (p:ghost
+              (p:filled-rectangle
+               content-w h))
+             label-pict)
+            (- content-w count-w)
+            (- (quotient h 2)
+               (quotient count-h 2))
             (p:colorize
              (p:text count-str system-mono-font-s)
              secondary-fg-color))
