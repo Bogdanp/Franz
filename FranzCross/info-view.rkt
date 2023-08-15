@@ -14,7 +14,7 @@
      (hpanel
       #:stretch '(#t #f)
       (hpanel
-       #:min-size '(100 #f)
+       #:min-size '(110 #f)
        #:stretch '(#f #t)
        (text
         #:font system-font-s
