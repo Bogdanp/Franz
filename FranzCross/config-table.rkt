@@ -36,11 +36,21 @@
    #:mixin
    (λ (%)
      (class %
+       (inherit get-selections select)
        (super-new)
        (define/override (on-subwindow-event receiver event)
-         (when (eq? (send event get-event-type) 'right-down)
-           (make-mouse-event-positions-absolute receiver event)
-           (set! context-pending-event event))
+         (case (send event get-event-type)
+           [(left-down)
+            (set! context-pending-event #f)]
+           [(right-down)
+            ;; HACK: The action callback doesn't fire unless there is
+            ;; a new selection.  So, deselect any selected items on
+            ;; right-click so that our context menu can fire on
+            ;; already-selected items.
+            (for ([idx (in-list (get-selections))])
+              (select idx #f))
+            (make-mouse-event-positions-absolute receiver event)
+            (set! context-pending-event event)])
          (super on-subwindow-event receiver event))))
    (λ (event entries selection)
      (case event
