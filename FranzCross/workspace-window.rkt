@@ -50,6 +50,19 @@
   (define/obs @sidebar-visible? #t)
   (reload-metadata #:force? #f @state)
   (define close! void)
+  (define (new-topic)
+    (render
+     (new-topic-dialog
+      #:create-action
+      (lambda (name partitions replication-factor options)
+        (define the-options
+          (for/list ([o (in-list options)])
+            (make-TopicOption
+             #:key (car o)
+             #:value (cdr o))))
+        (create-topic name partitions replication-factor the-options id)
+        (reload-metadata @state)))
+     (m:get-workspace-renderer id)))
   (define sidebar
     (workspace-sidebar
      #:context-action
@@ -84,6 +97,7 @@
                  (reload-metadata @state)))))
            event)]
          [else (void)]))
+     #:new-topic-action new-topic
      (@state . ~> . state-metadata)))
   (define content
     (vpanel
@@ -121,19 +135,7 @@
      "&Topic"
      (menu-item
       "&New Topic..."
-      (lambda ()
-        (render
-         (new-topic-dialog
-          #:create-action
-          (lambda (name partitions replication-factor options)
-            (define the-options
-              (for/list ([o (in-list options)])
-                (make-TopicOption
-                 #:key (car o)
-                 #:value (cdr o))))
-            (create-topic name partitions replication-factor the-options id)
-            (reload-metadata @state)))
-         (m:get-workspace-renderer id)))))
+      new-topic))
     (menu
      "&View"
      (menu-item

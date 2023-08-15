@@ -8,7 +8,9 @@
          racket/list
          racket/match
          racket/math
+         racket/string
          "canvas-list.rkt"
+         "combinator.rkt"
          "common.rkt"
          "observable.rkt"
          "preference.rkt")
@@ -24,7 +26,8 @@
 
 (define (workspace-sidebar @metadata
                            #:select-action [select-action void]
-                           #:context-action [context-action void])
+                           #:context-action [context-action void]
+                           #:new-topic-action [new-topic-action void])
   (define/obs @collapse-states
     (get-preference
      'workspace-sidebar:collapse-states
@@ -35,9 +38,11 @@
    @collapse-states
    (lambda (states)
      (put-preference 'workspace-sidebar:collapse-states states)))
+  (define/obs @filter "")
   (define/obs @items
     (let-observable ([m @metadata]
-                     [s @collapse-states])
+                     [s @collapse-states]
+                     [f @filter])
       (match-define
         (hash-table
          ['brokers brokers-collapsed?]
@@ -45,51 +50,80 @@
          ['groups groups-collapsed?]
          ['schemas schemas-collapsed?])
         s)
-      (flatten
-       (list
-        (Header 'brokers brokers-collapsed?)
-        (if brokers-collapsed? null (Metadata-brokers m))
-        (Header 'topics topics-collapsed?)
-        (if topics-collapsed? null (Metadata-topics m))
-        (Header 'groups groups-collapsed?)
-        (if groups-collapsed? null (Metadata-groups m))
-        (Header 'schemas schemas-collapsed?)
-        (if schemas-collapsed? null (Metadata-schemas m))))))
-  (canvas-list
-   @items
-   #:item-height 30
-   (λ (item state dc w h)
-     (define pict
-       ((cond
-          [(Header? item) Header-pict]
-          [(Broker? item) Broker-pict]
-          [(Topic? item) Topic-pict]
-          [(Group? item) Group-pict]
-          [(Schema? item) Schema-pict]
-          [else (error 'workspace-sidebar "unexpected item: ~s" item)])
-        item state dc w h))
-     (p:draw-pict pict dc 0 0))
-   #:item=?
-   (λ (a b)
-     (if (and (Header? a)
-              (Header? b))
-         (eq? (Header-label a)
-              (Header-label b))
-         (equal? a b)))
-   #:action
-   (λ (type item event)
-     (case type
-       [(select)
-        (unless (Header? item)
-          (select-action item))]
-       [(dbclick)
-        (when (Header? item)
-          (update-observable @collapse-states
-            (hash-update it (Header-label item) not)))]
-       [(context)
-        (unless (Header? item)
-          (context-action item event))]
-       [else (void)]))))
+      (define all-items
+        (flatten
+         (list
+          (Header 'brokers brokers-collapsed?)
+          (if brokers-collapsed? null (Metadata-brokers m))
+          (Header 'topics topics-collapsed?)
+          (if topics-collapsed? null (Metadata-topics m))
+          (Header 'groups groups-collapsed?)
+          (if groups-collapsed? null (Metadata-groups m))
+          (Header 'schemas schemas-collapsed?)
+          (if schemas-collapsed? null (Metadata-schemas m)))))
+      (if (equal? f "")
+          all-items
+          (filter (λ (item) (item-matches-filter? item f)) all-items))))
+  (vpanel
+   (canvas-list
+    @items
+    #:item-height 30
+    (λ (item state dc w h)
+      (define pict
+        ((cond
+           [(Header? item) Header-pict]
+           [(Broker? item) Broker-pict]
+           [(Topic? item) Topic-pict]
+           [(Group? item) Group-pict]
+           [(Schema? item) Schema-pict]
+           [else (error 'workspace-sidebar "unexpected item: ~s" item)])
+         item state dc w h))
+      (p:draw-pict pict dc 0 0))
+    #:item=? item=?
+    #:action
+    (λ (type item event)
+      (case type
+        [(select)
+         (unless (Header? item)
+           (select-action item))]
+        [(dbclick)
+         (when (Header? item)
+           (update-observable @collapse-states
+             (hash-update it (Header-label item) not)))]
+        [(context)
+         (unless (Header? item)
+           (context-action item event))]
+        [else (void)])))
+   (hpanel
+    #:stretch '(#t #f)
+    (button "+" new-topic-action)
+    (input @filter (drop1 (λ:= @filter))))))
+
+(define (item=? a b)
+  (cond
+    [(Header? a) (and (Header? b)
+                      (eq? (Header-label a)
+                           (Header-label b)))]
+    [(Topic? a) (and (Topic? b)
+                     (equal? (Topic-name a)
+                             (Topic-name b)))]
+    [(Group? a) (and (Group? b)
+                     (equal? (Group-id a)
+                             (Group-id b)))]
+    [(Schema? a) (and (Schema? b)
+                      (equal? (Schema-id a)
+                              (Schema-id b)))]
+    [else #f]))
+
+(define (item-matches-filter? item s)
+  (or (Header? item)
+      (string-contains?
+       ((or (and (Broker? item) Broker-id)
+            (and (Topic? item) Topic-name)
+            (and (Group? item) Group-id)
+            (and (Schema? item) Schema-name))
+        item)
+       s)))
 
 (define (Header-pict hdr state _dc w h)
   (match-define (Header label collapsed?) hdr)
