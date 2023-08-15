@@ -3,7 +3,6 @@
 (require franz/broker
          franz/schema-registry/schema
          (prefix-in p: pict)
-         racket/class
          racket/format
          racket/list
          racket/match
@@ -79,7 +78,7 @@
            [(Group? item) Group-pict]
            [(Schema? item) Schema-pict]
            [else (error 'workspace-sidebar "unexpected item: ~s" item)])
-         item state dc w h))
+         item state w h))
       (p:draw-pict pict dc 0 0))
     #:item=? item=?
     #:action
@@ -132,7 +131,7 @@
          item))
        (string-downcase s))))
 
-(define (Header-pict hdr state _dc w h)
+(define (Header-pict hdr state w h)
   (match-define (Header label collapsed?) hdr)
   (define bg-color
     (case state
@@ -155,7 +154,7 @@
      system-font-s)
     26 0)))
 
-(define (Broker-pict b state dc w h)
+(define (Broker-pict b state w h)
   (define label
     (format
      "~a:~a"
@@ -163,58 +162,60 @@
      (Broker-port b)))
   (standard-pict
    #:label label
-   state dc w h))
+   state w h))
 
-(define (Topic-pict t state dc w h)
+(define (Topic-pict t state w h)
   (standard-pict
    #:label (Topic-name t)
    #:count (Stats-sum-lag (Topic-stats t))
-   state dc w h))
+   state w h))
 
-(define (Group-pict g state dc w h)
+(define (Group-pict g state w h)
   (standard-pict
    #:label (Group-id g)
    #:count (Stats-sum-lag (Group-stats g))
-   state dc w h))
+   state w h))
 
-(define (Schema-pict s state dc w h)
+(define (Schema-pict s state w h)
   (standard-pict
    #:label (Schema-name s)
-   state dc w h))
+   state w h))
 
-(define (standard-pict state dc w h
+(define (standard-pict state w h
                        #:label label
                        #:count [count #f])
   (define l-padding 26)
   (define r-padding 10)
   (define count-str (and count (~count count)))
-  (define-values (label-w _label-h _label-baseline _label-extra)
-    (send dc get-text-extent label system-font-s #t))
-  (define-values (count-w count-h _count-baseline _count-extra)
-    (if count-str
-        (send dc get-text-extent count-str system-mono-font-s #t)
-        (values 0 0 0 0)))
   (define-values (bg-color fg-color secondary-fg-color)
     (case state
       [(hover) (values (color #xEEEEEEFF) primary-color secondary-color)]
       [(selected) (values selection-background-color selection-primary-color selection-secondary-color)]
       [else (values white primary-color secondary-color)]))
+  (define label-pict
+    (p:colorize
+     (p:text label system-font-s)
+     fg-color))
+  (define count-pict
+    (and count-str
+         (p:colorize
+          (p:text count-str system-mono-font-s)
+          secondary-fg-color)))
   (define content-w
     (max (- w l-padding r-padding) 0))
   (define space-w
-    (max (- content-w label-w count-w) 0))
+    (max (- content-w
+            (p:pict-width label-pict)
+            (p:pict-width count-pict))
+         0))
   (cond
     [(and (<= space-w 1)
           (>= (string-length label) 4))
      (standard-pict
-      #:label (~a (substring label 0 (- (string-length label) 4)) "…")
+      #:label (string-append (substring label 0 (- (string-length label) 4)) "…")
       #:count count
-      state dc w h)]
+      state w h)]
     [else
-     (define label-pict
-       (p:colorize
-        (p:text label system-font-s)
-        fg-color))
      (define text-pict
        (if count-str
            (p:pin-over
@@ -223,12 +224,10 @@
               (p:filled-rectangle
                content-w h))
              label-pict)
-            (- content-w count-w)
+            (- content-w (p:pict-width count-pict))
             (- (/ h 2)
-               (/ count-h 2))
-            (p:colorize
-             (p:text count-str system-mono-font-s)
-             secondary-fg-color))
+               (/ (p:pict-height count-pict) 2))
+            count-pict)
            label-pict))
      (p:lc-superimpose
       (p:filled-rectangle
