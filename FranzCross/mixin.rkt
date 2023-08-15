@@ -10,7 +10,7 @@
 
 (define ((mix-typeahead completions) %)
   (class %
-    (field [last-text #f]
+    (field [last-text #f] [editing? #f]
            [the-completions (if (obs? completions)
                                 (obs-peek completions)
                                 completions)])
@@ -32,27 +32,31 @@
      [stretchable-height stretchable-height]
 
      [callback (λ (self event)
-                 (define editor (send self get-editor))
-                 (define start
-                   (let ([s-box (box #f)])
-                     (send editor get-position s-box)
-                     (unbox s-box)))
-                 (define non-selected-text
-                   (send editor get-text 0 start))
-                 (unless (equal? non-selected-text last-text)
-                   (set! last-text non-selected-text)
-                   (define the-match
-                     (for/first ([completion (in-list the-completions)]
-                                 #:when (string-prefix? completion non-selected-text))
-                       completion))
-                   (when the-match
-                     (define rest-s
-                       (substring the-match start))
-                     (send editor begin-edit-sequence)
-                     (send editor insert rest-s)
-                     (send editor set-position start (send editor get-end-position))
-                     (send editor end-edit-sequence)))
-                 (callback self event))])
+                 (unless editing?
+                   (define editor (send self get-editor))
+                   (define start
+                     (let ([s-box (box #f)])
+                       (send editor get-position s-box)
+                       (unbox s-box)))
+                   (define non-selected-text
+                     (send editor get-text 0 start))
+                   (unless (or (equal? non-selected-text last-text)
+                               (equal? non-selected-text ""))
+                     (set! last-text non-selected-text)
+                     (define the-match
+                       (for/first ([completion (in-list the-completions)]
+                                   #:when (string-prefix? completion non-selected-text))
+                         completion))
+                     (when the-match
+                       (define rest-s
+                         (substring the-match start))
+                       (set! editing? #t)
+                       (send editor begin-edit-sequence)
+                       (send editor insert rest-s)
+                       (send editor set-position start (send editor get-end-position))
+                       (send editor end-edit-sequence)
+                       (set! editing? #f)))
+                   (callback self event)))])
     (when (obs? completions)
       (obs-observe! completions (λ (cs)
                                   (gui:queue-callback
