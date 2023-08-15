@@ -89,7 +89,9 @@
   (class %
     (inherit focus)
     (super-new)
-    (focus)))
+    (gui:queue-callback
+     (λ ()
+       (focus)))))
 
 
 (module+ main
