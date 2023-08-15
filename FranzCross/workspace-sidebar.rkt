@@ -118,12 +118,13 @@
 (define (item-matches-filter? item s)
   (or (Header? item)
       (string-contains?
-       ((or (and (Broker? item) Broker-id)
-            (and (Topic? item) Topic-name)
-            (and (Group? item) Group-id)
-            (and (Schema? item) Schema-name))
-        item)
-       s)))
+       (string-downcase
+        ((or (and (Broker? item) Broker-host)
+             (and (Topic? item) Topic-name)
+             (and (Group? item) Group-id)
+             (and (Schema? item) Schema-name))
+         item))
+       (string-downcase s))))
 
 (define (Header-pict hdr state _dc w h)
   (match-define (Header label collapsed?) hdr)
@@ -217,8 +218,8 @@
                content-w h))
              label-pict)
             (- content-w count-w)
-            (- (quotient h 2)
-               (quotient count-h 2))
+            (- (/ h 2)
+               (/ count-h 2))
             (p:colorize
              (p:text count-str system-mono-font-s)
              secondary-fg-color))
@@ -233,14 +234,10 @@
 
 (define (~count n)
   (cond
-    [(>= n 1000000000)
-     (~a (exact-round (/ n 1000000000.0)) "B")]
-    [(>= n 1000000)
-     (~a (exact-round (/ n 1000000.0)) "M")]
-    [(>= n 1000)
-     (~a (exact-round (/ n 1000.0)) "k")]
-    [else
-     (~a n)]))
+    [(>= n 1e9) (~a (exact-round (/ n 1e9)) "B")]
+    [(>= n 1e6) (~a (exact-round (/ n 1e6)) "M")]
+    [(>= n 1e3) (~a (exact-round (/ n 1e3)) "k")]
+    [else (~a n)]))
 
 (module+ main
   (render
