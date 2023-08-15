@@ -9,7 +9,7 @@
 
 (provide canvas-list)
 
-(define canvas-list%
+(define (make-canvas-list% %)
   (class* object% (view<%>)
     (init-field @items paint callback item=? item-height)
     (super-new)
@@ -18,20 +18,26 @@
       (list @items))
 
     (define/public (create parent)
-      (new (context-mixin cl:canvas-list%)
-           [parent parent]
-           [items (obs-peek @items)]
-           [item-height item-height]
-           [paint-item-callback (and paint
-                                     (λ (_self item state dc w h)
-                                       (paint item state dc w h)))]
-           [action-callback (λ (_self item event)
-                              (callback 'dbclick item event))]
-           [selection-callback (λ (_self item event)
-                                 (callback 'select item event))]
-           [context-action-callback (λ (self item event)
-                                      (make-mouse-event-positions-absolute self event)
-                                      (callback 'context item event))]))
+      (define items (obs-peek @items))
+      (define the-canvas-list
+        (new (context-mixin %)
+             [parent parent]
+             [items items]
+             [item-height item-height]
+             [paint-item-callback (and paint
+                                       (λ (_self item state dc w h)
+                                         (paint item state dc w h)))]
+             [action-callback (λ (_self item event)
+                                (callback 'dbclick item event))]
+             [selection-callback (λ (_self item event)
+                                   (callback 'select item event))]
+             [context-action-callback (λ (self item event)
+                                        (make-mouse-event-positions-absolute self event)
+                                        (callback 'context item event))]))
+      (unless (null? items)
+        (send the-canvas-list select-first)
+        (send the-canvas-list scroll-to-selection))
+      the-canvas-list)
 
     (define/public (update v what val)
       (case/dep what
@@ -49,8 +55,9 @@
                      [paint #f]
                      #:action [callback void]
                      #:item=? [item=? equal?]
-                     #:item-height [item-height 20])
-  (new canvas-list%
+                     #:item-height [item-height 20]
+                     #:mixin [mix values])
+  (new (make-canvas-list% (mix cl:canvas-list%))
        [@items @items]
        [paint paint]
        [callback callback]

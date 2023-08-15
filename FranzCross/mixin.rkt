@@ -1,7 +1,8 @@
 #lang racket/gui/easy
 
 (require racket/class
-         racket/string)
+         racket/string
+         (prefix-in ~ threading))
 
 ;; text ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -63,14 +64,6 @@
                                    (lambda ()
                                      (set! the-completions cs))))))))
 
-(module+ main
-  (render
-   (window
-    #:size '(320 #f)
-    (input "" #:mixin (mix-typeahead
-                       '("cleanup.policy"
-                         "compression.type"))))))
-
 
 ;; window ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -85,3 +78,28 @@
     (define/public (do-close)
       (send this show #f))
     (out-proc (λ () (send this do-close)))))
+
+
+;; window<%> ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(provide
+ mix-initial-focus)
+
+(define (mix-initial-focus %)
+  (class %
+    (inherit focus)
+    (super-new)
+    (focus)))
+
+
+(module+ main
+  (render
+   (window
+    #:size '(320 #f)
+    (input
+     #:mixin (λ (%)
+               (~~> %
+                    ((mix-typeahead '("cleanup.policy"
+                                      "compression.type")))
+                    (mix-initial-focus)))
+     ""))))

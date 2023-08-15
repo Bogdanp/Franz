@@ -8,7 +8,8 @@
          racket/gui/easy/operator
          (prefix-in ~ threading)
          "canvas-list.rkt"
-         "common.rkt")
+         "common.rkt"
+         "mixin.rkt")
 
 (provide
  welcome-window)
@@ -48,13 +49,14 @@
      #:min-size '(280 #f)
      #:stretch '(#f #t)
      (canvas-list
-      #:item-height 60
+      #:mixin mix-initial-focus
       #:action (λ (type item event)
                  (case type
                    [(dbclick) (open-action item)]
                    [(context) (context-action item event)]
                    [else (void)]))
       @connections
+      #:item-height 60
       (λ (item state dc w h)
         (p:draw-pict (connection-details-pict item state w h) dc 0 0)))))))
 

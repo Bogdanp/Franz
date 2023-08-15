@@ -12,6 +12,7 @@
          "canvas-list.rkt"
          "combinator.rkt"
          "common.rkt"
+         "mixin.rkt"
          "observable.rkt"
          "preference.rkt")
 
@@ -66,6 +67,7 @@
           (filter (λ (item) (item-matches-filter? item f)) all-items))))
   (vpanel
    (canvas-list
+    #:mixin mix-initial-focus
     @items
     #:item-height 30
     (λ (item state dc w h)
@@ -101,18 +103,22 @@
 
 (define (item=? a b)
   (cond
-    [(Header? a) (and (Header? b)
-                      (eq? (Header-label a)
-                           (Header-label b)))]
-    [(Topic? a) (and (Topic? b)
-                     (equal? (Topic-name a)
-                             (Topic-name b)))]
-    [(Group? a) (and (Group? b)
-                     (equal? (Group-id a)
-                             (Group-id b)))]
-    [(Schema? a) (and (Schema? b)
-                      (equal? (Schema-id a)
-                              (Schema-id b)))]
+    [(Header? a)
+     (and (Header? b)
+          (eq? (Header-label a)
+               (Header-label b)))]
+    [(Topic? a)
+     (and (Topic? b)
+          (equal? (Topic-name a)
+                  (Topic-name b)))]
+    [(Group? a)
+     (and (Group? b)
+          (equal? (Group-id a)
+                  (Group-id b)))]
+    [(Schema? a)
+     (and (Schema? b)
+          (equal? (Schema-id a)
+                  (Schema-id b)))]
     [else #f]))
 
 (define (item-matches-filter? item s)

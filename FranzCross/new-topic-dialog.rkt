@@ -59,6 +59,7 @@
      "Name:"
      (validated-input
       #:text->value non-empty-string
+      #:mixin mix-initial-focus
       @name (drop1 @name:=)))
     (hpanel
      #:stretch '(#t #f)
