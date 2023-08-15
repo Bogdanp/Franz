@@ -91,3 +91,14 @@
   chevron-s.png
   chevron-e.png
   icon_512x512.png)
+
+(define-syntax-rule (define-bitmaps [id path-expr] ...)
+  (begin
+    (begin
+      (provide id)
+      (define id (gui:read-bitmap #:try-@2x? #t path-expr))) ...))
+
+(define-bitmaps
+  [chevron-s-bmp chevron-s.png]
+  [chevron-e-bmp chevron-e.png]
+  [icon_512x512-bmp icon_512x512.png])

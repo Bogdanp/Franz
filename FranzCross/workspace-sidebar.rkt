@@ -21,8 +21,8 @@
 (struct Header (label collapsed?)
   #:transparent)
 
-(define chevron-e (p:bitmap (gui:read-bitmap #:try-@2x? #t chevron-e.png)))
-(define chevron-s (p:bitmap (gui:read-bitmap #:try-@2x? #t chevron-s.png)))
+(define chevron-e (p:bitmap chevron-e-bmp))
+(define chevron-s (p:bitmap chevron-s-bmp))
 
 (define (workspace-sidebar @metadata
                            #:select-action [select-action void]
