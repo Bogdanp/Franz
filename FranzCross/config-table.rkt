@@ -11,20 +11,14 @@
 (define (config-table @configs
                       #:get-parent-proc [get-parent-renderer void])
   (define context-pending-event #f)
-  (define/obs @revealed-names (hash))
+  (define-observables
+    [@revealed-names (hash)])
   (table
    '("Name" "Value" "Default?")
    #:column-widths
    '((0 180)
      (1 180)
      (2 80))
-   (let-observable ([configs @configs]
-                    [revealed @revealed-names])
-     (for/vector ([c (in-list configs)])
-       (if (and (ResourceConfig-is-sensitive c)
-                (not (hash-has-key? revealed (ResourceConfig-name c))))
-           (set-ResourceConfig-value c "********")
-           c)))
    #:entry->row
    (λ (c)
      (vector
@@ -33,6 +27,13 @@
       (if (ResourceConfig-is-default c)
           "yes"
           "no")))
+   (let-observable ([configs @configs]
+                    [revealed @revealed-names])
+     (for/vector ([c (in-list configs)])
+       (if (and (ResourceConfig-is-sensitive c)
+                (not (hash-has-key? revealed (ResourceConfig-name c))))
+           (set-ResourceConfig-value c "********")
+           c)))
    #:mixin
    (λ (%)
      (class %
@@ -67,17 +68,15 @@
             (if (ResourceConfig-is-sensitive entry)
                 (list
                  (menu-item-separator)
-                 (if (hash-has-key? (obs-peek @revealed-names) name)
+                 (if (hash-has-key? ^@revealed-names name)
                      (menu-item
                       "Hide"
-                      (λ ()
-                        (update-observable @revealed-names
-                          (hash-remove it name))))
+                      (λpdate-observable @revealed-names
+                        (hash-remove it name)))
                      (menu-item
                       "Reveal"
-                      (λ ()
-                        (update-observable @revealed-names
-                          (hash-set it name #t))))))
+                      (λpdate-observable @revealed-names
+                        (hash-set it name #t)))))
                 null))
            context-pending-event)
           (set! context-pending-event #f))]))))

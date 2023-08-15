@@ -9,7 +9,8 @@
 (provide
  define-observables
  let-observable
- update-observable)
+ update-observable
+ λpdate-observable)
 
 (define-syntax (define-observables stx)
   (syntax-parse stx
@@ -40,8 +41,13 @@
     [(_ [id:id obs-expr:expr] body ...+)
      #'(obs-expr . <~ . (λ (id) body ...))]
     [(_ obs-expr:expr body ...+)
-     #:with it (format-id stx "it")
+     #:with it (format-id #'obs-expr "it")
      #'(update-observable [it obs-expr] body ...)]))
+
+(define-syntax (λpdate-observable stx)
+  (syntax-parse stx
+    [(_ . body)
+     #'(λ () (update-observable . body))]))
 
 (module+ test
   (require rackunit)
