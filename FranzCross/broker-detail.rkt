@@ -3,7 +3,6 @@
 (require franz/broker
          (submod franz/workspace rpc)
          racket/format
-         racket/gui/easy/font
          "common.rkt"
          "config-table.rkt"
          "info-view.rkt"

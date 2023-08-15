@@ -14,6 +14,7 @@
          "new-topic-dialog.rkt"
          "split-view.rkt"
          "status-bar.rkt"
+         "topic-detail.rkt"
          "view.rkt"
          (prefix-in m: "window-manager.rkt")
          "workspace-sidebar.rkt")
@@ -120,6 +121,7 @@
       (ConnectionDetails-name details))
      (match-view @selected-item
        [(? Broker? b) (broker-detail id b make-status-proc)]
+       [(? Topic? t) (topic-detail id t make-status-proc)]
        [_ default-view])))
   (window
    #:title (~title details)
