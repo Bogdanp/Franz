@@ -8,6 +8,11 @@
            "keychain.rkt"
            "window-manager.rkt")
 
+  (define quit-evt (make-semaphore))
+  (gui:application-quit-handler
+   (lambda ()
+     (semaphore-post quit-evt)))
+
   (define eventspace #f)
   (let/cc esc
     (uncaught-exception-handler
@@ -30,5 +35,5 @@
            (render-welcome-window))))))
   (void
    (with-handlers ([exn:break? void])
-     (gui:yield eventspace)))
+     (gui:yield (choice-evt eventspace quit-evt))))
   (rpc:close-all-workspaces))
