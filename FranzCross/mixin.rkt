@@ -1,8 +1,7 @@
 #lang racket/gui/easy
 
 (require racket/class
-         racket/string
-         (prefix-in ~ threading))
+         racket/string)
 
 ;; text ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -100,8 +99,8 @@
     #:size '(320 #f)
     (input
      #:mixin (λ (%)
-               (~~> %
-                    ((mix-typeahead '("cleanup.policy"
-                                      "compression.type")))
-                    (mix-initial-focus)))
+               (let ([mix-typeahead (mix-typeahead
+                                     '("cleanup.policy"
+                                       "compression.type"))])
+                 (mix-initial-focus (mix-typeahead %))))
      ""))))
