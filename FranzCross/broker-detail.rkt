@@ -6,6 +6,7 @@
          racket/gui/easy/font
          "common.rkt"
          "config-table.rkt"
+         "info-view.rkt"
          "observable.rkt"
          "view.rkt"
          (prefix-in m: "window-manager.rkt"))
@@ -58,24 +59,6 @@
        (config-table
         #:get-parent-proc (λ () (m:get-workspace-renderer id))
         @config)]))))
-
-(define (infos is)
-  (apply
-   vpanel
-   #:alignment '(left top)
-   #:margin '(10 10)
-   (for/list ([i (in-list is)])
-     (hpanel
-      #:stretch '(#t #f)
-      (hpanel
-       #:min-size '(100 #f)
-       #:stretch '(#f #t)
-       (text
-        #:font system-font-s
-        (car i)))
-      (text
-       #:font (font #:weight 'bold system-font font-size-s)
-       (cdr i))))))
 
 (module+ main
   (render
