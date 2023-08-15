@@ -191,7 +191,7 @@
 (define default-view
   (hpanel
    #:alignment '(center center)
-   (text "Selet a Broker, Topic or Consumer Group")))
+   (text "Select a Broker, Topic or Consumer Group")))
 
 (module+ main
   (m:open-workspace
