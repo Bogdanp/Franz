@@ -206,7 +206,7 @@
   (define space-w
     (max (- content-w
             (p:pict-width label-pict)
-            (p:pict-width count-pict))
+            (if count-pict (p:pict-width count-pict) 0))
          0))
   (cond
     [(and (<= space-w 1)
