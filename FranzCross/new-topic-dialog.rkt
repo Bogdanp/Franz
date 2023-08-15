@@ -153,7 +153,9 @@
      (validated-input
       #:text->value non-empty-string
       #:valid? @name-valid?
-      #:mixin (mix-typeahead (hash-keys completions))
+      #:mixin (λ (%)
+                (mix-initial-focus
+                 ((mix-typeahead (hash-keys completions)) %)))
       @name (drop1 @name:=)))
     (labeled*
      "Value:"
