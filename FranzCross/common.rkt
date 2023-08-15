@@ -14,7 +14,7 @@
 
 (define-values (system-font system-mono-font)
   (case (system-type 'os*)
-    [(macosx) (values "SF Pro" "SF Mono")]
+    [(macosx) (values "Lucida Grande" "Monaco")]  ;; pango can't deal with more modern fonts
     [(linux) (values "Ubuntu" "Ubuntu Mono")]
     [else (values "Segoe UI" "Consolas")]))
 

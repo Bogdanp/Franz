@@ -71,10 +71,10 @@
        #:min-size '(100 #f)
        #:stretch '(#f #t)
        (text
-        #:font system-font-xs
+        #:font system-font-s
         (car i)))
       (text
-       #:font (font #:weight 'bold system-font font-size-xs)
+       #:font (font #:weight 'bold system-font font-size-s)
        (cdr i))))))
 
 (module+ main
