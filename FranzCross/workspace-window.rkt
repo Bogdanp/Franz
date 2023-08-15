@@ -7,12 +7,14 @@
          racket/format
          racket/match
          "alert.rkt"
+         "broker-detail.rkt"
          "hacks.rkt"
          "mixin.rkt"
          "observable.rkt"
          "new-topic-dialog.rkt"
          "split-view.rkt"
          "status-bar.rkt"
+         "view.rkt"
          (prefix-in m: "window-manager.rkt")
          "workspace-sidebar.rkt")
 
@@ -46,8 +48,10 @@
            it)))))
 
 (define (workspace-window id details)
-  (define/obs @state (make-state id))
-  (define/obs @sidebar-visible? #t)
+  (define-observables
+    [@state (make-state id)]
+    [@sidebar-visible? #t]
+    [@selected-item #f])
   (reload-metadata #:force? #f @state)
   (define close! void)
   (define (new-topic)
@@ -63,8 +67,18 @@
         (create-topic name partitions replication-factor the-options id)
         (reload-metadata @state)))
      (m:get-workspace-renderer id)))
+  (define (make-status-proc)
+    (match-define (state _id cookie _status _metadata)
+      (update-observable @state
+        (struct-copy state it [cookie (add1 (state-cookie it))])))
+    (lambda (status)
+      (update-observable @state
+        (when (eqv? (state-cookie it) cookie)
+          (struct-copy state it [status status])))))
   (define sidebar
     (workspace-sidebar
+     #:select-action
+     (λ:= @selected-item)
      #:context-action
      (λ (item event)
        (define workspace-renderer
@@ -103,7 +117,10 @@
     (vpanel
      (status-bar
       (@state . ~> . state-status)
-      (ConnectionDetails-name details))))
+      (ConnectionDetails-name details))
+     (match-view @selected-item
+       [(? Broker? b) (broker-detail id b make-status-proc)]
+       [_ default-view])))
   (window
    #:title (~title details)
    #:mixin (mix-close-window
@@ -170,6 +187,11 @@
    "~a:~a"
    (ConnectionDetails-bootstrap-host details)
    (ConnectionDetails-bootstrap-port details)))
+
+(define default-view
+  (hpanel
+   #:alignment '(center center)
+   (text "Selet a Broker, Topic or Consumer Group")))
 
 (module+ main
   (m:open-workspace
