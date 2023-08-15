@@ -126,7 +126,12 @@
          (new-topic-dialog
           #:create-action
           (lambda (name partitions replication-factor options)
-            (create-topic name partitions replication-factor null id)
+            (define the-options
+              (for/list ([o (in-list options)])
+                (make-TopicOption
+                 #:key (car o)
+                 #:value (cdr o))))
+            (create-topic name partitions replication-factor the-options id)
             (reload-metadata @state)))
          (m:get-workspace-renderer id)))))
     (menu

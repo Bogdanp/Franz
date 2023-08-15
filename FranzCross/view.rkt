@@ -5,7 +5,8 @@
          racket/gui/easy
          racket/gui/easy/operator
          racket/match
-         "keyword.rkt")
+         "keyword.rkt"
+         "observable.rkt")
 
 (provide
  match-view
@@ -16,11 +17,13 @@
 (define-syntax-rule (match-view obs-expr clause0 clause ...)
   (observable-view obs-expr (match-lambda clause0 clause ...)))
 
-(define (labeled label v #:width [width 120])
+(define (labeled label v
+                 #:width [width 120]
+                 #:alignment [alignment '(right center)])
   (hpanel
    (hpanel
-    #:alignment '(right center)
     #:min-size `(,width #f)
+    #:alignment alignment
     #:stretch '(#f #t)
     (text label))
    v))
@@ -30,27 +33,35 @@
    (lambda (kws kw-args . args)
      (keyword-apply input kws kw-args args #:style '(single password)))))
 
+(define invalid-bg-color
+  (color "red"))
+
 (define validated-input
   (make-keyword-procedure
    (lambda (kws kw-args @data action . args)
      (let*-values ([(kw-ht) (keywords->hash kws kw-args)]
                    [(text->value kw-ht) (hash-pop kw-ht '#:text->value (λ () (λ (_) #t)))]
+                   [(valid? kw-ht) (hash-pop kw-ht '#:valid? (λ () #f))]
                    [(kws kw-args) (hash->keywords kw-ht)])
        (define/obs @text (~a (obs-peek @data)))
        (obs-observe! @data (compose1 (λ:= @text) ~a))
+       (when valid?
+         (valid? . := . (not (not (text->value (obs-peek @text))))))
        (define (wrapped-action event text)
          (@text . := . text)
          (define maybe-value (text->value text))
          (when maybe-value
-           (action event maybe-value)))
+           (action event maybe-value))
+         (when valid?
+           (valid? . := . (not (not maybe-value)))))
        (keyword-apply
         input
         kws kw-args
         @text wrapped-action args
-        #:background-color (@text . ~> . (λ (text)
-                                           (if (text->value text)
-                                               #f
-                                               (color "red")))))))))
+        #:background-color (let-observable ([text @text])
+                             (if (text->value text)
+                                 #f
+                                 invalid-bg-color)))))))
 
 (module+ main
   (require "combinator.rkt")
