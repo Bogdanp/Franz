@@ -12,7 +12,7 @@
 (define (labeled* label v #:alignment [alignment '(right center)])
   (labeled
    #:alignment alignment
-   #:width 60
+   #:width 70
    label v))
 
 (define (new-topic-dialog #:cancel-action [cancel-action void]
@@ -47,7 +47,7 @@
               (append it (list (cons name value)))))))))
   (dialog
    #:title "New Topic"
-   #:size '(720 320)
+   #:size '(580 #f)
    #:mixin (mix-close-window
             cancel-action
             (λ (close!-proc)
@@ -80,6 +80,7 @@
      (vpanel
       #:alignment '(left top)
       (table
+       #:min-size '(#f 100)
        #:margin '(2 0)
        '("Name" "Value")
        (@options . ~> . list->vector)
