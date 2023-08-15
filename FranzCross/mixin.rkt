@@ -1,6 +1,74 @@
-#lang racket/base
+#lang racket/gui/easy
 
-(require racket/class)
+(require racket/class
+         racket/string)
+
+;; text ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(provide
+ mix-typeahead)
+
+(define ((mix-typeahead completions) %)
+  (class %
+    (field [last-text #f]
+           [the-completions (if (obs? completions)
+                                (obs-peek completions)
+                                completions)])
+    (init-field parent label init-value enabled callback style font
+                vert-margin horiz-margin min-width min-height
+                stretchable-width stretchable-height)
+    (super-new
+     [parent parent]
+     [label label]
+     [init-value init-value]
+     [enabled enabled]
+     [style style]
+     [font font]
+     [vert-margin vert-margin]
+     [horiz-margin horiz-margin]
+     [min-width min-width]
+     [min-height min-height]
+     [stretchable-width stretchable-width]
+     [stretchable-height stretchable-height]
+
+     [callback (λ (self event)
+                 (define editor (send self get-editor))
+                 (define start
+                   (let ([s-box (box #f)])
+                     (send editor get-position s-box)
+                     (unbox s-box)))
+                 (define non-selected-text
+                   (send editor get-text 0 start))
+                 (unless (equal? non-selected-text last-text)
+                   (set! last-text non-selected-text)
+                   (define the-match
+                     (for/first ([completion (in-list the-completions)]
+                                 #:when (string-prefix? completion non-selected-text))
+                       completion))
+                   (when the-match
+                     (define rest-s
+                       (substring the-match start))
+                     (send editor begin-edit-sequence)
+                     (send editor insert rest-s)
+                     (send editor set-position start (send editor get-end-position))
+                     (send editor end-edit-sequence)))
+                 (callback self event))])
+    (when (obs? completions)
+      (obs-observe! completions (λ (cs)
+                                  (gui:queue-callback
+                                   (lambda ()
+                                     (set! the-completions cs))))))))
+
+(module+ main
+  (render
+   (window
+    #:size '(320 #f)
+    (input "" #:mixin (mix-typeahead
+                       '("cleanup.policy"
+                         "compression.type"))))))
+
+
+;; window ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide
  mix-close-window)
