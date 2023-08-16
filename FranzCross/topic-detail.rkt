@@ -8,29 +8,32 @@
          "config-table.rkt"
          "info-view.rkt"
          "observable.rkt"
+         "thread.rkt"
          "view.rkt"
          (prefix-in m: "window-manager.rkt"))
 
 (provide
  topic-detail)
 
-(define (topic-detail id t [make-status-proc (λ () void)])
+(define (topic-detail id t [call-with-status-proc void])
   (define-observables
     [@tab 'information]
     [@config null])
   (define-values (replicas in-sync-replicas)
-    (for/fold ([replicas 0] [in-sync-replicas 0])
+    (for/fold ([replicas 0]
+               [in-sync-replicas 0])
               ([p (in-list (Topic-partitions t))])
       (values
        (+ replicas (length (TopicPartition-replica-node-ids p)))
        (+ in-sync-replicas (length (TopicPartition-in-sync-replica-node-ids p))))))
   (define (reload-config)
-    ((make-status-proc) "Fetching Configs")
-    (thread
-     (lambda ()
-       (define status (make-status-proc))
-       (@config:= (get-resource-configs (Topic-name t) 'topic id))
-       (status "Ready"))))
+    (call-with-status-proc
+     (lambda (status)
+       (thread*
+        (dynamic-wind
+          (λ () (status "Fetching Configs"))
+          (λ () (@config:= (get-resource-configs (Topic-name t) 'topic id)))
+          (λ () (status "Ready")))))))
   (vpanel
    #:alignment '(left top)
    #:margin '(10 10)
@@ -86,6 +89,7 @@
 (module+ main
   (render
    (window
+    #:title "Topic Detail"
     #:size '(800 600)
     (topic-detail
      1

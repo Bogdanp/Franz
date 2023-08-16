@@ -68,14 +68,16 @@
         (create-topic name partitions replication-factor the-options id)
         (reload-metadata @state)))
      (m:get-workspace-renderer id)))
-  (define (make-status-proc)
+  (define (call-with-status-proc proc)
     (match-define (state _id cookie _status _metadata)
       (update-observable @state
         (struct-copy state it [cookie (add1 (state-cookie it))])))
-    (lambda (status)
+    (define (status s)
       (update-observable @state
         (when (eqv? (state-cookie it) cookie)
-          (struct-copy state it [status status])))))
+          (struct-copy state it [status s])))
+      (void))
+    (proc status))
   (define sidebar
     (workspace-sidebar
      #:select-action
@@ -120,8 +122,8 @@
       (@state . ~> . state-status)
       (ConnectionDetails-name details))
      (match-view @selected-item
-       [(? Broker? b) (broker-detail id b make-status-proc)]
-       [(? Topic? t) (topic-detail id t make-status-proc)]
+       [(? Broker? b) (broker-detail id b call-with-status-proc)]
+       [(? Topic? t) (topic-detail id t call-with-status-proc)]
        [_ default-view])))
   (window
    #:title (~title details)

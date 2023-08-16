@@ -7,23 +7,25 @@
          "config-table.rkt"
          "info-view.rkt"
          "observable.rkt"
+         "thread.rkt"
          "view.rkt"
          (prefix-in m: "window-manager.rkt"))
 
 (provide
  broker-detail)
 
-(define (broker-detail id b [make-status-proc (λ () void)])
+(define (broker-detail id b [call-with-status-proc void])
   (define-observables
     [@tab 'information]
     [@config null])
   (define (reload-config)
-    ((make-status-proc) "Fetching Configs")
-    (thread
-     (lambda ()
-       (define status (make-status-proc))
-       (@config:= (get-resource-configs (~a (Broker-id b)) 'broker id))
-       (status "Ready"))))
+    (call-with-status-proc
+     (lambda (status)
+       (thread*
+        (dynamic-wind
+          (λ () (status "Fetching Configs"))
+          (λ () (@config:= (get-resource-configs (~a (Broker-id b)) 'broker id)))
+          (λ () (status "Ready")))))))
   (vpanel
    #:alignment '(left top)
    #:margin '(10 10)
