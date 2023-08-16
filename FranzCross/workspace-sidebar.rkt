@@ -139,7 +139,7 @@
   (match-define (Header label collapsed?) hdr)
   (define bg-color
     (case state
-      [(hover selected) (color #xEEEEEEFF)]
+      [(hover selected) hover-background-color]
       [else white]))
   (p:lc-superimpose
    (p:filled-rectangle
@@ -193,7 +193,7 @@
   (define count-str (and count (~count count)))
   (define-values (bg-color fg-color secondary-fg-color)
     (case state
-      [(hover) (values (color #xEEEEEEFF) primary-color secondary-color)]
+      [(hover) (values hover-background-color primary-color secondary-color)]
       [(selected) (values selection-background-color selection-primary-color selection-secondary-color)]
       [else (values white primary-color secondary-color)]))
   (define label-pict

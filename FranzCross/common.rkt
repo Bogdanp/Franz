@@ -68,6 +68,7 @@
   [white #xFFFFFFFF]
   [primary-color #x000000FF]
   [secondary-color #x505050FF]
+  [hover-background-color #xEEEEEEFF]
   [selection-background-color #x084ADAFF]
   [selection-primary-color #xFFFFFFFF]
   [selection-secondary-color #xC3DEFFFF])
