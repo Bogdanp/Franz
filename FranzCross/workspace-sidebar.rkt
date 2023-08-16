@@ -106,6 +106,10 @@
      (and (Header? b)
           (eq? (Header-label a)
                (Header-label b)))]
+    [(Broker? a)
+     (and (Broker? b)
+          (eqv? (Broker-id a)
+                (Broker-id b)))]
     [(Topic? a)
      (and (Topic? b)
           (equal? (Topic-name a)
