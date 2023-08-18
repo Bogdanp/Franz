@@ -1,17 +1,32 @@
 #lang racket/base
 
-(require "generic.rkt")
+(require racket/match
+         racket/port
+         racket/runtime-path
+         "generic.rkt")
 
 (provide
  filesystem-keychain?
  make-filesystem-keychain)
 
-(define (make-filesystem-keychain path)
-  (filesystem-keychain path))
+(define-runtime-module-path-index win32.rkt
+  "win32.rkt")
 
-;; An insecure keychain implementation intended to be used for
-;; testing only.
-(struct filesystem-keychain (path)
+(define-values (platform-protect-proc platform-unprotect-proc)
+  (case (system-type 'os)
+    [(windows)
+     (values
+      (dynamic-require win32.rkt 'protect-data)
+      (dynamic-require win32.rkt 'unprotect-data))]
+    [else
+     (values values values)]))
+
+(define (make-filesystem-keychain path
+                                  [protect-proc platform-protect-proc]
+                                  [unprotect-proc platform-unprotect-proc])
+  (filesystem-keychain path protect-proc unprotect-proc))
+
+(struct filesystem-keychain (path protect-proc unprotect-proc)
   #:methods gen:keychain
   [(define (put-password kc id password)
      (write-ht kc (hash-set (read-ht kc) id password)))
@@ -23,14 +38,23 @@
      (write-ht kc (hash-remove (read-ht kc) id)))])
 
 (define (read-ht kc)
+  (match-define (filesystem-keychain path _protect unprotect) kc)
   (with-handlers ([exn:fail:filesystem? (λ (_) (hash))])
-    (call-with-input-file (filesystem-keychain-path kc) read)))
+    (call-with-input-file path
+      (lambda (in)
+        (call-with-input-bytes (unprotect (port->bytes in)) read)))))
 
 (define (write-ht kc ht)
-  (call-with-output-file (filesystem-keychain-path kc)
+  (match-define (filesystem-keychain path protect _unprotect) kc)
+  (call-with-output-file path
     #:exists 'truncate/replace
     (lambda (out)
-      (write ht out))))
+      (define bs
+        (protect
+         (call-with-output-bytes
+          (lambda (bs-out)
+            (write ht bs-out)))))
+      (void (write-bytes bs out)))))
 
 (module+ test
   (require racket/file
@@ -42,9 +66,8 @@
        (begin0 path
          (delete-file path)))))
 
-  (check-exn
-   #rx"password with id .+ not found"
-   (λ () (get-password kc "example")))
+  (check-false
+   (get-password kc "example"))
 
   (check-equal?
    (put-password kc "example" "hunter2")
@@ -58,6 +81,5 @@
    (remove-password kc "example")
    (void))
 
-  (check-exn
-   #rx"password with id .+ not found"
-   (λ () (get-password kc "example"))))
+  (check-false
+   (get-password kc "example")))
