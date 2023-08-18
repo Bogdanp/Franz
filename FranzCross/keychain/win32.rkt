@@ -35,8 +35,8 @@
     (_array/list _byte (DATA_BLOB-len b)))))
 
 (module+ test
-  (unless (equal? (unprotect-data (protect-data #"hello")) #"hello")
-    (error 'roundtrip)))
+  (require rackunit)
+  (check-equal? (unprotect-data (protect-data #"hello")) #"hello"))
 
 
 ;; kernel32 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

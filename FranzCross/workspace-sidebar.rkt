@@ -97,7 +97,7 @@
         [else (void)])))
    (hpanel
     #:stretch '(#t #f)
-    (button "+" new-topic-action)
+    (button plus-bmp new-topic-action)
     (input @filter (drop1 (λ:= @filter))))))
 
 (define (item=? a b)

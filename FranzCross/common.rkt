@@ -91,7 +91,8 @@
 (define-assets
   chevron-s.png
   chevron-e.png
-  icon_512x512.png)
+  icon_512x512.png
+  plus.png)
 
 (define-syntax-rule (define-bitmaps [id path-expr] ...)
   (begin
@@ -102,4 +103,5 @@
 (define-bitmaps
   [chevron-s-bmp chevron-s.png]
   [chevron-e-bmp chevron-e.png]
-  [icon_512x512-bmp icon_512x512.png])
+  [icon_512x512-bmp icon_512x512.png]
+  [plus-bmp plus.png])

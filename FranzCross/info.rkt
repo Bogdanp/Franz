@@ -10,3 +10,4 @@
                "gui-lib"
                "pict-lib"
                "threading-lib"))
+(define build-deps '("rackunit-lib"))
