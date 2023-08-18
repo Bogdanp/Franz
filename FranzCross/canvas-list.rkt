@@ -3,22 +3,24 @@
 (require (prefix-in cl: canvas-list)
          racket/class
          racket/gui/easy
+         racket/gui/easy/operator
          racket/list
-         threading
+         (prefix-in ~ threading)
          "hacks.rkt")
 
 (provide canvas-list)
 
 (define (make-canvas-list% %)
   (class* object% (view<%>)
-    (init-field @items paint callback item=? item-height)
+    (init-field @items @selected-item paint callback item=? item-height)
     (super-new)
 
     (define/public (dependencies)
-      (list @items))
+      (list @items @selected-item))
 
     (define/public (create parent)
       (define items (obs-peek @items))
+      (define selected-item (obs-peek @selected-item))
       (define the-canvas-list
         (new (context-mixin %)
              [parent parent]
@@ -35,7 +37,9 @@
                                         (make-mouse-event-positions-absolute self event)
                                         (callback 'context item event))]))
       (unless (null? items)
-        (send the-canvas-list select-first)
+        (if selected-item
+            (send the-canvas-list select-index (index-of items selected-item item=?))
+            (send the-canvas-list select-first))
         (send the-canvas-list scroll-to-selection))
       the-canvas-list)
 
@@ -43,10 +47,15 @@
       (case/dep what
         [@items
          (define maybe-index
-           (and~> (send v get-selected-item)
-                  (index-of val _ item=?)))
+           (~and~> (send v get-selected-item)
+                   (index-of val _ item=?)))
          (send v set-items val)
-         (send v select-index maybe-index)]))
+         (send v select-index maybe-index)]
+        [@selected-item
+         (define index
+           (and val (index-of (obs-peek @items) val)))
+         (unless (equal? (send v get-selected-index) index)
+           (send v select-index index))]))
 
     (define/public (destroy v)
       (send v clear-context))))
@@ -56,9 +65,11 @@
                      #:action [callback void]
                      #:item=? [item=? equal?]
                      #:item-height [item-height 20]
+                     #:selected-item [selected-item #f]
                      #:mixin [mix values])
   (new (make-canvas-list% (mix cl:canvas-list%))
        [@items @items]
+       [@selected-item (@ selected-item)]
        [paint paint]
        [callback callback]
        [item=? item=?]

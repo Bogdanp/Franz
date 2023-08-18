@@ -8,6 +8,7 @@
          "connection-dialog.rkt"
          "hacks.rkt"
          "keychain.rkt"
+         "preferences-window.rkt"
          "welcome-window.rkt")
 
 (lazy-require
@@ -18,7 +19,12 @@
  close-all-windows)
 
 (define (close-all-windows)
-  (for-each try-close-renderer (cons the-welcome-renderer (map workspace-renderer (hash-values workspaces)))))
+  (for-each
+   try-close-renderer
+   (list*
+    the-welcome-renderer
+    the-preferences-renderer
+    (map workspace-renderer (hash-values workspaces)))))
 
 (define (try-close-renderer r)
   (when r (send (renderer-root r) show #f)))
@@ -108,6 +114,28 @@
 
 (define (get-welcome-renderer)
   the-welcome-renderer)
+
+
+;; preferences ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(provide
+ render-preferences-window)
+
+(define the-preferences-renderer #f)
+(define/obs @current-preferences-view 'general)
+
+(define (render-preferences-window [view 'general])
+  (@current-preferences-view . := . view)
+  (cond
+    [the-preferences-renderer
+     (define the-preferences-window
+       (renderer-root the-preferences-renderer))
+     (send the-preferences-window show #t)]
+    [else
+     (set! the-preferences-renderer
+           (render
+            (preferences-window
+             @current-preferences-view)))]))
 
 
 ;; workspaces ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -166,6 +166,9 @@
     (menu
      "&Window"
      (menu-item
+      "&Preferences"
+      m:render-preferences-window)
+     (menu-item
       "&Welcome to Franz"
       m:render-welcome-window))
     (menu
