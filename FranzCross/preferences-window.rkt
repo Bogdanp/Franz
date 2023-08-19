@@ -9,6 +9,7 @@
          "canvas-list.rkt"
          "combinator.rkt"
          "common.rkt"
+         "mixin.rkt"
          "observable.rkt"
          "preference.rkt"
          "view.rkt")
@@ -25,6 +26,7 @@
      #:min-size '(180 #f)
      #:stretch '(#f #t)
      (canvas-list
+      #:mixin mix-initial-focus
       (@ '(general connections license updates))
       #:action
       (λ (type item _event)
