@@ -2,6 +2,7 @@
 
 (require franz/connection-details
          (prefix-in rpc: (submod franz/connection-details rpc))
+         (prefix-in rpc: (submod franz/metadata rpc))
          (prefix-in rpc: (submod franz/workspace rpc))
          racket/class
          racket/lazy-require
@@ -151,6 +152,11 @@
 (define workspaces (make-hasheqv))
 
 (define (open-workspace details [force? #f])
+  (if (rpc:is-license-valid)
+      (do-open-workspace details force?)
+      (render-preferences-window 'license)))
+
+(define (do-open-workspace details force?)
   (define connection-id
     (ConnectionDetails-id details))
   (define workspace-id
