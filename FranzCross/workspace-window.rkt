@@ -141,6 +141,10 @@
       (λ () (m:open-workspace details #t)))
      (menu-item-separator)
      (menu-item
+      "&Preferences"
+      m:render-preferences-window)
+     (menu-item-separator)
+     (menu-item
       "E&xit"
       (λ () (m:close-all-windows))))
     (menu
@@ -164,26 +168,21 @@
         (~a (if visible? "Hide" "Show") " &Sidebar"))
       (λ<~ @sidebar-visible? not)))
     (menu
-     "&Window"
+     "&Help"
      (menu-item
-      "Check for Updates..."
-      void)
-     (menu-item-separator)
-     (menu-item
-      "&Preferences"
-      m:render-preferences-window)
+      "Franz &Manual"
+      (λ () (send-url "https://franz.defn.io/manual/")))
      (menu-item
       "&Welcome to Franz"
       m:render-welcome-window)
      (menu-item-separator)
      (menu-item
-      "About &Franz"
-      m:render-about-window))
-    (menu
-     "&Help"
+      "Check for Updates..."
+      void)
+     (menu-item-separator)
      (menu-item
-      "Franz &Manual"
-      (λ () (send-url "https://franz.defn.io/manual/")))))
+      "About &Franz"
+      m:render-about-window)))
    (if-view
     @sidebar-visible?
     (split-view
