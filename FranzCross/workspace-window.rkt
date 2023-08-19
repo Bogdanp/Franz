@@ -166,11 +166,19 @@
     (menu
      "&Window"
      (menu-item
+      "Check for Updates..."
+      void)
+     (menu-item-separator)
+     (menu-item
       "&Preferences"
       m:render-preferences-window)
      (menu-item
       "&Welcome to Franz"
-      m:render-welcome-window))
+      m:render-welcome-window)
+     (menu-item-separator)
+     (menu-item
+      "About &Franz"
+      m:render-about-window))
     (menu
      "&Help"
      (menu-item
@@ -201,6 +209,10 @@
    (text "Select a Broker, Topic or Consumer Group")))
 
 (module+ main
+  (require db franz/metadata)
+  (current-connection
+   (sqlite3-connect #:database 'memory))
+  (migrate!)
   (m:open-workspace
    (make-ConnectionDetails
     #:id 1

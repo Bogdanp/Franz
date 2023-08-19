@@ -6,6 +6,7 @@
          (prefix-in rpc: (submod franz/workspace rpc))
          racket/class
          racket/lazy-require
+         "about-window.rkt"
          "connection-dialog.rkt"
          "hacks.rkt"
          "keychain.rkt"
@@ -137,6 +138,23 @@
            (render
             (preferences-window
              @current-preferences-view)))]))
+
+
+;; about ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(provide
+ render-about-window)
+
+(define the-about-renderer #f)
+
+(define (render-about-window)
+  (cond
+    [the-about-renderer
+     (define the-about-window
+       (renderer-root the-about-renderer))
+     (send the-about-window show #t)]
+    [else
+     (set! the-about-renderer (render (about-window)))]))
 
 
 ;; workspaces ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

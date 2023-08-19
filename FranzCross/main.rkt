@@ -5,6 +5,7 @@
            franz/main
            (prefix-in rpc: (submod franz/workspace rpc))
            racket/port
+           "auto-update.rkt"
            "keychain.rkt"
            "window-manager.rkt")
 
@@ -12,6 +13,14 @@
   (gui:application-quit-handler
    (lambda ()
      (semaphore-post quit-evt)))
+  (gui:application-preferences-handler
+   (lambda ()
+     (parameterize ([gui:current-eventspace eventspace])
+       (render-preferences-window))))
+  (gui:application-about-handler
+   (lambda ()
+     (parameterize ([gui:current-eventspace eventspace])
+       (render-about-window))))
 
   (define eventspace #f)
   (let/cc esc
@@ -32,6 +41,7 @@
                         (build-application-path "keychain.rktd"))])
          (set! eventspace (gui:make-eventspace))
          (parameterize ([gui:current-eventspace eventspace])
+           (start-auto-updater)
            (render-welcome-window))))))
   (void
    (with-handlers ([exn:break? void])
