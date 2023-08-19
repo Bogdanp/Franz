@@ -1,7 +1,13 @@
 #lang racket/gui/easy
 
-(require (prefix-in p: pict)
+(require browser/external
+         (submod franz/metadata rpc)
+         (prefix-in p: pict)
+         racket/date
+         racket/gui/easy/font
+         racket/string
          "canvas-list.rkt"
+         "combinator.rkt"
          "common.rkt"
          "observable.rkt"
          "preference.rkt"
@@ -34,11 +40,8 @@
     (match-view @current-view
       ['general
        (define/obs @reload-ival
-         (get-preference 'reload-interval 5))
-       (obs-observe!
-        @reload-ival
-        (λ (ival)
-          (put-preference 'reload-interval ival)))
+         (get-preference 'general:reload-interval 5))
+       (obs-observe! @reload-ival (λ (ival) (put-preference 'general:reload-interval ival)))
        (detail-view
         "General"
         (labeled
@@ -60,16 +63,75 @@
        (detail-view
         "Connections")]
       ['license
+       (define-observables
+         [@activated? (and (get-license) #t)]
+         [@license ""])
        (detail-view
-        "License")]
+        "License"
+        (if-view
+         @activated?
+         (vpanel
+          #:alignment '(left top)
+          (text
+           #:font (font #:weight 'bold system-font font-size-l)
+           "Full Version Activated")
+          (text
+           #:font system-font-m
+           (string-join
+            '("Thank you for supporting Franz development by"
+              "purchasing a license.")
+            "\n")))
+         (vpanel
+          #:alignment '(left top)
+          #:stretch '(#t #f)
+          (text
+           (format
+            "Your trial ~a on ~a."
+            (if (is-license-valid) "expires" "expired")
+            (date->string (seconds->date (get-trial-deadline)))))
+          (hpanel
+           (input @license (drop1 (λ:= @license)))
+           (button
+            "Activate License"
+            (lambda ()
+              (when (activate-license ^@license)
+                (@activated?:= #t)))))
+          (button
+           "Purchase License"
+           (lambda ()
+             (send-url "https://franz.defn.io/buy.html"))))))]
       ['updates
+       (define-observables
+         [@check-for-updates? (get-preference 'auto-update:check? #t)]
+         [@update-interval (get-preference 'auto-update:interval 14400)])
+       (obs-observe! @check-for-updates? (λ (check?) (put-preference 'auto-update:check? check?)))
+       (obs-observe! @update-interval (λ (ival) (put-preference 'auto-update:interval ival)))
        (detail-view
-        "Updates")]))))
+        "Updates"
+        (labeled
+         ""
+         (checkbox
+          (λ:= @check-for-updates?)
+          #:label "Automatically check for updates"
+          #:checked? @check-for-updates?))
+        (labeled
+         "Check interval:"
+         (choice
+          '(3600 14400 86400)
+          #:choice->label
+          (λ (ival)
+            (case ival
+              [(3600) "Every hour"]
+              [(14400) "Every four hours"]
+              [(86400) "Every day"]))
+          #:selection @update-interval
+          #:enabled? @check-for-updates?
+          (λ:= @update-interval))))]))))
 
 (define (detail-view title . content)
   (vpanel
    #:alignment '(left top)
-   #:margin '(10 10)
+   #:margin '(15 10)
    (text
     #:font system-font-xl
     title)
@@ -77,7 +139,7 @@
     vpanel
     #:alignment '(left top)
     #:stretch '(#t #f)
-    #:margin '(0 10)
+    #:margin '(0 25)
     content)))
 
 (define (label-pict label state w h)
@@ -101,6 +163,12 @@
     8 0)))
 
 (module+ main
+  (require db
+           franz/metadata)
+  (current-connection
+   (sqlite3-connect
+    #:database 'memory))
+  (migrate!)
   (render
    (preferences-window
     (@ 'license))))
