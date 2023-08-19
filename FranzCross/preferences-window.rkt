@@ -43,7 +43,9 @@
       ['general
        (define/obs @reload-ival
          (get-preference 'general:reload-interval 5))
-       (obs-observe! @reload-ival (λ (ival) (put-preference 'general:reload-interval ival)))
+       (put-preference-from-observable
+        'general:reload-interval
+        @reload-ival)
        (detail-view
         "General"
         (labeled
@@ -108,8 +110,8 @@
        (define-observables
          [@check-for-updates? (get-preference 'auto-update:check? #t)]
          [@update-interval (get-preference 'auto-update:interval 14400)])
-       (obs-observe! @check-for-updates? (λ (check?) (put-preference 'auto-update:check? check?)))
-       (obs-observe! @update-interval (λ (ival) (put-preference 'auto-update:interval ival)))
+       (put-preference-from-observable 'auto-update:check? @check-for-updates?)
+       (put-preference-from-observable 'auto-update:interval @update-interval)
        (detail-view
         "Updates"
         (labeled
