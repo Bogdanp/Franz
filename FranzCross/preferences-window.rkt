@@ -92,14 +92,16 @@
             (if (is-license-valid) "expires" "expired")
             (date->string (seconds->date (get-trial-deadline)))))
           (hpanel
-           (input @license (drop1 (λ:= @license)))
+           (hpanel
+            (text "License:")
+            (input @license (drop1 (λ:= @license))))
            (button
-            "Activate License"
+            "Activate"
             (lambda ()
               (when (activate-license ^@license)
                 (@activated?:= #t)))))
           (button
-           "Purchase License"
+           "Purchase a License"
            (lambda ()
              (send-url "https://franz.defn.io/buy.html"))))))]
       ['updates
