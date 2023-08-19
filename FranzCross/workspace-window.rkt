@@ -7,6 +7,7 @@
          racket/format
          racket/match
          "alert.rkt"
+         "auto-update.rkt"
          "broker-detail.rkt"
          "hacks.rkt"
          "mixin.rkt"
@@ -178,7 +179,7 @@
      (menu-item-separator)
      (menu-item
       "Check for Updates..."
-      void)
+      check-for-updates)
      (menu-item-separator)
      (menu-item
       "About &Franz"
