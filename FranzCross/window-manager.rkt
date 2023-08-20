@@ -28,7 +28,6 @@
     (get-about-renderer)
     (get-welcome-renderer)
     (get-preferences-renderer)
-    (get-check-for-updates-renderer)
     (map workspace-renderer (hash-values workspaces)))))
 
 (define (try-close-renderer r)
@@ -146,12 +145,10 @@
 ;; auto-update ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide
- render-check-for-updates-window
- get-check-for-updates-renderer)
+ render-check-for-updates-dialog)
 
-(define-values (render-check-for-updates-window get-check-for-updates-renderer)
-  (make-singleton-renderer
-   (λ () (render (check-for-updates-window)))))
+(define (render-check-for-updates-dialog)
+  (render (check-for-updates-dialog)))
 
 
 ;; workspaces ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

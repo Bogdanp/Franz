@@ -3,20 +3,16 @@
 (require franz/auto-updater
          franz/release
          franz/version
-         racket/lazy-require
          racket/match
          "common.rkt"
          "mixin.rkt"
          "preference.rkt")
 
-(lazy-require
- ["window-manager.rkt" (get-check-for-updates-renderer)])
-
 (provide
  start-auto-updater
  stop-auto-updater
  restart-auto-updater
- check-for-updates-window)
+ check-for-updates-dialog)
 
 (define the-auto-updater #f)
 
@@ -71,7 +67,7 @@
        "Download Update"
        void))))))
 
-(define (check-for-updates-window)
+(define (check-for-updates-dialog)
   (define close! void)
   (define/obs @value 0)
   (define value-thd
@@ -88,14 +84,13 @@
        [(list #f #f)
         (break-thread value-thd)
         (render
-         (up-to-date-dialog)
-         (get-check-for-updates-renderer))]
+         (up-to-date-dialog))]
        [(list changelog release)
         (break-thread value-thd)
         (void) ;; FIXME
         ])
      (gui:queue-callback close!)))
-  (window
+  (dialog
    #:title "Checking for Updates"
    #:size '(480 #f)
    #:mixin (mix-close-window
@@ -139,7 +134,7 @@
   (require racket/port)
   (define here (syntax-source #'here))
   (start-auto-updater)
-  (render (check-for-updates-window))
+  (render (check-for-updates-dialog))
   (render
    (updates-available-window
     (call-with-input-file (build-path here 'up 'up "website" "versions" "changelog.txt")
