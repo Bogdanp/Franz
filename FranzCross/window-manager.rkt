@@ -7,6 +7,7 @@
          racket/class
          racket/lazy-require
          "about-window.rkt"
+         "auto-update.rkt"
          "connection-dialog.rkt"
          "hacks.rkt"
          "keychain.rkt"
@@ -27,6 +28,7 @@
     (get-about-renderer)
     (get-welcome-renderer)
     (get-preferences-renderer)
+    (get-check-for-updates-renderer)
     (map workspace-renderer (hash-values workspaces)))))
 
 (define (try-close-renderer r)
@@ -138,7 +140,18 @@
  render-about-window)
 
 (define-values (render-about-window get-about-renderer)
-  (make-singleton-renderer (λ () (render (about-window)))))
+  (make-singleton-renderer
+   (λ () (render (about-window)))))
+
+
+;; auto-update ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(provide
+ render-check-for-updates-window)
+
+(define-values (render-check-for-updates-window get-check-for-updates-renderer)
+  (make-singleton-renderer
+   (λ () (render (check-for-updates-window)))))
 
 
 ;; workspaces ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

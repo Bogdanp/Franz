@@ -10,7 +10,7 @@
 (provide
  start-auto-updater
  stop-auto-updater
- check-for-updates)
+ check-for-updates-window)
 
 (define the-auto-updater #f)
 
@@ -30,7 +30,7 @@
 (define (stop-auto-updater)
   (void (auto-updater-stop the-auto-updater)))
 
-(define (check-for-updates)
+(define (check-for-updates-window)
   (define do-close! void)
   (define (close!)
     (break-thread value-thd)
@@ -56,24 +56,23 @@
         (void) ;; FIXME
         ])
      (gui:queue-callback close!)))
-  (render
-   (dialog
-    #:title "Checking for Updates"
-    #:size '(480 #f)
-    #:mixin (mix-close-window
-             void
-             (lambda (close!-proc)
-               (set! do-close! close!-proc)))
-    (hpanel
-     #:margin '(10 20)
-     (image
-      #:size '(48 48)
-      icon_512x512.png)
-     (vpanel
-      #:alignment '(left center)
-      #:stretch '(#t #f)
-      (text "Checking for updates...")
-      (progress @value))))))
+  (window
+   #:title "Checking for Updates"
+   #:size '(480 #f)
+   #:mixin (mix-close-window
+            void
+            (lambda (close!-proc)
+              (set! do-close! close!-proc)))
+   (hpanel
+    #:margin '(10 20)
+    (image
+     #:size '(48 48)
+     icon_512x512.png)
+    (vpanel
+     #:alignment '(left center)
+     #:stretch '(#t #f)
+     (text "Checking for updates...")
+     (progress @value)))))
 
 (define (up-to-date-dialog)
   (define close! void)
@@ -97,4 +96,5 @@
 
 (module+ main
   (start-auto-updater)
-  (check-for-updates))
+  (render
+   (check-for-updates-window)))

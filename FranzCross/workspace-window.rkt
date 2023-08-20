@@ -179,7 +179,7 @@
      (menu-item-separator)
      (menu-item
       "Check for Updates..."
-      check-for-updates)
+      m:render-check-for-updates-window)
      (menu-item-separator)
      (menu-item
       "About &Franz"
