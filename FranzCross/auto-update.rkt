@@ -79,38 +79,18 @@
          (define dst-directory
            (gui:get-directory))
          (when dst-directory
-           (define close-dialog! void)
            (define/obs @progress 0)
-           (define url (Release-mac-url release)) ;; FIXME
-           (define head-response (http:head url))
-           (define content-length
-             (string->number
-              (bytes->string/utf-8
-               (http:response-headers-ref head-response 'content-length))))
-           (define dst-path (build-path dst-directory (last (string-split url "/"))))
+           (define close-dialog! void)
            (define download-thd
              (thread
               (lambda ()
-                (define res (http:get #:stream? #t url))
-                (define ok?
-                  (call-with-output-file dst-path
-                    (lambda (out)
-                      (with-handlers ([exn:break? (λ (_) #f)])
-                        (parameterize-break #t
-                          (define buf (make-bytes (* 1024 1024)))
-                          (let loop ([total 0])
-                            (@progress . := . (inexact->exact (round (* (/ total content-length) 100))))
-                            (define n-read (read-bytes! buf (http:response-output res)))
-                            (unless (eof-object? n-read)
-                              (write-bytes buf out 0 n-read)
-                              (loop (+ total n-read)))))
-                        (sync (system-idle-evt))
-                        (close-dialog!)
-                        (close!)
-                        (send-url/file dst-path)
-                        'ok))))
-                (unless ok?
-                  (delete-file dst-path)))))
+                (define dst-path
+                  (download-release release dst-directory (λ:= @progress)))
+                (when dst-path
+                  (sync (system-idle-evt))
+                  (close-dialog!)
+                  (close!)
+                  (send-url/file dst-path)))))
            (render
             (dialog
              #:title "Downloading Update"
@@ -124,6 +104,32 @@
               (progress @progress)
               (button "Cancel" (λ () (close-dialog!))))))
            (break-thread download-thd)))))))))
+
+(define (download-release release dst-directory on-progress)
+  (define url (Release-mac-url release)) ;; FIXME
+  (define head-response (http:head url))
+  (define content-length
+    (string->number
+     (bytes->string/utf-8
+      (http:response-headers-ref head-response 'content-length))))
+  (define dst-path (build-path dst-directory (last (string-split url "/"))))
+  (define res (http:get #:stream? #t url))
+  (define ok?
+    (call-with-output-file dst-path
+      (lambda (out)
+        (with-handlers ([exn:break? (λ (_) #f)])
+          (parameterize-break #t
+            (define buf (make-bytes (* 1024 1024)))
+            (let loop ([total 0])
+              (on-progress (inexact->exact (round (* (/ total content-length) 100))))
+              (define n-read (read-bytes! buf (http:response-output res)))
+              (unless (eof-object? n-read)
+                (write-bytes buf out 0 n-read)
+                (loop (+ total n-read)))))
+          'ok))))
+  (unless ok?
+    (delete-file dst-path))
+  (and ok? dst-path))
 
 (define (check-for-updates-dialog)
   (define close! void)
