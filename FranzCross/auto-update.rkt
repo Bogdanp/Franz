@@ -3,8 +3,12 @@
 (require franz/auto-updater
          franz/release
          franz/version
+         (prefix-in http: net/http-easy)
+         net/sendurl
          racket/class
+         racket/list
          racket/match
+         racket/string
          "common.rkt"
          "mixin.rkt"
          "preference.rkt")
@@ -71,7 +75,55 @@
       (button
        #:style '(border)
        "Download Update"
-       void))))))
+       (λ ()
+         (define dst-directory
+           (gui:get-directory))
+         (when dst-directory
+           (define close-dialog! void)
+           (define/obs @progress 0)
+           (define url (Release-mac-url release)) ;; FIXME
+           (define head-response (http:head url))
+           (define content-length
+             (string->number
+              (bytes->string/utf-8
+               (http:response-headers-ref head-response 'content-length))))
+           (define dst-path (build-path dst-directory (last (string-split url "/"))))
+           (define download-thd
+             (thread
+              (lambda ()
+                (define res (http:get #:stream? #t url))
+                (define ok?
+                  (call-with-output-file dst-path
+                    (lambda (out)
+                      (with-handlers ([exn:break? (λ (_) #f)])
+                        (parameterize-break #t
+                          (define buf (make-bytes (* 1024 1024)))
+                          (let loop ([total 0])
+                            (@progress . := . (inexact->exact (round (* (/ total content-length) 100))))
+                            (define n-read (read-bytes! buf (http:response-output res)))
+                            (unless (eof-object? n-read)
+                              (write-bytes buf out 0 n-read)
+                              (loop (+ total n-read)))))
+                        (sync (system-idle-evt))
+                        (close-dialog!)
+                        (send-url/file dst-path)
+                        'ok))))
+                (unless ok?
+                  (delete-file dst-path)))))
+           (render
+            (dialog
+             #:title "Downloading Update"
+             #:min-size '(180 #f)
+             #:mixin (mix-close-window
+                      void
+                      (lambda (close!-proc)
+                        (set! close-dialog! close!-proc)))
+             (vpanel
+              #:alignment '(right top)
+              (progress @progress)
+              (button "Cancel" (λ () (close-dialog!))))))
+           (break-thread download-thd)
+           (close!)))))))))
 
 (define (check-for-updates-dialog)
   (define close! void)
@@ -148,4 +200,4 @@
     (make-Release
      #:arch (system-type 'arch)
      #:version franz-version
-     #:mac-url "https://example.com"))))
+     #:mac-url "https://franz.defn.io/releases/Franz%201.0.0006.universal.dmg"))))
