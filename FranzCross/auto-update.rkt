@@ -106,6 +106,7 @@
                               (loop (+ total n-read)))))
                         (sync (system-idle-evt))
                         (close-dialog!)
+                        (close!)
                         (send-url/file dst-path)
                         'ok))))
                 (unless ok?
@@ -122,8 +123,7 @@
               #:alignment '(right top)
               (progress @progress)
               (button "Cancel" (λ () (close-dialog!))))))
-           (break-thread download-thd)
-           (close!)))))))))
+           (break-thread download-thd)))))))))
 
 (define (check-for-updates-dialog)
   (define close! void)
@@ -136,25 +136,25 @@
            (sleep (/ 1.0 60))
            (@value . := . value)
            (loop (modulo (add1 value) 100)))))))
+  (define (stop-value-thd!)
+    (break-thread value-thd)
+    (sync (system-idle-evt)))
   (thread
    (lambda ()
-     (match (auto-updater-check the-auto-updater)
-       [(list #f #f)
-        (break-thread value-thd)
-        (render
-         (up-to-date-dialog))]
-       [(list changelog release)
-        (break-thread value-thd)
-        (void) ;; FIXME
-        ])
+     (match-define (list changelog release)
+       (auto-updater-check the-auto-updater))
+     (stop-value-thd!)
+     (render
+      (if (and changelog release)
+          (updates-available-window changelog release)
+          (up-to-date-dialog)))
      (gui:queue-callback close!)))
   (dialog
    #:title "Checking for Updates"
    #:size '(480 #f)
    #:mixin (mix-close-window
             (lambda ()
-              (break-thread value-thd)
-              (sync (system-idle-evt)))
+              (stop-value-thd!))
             (lambda (close!-proc)
               (set! close! close!-proc)))
    (hpanel
