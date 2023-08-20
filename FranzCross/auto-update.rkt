@@ -3,6 +3,7 @@
 (require franz/auto-updater
          franz/release
          franz/version
+         racket/class
          racket/match
          "common.rkt"
          "mixin.rkt"
@@ -55,6 +56,11 @@
      (input
       #:style '(multiple)
       #:min-size '(#f 180)
+      #:mixin (λ (%)
+                (class %
+                  (inherit get-editor)
+                  (super-new)
+                  (send (get-editor) scroll-to-position 0)))
       changelog)
      (hpanel
       #:alignment '(right center)
