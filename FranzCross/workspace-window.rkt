@@ -77,7 +77,7 @@
       (update-observable @state
         (if (eqv? (state-cookie it) cookie)
             (struct-copy state it [status s])
-            s))
+            it))
       (void))
     (dynamic-wind
       (λ () (void))
