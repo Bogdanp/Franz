@@ -6,6 +6,7 @@
          racket/date
          racket/gui/easy/font
          racket/string
+         "auto-update.rkt"
          "canvas-list.rkt"
          "combinator.rkt"
          "common.rkt"
@@ -112,6 +113,8 @@
          [@update-interval (get-preference 'auto-update:interval 14400)])
        (put-preference-from-observable 'auto-update:check? @check-for-updates?)
        (put-preference-from-observable 'auto-update:interval @update-interval)
+       (obs-observe! @check-for-updates? (λ (_) (restart-auto-updater)))
+       (obs-observe! @update-interval (λ (_) (restart-auto-updater)))
        (detail-view
         "Updates"
         (labeled

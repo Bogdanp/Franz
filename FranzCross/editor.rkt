@@ -9,6 +9,9 @@
          racket/string
          "common.rkt")
 
+(provide
+ editor)
+
 (define-syntax-rule (define-style id base [meth arg ...] ...)
   (define id
     (let ([dt (new gui:style-delta%)])
