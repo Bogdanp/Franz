@@ -19,13 +19,11 @@
     [@tab 'information]
     [@config null])
   (define (reload-config)
-    (call-with-status-proc
-     (lambda (status)
-       (thread*
-        (dynamic-wind
-          (λ () (status "Fetching Configs"))
-          (λ () (@config:= (get-resource-configs (~a (Broker-id b)) 'broker id)))
-          (λ () (status "Ready")))))))
+    (thread*
+     (call-with-status-proc
+      (lambda (status)
+        (status "Fetching Configs")
+        (@config:= (get-resource-configs (~a (Broker-id b)) 'broker id))))))
   (vpanel
    #:alignment '(left top)
    #:margin '(10 10)

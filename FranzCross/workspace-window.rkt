@@ -75,10 +75,21 @@
         (struct-copy state it [cookie (add1 (state-cookie it))])))
     (define (status s)
       (update-observable @state
-        (when (eqv? (state-cookie it) cookie)
-          (struct-copy state it [status s])))
+        (if (eqv? (state-cookie it) cookie)
+            (struct-copy state it [status s])
+            state))
       (void))
-    (proc status))
+    (dynamic-wind
+      (λ () (void))
+      (λ () (proc status))
+      (λ () (status "Ready"))))
+  (define (open-consumer-group gid)
+    (define group
+      (for/first ([g (in-list (Metadata-groups (state-metadata ^@state)))]
+                  #:when (equal? (Group-id g) gid))
+        g))
+    (when group
+      (@selected-item:= group)))
   (define sidebar
     (workspace-sidebar
      #:select-action

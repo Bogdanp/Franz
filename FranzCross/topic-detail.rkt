@@ -15,9 +15,12 @@
 (provide
  topic-detail)
 
-(define (topic-detail id t [call-with-status-proc void])
+(define (topic-detail id t
+                      [open-consumer-group void]
+                      [call-with-status-proc void])
   (define-observables
     [@tab 'information]
+    [@groups null]
     [@config null])
   (define-values (replicas in-sync-replicas)
     (for/fold ([replicas 0]
@@ -27,13 +30,17 @@
        (+ replicas (length (TopicPartition-replica-node-ids p)))
        (+ in-sync-replicas (length (TopicPartition-in-sync-replica-node-ids p))))))
   (define (reload-config)
-    (call-with-status-proc
-     (lambda (status)
-       (thread*
-        (dynamic-wind
-          (λ () (status "Fetching Configs"))
-          (λ () (@config:= (get-resource-configs (Topic-name t) 'topic id)))
-          (λ () (status "Ready")))))))
+    (thread*
+     (call-with-status-proc
+      (lambda (status)
+        (status "Fetching Configs")
+        (@config:= (get-resource-configs (Topic-name t) 'topic id))))))
+  (define (reload-topic-groups)
+    (thread*
+     (call-with-status-proc
+      (lambda (status)
+        (status "Finding Groups")
+        (@groups:= (find-topic-groups (Topic-name t) id))))))
   (vpanel
    #:alignment '(left top)
    #:margin '(10 10)
@@ -51,7 +58,7 @@
     #:stretch '(#t #f)
     #:min-size '(#f 10))
    (tabs
-    '(information config)
+    '(information records groups config)
     #:choice->label (compose1 string-titlecase symbol->string)
     (λ (event _choices selection)
       (case event
@@ -80,6 +87,27 @@
             (number->string (TopicPartition-leader-id p))
             (string-join (map number->string (TopicPartition-replica-node-ids p)) ",")
             (string-join (map number->string (TopicPartition-in-sync-replica-node-ids p)) ",")))))]
+      ['records
+       (text "Records")]
+      ['groups
+       (reload-topic-groups)
+       (vpanel
+        #:alignment '(left top)
+        #:margin '(10 10)
+        (text
+         #:font (font #:weight 'bold system-font font-size-m)
+         "Consumer Groups")
+        (match-view @groups
+          ['() (text "This topic has no active consumers.")]
+          [groups (apply
+                   vpanel
+                   #:alignment '(left top)
+                   (for/list ([g (in-list groups)])
+                     (hpanel
+                      #:stretch '(#t #f)
+                      (text g)
+                      (spacer)
+                      (button "Open" (λ () (open-consumer-group g))))))]))]
       ['config
        (reload-config)
        (config-table
