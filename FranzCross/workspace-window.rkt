@@ -7,8 +7,8 @@
          racket/format
          racket/match
          "alert.rkt"
-         "auto-update.rkt"
          "broker-detail.rkt"
+         "group-detail.rkt"
          "hacks.rkt"
          "mixin.rkt"
          "observable.rkt"
@@ -135,7 +135,8 @@
       (ConnectionDetails-name details))
      (match-view @selected-item
        [(? Broker? b) (broker-detail id b call-with-status-proc)]
-       [(? Topic? t) (topic-detail id t call-with-status-proc)]
+       [(? Topic? t) (topic-detail id t open-consumer-group call-with-status-proc)]
+       [(? Group? g) (group-detail id g call-with-status-proc)]
        [_ default-view])))
   (window
    #:title (~title details)
