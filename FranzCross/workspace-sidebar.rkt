@@ -85,8 +85,7 @@
     (λ (type item event)
       (case type
         [(select)
-         (unless (Header? item)
-           (select-action item))]
+         (select-action item)]
         [(dbclick)
          (when (Header? item)
            (update-observable @collapse-states
