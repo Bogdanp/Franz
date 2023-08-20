@@ -147,7 +147,8 @@
 ;; auto-update ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide
- render-check-for-updates-window)
+ render-check-for-updates-window
+ get-check-for-updates-renderer)
 
 (define-values (render-check-for-updates-window get-check-for-updates-renderer)
   (make-singleton-renderer

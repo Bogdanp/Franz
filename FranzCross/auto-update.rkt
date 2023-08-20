@@ -1,15 +1,21 @@
 #lang racket/gui/easy
 
 (require franz/auto-updater
+         franz/release
          franz/version
+         racket/lazy-require
          racket/match
          "common.rkt"
          "mixin.rkt"
          "preference.rkt")
 
+(lazy-require
+ ["window-manager.rkt" (get-check-for-updates-renderer)])
+
 (provide
  start-auto-updater
  stop-auto-updater
+ restart-auto-updater
  check-for-updates-window)
 
 (define the-auto-updater #f)
@@ -30,12 +36,43 @@
 (define (stop-auto-updater)
   (void (auto-updater-stop the-auto-updater)))
 
+(define (restart-auto-updater)
+  (stop-auto-updater)
+  (start-auto-updater))
+
+(define (updates-available-window changelog release)
+  (define close! void)
+  (window
+   #:title "Updates Available"
+   #:size '(720 #f)
+   #:mixin (mix-close-window
+            void
+            (lambda (close!-proc)
+              (set! close! close!-proc)))
+   (hpanel
+    #:alignment '(left top)
+    #:margin '(10 10)
+    (image
+     #:size '(64 64)
+     icon_512x512.png)
+    (vpanel
+     (input
+      #:style '(multiple)
+      #:min-size '(#f 180)
+      changelog)
+     (hpanel
+      #:alignment '(right center)
+      #:stretch '(#t #f)
+      (button
+       "Cancel"
+       (λ () (close!)))
+      (button
+       #:style '(border)
+       "Download Update"
+       void))))))
+
 (define (check-for-updates-window)
-  (define do-close! void)
-  (define (close!)
-    (break-thread value-thd)
-    (sync (system-idle-evt))
-    (do-close!))
+  (define close! void)
   (define/obs @value 0)
   (define value-thd
     (thread
@@ -50,7 +87,9 @@
      (match (auto-updater-check the-auto-updater)
        [(list #f #f)
         (break-thread value-thd)
-        (render (up-to-date-dialog))]
+        (render
+         (up-to-date-dialog)
+         (get-check-for-updates-renderer))]
        [(list changelog release)
         (break-thread value-thd)
         (void) ;; FIXME
@@ -60,9 +99,11 @@
    #:title "Checking for Updates"
    #:size '(480 #f)
    #:mixin (mix-close-window
-            void
+            (lambda ()
+              (break-thread value-thd)
+              (sync (system-idle-evt)))
             (lambda (close!-proc)
-              (set! do-close! close!-proc)))
+              (set! close! close!-proc)))
    (hpanel
     #:margin '(10 20)
     (image
@@ -95,6 +136,15 @@
      (λ () (close!))))))
 
 (module+ main
+  (require racket/port)
+  (define here (syntax-source #'here))
   (start-auto-updater)
+  (render (check-for-updates-window))
   (render
-   (check-for-updates-window)))
+   (updates-available-window
+    (call-with-input-file (build-path here 'up 'up "website" "versions" "changelog.txt")
+      port->string)
+    (make-Release
+     #:arch (system-type 'arch)
+     #:version franz-version
+     #:mac-url "https://example.com"))))
