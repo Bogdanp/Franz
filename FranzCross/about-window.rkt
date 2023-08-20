@@ -10,6 +10,7 @@
   (window
    #:size '(320 240)
    #:title "About Franz"
+   #:style '(no-resize-border)
    (vpanel
     #:margin '(20 20)
     (image
