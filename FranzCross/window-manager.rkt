@@ -128,10 +128,9 @@
 (define-values (render-preferences-window get-preferences-renderer)
   (make-singleton-renderer
    (let ([@current-preferences-view (@ 'general)])
-     (λ ([view 'general])
+     (lambda ([view 'general])
        (@current-preferences-view . := . view)
-       (preferences-window
-        @current-preferences-view)))))
+       (render (preferences-window @current-preferences-view))))))
 
 
 ;; about ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
