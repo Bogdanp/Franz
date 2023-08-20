@@ -24,12 +24,23 @@
   (for-each
    try-close-renderer
    (list*
-    the-welcome-renderer
-    the-preferences-renderer
+    (get-about-renderer)
+    (get-welcome-renderer)
+    (get-preferences-renderer)
     (map workspace-renderer (hash-values workspaces)))))
 
 (define (try-close-renderer r)
   (when r (send (renderer-root r) show #f)))
+
+(define (make-singleton-renderer make-renderer-proc)
+  (define the-renderer #f)
+  (values
+   (lambda args
+     (if the-renderer
+         (send (renderer-root the-renderer) show #t)
+         (set! the-renderer (apply make-renderer-proc args))))
+   (lambda ()
+     the-renderer)))
 
 
 ;; welcome window ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -37,8 +48,6 @@
 (provide
  render-welcome-window
  get-welcome-renderer)
-
-(define the-welcome-renderer #f)
 
 (define (render-connection-dialog conn action
                                   #:title [title "New Connection"]
@@ -52,16 +61,7 @@
       (action saved-conn)
       (close!))
     conn)
-   the-welcome-renderer))
-
-(define (render-welcome-window)
-  (cond
-    [the-welcome-renderer
-     (define the-welcome-window
-       (renderer-root the-welcome-renderer))
-     (send the-welcome-window show #t)]
-    [else
-     (set! the-welcome-renderer (do-render-welcome-window))]))
+   (get-welcome-renderer)))
 
 (define (do-render-welcome-window)
   (define/obs @connections
@@ -87,7 +87,7 @@
     #:context-action
     (λ (details event)
       (render-popup-menu*
-       the-welcome-renderer
+       (get-welcome-renderer)
        (popup-menu
         (menu-item
          "Edit..."
@@ -114,8 +114,8 @@
        event))
     @connections)))
 
-(define (get-welcome-renderer)
-  the-welcome-renderer)
+(define-values (render-welcome-window get-welcome-renderer)
+  (make-singleton-renderer do-render-welcome-window))
 
 
 ;; preferences ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -123,21 +123,13 @@
 (provide
  render-preferences-window)
 
-(define the-preferences-renderer #f)
-(define/obs @current-preferences-view 'general)
-
-(define (render-preferences-window [view 'general])
-  (@current-preferences-view . := . view)
-  (cond
-    [the-preferences-renderer
-     (define the-preferences-window
-       (renderer-root the-preferences-renderer))
-     (send the-preferences-window show #t)]
-    [else
-     (set! the-preferences-renderer
-           (render
-            (preferences-window
-             @current-preferences-view)))]))
+(define-values (render-preferences-window get-preferences-renderer)
+  (make-singleton-renderer
+   (let ([@current-preferences-view (@ 'general)])
+     (λ ([view 'general])
+       (@current-preferences-view . := . view)
+       (preferences-window
+        @current-preferences-view)))))
 
 
 ;; about ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -145,16 +137,8 @@
 (provide
  render-about-window)
 
-(define the-about-renderer #f)
-
-(define (render-about-window)
-  (cond
-    [the-about-renderer
-     (define the-about-window
-       (renderer-root the-about-renderer))
-     (send the-about-window show #t)]
-    [else
-     (set! the-about-renderer (render (about-window)))]))
+(define-values (render-about-window get-about-renderer)
+  (make-singleton-renderer (λ () (render (about-window)))))
 
 
 ;; workspaces ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

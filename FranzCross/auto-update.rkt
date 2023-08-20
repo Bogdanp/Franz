@@ -78,8 +78,8 @@
 (define (up-to-date-dialog)
   (define close! void)
   (dialog
-   #:title "Up to Date"
    #:size '(240 #f)
+   #:title "Up to Date"
    #:mixin (mix-close-window
             void
             (lambda (close!-proc)
