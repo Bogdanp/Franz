@@ -12,7 +12,9 @@
  match-view
  labeled
  password
- validated-input)
+ validated-input
+ ~optional-str
+ ->optional-str)
 
 (define-syntax-rule (match-view obs-expr clause0 clause ...)
   (observable-view obs-expr (match-lambda clause0 clause ...)))
@@ -62,6 +64,12 @@
                              (if (text->value text)
                                  #f
                                  invalid-bg-color)))))))
+
+(define (~optional-str s)
+  (or s ""))
+
+(define (->optional-str v)
+  (if (string=? v "") #f v))
 
 (module+ main
   (require "combinator.rkt")

@@ -135,12 +135,6 @@
     [(AuthMechanism.scramSHA512) "SCRAM-SHA-512"]
     [(AuthMechanism.aws) "AWS-MSK-IAM"]))
 
-(define (~optional-str s)
-  (or s ""))
-
-(define (->optional-str v)
-  (if (string=? v "") #f v))
-
 (define (string->port v)
   (define n (string->number v))
   (and n (>= n 0) (<= n 65535) n))
