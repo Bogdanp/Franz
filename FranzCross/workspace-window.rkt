@@ -3,6 +3,7 @@
 (require browser/external
          franz/broker
          franz/connection-details
+         franz/schema-registry/schema
          (submod franz/workspace rpc)
          racket/format
          racket/match
@@ -13,6 +14,7 @@
          "mixin.rkt"
          "observable.rkt"
          "new-topic-dialog.rkt"
+         "schema-detail.rkt"
          "split-view.rkt"
          "status-bar.rkt"
          "topic-detail.rkt"
@@ -137,6 +139,7 @@
        [(? Broker? b) (broker-detail id b call-with-status-proc)]
        [(? Topic? t) (topic-detail id t open-consumer-group call-with-status-proc)]
        [(? Group? g) (group-detail id g call-with-status-proc)]
+       [(? Schema? s) (schema-detail id s)]
        [_ default-view])))
   (window
    #:title (~title details)
