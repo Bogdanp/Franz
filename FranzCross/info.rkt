@@ -9,6 +9,7 @@
                ["gui-easy-lib" #:version "0.13"]
                "gui-lib"
                "http-easy-lib"
+               "json-lexer-lib"
                "pict-lib"
                "threading-lib"))
 (define build-deps '("rackunit-lib"))
