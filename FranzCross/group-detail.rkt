@@ -19,10 +19,12 @@
     [@offsets #f])
   (define/obs @lag
     (let-observable ([offsets @offsets])
-      (and offsets (for*/sum ([t (GroupOffsets-topics offsets)]
-                              [p (GroupTopic-partitions t)])
-                     (- (GroupPartitionOffset-high-watermark p)
-                        (GroupPartitionOffset-offset p))))))
+      (if offsets
+          (for*/sum ([t (GroupOffsets-topics offsets)]
+                     [p (GroupTopic-partitions t)])
+            (- (GroupPartitionOffset-high-watermark p)
+               (GroupPartitionOffset-offset p)))
+          0)))
   (define offsets-b
     (make-weak-box @offsets))
   (thread*
@@ -51,20 +53,17 @@
       #:color secondary-color
       #:font system-font-xs
       "Group"))
-    (match-view @lag
-      [#f (spacer)]
-      [lag
-       (spacer)
-       (vpanel
-        #:alignment '(right top)
-        #:stretch '(#t #f)
-        (text
-         #:color secondary-color
-         #:font system-font-xs
-         "Messages Behind:")
-        (text
-         #:font system-font-l
-         (~a lag)))]))
+    (spacer)
+    (vpanel
+     #:alignment '(right top)
+     #:stretch '(#t #f)
+     (text
+      #:color secondary-color
+      #:font system-font-xs
+      "Messages Behind:")
+     (text
+      #:font system-font-l
+      (@lag . ~> . ~a))))
    (state-pill @offsets)))
 
 (define (state-pill @offsets)
