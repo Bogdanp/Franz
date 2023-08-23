@@ -68,38 +68,36 @@
    (state-pill @offsets)))
 
 (define (state-pill @offsets)
-  (match-view @offsets
-    [#f (spacer)]
-    [_ (pict-canvas
-        @offsets
-        #:min-size '(#f 30)
-        #:stretch '(#t #f)
-        #:style '(transparent)
-        (λ (offsets)
-          (define state (GroupOffsets-state offsets))
-          (define-values (bg-color fg-color)
-            (case state
-              [(stable) (values (color #x00CC00FF) white)]
-              [(dead) (values (color #xCC0000FF) white)]
-              [else (values hover-background-color primary-color)]))
-          (define text-pict
-            (p:inset
-             (p:colorize
-              (p:text
-               (string-upcase (symbol->string state))
-               (font #:weight 'bold system-font (sub1 font-size-xs)))
-              fg-color)
-             5 2))
-          (p:inset
-           (p:lc-superimpose
-            (p:filled-rounded-rectangle
-             (p:pict-width text-pict)
-             (p:pict-height text-pict)
-             5 ;corner-radius
-             #:color bg-color
-             #:border-color bg-color)
-            text-pict)
-           0 10)))]))
+  (pict-canvas
+   @offsets
+   #:min-size '(#f 30)
+   #:stretch '(#t #f)
+   #:style '(transparent)
+   (λ (offsets)
+     (define state (if offsets (GroupOffsets-state offsets) 'loading))
+     (define-values (bg-color fg-color)
+       (case state
+         [(stable) (values (color #x00CC00FF) white)]
+         [(dead) (values (color #xCC0000FF) white)]
+         [else (values white primary-color)]))
+     (define text-pict
+       (p:inset
+        (p:colorize
+         (p:text
+          (string-upcase (symbol->string state))
+          (font #:weight 'bold system-font (sub1 font-size-xs)))
+         fg-color)
+        5 2))
+     (p:inset
+      (p:lc-superimpose
+       (p:filled-rounded-rectangle
+        (p:pict-width text-pict)
+        (p:pict-height text-pict)
+        5 ;corner-radius
+        #:color bg-color
+        #:border-color bg-color)
+       text-pict)
+      0 10))))
 
 (module+ main
   (render
