@@ -152,6 +152,10 @@
 (define-rpc (get-connections : (Listof ConnectionDetails))
   (map meta->ConnectionDetails (meta:get-connections)))
 
+(define-rpc (get-connection [_ id : UVarint] : (Optional ConnectionDetails))
+  (and~> (meta:get-connection id)
+         (meta->ConnectionDetails)))
+
 (define-rpc (save-connection [_ c : ConnectionDetails] : ConnectionDetails)
   (meta->ConnectionDetails
    (meta:insert-connection!

@@ -22,6 +22,7 @@
 
  (schema-out connection-details)
  get-connections
+ get-connection
  insert-connection!
  update-connection!
  touch-connection!
@@ -111,6 +112,11 @@
   (sequence->list
    (in-entities conn (~> (from connection-details #:as c)
                          (order-by ([c.last-used-at #:desc]))))))
+
+(define/contract (get-connection id)
+  (-> id/c (or/c #f connection-details?))
+  (lookup conn (~> (from connection-details #:as c)
+                   (where (= c.id ,id)))))
 
 (define/contract (insert-connection! c)
   (-> connection-details? connection-details?)
