@@ -1,20 +1,30 @@
 #lang racket/gui/easy
 
-(require franz/schema-registry/schema
+(require (submod franz/schema-registry rpc)
+         franz/schema-registry/schema
+         json/pretty
          racket/format
          racket/match
+         racket/port
          "common.rkt"
          "editor.rkt"
          "info-view.rkt"
          "observable.rkt"
+         "thread.rkt"
          "view.rkt")
 
 (provide
  schema-detail)
 
-(define (schema-detail _id s)
+(define (schema-detail id s [call-with-status-proc void])
   (define-observables
-    [@tab 'information])
+    [@tab 'information]
+    [@schema s])
+  (thread*
+   (call-with-status-proc
+    (lambda (status)
+      (status "Fetching Schema")
+      (@schema:= (get-schema (Schema-name s) id)))))
   (vpanel
    #:alignment '(left top)
    #:margin '(10 10)
@@ -39,17 +49,33 @@
          (@tab:= choice)]))
     (match-view @tab
       ['information
-       (infos
-        `(("Type" . ,(~Schema-type s))
-          ("Latest Version" . ,(~a (Schema-version s)))))]
+       (observable-view
+        @schema
+        (lambda (schema)
+          (infos
+           `(("Type" . ,(~Schema-type schema))
+             ("Latest Version" . ,(~a (Schema-version schema)))))))]
       ['source
+       (define/obs @lang
+         (let-observable ([s @schema])
+           (match (Schema-type s)
+             [(? SchemaType.avro?) 'json]
+             [(? SchemaType.json?) 'json]
+             [(? SchemaType.protobuf?) 'protobuf]
+             [_ 'json])))
        (editor
-        #:lang (match (Schema-type s)
-                 [(? SchemaType.avro?) 'json]
-                 [(? SchemaType.json?) 'json]
-                 [(? SchemaType.protobuf?) 'protobuf]
-                 [_ 'json])
-        (Schema-schema s))]))))
+        #:lang @lang
+        (let-observable ([s @schema]
+                         [l @lang])
+          (define code
+            (or (Schema-schema s) ""))
+          (case l
+            [(json) (call-with-output-string
+                     (lambda (out)
+                       (call-with-input-string code
+                         (lambda (in)
+                           (pretty-print-json in out)))))]
+            [else code])))]))))
 
 (define (~Schema-type s)
   (match (Schema-type s)

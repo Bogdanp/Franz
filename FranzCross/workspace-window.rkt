@@ -3,6 +3,9 @@
 (require browser/external
          franz/broker
          franz/connection-details
+         (submod franz/connection-details rpc)
+         franz/schema-registry
+         (submod franz/schema-registry rpc)
          franz/schema-registry/schema
          (submod franz/workspace rpc)
          racket/format
@@ -11,12 +14,15 @@
          "broker-detail.rkt"
          "group-detail.rkt"
          "hacks.rkt"
+         "keychain.rkt"
          "mixin.rkt"
          "observable.rkt"
          "new-topic-dialog.rkt"
          "schema-detail.rkt"
+         "schema-registry-dialog.rkt"
          "split-view.rkt"
          "status-bar.rkt"
+         "thread.rkt"
          "topic-detail.rkt"
          "view.rkt"
          (prefix-in m: "window-manager.rkt")
@@ -28,49 +34,20 @@
 (struct state (id cookie status metadata))
 
 (define (make-state id)
-  (state id 0 "Ready" (make-Metadata
-                       #:brokers null
-                       #:topics null
-                       #:groups null
-                       #:schemas null)))
-
-(define (reload-metadata @state #:force? [force? #t])
-  (match-define (state id cookie _status _metadata)
-    (update-observable @state
-      (struct-copy state it
-                   [status "Fetching Metadata"]
-                   [cookie (add1 (state-cookie it))])))
-  (thread
-   (lambda ()
-     (define metadata
-       (get-metadata force? id))
-     (update-observable @state
-       (if (eqv? cookie (state-cookie it))
-           (struct-copy state it
-                        [status "Ready"]
-                        [metadata metadata])
-           it)))))
+  (define metadata
+    (make-Metadata
+     #:brokers null
+     #:topics null
+     #:groups null
+     #:schemas null))
+  (state id 0 "Ready" metadata))
 
 (define (workspace-window id details)
+  (define close! void)
   (define-observables
     [@state (make-state id)]
     [@sidebar-visible? #t]
     [@selected-item #f])
-  (reload-metadata #:force? #f @state)
-  (define close! void)
-  (define (new-topic)
-    (render
-     (new-topic-dialog
-      #:create-action
-      (lambda (name partitions replication-factor options)
-        (define the-options
-          (for/list ([o (in-list options)])
-            (make-TopicOption
-             #:key (car o)
-             #:value (cdr o))))
-        (create-topic name partitions replication-factor the-options id)
-        (reload-metadata @state)))
-     (m:get-workspace-renderer id)))
   (define (call-with-status-proc proc)
     (match-define (state _id cookie _status _metadata)
       (update-observable @state
@@ -85,6 +62,26 @@
       (λ () (void))
       (λ () (proc status))
       (λ () (status "Ready"))))
+  (define (reload-metadata #:force? [force? #t])
+    (thread*
+     (call-with-status-proc
+      (lambda (status)
+        (status "Fetching Metadata")
+        (update-observable @state
+          (struct-copy state it [metadata (get-metadata force? id)]))))))
+  (define (new-topic)
+    (render
+     (new-topic-dialog
+      #:create-action
+      (lambda (name partitions replication-factor options)
+        (define the-options
+          (for/list ([o (in-list options)])
+            (make-TopicOption
+             #:key (car o)
+             #:value (cdr o))))
+        (create-topic name partitions replication-factor the-options id)
+        (reload-metadata)))
+     (m:get-workspace-renderer id)))
   (define (open-consumer-group gid)
     (define group
       (for/first ([g (in-list (Metadata-groups (state-metadata ^@state)))]
@@ -92,6 +89,11 @@
         g))
     (when group
       (@selected-item:= group)))
+  (define registry-id
+    (ConnectionDetails-schema-registry-id details))
+  (when registry-id
+    (do-activate-schema-registry id (get-schema-registry registry-id)))
+  (reload-metadata #:force? #f)
   (define sidebar
     (workspace-sidebar
      #:select-action
@@ -108,11 +110,13 @@
             (menu-item
              "Delete"
              (lambda ()
+               (define message
+                 (format "Delete ~a? This action cannot be undone." (Group-id item)))
                (when (confirm #:title "Delete Group"
-                              #:message (format "Delete ~a? This action cannot be undone." (Group-id item))
+                              #:message message
                               #:renderer workspace-renderer)
                  (delete-group (Group-id item) id)
-                 (reload-metadata @state)))))
+                 (reload-metadata)))))
            event)]
          [(Topic? item)
           (render-popup-menu*
@@ -121,11 +125,13 @@
             (menu-item
              "Delete"
              (lambda ()
+               (define message
+                 (format "Delete ~a? This action cannot be undone." (Topic-name item)))
                (when (confirm #:title "Delete Topic"
-                              #:message (format "Delete ~a? This action cannot be undone." (Topic-name item))
+                              #:message message
                               #:renderer workspace-renderer)
                  (delete-topic (Topic-name item) id)
-                 (reload-metadata @state)))))
+                 (reload-metadata)))))
            event)]
          [else (void)]))
      #:new-topic-action new-topic
@@ -139,7 +145,7 @@
        [(? Broker? b) (broker-detail id b call-with-status-proc)]
        [(? Topic? t) (topic-detail id t open-consumer-group call-with-status-proc)]
        [(? Group? g) (group-detail id g call-with-status-proc)]
-       [(? Schema? s) (schema-detail id s)]
+       [(? Schema? s) (schema-detail id s call-with-status-proc)]
        [_ default-view])))
   (window
    #:title (~title details)
@@ -167,7 +173,7 @@
      "&Connection"
      (menu-item
       "&Reload"
-      (λ () (reload-metadata @state)))
+      reload-metadata)
      (menu-item-separator)
      (menu-item
       "&Close"
@@ -177,6 +183,41 @@
      (menu-item
       "&New Topic..."
       new-topic))
+    (menu
+     "Schema &Registry"
+     (menu-item
+      "Configure..."
+      (lambda ()
+        (let* ([details (get-connection (ConnectionDetails-id details))]
+               [registry-id (ConnectionDetails-schema-registry-id details)])
+          (render
+           (schema-registry-dialog
+            (if registry-id
+                (get-schema-registry registry-id)
+                (make-SchemaRegistry #:url ""))
+            #:save-action
+            (lambda (saved-registry)
+              (when registry-id
+                (deactivate-schema-registry id))
+              (define updated-details
+                (cond
+                  [saved-registry
+                   (define saved-registry-id
+                     (SchemaRegistry-id
+                      (if registry-id
+                          (update-schema-registry saved-registry)
+                          (save-schema-registry saved-registry))))
+                   (do-activate-schema-registry id saved-registry)
+                   (set-ConnectionDetails-schema-registry-id details saved-registry-id)]
+                  [registry-id
+                   (deactivate-schema-registry id)
+                   (delete-schema-registry id)
+                   (set-ConnectionDetails-schema-registry-id details #f)]
+                  [else
+                   details]))
+              (update-connection updated-details)
+              (reload-metadata)))
+           (m:get-workspace-renderer id))))))
     (menu
      "&View"
      (menu-item
@@ -222,6 +263,11 @@
   (hpanel
    #:alignment '(center center)
    (text "Select a Broker, Topic or Consumer Group")))
+
+(define (do-activate-schema-registry id registry)
+  (define keychain (current-keychain))
+  (define password (and keychain (get-password keychain (SchemaRegistry-password-id registry))))
+  (activate-schema-registry registry password id))
 
 (module+ main
   (require db franz/metadata)
