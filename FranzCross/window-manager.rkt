@@ -6,6 +6,7 @@
          (prefix-in rpc: (submod franz/workspace rpc))
          racket/class
          racket/lazy-require
+         racket/match
          "about-window.rkt"
          "auto-update.rkt"
          "connection-dialog.rkt"
@@ -190,7 +191,10 @@
                 (workspace details the-renderer))]))
 
 (define (close-workspace id)
+  (match-define (workspace _details renderer)
+    (hash-ref workspaces id))
   (hash-remove! workspaces id)
+  (renderer-destroy renderer)
   (rpc:close-workspace id))
 
 (define (get-workspace-renderer id)

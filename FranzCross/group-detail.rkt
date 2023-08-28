@@ -25,46 +25,48 @@
             (- (GroupPartitionOffset-high-watermark p)
                (GroupPartitionOffset-offset p)))
           0)))
-  (define offsets-b
-    (make-weak-box @offsets))
-  (thread*
-   (let loop ()
-     (define reload-ival (get-preference 'general:reload-interval 5))
-     (define offsets (weak-box-value offsets-b))
-     (when offsets
-       (call-with-status-proc
-        (lambda (status)
-          (status "Fetching Offsets")
-          (offsets . := . (fetch-offsets (Group-id g) id))))
-       (sleep reload-ival)
-       (loop))))
-  (vpanel
-   #:alignment '(left top)
-   #:margin '(10 10)
-   (hpanel
-    #:stretch '(#t #f)
-    (vpanel
-     #:alignment '(left top)
+  (define reload-thd
+    (thread*
+     (with-handlers ([exn:break? void])
+       (let loop ()
+         (define reload-ival (get-preference 'general:reload-interval 5))
+         (call-with-status-proc
+          (lambda (status)
+            (status "Fetching Offsets")
+            (@offsets . := . (fetch-offsets (Group-id g) id))))
+         (sleep reload-ival)
+         (loop)))))
+  (add-hooks
+   #:on-destroy
+   (lambda ()
+     (break-thread reload-thd))
+   (vpanel
+    #:alignment '(left top)
+    #:margin '(10 10)
+    (hpanel
      #:stretch '(#t #f)
-     (text
-      #:font system-font-l
-      (Group-id g))
-     (text
-      #:color secondary-color
-      #:font system-font-xs
-      "Group"))
-    (spacer)
-    (vpanel
-     #:alignment '(right top)
-     #:stretch '(#t #f)
-     (text
-      #:color secondary-color
-      #:font system-font-xs
-      "Messages Behind:")
-     (text
-      #:font system-font-l
-      (@lag . ~> . ~a))))
-   (state-pill @offsets)))
+     (vpanel
+      #:alignment '(left top)
+      #:stretch '(#t #f)
+      (text
+       #:font system-font-l
+       (Group-id g))
+      (text
+       #:color secondary-color
+       #:font system-font-xs
+       "Group"))
+     (spacer)
+     (vpanel
+      #:alignment '(right top)
+      #:stretch '(#t #f)
+      (text
+       #:color secondary-color
+       #:font system-font-xs
+       "Messages Behind:")
+      (text
+       #:font system-font-l
+       (@lag . ~> . ~a))))
+    (state-pill @offsets))))
 
 (define (state-pill @offsets)
   (pict-canvas
