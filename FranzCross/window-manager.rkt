@@ -83,9 +83,10 @@
        (make-ConnectionDetails
         #:name "New Connection")
        (λ (details)
-         (rpc:save-connection details)
+         (define saved-details
+           (rpc:save-connection details))
          (reload-connections)
-         (open-workspace details))))
+         (open-workspace saved-details))))
     #:context-action
     (λ (details event)
       (render-popup-menu*
@@ -159,7 +160,8 @@
  close-workspace
  get-workspace-renderer)
 
-(struct workspace (details renderer))
+(struct workspace (details renderer)
+  #:transparent)
 
 ;; workspace id -> workspace
 (define workspaces (make-hasheqv))
