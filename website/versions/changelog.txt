@@ -4,12 +4,16 @@
 * Support for providing custom SSL keys and certificates.
 * Topic partition replication information to the Topic Detail view.
 
+## Changed
+
+* Group offset reset menu items are disabled for non-empty groups.
+
 ## Fixed
 
-* An issue with opening topics from the Consumer Group Detail view
-  when filtering was applied.
-* An issue with loading broker metadata for topics whose leader nodes
-  are unavailable.
+* Broker metadata loading for topics whose leader nodes are
+  unavailable.
+* Topics can be opened from the Consumer Group Detail view with
+  filtering applied.
 
 ## Notes
 
