@@ -5,6 +5,11 @@
     "macURL": "https://franz.defn.io/releases/Franz%201.0.0008.universal.dmg"
   },
   {
+    "arch": "x86_64",
+    "version": "1.0.0008",
+    "macURL": "https://franz.defn.io/releases/Franz%201.0.0008.universal.dmg"
+  },
+  {
     "arch": "arm64",
     "version": "1.0.0007",
     "macURL": "https://franz.defn.io/releases/Franz%201.0.0007.universal.dmg"
