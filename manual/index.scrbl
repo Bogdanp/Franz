@@ -650,3 +650,6 @@ Window (@kbd[cmd @","]).
 Franz is built using the @racket-anchor{Racket programming language}
 and distributes its runtime alongside the application.  Racket is
 licensed under the MIT License.
+
+The source code for Franz is available for all to read on
+@link["https://github.com/Bogdanp/Franz"]{GitHub}.
