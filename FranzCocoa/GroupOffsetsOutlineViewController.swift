@@ -371,6 +371,17 @@ extension GroupOffsetsOutlineViewController: NSMenuDelegate {
   }
 }
 
+// MARK: - NSMenuItemValidation
+extension GroupOffsetsOutlineViewController: NSMenuItemValidation {
+  func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
+    if menuItem.action == #selector(didPressResetTopicOffsetsItem(_:)) ||
+        menuItem.action == #selector(didPressResetPartitionOffsetItem(_:)) {
+      return offsets.state == "empty"
+    }
+    return true
+  }
+}
+
 // MARK: - ResetTopicOffsets
 fileprivate struct ResetTopicOffsets: View {
   @State var target = Symbol("latest")
