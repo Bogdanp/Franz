@@ -309,11 +309,6 @@ See @registry-yt{this YouTube video} for a live demo.
 If any of these limitations are showstoppers for you, please e-mail me
 at @tt{bogdan@"@"defn.io} and let me know.
 
-@subsection{Compression}
-
-The only compression formats currently supported are @tt{gzip},
-@tt{lz4} and @tt{snappy}.
-
 @subsection[#:tag "limitations-schema-registry"]{Schema Registry}
 
 The only type of @tech{schema registry} currently supported is the
