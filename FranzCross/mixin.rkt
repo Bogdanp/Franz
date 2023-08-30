@@ -71,12 +71,11 @@
 
 (define ((mix-close-window on-close-proc [out-proc void]) %)
   (class %
+    (inherit show)
     (super-new)
     (define/augment (on-close)
       (on-close-proc))
-    (define/public (do-close)
-      (send this show #f))
-    (out-proc (λ () (send this do-close)))))
+    (out-proc (λ () (show #f)))))
 
 
 ;; window<%> ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -89,8 +88,7 @@
     (inherit focus)
     (super-new)
     (gui:queue-callback
-     (λ ()
-       (focus)))))
+     (λ () (focus)))))
 
 
 (module+ main

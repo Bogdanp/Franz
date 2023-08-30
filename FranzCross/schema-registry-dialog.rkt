@@ -22,6 +22,7 @@
                                       (get-password keychain _)))])
   (dialog
    #:size '(420 #f)
+   #:title "Schema Registry"
    #:mixin (mix-close-window
             void
             (λ (close!-proc)
@@ -56,7 +57,8 @@
      (button
       "Save"
       #:style '(border)
-      (λ ()
+      (lambda ()
+        (define url ^@url)
         (define password (->optional-str ^@password))
         (define password-id
           (or (SchemaRegistry-password-id details)
@@ -66,17 +68,19 @@
               (put-password keychain password-id password)
               (remove-password keychain password-id)))
         (define saved-details
-          (make-SchemaRegistry
-           #:id (SchemaRegistry-id details)
-           #:url ^@url
-           #:username (->optional-str ^@username)
-           #:password-id password-id))
+          (and (not (string=? url ""))
+               (make-SchemaRegistry
+                #:id (SchemaRegistry-id details)
+                #:url ^@url
+                #:username (->optional-str ^@username)
+                #:password-id password-id)))
         (save-action saved-details)
         (close!)))))))
 
 (module+ main
   (render
    (schema-registry-dialog
+    #:save-action (λ (r) (eprintf "registry: ~s~n" r))
     (make-SchemaRegistry
      #:id 1
      #:url "https://example.com"))))

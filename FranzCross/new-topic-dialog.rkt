@@ -175,7 +175,7 @@
       (let-observable ([name-valid? @name-valid?]
                        [value-valid? @value-valid?])
         (and name-valid? value-valid?))
-      (λ ()
+      (lambda ()
         (action ^@name ^@value)
         (close!)))))))
 
