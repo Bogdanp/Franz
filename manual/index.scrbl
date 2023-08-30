@@ -312,8 +312,7 @@ at @tt{bogdan@"@"defn.io} and let me know.
 @subsection[#:tag "limitations-schema-registry"]{Schema Registry}
 
 The only type of @tech{schema registry} currently supported is the
-Confluent Schema Registry.  Protobuf schemas are currently not
-supported.
+Confluent Schema Registry.
 
 
 @section[#:tag "ref"]{Scripting Reference}
