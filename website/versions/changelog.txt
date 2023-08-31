@@ -4,6 +4,10 @@
 * Support for running scripts on already-loaded data from the
   Scripting Window.
 
+## Changed
+
+* The Jump Popover defaults to "recent" instead of "latest".
+
 # 2023.08.30 (Version 1.0, Build 8)
 ## Added
 

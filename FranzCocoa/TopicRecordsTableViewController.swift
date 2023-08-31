@@ -937,7 +937,7 @@ fileprivate struct IteratorResetForm: View {
     case offset
   }
 
-  @State var target = Offset.latest
+  @State var target = Offset.recent
   @State var timestamp = Date()
   @State var delta = UVarint(20)
   @State var offset = UVarint(0)
