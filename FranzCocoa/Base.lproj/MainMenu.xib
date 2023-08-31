@@ -393,6 +393,15 @@
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Script" id="cSL-v8-COx">
                         <items>
+                            <menuItem title="Apply" id="RUg-6z-KEf">
+                                <string key="keyEquivalent" base64-UTF8="YES">
+DQ
+</string>
+                                <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                <connections>
+                                    <action selector="applyScript:" target="-1" id="qtG-K1-ZvD"/>
+                                </connections>
+                            </menuItem>
                             <menuItem title="Activate" id="XZy-3T-uje">
                                 <string key="keyEquivalent" base64-UTF8="YES">
 DQ

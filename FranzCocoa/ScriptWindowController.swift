@@ -54,7 +54,6 @@ class ScriptWindowController: NSWindowController {
       guard notification.userInfo?["id"] as? UVarint == id else { return }
       guard notification.userInfo?["topic"] as? String == topic else { return }
       self.delegate = ob
-      self.enableToggleItem()
       self.toolbar.validateVisibleItems()
     }
 
@@ -69,7 +68,6 @@ class ScriptWindowController: NSWindowController {
       guard notification.userInfo?["topic"] as? String == topic else { return }
       self.delegate = ob
       self.deactivate()
-      self.disableToggleItem()
       self.toolbar.validateVisibleItems()
     }
   }
@@ -78,24 +76,14 @@ class ScriptWindowController: NSWindowController {
     toolbar.items.first(where: { $0.itemIdentifier == .toggleActive })
   }
 
-  private func disableToggleItem() {
-    toggleToolbarItem?.action = nil
-  }
-
-  private func enableToggleItem() {
-    toggleToolbarItem?.action = #selector(toggleScript(_:))
-  }
-
   private func activate() {
     if let activated = delegate?.scriptWindow(willActivate: editorCtl.code), activated {
-      toggleToolbarItem?.image = bolt(accented: true)
       active = true
     }
   }
 
   private func deactivate() {
     delegate?.scriptWindowWillDeactivate()
-    toggleToolbarItem?.image = bolt()
     active = false
   }
 
@@ -181,6 +169,13 @@ class ScriptWindowController: NSWindowController {
       activate()
     }
   }
+
+  @objc func applyScript(_ sender: Any) {
+    if active {
+      return
+    }
+    print("Apply!")
+  }
 }
 
 // MARK: - ScriptWindowControllerDelegate
@@ -195,6 +190,7 @@ extension ScriptWindowController: EditorViewControllerDelegate {
   func codeDidChange(_ sender: EditorViewController) {
     if active {
       deactivate()
+      toolbar.validateVisibleItems()
     }
     window?.isDocumentEdited = true
   }
@@ -211,6 +207,10 @@ extension ScriptWindowController: NSMenuItemValidation {
     }
     if menuItem.action == #selector(toggleScript(_:)) {
       menuItem.title = active ? "Deactivate" : "Activate"
+      return delegate != nil
+    }
+    if menuItem.action == #selector(applyScript(_:)) {
+      return !active && delegate != nil
     }
     return true
   }
@@ -218,8 +218,12 @@ extension ScriptWindowController: NSMenuItemValidation {
 
 // MARK: - NSToolbarDelegate
 extension ScriptWindowController: NSToolbarDelegate {
+  private func makeSymbolConfig() -> NSImage.SymbolConfiguration {
+    return NSImage.SymbolConfiguration(pointSize: 18, weight: .regular)
+  }
+
   private func bolt(accented: Bool = false) -> NSImage {
-    var conf = NSImage.SymbolConfiguration(pointSize: 18, weight: .regular)
+    var conf = makeSymbolConfig()
     if accented {
       conf = conf.applying(.init(paletteColors: [.controlAccentColor]))
     }
@@ -233,6 +237,13 @@ extension ScriptWindowController: NSToolbarDelegate {
     willBeInsertedIntoToolbar flag: Bool) -> NSToolbarItem? {
 
       switch itemIdentifier {
+      case .apply:
+        let item = NSToolbarItem(itemIdentifier: itemIdentifier)
+        item.image = NSImage(systemSymbolName: "play.fill", accessibilityDescription: "Apply")!
+          .withSymbolConfiguration(makeSymbolConfig())
+        item.label = "Apply"
+        item.action = #selector(applyScript(_:))
+        return item
       case .toggleActive:
         let item = NSToolbarItem(itemIdentifier: itemIdentifier)
         item.image = bolt()
@@ -245,16 +256,31 @@ extension ScriptWindowController: NSToolbarDelegate {
   }
 
   func toolbarAllowedItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-    return [.toggleActive]
+    return [.apply, .toggleActive]
   }
 
   func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-    return [.flexibleSpace, .toggleActive]
+    return [.apply, .flexibleSpace, .toggleActive]
+  }
+}
+
+// MARK: - NSToolbarItemValidation
+extension ScriptWindowController: NSToolbarItemValidation {
+  func validateToolbarItem(_ item: NSToolbarItem) -> Bool {
+    if item.action == #selector(applyScript(_:)) {
+      return !active && delegate != nil
+    }
+    if item.action == #selector(toggleScript(_:)) {
+      item.image = bolt(accented: active)
+      return delegate != nil
+    }
+    return true
   }
 }
 
 // MARK: - NSToolbarItem.Identifier
 extension NSToolbarItem.Identifier {
+  static let apply = Self("apply")
   static let toggleActive = Self("toggleActive")
 }
 
