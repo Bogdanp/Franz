@@ -10,7 +10,9 @@
          racket/file
          racket/port
          racket/runtime-path
-         "pool.rkt")
+         "iterator.rkt"
+         "pool.rkt"
+         "record.rkt")
 
 (define-rpc (get-script [for-topic topic : String]
                         [in-workspace id : UVarint] : String)
@@ -21,15 +23,20 @@
 (define-rpc (activate-script [_ script : String]
                              [for-topic topic : String]
                              [in-workspace id : UVarint])
-  (define script-res
-    (lua-eval script))
-  (unless (pair? script-res)
-    (error 'activate "the script must return a value"))
-  (define script-ob
-    (car script-res))
-  (unless (table? script-ob)
-    (error 'activate "the script return value must be a table"))
-  (pool-activate-script id topic script-ob))
+  (pool-activate-script id topic (make-script 'activate-script script)))
+
+(define-rpc (apply-script [_ script : String]
+                          [to-records records : (Listof IteratorRecord)]
+                          [in-workspace id : UVarint] : (Listof IteratorResult))
+  (define proc (table-ref (make-script 'apply-script script) #"transform"))
+  (unless (procedure? proc)
+    (error 'apply-script "script.transform is not a procedure"))
+  (for*/list ([r (in-list records)]
+              [t (in-value (proc (IteratorRecord->table r)))]
+              #:unless (nil? t))
+    (unless (table? t)
+      (error 'apply-script "script.transform must return a table or nil~n  received: ~s" t))
+    (IteratorResult.transformed (table->IteratorRecord t) r)))
 
 (define-rpc (deactivate-script [for-topic topic : String]
                                [in-workspace id : UVarint])
@@ -37,6 +44,17 @@
 
 
 ;; help ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define (make-script who script)
+  (define script-res
+    (lua-eval script))
+  (unless (pair? script-res)
+    (error who "the script must return a value"))
+  (define script-ob
+    (car script-res))
+  (unless (table? script-ob)
+    (error who "the script return value must be a table"))
+  script-ob)
 
 (define default-script
   #<<SCRIPT

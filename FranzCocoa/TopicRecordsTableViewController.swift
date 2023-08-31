@@ -167,7 +167,7 @@ class TopicRecordsTableViewController: NSViewController {
     }
   }
 
-  private func loadRecords(completionHandler: @escaping ([IteratorRecord]?) -> Void) {
+  private func loadRecords(completionHandler: @escaping ([IteratorResult]?) -> Void) {
     assert(Thread.isMainThread)
     guard let iteratorId else { return }
     let cookie = self.cookie
@@ -189,8 +189,16 @@ class TopicRecordsTableViewController: NSViewController {
       })
   }
 
-  // Invariant: completionHandler is always called on the main thread.
   private func setRecords(_ records: [IteratorRecord],
+                          byAppending appending: Bool = true,
+                          completionHandler: @escaping () -> Void = { }) {
+    setRecords(records.map(IteratorResult.original), byAppending: appending) {
+      completionHandler()
+    }
+  }
+
+  // Invariant: completionHandler is always called on the main thread.
+  private func setRecords(_ records: [IteratorResult],
                           byAppending appending: Bool = true,
                           completionHandler: @escaping () -> Void = { }) {
     assert(Thread.isMainThread)
@@ -222,7 +230,7 @@ class TopicRecordsTableViewController: NSViewController {
         var added = [Item]()
         added.reserveCapacity(records.count)
         for r in records {
-          added.append(Item(record: r))
+          added.append(Item(r))
         }
 
         Timed.block(named: "setRecords.sort") {
@@ -250,7 +258,7 @@ class TopicRecordsTableViewController: NSViewController {
         Timed.block(named: "setRecords.fill") {
           items.reserveCapacity(records.count)
           for r in records {
-            items.append(Item(record: r))
+            items.append(Item(r))
           }
         }
 
@@ -386,7 +394,7 @@ class TopicRecordsTableViewController: NSViewController {
     assert(Thread.isMainThread)
     cookie += 1
     let cookie = cookie
-    setRecords([], byAppending: false)
+    setRecords([IteratorResult](), byAppending: false)
     liveModeOn = true
     segmentedControl.setSelected(true, forSegment: 0)
     segmentedControl.setEnabled(false, forSegment: 1)
@@ -652,10 +660,19 @@ fileprivate class Item: NSObject, Comparable {
 
   var id: ID
   var record: IteratorRecord
+  var original: IteratorRecord
 
-  init(record: IteratorRecord) {
-    self.id = ID(pid: record.partitionId, offset: record.offset)
-    self.record = record
+  init(_ r: IteratorResult) {
+    switch r {
+    case .original(let record):
+      self.id = ID(pid: record.partitionId, offset: record.offset)
+      self.record = record
+      self.original = record
+    case .transformed(let record, let original):
+      self.id = ID(pid: original.partitionId, offset: original.offset)
+      self.record = record
+      self.original = original
+    }
   }
 
   static func > (lhs: Item, rhs: Item) -> Bool {

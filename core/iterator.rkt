@@ -5,7 +5,8 @@
 (provide
  IteratorOffset->
  (enum-out IteratorOffset)
- (record-out IteratorRecord))
+ (record-out IteratorRecord)
+ (enum-out IteratorResult))
 
 (define-enum IteratorOffset
   [earliest]
@@ -21,6 +22,11 @@
   [key : (Optional Bytes)]
   [value : (Optional Bytes)]
   [headers : (HashTable String Bytes)])
+
+(define-enum IteratorResult
+  [original {record : IteratorRecord}]
+  [transformed {record : IteratorRecord}
+               {original : IteratorRecord}])
 
 (define (IteratorOffset-> io)
   (cond

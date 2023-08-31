@@ -1,10 +1,8 @@
 #lang racket/base
 
 (require (prefix-in k: kafka)
-         (prefix-in k: kafka/iterator)
          (prefix-in kerr: kafka/private/error) ;; FIXME
          lua/value
-         (only-in lua/private/table table-ht)
          noise/backend
          noise/serde
          "broker.rkt"
@@ -12,6 +10,7 @@
          "group.rkt"
          "iterator.rkt"
          "pool.rkt"
+         "record.rkt"
          "schema-registry/generic.rkt")
 
 (define-rpc (open-workspace [with-conn conn : ConnectionDetails]
@@ -89,24 +88,25 @@
   (pool-open-iterator id topic (IteratorOffset-> offset)))
 
 (define-rpc (get-records [_ id : UVarint]
-                         [with-max-bytes max-bytes : UVarint] : (Listof IteratorRecord))
+                         [with-max-bytes max-bytes : UVarint] : (Listof IteratorResult))
   (define-values (registry script records)
     (pool-get-records id max-bytes))
   (cond
     [script
-     (define proc
-       (table-ref script transform-key))
+     (define proc (table-ref script #"transform"))
      (unless (procedure? proc)
-       (error 'script "script.transform is not a procedure"))
+       (error 'get-records "script.transform is not a procedure"))
      (for*/list ([r (in-vector records)]
-                 [t (in-value (proc (record->table (if registry (decode-record registry r) r))))]
-                 #:when (truthy? t))
+                 [o (in-value (if registry (decode-record registry r) r))]
+                 [t (in-value (proc (record->table o)))]
+                 #:unless (nil? t))
        (unless (table? t)
-         (error 'script "script.transform must return a table or nil~n  received: ~s" t))
-       (table->IteratorRecord t))]
+         (error 'get-records "script.transform must return a table or nil~n  received: ~s" t))
+       (IteratorResult.transformed (table->IteratorRecord t) o))]
     [else
      (for/list ([r (in-vector records)])
-       (record->IteratorRecord (if registry (decode-record registry r) r)))]))
+       (IteratorResult.original
+        (record->IteratorRecord (if registry (decode-record registry r) r))))]))
 
 (define-rpc (reset-iterator [with-id id : UVarint]
                             [to-offset offset : IteratorOffset])
@@ -173,7 +173,7 @@
          (publish-record t 0 #"k" #"v" id))
        (test-begin
          (define it (open-iterator t (IteratorOffset.earliest) id))
-         (define recs (get-records it (* 1024 1024)))
+         (define recs (map IteratorResult.original-record (get-records it (* 1024 1024))))
          (check-equal? (length recs) 1)
          (check-equal? (IteratorRecord-key (car recs)) #"k")
          (check-equal? (IteratorRecord-value (car recs)) #"v"))
@@ -182,69 +182,3 @@
 
   (when (equal? (getenv "FRANZ_INTEGRATION_TESTS") "x")
     (run-tests integration-tests)))
-
-;; help ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(define (record->IteratorRecord r)
-  (IteratorRecord
-   (k:record-partition-id r)
-   (k:record-offset r)
-   (k:record-timestamp r)
-   (k:record-key r)
-   (k:record-value r)
-   (k:record-headers r)))
-
-(define-syntax-rule (define-lua-keys [id k] ...)
-  (begin (define id k) ...))
-
-(define-lua-keys
-  [transform-key #"transform"]
-  [partition-id-key #"partition_id"]
-  [offset-key #"offset"]
-  [timestamp-key #"timestamp"]
-  [key-key #"key"]
-  [value-key #"value"]
-  [headers-key #"headers"])
-
-(define (record->table r)
-  (make-table
-   (cons partition-id-key (k:record-partition-id r))
-   (cons offset-key (k:record-offset r))
-   (cons timestamp-key (k:record-timestamp r))
-   (cons key-key (or (k:record-key r) nil))
-   (cons value-key (or (k:record-value r) nil))
-   (cons headers-key (let ([t (make-table)])
-                       (begin0 t
-                         (for ([(k v) (in-hash (k:record-headers r))])
-                           (table-set! t (string->bytes/utf-8 k) (or v nil))))))))
-
-(define (table->IteratorRecord t)
-  (define pid (table-ref t partition-id-key))
-  (unless (exact-nonnegative-integer? pid)
-    (error 'script "record partition ids must be nonnegative integers~n  received: ~e" pid))
-  (define offset (table-ref t offset-key))
-  (unless (exact-nonnegative-integer? offset)
-    (error 'script "record offsets must be nonnegative integers~n  received: ~e" offset))
-  (define timestamp (table-ref t timestamp-key))
-  (unless (exact-nonnegative-integer? timestamp)
-    (error 'script "record timestamps must be nonnegative integers~n  received: ~e" timestamp))
-  (define key
-    (let ([k (table-ref t key-key)])
-      (if (nil? k) #f k)))
-  (when (and key (not (bytes? key)))
-    (error 'script "record keys must be either nil or strings~n  received: ~e~n" key))
-  (define value
-    (let ([v (table-ref t value-key)])
-      (if (nil? v) #f v)))
-  (when (and value (not (bytes? value)))
-    (error 'script "record values must be either nil or strings~n  received: ~e~n" value))
-  (define headers
-    (let ([v (table-ref t headers-key)])
-      (if (nil? v)
-          (hash)
-          (for/hash ([(k v) (in-hash (table-ht v))])
-            (values (bytes->string/utf-8 k) (if (nil? v) #"" v))))))
-  (IteratorRecord pid offset timestamp key value headers))
-
-(define (truthy? v)
-  (and (not (nil? v)) v))
