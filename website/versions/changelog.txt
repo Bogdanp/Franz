@@ -1,4 +1,10 @@
-# 2023.08.30 (Build 8)
+# 2023.09.30 (Version 1.1, Build 1)
+## Added
+
+* Support for running scripts on already-loaded data from the
+  Scripting Window.
+
+# 2023.08.30 (Version 1.0, Build 8)
 ## Added
 
 * Support for providing custom SSL keys and certificates.
@@ -17,9 +23,9 @@
 
 ## Notes
 
-* As of the next version (Build 9), Franz will require macOS 13+.
+* As of the next version, Franz will require macOS 13+.
 
-# 2023.07.14 (Build 7)
+# 2023.07.14 (Version 1.0, Build 7)
 ## Added
 
 * Support for LZ4 decompression.
@@ -27,7 +33,7 @@
 * Support for Zstandard decompression.
 * Schema Registry support for Protocol Buffers.
 
-# 2023.02.17 (Build 6)
+# 2023.02.17 (Version 1.0, Build 6)
 ## Added
 
 * Support for configuring per-connection defaults from Preferences.
@@ -37,7 +43,7 @@
 * Total group lag is now displayed in the Workspace sidebar.  It's
   possible to customize these stats from the Preferences Window.
 
-# 2023.01.20 (Build 5)
+# 2023.01.20 (Version 1.0, Build 5)
 ## Added
 
 * The Consumer Groups tab to the Topic Detail view.
@@ -57,7 +63,7 @@
   instead 300 bytes.
 * Config Tables now support copying keys & values.
 
-# 2023.01.06 (Build 4)
+# 2023.01.06 (Version 1.0, Build 4)
 ## Added
 
 * Schema Registry support.
@@ -71,7 +77,7 @@
 * LZ4 decompression performance is improved.
 * Avro decoding now supports optional fields.
 
-# 2022.12.14 (Build 3)
+# 2022.12.14 (Version 1.0, Build 3)
 ## Added
 
 * Amazon MSK IAM auth.
@@ -82,13 +88,13 @@
 * MessagePack support.
 * Updates and improvements to the Manual.
 
-# 2022.11.21 (Build 2)
+# 2022.11.21 (Version 1.0, Build 2)
 ## Fixed
 
 * An issue with setting the port number on connections.
 * An issue with downloading updates.  You may have to download this
   update manually from the website at https://franz.defn.io.
 
-# 2022.11.20 (Build 1)
+# 2022.11.20 (Version 1.0, Build 1)
 
 * Initial BETA release.
