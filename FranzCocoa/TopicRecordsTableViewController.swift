@@ -572,6 +572,21 @@ extension TopicRecordsTableViewController: ScriptWindowDelegate {
     return Error.wait(Backend.shared.activateScript(script, forTopic: topic, inWorkspace: id)) != nil
   }
 
+  func scriptWindow(willApply script: String) {
+    Backend.shared.applyScript(
+      script,
+      toRecords: items.map { $0.original },
+      inWorkspace: id
+    ).sink( onError: { err in
+      Error.alert(withError: err)
+    }, onComplete: { [weak self] records in
+      self?.setRecords(
+        records,
+        byAppending: false
+      )
+    })
+  }
+
   func scriptWindowWillDeactivate() {
     Error.wait(Backend.shared.deactivateScript(forTopic: topic, inWorkspace: id))
   }

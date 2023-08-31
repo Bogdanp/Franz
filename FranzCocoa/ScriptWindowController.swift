@@ -174,13 +174,14 @@ class ScriptWindowController: NSWindowController {
     if active {
       return
     }
-    print("Apply!")
+    delegate?.scriptWindow(willApply: editorCtl.code)
   }
 }
 
 // MARK: - ScriptWindowControllerDelegate
 protocol ScriptWindowDelegate: AnyObject {
   func scriptWindow(willActivate script: String) -> Bool
+  func scriptWindow(willApply script: String)
   func scriptWindowWillClose()
   func scriptWindowWillDeactivate()
 }
