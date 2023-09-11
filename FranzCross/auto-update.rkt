@@ -32,7 +32,7 @@
            #:version franz-version
            #:frequency (and
                         (get-preference 'auto-update:check? #t)
-                        (get-preference 'auto-update:interval 3600))))))
+                        (* (get-preference 'auto-update:interval 3600) 1000))))))
 
 (define (stop-auto-updater)
   (void (auto-updater-stop the-auto-updater)))
