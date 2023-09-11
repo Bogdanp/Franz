@@ -636,6 +636,46 @@ Use @lua[msgpack.unpack] to decode your data.
 }|
 
 
+@section{Guides}
+
+@subsection{Mutual TLS}
+
+Franz supports connecting to Kafka servers with mTLS (also known as
+``two-way SSL'') enabled. To connect to a server with mTLS, merely
+provide an SSL Key and an SSL Certificate during connection setup.
+
+@subsubsection{How to extract Java Keystore keys & certificates}
+
+If your client key and certificates are stored in a Java Keystore file
+(typically, a file with the @tt{.jks} extension), then you must first
+extract and convert them to PEM format. You can do this using the
+@tt{keytool} utility provided by your Java Runtime Environment. For
+example, assuming you have a keystore file named @filepath{client.jks},
+you can run the following command:
+
+@verbatim{
+  keytool \
+    -importkeystore \
+    -srckeystore client.jks \
+    -destkeystore client.p12 \
+    -srcstoretype jks \
+    -deststoretype pkcs12
+}
+
+The result is a PKCS12 store named @filepath{client.p12}. Next, convert
+this store to PEM format by running:
+
+@verbatim{
+  openssl pkcs12 \
+    -nodes \
+    -in client.p12 \
+    -out client.pem
+}
+
+Finally, select the @filepath{client.pem} file as @emph{both} the SSL
+Key and the SSL Cert from the Franz Connection Dialog and connect to
+your broker.
+
 @section{Privacy}
 
 Apart from when checking for updates, Franz never phones home for any
