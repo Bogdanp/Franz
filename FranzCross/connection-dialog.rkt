@@ -35,7 +35,10 @@
     [@aws-access-key-id (~optional-str (ConnectionDetails-aws-access-key-id details))]
     [@use-ssl? (ConnectionDetails-use-ssl details)]
     [@ssl-key-path (ConnectionDetails-ssl-key-path details)]
-    [@ssl-cert-path (ConnectionDetails-ssl-cert-path details)])
+    [@ssl-cert-path (ConnectionDetails-ssl-cert-path details)]
+    [@use-http-proxy? (not (not (ConnectionDetails-http-proxy-addr details)))]
+    [@http-proxy-host (or (~and~> (ConnectionDetails-http-proxy-addr details) get-http-proxy-host) "127.0.0.1")]
+    [@http-proxy-port (or (~and~> (ConnectionDetails-http-proxy-addr details) get-http-proxy-port) 1080)])
   (dialog
    #:title title
    #:size '(520 #f)
@@ -50,6 +53,29 @@
     (hpanel
      (labeled "Bootstrap Host:" (input @host (drop1 @host:=)))
      (labeled "Port:" (validated-input @port (drop1 @port:=) #:text->value string->port) #:width #f))
+    (vpanel
+     (labeled
+      ""
+      (checkbox
+       #:label "Use HTTP Proxy"
+       #:checked? @use-http-proxy?
+       @use-http-proxy?:=))
+     (if-view
+      @use-http-proxy?
+      (hpanel
+       (labeled
+        "HTTP Proxy:"
+        (validated-input
+         @http-proxy-host
+         (drop1 @http-proxy-host:=)))
+       (labeled
+        "Port:"
+        (validated-input
+         @http-proxy-port
+         (drop1 @http-proxy-port:=)
+         #:text->value string->port)
+        #:width #f))
+      (spacer)))
     (labeled
      "Auth Mechanism:"
      (choice
@@ -83,12 +109,14 @@
        @use-ssl?:=))
      (button
       (make-browse-label @ssl-key-path "SSL Key")
+      #:enabled? @use-ssl?
       (lambda ()
         (define path
           (get-file ^@ssl-key-path '(("PKCS8 Private Key" "*.der; *.pem; *.key"))))
         (@ssl-key-path . := . (~and~> path path->string))))
      (button
       (make-browse-label @ssl-cert-path "SSL Cert")
+      #:enabled? @use-ssl?
       (lambda ()
         (define path
           (get-file ^@ssl-cert-path '(("X.509 Certificate" "*.crt; *.pem"))))
@@ -104,6 +132,11 @@
       #:style '(border)
       save-label
       (lambda ()
+        (define http-proxy-addr
+          (and ^@use-http-proxy?
+               (format "~a:~a"
+                       ^@http-proxy-host
+                       ^@http-proxy-port)))
         (define password (->optional-str ^@password))
         (define password-id
           (or (ConnectionDetails-password-id details)
@@ -116,6 +149,7 @@
           (make-ConnectionDetails
            #:id (ConnectionDetails-id details)
            #:name (or (->optional-str ^@name) "Unnamed Connection")
+           #:http-proxy-addr http-proxy-addr
            #:bootstrap-host ^@host
            #:bootstrap-port ^@port
            #:auth-mechanism ^@mechanism
@@ -138,6 +172,15 @@
 (define (string->port v)
   (define n (string->number v))
   (and n (>= n 0) (<= n 65535) n))
+
+(define http-proxy-addr-re
+  #rx"([^:]+):([1-9][0-9]*)")
+
+(define (get-http-proxy-host v)
+  (cadr (regexp-match http-proxy-addr-re v)))
+
+(define (get-http-proxy-port v)
+  (string->number (caddr (regexp-match http-proxy-addr-re v))))
 
 (define (make-browse-label o label)
   (o . ~> . (λ (v) (~a (if v (~a label "*") label) "..."))))
