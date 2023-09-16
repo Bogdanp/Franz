@@ -15,7 +15,10 @@ class ConnectionDetailsFormViewController: NSViewController {
   @IBOutlet weak var authMechanismButton: NSPopUpButton!
   @IBOutlet weak var usernameField: NSTextField!
   @IBOutlet weak var passwordField: NSTextField!
-  @IBOutlet weak var enableSSLCheckbox: NSButton!
+  @IBOutlet weak var enableHttpProxyCheckbox: NSButton!
+  @IBOutlet weak var httpProxyHostField: NSTextField!
+  @IBOutlet weak var httpProxyPortField: NSTextField!
+  @IBOutlet weak var enableSslCheckbox: NSButton!
   @IBOutlet weak var sslKeyButton: NSButton!
   @IBOutlet weak var sslCertButton: NSButton!
   @IBOutlet weak var awsRegionField: NSTextField!
@@ -23,6 +26,10 @@ class ConnectionDetailsFormViewController: NSViewController {
   @IBOutlet weak var awsAccessKeySecretField: NSSecureTextField!
   @IBOutlet weak var cancelButton: NSButton!
   @IBOutlet weak var actionButton: NSButton!
+
+  @IBOutlet weak var proxyViewHeightConstraint: NSLayoutConstraint!
+  @IBOutlet weak var proxyView: NSView!
+  @IBOutlet var httpProxyView: NSView!
 
   @IBOutlet weak var authViewHeightConstraint: NSLayoutConstraint!
   @IBOutlet weak var authView: NSView!
@@ -47,11 +54,20 @@ class ConnectionDetailsFormViewController: NSViewController {
     portFormatter.maximum = 65535
     portFormatter.allowsFloats = false
     bootstrapPortField.formatter = portFormatter
+    httpProxyPortField.formatter = portFormatter
 
     if let details {
       nameField.stringValue = details.name
       bootstrapHostField.stringValue = details.bootstrapHost
       bootstrapPortField.integerValue = Int(details.bootstrapPort)
+      if let httpProxyAddr = details.httpProxyAddr {
+        enableHttpProxyCheckbox.state = .on
+        let parts = httpProxyAddr.split(separator: ":")
+        if parts.count == 2 {
+          httpProxyHostField.stringValue = String(parts[0])
+          httpProxyPortField.integerValue = Int(parts[1]) ?? 1080
+        }
+      }
       authMechanism = details.authMechanism
       if let username = details.username {
         usernameField.stringValue = username
@@ -75,7 +91,7 @@ class ConnectionDetailsFormViewController: NSViewController {
       if let accessKeyId = details.awsAccessKeyId {
         awsAccessKeyIdField.stringValue = accessKeyId
       }
-      enableSSLCheckbox.state = details.useSsl ? .on : .off
+      enableSslCheckbox.state = details.useSsl ? .on : .off
       sslKeyPathBookmark = details.sslKeyPath
       sslCertPathBookmark = details.sslCertPath
     }
@@ -128,28 +144,51 @@ class ConnectionDetailsFormViewController: NSViewController {
   }
 
   private func reset() {
+    httpProxyView.removeFromSuperview()
+    if enableHttpProxyCheckbox.state == .on {
+      proxyView.setFrameSize(NSSize(width: 490, height: 26))
+      proxyView.addSubview(httpProxyView)
+      proxyViewHeightConstraint.constant = 26
+      httpProxyView.setFrameOrigin(proxyView.bounds.origin)
+    } else {
+      proxyView.setFrameSize(NSSize(width: 490, height: 0))
+      proxyViewHeightConstraint.constant = 0
+    }
+
     plainAuthView.removeFromSuperview()
     awsAuthView.removeFromSuperview()
     switch authMechanism {
     case .plain, .scramSHA256, .scramSHA512:
-      authView.setFrameSize(NSSize(width: 490, height: 38))
+      authView.setFrameSize(NSSize(width: 490, height: 26))
       authView.addSubview(plainAuthView)
-      authViewHeightConstraint.constant = 38
-      plainAuthView.setFrameOrigin(authView.bounds.origin.applying(.init(translationX: 0, y: 2)))
-      view.window?.setContentSize(NSSize(width: 490, height: 200))
+      authViewHeightConstraint.constant = 26
+      plainAuthView.setFrameOrigin(authView.bounds.origin)
     case .aws:
-      authView.setFrameSize(NSSize(width: 490, height: 62))
+      authView.setFrameSize(NSSize(width: 490, height: 52))
       authView.addSubview(awsAuthView)
       awsAuthView.setFrameOrigin(authView.bounds.origin)
-      authViewHeightConstraint.constant = 62
-      view.window?.setContentSize(NSSize(width: 490, height: 226))
+      authViewHeightConstraint.constant = 52
     }
 
+    view.window?.setContentSize(NSSize(
+      width: 490,
+      height: 185 + proxyView.frame.height + authView.bounds.height
+    ))
+    sslKeyButton.isEnabled = enableSslCheckbox.state == .on
     sslKeyButton.title = sslKeyPathBookmark == nil ? "SSL Key..." : "SSL Key*..."
+    sslCertButton.isEnabled = enableSslCheckbox.state == .on
     sslCertButton.title = sslCertPathBookmark == nil ? "SSL Cert...": "SSL Cert*..."
   }
 
+  @IBAction func didToggleEnableHttpProxy(_ sender: Any) {
+    reset()
+  }
+
   @IBAction func didChangeAuthMechanism(_ sender: Any) {
+    reset()
+  }
+
+  @IBAction func didToggleEnableSsl(_ sender: Any) {
     reset()
   }
 
@@ -261,10 +300,25 @@ class ConnectionDetailsFormViewController: NSViewController {
       : UVarint(bootstrapPortField.integerValue)
     )
 
+    var httpProxyAddr: String?
+    if enableHttpProxyCheckbox.state == .on {
+      let host = (
+        httpProxyHostField.stringValue == ""
+        ? "127.0.0.1"
+        : httpProxyHostField.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
+      )
+      let port = (
+        httpProxyPortField.stringValue == ""
+        ? 1080
+        : UVarint(httpProxyPortField.integerValue)
+      )
+      httpProxyAddr = "\(host):\(port)"
+    }
+
     actionProc(ConnectionDetails(
       id: details?.id,
       name: nameField.stringValue == "" ? "Unnamed Connection" : nameField.stringValue,
-      httpProxyAddr: nil,
+      httpProxyAddr: httpProxyAddr,
       bootstrapHost: bootstrapHost,
       bootstrapPort: bootstrapPort,
       authMechanism: authMechanism,
@@ -273,7 +327,7 @@ class ConnectionDetailsFormViewController: NSViewController {
       passwordId: password != nil ? passwordId : nil,
       awsRegion: awsRegion,
       awsAccessKeyId: awsAccessKeyId,
-      useSsl: enableSSLCheckbox.state == .on,
+      useSsl: enableSslCheckbox.state == .on,
       sslKeyPath: sslKeyPathBookmark,
       sslCertPath: sslCertPathBookmark,
       schemaRegistryId: nil
