@@ -35,7 +35,6 @@
  delete-schema-registry!
 
  maybe-adjust-trial-deadline
- reset-trial-deadline!
 
  get-buid)
 
@@ -302,9 +301,18 @@
          (~license-key)))
 
 (define-rpc (activate-license [_ key : String] : Bool)
-  (and (parse-license key)
-       (put-metadata! 'license key)
-       #t))
+  (and~> (parse-license key)
+         (do-activate-license)))
+
+(define (do-activate-license l)
+  (cond
+    [(trial-reset-license? l)
+     (define d (seconds->date (+ (license-seconds l) trial-duration)))
+     (begin0 #t
+       (reset-trial-deadline! (date-year d) (date-month d) (date-day d)))]
+    [else
+     (begin0 #t
+       (put-metadata! 'license (~license-key l)))]))
 
 (define (maybe-adjust-trial-deadline)
   (unless (is-license-valid)

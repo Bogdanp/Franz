@@ -11,7 +11,8 @@
 (provide
  generate-random-license
  parse-license
- ~license-key)
+ ~license-key
+ license-seconds)
 
 (define license-secret
   (string->bytes/utf-8 s:license-secret))
@@ -28,7 +29,7 @@
 
 (define (parse-license s)
   (match s
-    [(regexp #rx"^(01)(....)-([0-9A-F]+)-([0-9A-F]+)$"
+    [(regexp #rx"^(..)(....)-([0-9A-F]+)-([0-9A-F]+)$"
              (list _ version-str issue-date-str rand-str checksum-str))
      (define payload
        (call-with-output-bytes
@@ -40,9 +41,10 @@
      (define checksum
        (checksum-bytes payload))
      (and (bytes=? checksum (hex-string->bytes checksum-str))
-          (let ([issue-date (integer-bytes->integer (hex-string->bytes issue-date-str) #f #t)]
+          (let ([version (integer-bytes->integer (hex-string->bytes version-str) #f #t)]
+                [issue-date (integer-bytes->integer (hex-string->bytes issue-date-str) #f #t)]
                 [rand (hex-string->bytes rand-str)])
-            (license 1 issue-date rand)))]
+            (license version issue-date rand)))]
 
     [_
      #f]))
@@ -63,6 +65,9 @@
      (write-char #\- out)
      (display-bytes (checksum-bytes payload) out))))
 
+(define (license-seconds l)
+  (+ epoch (* (license-issue-date l) 86400)))
+
 (define (checksum-bytes payload)
   (subbytes (sha1-bytes (bytes-append payload license-secret)) 0 12))
 
@@ -75,6 +80,19 @@
 (define (display-bytes bs out)
   (for ([b (in-bytes bs)])
     (write-string (~byte b) out)))
+
+
+;; trials ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(provide
+ set-trial-reset-flag
+ trial-reset-license?)
+
+(define (set-trial-reset-flag l)
+  (struct-copy license l [version (bitwise-ior #x80 (license-version l))]))
+
+(define (trial-reset-license? l)
+  (= #x80 (bitwise-and #x80 (license-version l))))
 
 
 ;; date ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
