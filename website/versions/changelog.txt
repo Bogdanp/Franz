@@ -3,6 +3,7 @@
 
 * Support for running scripts on already-loaded data from the
   Scripting Window.
+* Support for connecting to Kafka via an HTTP proxy.
 
 ## Changed
 
