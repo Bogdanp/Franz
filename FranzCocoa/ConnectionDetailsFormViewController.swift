@@ -264,6 +264,7 @@ class ConnectionDetailsFormViewController: NSViewController {
     actionProc(ConnectionDetails(
       id: details?.id,
       name: nameField.stringValue == "" ? "Unnamed Connection" : nameField.stringValue,
+      httpProxyAddr: nil,
       bootstrapHost: bootstrapHost,
       bootstrapPort: bootstrapPort,
       authMechanism: authMechanism,

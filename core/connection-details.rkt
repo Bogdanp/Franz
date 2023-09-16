@@ -31,6 +31,7 @@
 (define-record ConnectionDetails
   [(id #f) : (Optional UVarint)]
   [name : String #:contract non-empty-string?]
+  [(http-proxy-addr #f) : (Optional String) #:contract (or/c #f non-empty-string?)]
   [(bootstrap-host "127.0.0.1") : String #:contract non-empty-string?]
   [(bootstrap-port 9092) : UVarint #:contract (integer-in 0 65535)]
   [(auth-mechanism (AuthMechanism.plain)) : AuthMechanism]
@@ -63,6 +64,7 @@
   (make-ConnectionDetails
    #:id (meta:connection-details-id c)
    #:name (meta:connection-details-name c)
+   #:http-proxy-addr (sql-null->false (meta:connection-details-http-proxy-addr c))
    #:bootstrap-host (meta:connection-details-bootstrap-host c)
    #:bootstrap-port (meta:connection-details-bootstrap-port c)
    #:auth-mechanism (meta->AuthMechanism (meta:connection-details-auth-mechanism c))
@@ -79,6 +81,7 @@
   (define meta:c
     (meta:make-connection-details
      #:name (ConnectionDetails-name c)
+     #:http-proxy-addr (or (ConnectionDetails-http-proxy-addr c) sql-null)
      #:bootstrap-host (ConnectionDetails-bootstrap-host c)
      #:bootstrap-port (ConnectionDetails-bootstrap-port c)
      #:auth-mechanism (AuthMechanism->meta (ConnectionDetails-auth-mechanism c))
@@ -147,7 +150,11 @@
                       #:certificate-chain (ConnectionDetails-ssl-cert-path c)
                       'auto)]
                     [else
-                     (ssl-secure-client-context)]))))
+                     (ssl-secure-client-context)]))
+   #:proxy (and (ConnectionDetails-http-proxy-addr c)
+                (match-let ([(regexp #rx"([^:]+):(.+)" (list _ host (app string->number port)))
+                             (ConnectionDetails-http-proxy-addr c)])
+                  (k:make-http-proxy host port)))))
 
 (define-rpc (get-connections : (Listof ConnectionDetails))
   (map meta->ConnectionDetails (meta:get-connections)))

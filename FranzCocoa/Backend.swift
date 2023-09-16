@@ -300,6 +300,7 @@ public struct Broker: Readable, Writable {
 public struct ConnectionDetails: Readable, Writable {
   public let id: UVarint?
   public let name: String
+  public let httpProxyAddr: String?
   public let bootstrapHost: String
   public let bootstrapPort: UVarint
   public let authMechanism: AuthMechanism
@@ -316,6 +317,7 @@ public struct ConnectionDetails: Readable, Writable {
   public init(
     id: UVarint?,
     name: String,
+    httpProxyAddr: String?,
     bootstrapHost: String,
     bootstrapPort: UVarint,
     authMechanism: AuthMechanism,
@@ -331,6 +333,7 @@ public struct ConnectionDetails: Readable, Writable {
   ) {
     self.id = id
     self.name = name
+    self.httpProxyAddr = httpProxyAddr
     self.bootstrapHost = bootstrapHost
     self.bootstrapPort = bootstrapPort
     self.authMechanism = authMechanism
@@ -349,6 +352,7 @@ public struct ConnectionDetails: Readable, Writable {
     return ConnectionDetails(
       id: UVarint?.read(from: inp, using: &buf),
       name: String.read(from: inp, using: &buf),
+      httpProxyAddr: String?.read(from: inp, using: &buf),
       bootstrapHost: String.read(from: inp, using: &buf),
       bootstrapPort: UVarint.read(from: inp, using: &buf),
       authMechanism: AuthMechanism.read(from: inp, using: &buf),
@@ -367,6 +371,7 @@ public struct ConnectionDetails: Readable, Writable {
   public func write(to out: OutputPort) {
     id.write(to: out)
     name.write(to: out)
+    httpProxyAddr.write(to: out)
     bootstrapHost.write(to: out)
     bootstrapPort.write(to: out)
     authMechanism.write(to: out)

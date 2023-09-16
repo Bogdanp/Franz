@@ -89,6 +89,7 @@
   #:table "connection_details"
   ([id id/f #:primary-key #:auto-increment]
    [name string/f #:contract non-empty-string?]
+   [(http-proxy-addr sql-null) string/f #:nullable]
    [(bootstrap-host "127.0.0.1") string/f #:contract non-empty-string?]
    [(bootstrap-port 9092) integer/f #:contract (integer-in 0 65535)]
    [(auth-mechanism 'plain) symbol/f #:contract auth-mechanism/c]
