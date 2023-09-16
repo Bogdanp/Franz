@@ -269,7 +269,7 @@ fileprivate struct LicenseView: View {
 
   private func activate() {
     if let activated = Error.wait(Backend.shared.activateLicense(license)), activated {
-      activatedLicense = license
+      activatedLicense = Error.wait(Backend.shared.getLicense()) ?? ""
     }
   }
 }

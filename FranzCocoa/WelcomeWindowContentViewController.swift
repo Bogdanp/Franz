@@ -13,7 +13,7 @@ class WelcomeWindowContentViewController: NSViewController {
     versionLabel.stringValue = "Version \(version) (Build \(build))"
 
     trialButton.isHidden = true
-    if let valid = Error.wait(Backend.shared.isLicenseValid()), !valid {
+    if Error.wait(Backend.shared.getLicense()) == nil {
       trialButton.isHidden = false
       if let deadlineSeconds =  Error.wait(Backend.shared.getTrialDeadline()) {
         let now = Date()
