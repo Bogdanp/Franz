@@ -60,8 +60,8 @@
     #:save-label save-label
     #:save-action
     (λ (saved-conn close!)
-      (action saved-conn)
-      (close!))
+      (close!)
+      (action saved-conn))
     conn)
    (get-welcome-renderer)))
 
