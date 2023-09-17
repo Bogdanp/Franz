@@ -17,7 +17,7 @@ all: ${CORE_ZO} ${APP_SRC}/Backend.swift
 
 .PHONY: clean
 clean:
-	rm -r ${RESOURCES_PATH}
+	rm -fr ${RESOURCES_PATH}
 
 ${RKT_MAIN_ZO}: ${RKT_FILES}
 	raco make -j 16 -v ${RKT_SRC}/main.rkt
@@ -41,10 +41,3 @@ ${MANUAL_PATH}/index.html: manual/*.scrbl
 
 website/manual/index.html: manual/*.scrbl
 	make -C website manual/index.html
-
-.PHONY: sync-arm64
-sync-arm64:
-	rm -f ${RESOURCES_PATH}/core-arm64.zo
-	rm -rf ${RESOURCES_PATH}/runtime-arm64
-	scp -r racecar.local:~/sandbox/franz/FranzCocoa/resources/core-arm64.zo ${RESOURCES_PATH}/
-	scp -r racecar.local:~/sandbox/franz/FranzCocoa/resources/runtime-arm64 ${RESOURCES_PATH}/
