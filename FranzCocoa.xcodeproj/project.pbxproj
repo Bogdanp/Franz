@@ -483,7 +483,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "make\nBin/sign-dylibs\n";
+			shellScript = "if [[ -z \"${GITHUB_ACTIONS}\" ]]; then\n  make\nfi\nBin/sign-dylibs\n";
 		};
 		43DF4FA929000BFE00E7BB98 /* Run Linter */ = {
 			isa = PBXShellScriptBuildPhase;

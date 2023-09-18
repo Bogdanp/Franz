@@ -1,9 +1,9 @@
 on: [push]
 name: Build
 jobs:
-  build:
+  build_core_arm64:
     runs-on: macos-12
-    name: Build on macOS 12
+    name: Build core (arm64) on macOS 12
     steps:
       - uses: actions/checkout@master
       - uses: Bogdanp/setup-racket@v1.10
@@ -12,15 +12,11 @@ jobs:
           distribution: 'full'
           variant: 'CS'
           version: '8.10'
-          packages: http-easy-lib,raco-cross-lib
-      - name: Install Noise
+          packages: raco-cross-lib
+      - name: Clone Noise
         run: |
           mkdir ../../sandbox
           git clone --depth 1 --branch racket-8.10 https://github.com/Bogdanp/Noise ../../sandbox/Noise
-          raco pkg install -D --batch --auto ../../sandbox/noise/Racket/noise-serde-lib/
-      - name: Build Noise
-        run: make
-        working-directory: ../../sandbox/Noise
       - name: Prepare secrets
         run: |
           echo -n "$LICENSE_SECRET" | base64 --decode -o core/secrets/license-secret.txt
@@ -28,12 +24,6 @@ jobs:
         env:
           LICENSE_SECRET: ${{ secrets.LICENSE_SECRET }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-      - name: Install core
-        run: raco pkg install -D --batch --auto --name franz core/
-      - name: Build manual
-        run: make FranzCocoa/resources/manual/index.html
-      - name: Build core x86_64
-        run: make
       - name: Build core arm64
         run: |
           raco cross \
@@ -57,7 +47,101 @@ jobs:
             --mods FranzCocoa/resources/core-arm64.zo core/main.rkt
       - name: Show your work
         run: find FranzCocoa/resources
-      - name: Install Apple Certificate
+      - name: Upload core
+        uses: actions/upload-artifact@v3
+        with:
+          name: core-arm64
+          path: |
+            FranzCocoa/resources/core-arm64.zo
+            FranzCocoa/resources/runtime-arm64/
+
+  build_core_x86_64:
+    runs-on: macos-12
+    name: Build core (x86_64) on macOS 12
+    steps:
+      - uses: actions/checkout@master
+      - uses: Bogdanp/setup-racket@v1.10
+        with:
+          architecture: 'x64'
+          distribution: 'full'
+          variant: 'CS'
+          version: '8.10'
+          packages: http-easy-lib
+      - name: Build Noise
+        run: |
+          mkdir ../../sandbox
+          git clone --depth 1 --branch racket-8.10 https://github.com/Bogdanp/Noise ../../sandbox/Noise
+          raco pkg install -D --batch --auto ../../sandbox/noise/Racket/noise-serde-lib/
+          pushd ../../sandbox/Noise
+          make
+      - name: Prepare secrets
+        run: |
+          echo -n "$LICENSE_SECRET" | base64 --decode -o core/secrets/license-secret.txt
+          echo -n "$SENTRY_DSN" | base64 --decode -o core/secrets/sentry-dsn.txt
+        env:
+          LICENSE_SECRET: ${{ secrets.LICENSE_SECRET }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+      - name: Install core
+        run: raco pkg install -D --batch --auto --name franz core/
+      - name: Build manual
+        run: make FranzCocoa/resources/manual/index.html
+      - name: Build core
+        run: make
+      - name: Show your work
+        run: find FranzCocoa/resources
+      - name: Upload manual
+        uses: actions/upload-artifact@v3
+        with:
+          name: manual-x86_64
+          path: FranzCocoa/resources/manual/
+      - name: Upload core
+        uses: actions/upload-artifact@v3
+        with:
+          name: core-x86_64
+          path: |
+            FranzCocoa/resources/core-x86_64.zo
+            FranzCocoa/resources/runtime-x86_64/
+
+  build_app:
+    runs-on: macos-12
+    name: Build Franz.app on macOS 12
+    needs:
+      - build_core_arm64
+      - build_core_x86_64
+    steps:
+      - uses: actions/checkout@master
+      - uses: Bogdanp/setup-racket@v1.10
+        with:
+          architecture: 'x64'
+          distribution: 'full'
+          variant: 'CS'
+          version: '8.10'
+          packages: http-easy-lib
+      - name: Install Noise
+        run: |
+          mkdir ../../sandbox
+          git clone --depth 1 --branch racket-8.10 https://github.com/Bogdanp/Noise ../../sandbox/Noise
+          raco pkg install -D --batch --auto ../../sandbox/noise/Racket/noise-serde-lib/
+          pushd ../../sandbox/Noise
+          make
+      - name: Download core arm64
+        uses: actions/download-artifact@v3
+        with:
+          name: core-arm64
+          path: FranzCocoa/resources/
+      - name: Download core x86_64
+        uses: actions/download-artifact@v3
+        with:
+          name: core-x86_64
+          path: FranzCocoa/resources/
+      - name: Download manual x86_64
+        uses: actions/download-artifact@v3
+        with:
+          name: manual-x86_64
+          path: FranzCocoa/resources/
+      - name: Show artifacts
+        run: find FranzCocoa/resources
+      - name: Install Certificates
         run: |
           # https://docs.github.com/en/actions/deployment/deploying-xcode-applications/installing-an-apple-certificate-on-macos-runners-for-xcode-development
           MAC_DEV_CER_PATH=$RUNNER_TEMP/madev.p12
