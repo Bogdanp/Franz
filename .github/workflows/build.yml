@@ -138,7 +138,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: manual-x86_64
-          path: FranzCocoa/resources/
+          path: FranzCocoa/resources/manual/
       - name: Show artifacts
         run: find FranzCocoa/resources
       - name: Install Certificates
