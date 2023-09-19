@@ -2,7 +2,7 @@ on: [push]
 name: Build
 jobs:
   build_core_arm64:
-    runs-on: macos-12-xl
+    runs-on: macos-12
     name: Build core (arm64) on macOS 12
     steps:
       - uses: actions/checkout@master
@@ -56,7 +56,7 @@ jobs:
             FranzCocoa/resources/runtime-arm64/
 
   build_core_x86_64:
-    runs-on: macos-12-xl
+    runs-on: macos-12
     name: Build core (x86_64) on macOS 12
     steps:
       - uses: actions/checkout@master
@@ -103,7 +103,7 @@ jobs:
             FranzCocoa/resources/runtime-x86_64/
 
   build_app:
-    runs-on: macos-12-xl
+    runs-on: macos-12
     name: Build Franz.app on macOS 12
     needs:
       - build_core_arm64
