@@ -173,7 +173,7 @@ jobs:
           xcodebuild \
             -exportArchive \
             -archivePath dist/Franz.xcarchive \
-            -exportOptionsPlist export.plist \
+            -exportOptionsPlist FranzCocoa/ExportOptions.plist \
             -exportPath dist/ \
             -allowProvisioningUpdates
           npx create-dmg dist/Franz.app dist/
