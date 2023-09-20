@@ -102,7 +102,9 @@
                  #:unless (nil? t))
        (unless (table? t)
          (error 'get-records "script.transform must return a table or nil~n  received: ~s" t))
-       (IteratorResult.transformed (table->IteratorRecord t) o))]
+       (IteratorResult.transformed
+        (table->IteratorRecord t)
+        (record->IteratorRecord o)))]
     [else
      (for/list ([r (in-vector records)])
        (IteratorResult.original
