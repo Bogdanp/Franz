@@ -141,7 +141,8 @@
 
 (module+ test
   (require rackunit
-           rackunit/text-ui)
+           rackunit/text-ui
+           (submod "script.rkt" rpc))
 
   (define test-details
     (make-ConnectionDetails
@@ -179,6 +180,33 @@
          (check-equal? (length recs) 1)
          (check-equal? (IteratorRecord-key (car recs)) #"k")
          (check-equal? (IteratorRecord-value (car recs)) #"v"))
+       (delete-topic t id)
+       (close-workspace id))
+
+     (test-case "read transformed record"
+       (define id
+         (open-workspace test-details #f))
+       (define t "workspace-read-transformed-test")
+       (test-begin
+         (create-topic t 2 1 null id)
+         (publish-record t 0 #"k" #"v" id)
+         (activate-script #<<SCRIPT
+local script = {}
+function script.transform(r)
+  r.value = r.value .. '!'
+  return r
+end
+return script
+SCRIPT
+                          t id))
+       (test-begin
+         (define it (open-iterator t (IteratorOffset.earliest) id))
+         (define recs (get-records it (* 1024 1024)))
+         (check-equal? (length recs) 1)
+         (check-equal? (IteratorRecord-key (IteratorResult.transformed-record (car recs))) #"k")
+         (check-equal? (IteratorRecord-value (IteratorResult.transformed-record (car recs))) #"v!")
+         (check-equal? (IteratorRecord-key (IteratorResult.transformed-original (car recs))) #"k")
+         (check-equal? (IteratorRecord-value (IteratorResult.transformed-original (car recs))) #"v"))
        (delete-topic t id)
        (close-workspace id))))
 
