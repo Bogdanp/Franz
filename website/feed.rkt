@@ -23,15 +23,17 @@
 (define (make-item blocks)
   (match-define (cons (heading title _) content)
     (reverse blocks))
-  (match-define (regexp #rx"^([^ ]+) \\(Build (.+)\\)"
+  (match-define (regexp #rx"^([^ ]+) \\(Version (.+), Build (.+)\\)"
                         (list _
                               release-date-str
+                              version-str
                               (app string->number build)))
     title)
   (define release-date
     (parse-moment release-date-str "yyyy.MM.dd"))
   (define release-url
-    (format "https://franz.defn.io/releases/Franz%201.0.~a.universal.dmg"
+    (format "https://franz.defn.io/releases/Franz%20~a.~a.universal.dmg"
+            version-str
             (~r build
                 #:min-width 4
                 #:pad-string "0")))
