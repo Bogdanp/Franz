@@ -12,7 +12,7 @@
                "http-easy-lib"
                ["json-lexer-lib" #:version "0.1.1"]
                ["kafka-lib" #:version "0.10"]
-               "libsqlite3"
+               ["libsqlite3" #:version "3.43.1"]
                "libzstd"
                ["lua-lib" #:version "0.1.2"]
                "messagepack-lib"
