@@ -14,7 +14,8 @@
  password
  validated-input
  ~optional-str
- ->optional-str)
+ ->optional-str
+ ~truncate)
 
 (define-syntax-rule (match-view obs-expr clause0 clause ...)
   (observable-view obs-expr (match-lambda clause0 clause ...)))
@@ -70,6 +71,13 @@
 
 (define (->optional-str v)
   (if (string=? v "") #f v))
+
+(define (~truncate s [max-len 50])
+  (if (>= (string-length s) max-len)
+      (let ([s (substring s 0 max-len)])
+        (begin0 s
+          (string-set! s (sub1 max-len) #\…)))
+      s))
 
 (module+ main
   (require "combinator.rkt")

@@ -35,7 +35,7 @@
      #:stretch '(#t #f)
      (text
       #:font system-font-l
-      (Schema-name s))
+      (~truncate (Schema-name s)))
      (text
       #:color secondary-color
       #:font system-font-xs

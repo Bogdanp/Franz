@@ -32,7 +32,7 @@
     #:stretch '(#t #f)
     (text
      #:font system-font-l
-     (Broker-host b))
+     (~truncate (Broker-host b)))
     (text
      #:color secondary-color
      #:font system-font-xs

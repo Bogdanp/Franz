@@ -49,7 +49,7 @@
     #:stretch '(#t #f)
     (text
      #:font system-font-l
-     (Topic-name t))
+     (~truncate (Topic-name t)))
     (text
      #:color secondary-color
      #:font system-font-xs

@@ -50,7 +50,7 @@
       #:stretch '(#t #f)
       (text
        #:font system-font-l
-       (Group-id g))
+       (~truncate (Group-id g)))
       (text
        #:color secondary-color
        #:font system-font-xs
