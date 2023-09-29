@@ -1,7 +1,9 @@
 #lang racket/gui/easy
 
 (require racket/class
-         racket/string)
+         racket/string
+         "hacks.rkt")
+
 
 ;; text ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -81,7 +83,19 @@
 ;; window<%> ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide
+ mix-context-event
  mix-initial-focus)
+
+(define ((mix-context-event proc) %)
+  (class %
+    (super-new)
+    (define/override (on-subwindow-event receiver event)
+      (case (send event get-event-type)
+        [(right-down)
+         (make-mouse-event-positions-absolute receiver event)
+         (begin0 #t
+           (proc event))]
+        [else #f]))))
 
 (define (mix-initial-focus %)
   (class %

@@ -3,6 +3,7 @@
 (require franz/broker
          racket/class
          "hacks.rkt"
+         "mixin.rkt"
          "observable.rkt")
 
 (provide
@@ -10,9 +11,9 @@
 
 (define (config-table @configs
                       #:get-parent-proc [get-parent-renderer void])
-  (define context-pending-event #f)
   (define-observables
-    [@revealed-names (hash)])
+    [@revealed-names (hash)]
+    [@selection #f])
   (table
    '("Name" "Value" "Default?")
    #:column-widths
@@ -35,51 +36,35 @@
            (set-ResourceConfig-value c "********")
            c)))
    #:mixin
-   (λ (%)
-     (class %
-       (inherit get-selections select)
-       (super-new)
-       (define/override (on-subwindow-event receiver event)
-         (case (send event get-event-type)
-           [(left-down)
-            (set! context-pending-event #f)]
-           [(right-down)
-            ;; HACK: The action callback doesn't fire unless there is
-            ;; a new selection.  So, deselect any selected items on
-            ;; right-click so that our context menu can fire on
-            ;; already-selected items.
-            (for ([idx (in-list (get-selections))])
-              (select idx #f))
-            (make-mouse-event-positions-absolute receiver event)
-            (set! context-pending-event event)])
-         (super on-subwindow-event receiver event))))
+   (mix-context-event
+    (lambda (event)
+      (define entry ^@selection)
+      (when entry
+        (define name (ResourceConfig-name entry))
+        (render-popup-menu*
+         (get-parent-renderer)
+         (apply
+          popup-menu
+          (menu-item "Copy Key" (λ () (put-clipboard name)))
+          (menu-item "Copy Value" (λ () (put-clipboard (ResourceConfig-value entry))))
+          (if (ResourceConfig-is-sensitive entry)
+              (list
+               (menu-item-separator)
+               (if (hash-has-key? ^@revealed-names name)
+                   (menu-item
+                    "Hide"
+                    (λpdate-observable @revealed-names
+                      (hash-remove it name)))
+                   (menu-item
+                    "Reveal"
+                    (λpdate-observable @revealed-names
+                      (hash-set it name #t)))))
+              null))
+         event))))
    (λ (event entries selection)
      (case event
        [(select)
-        (when context-pending-event
-          (define entry (vector-ref entries selection))
-          (define name (ResourceConfig-name entry))
-          (render-popup-menu*
-           (get-parent-renderer)
-           (apply
-            popup-menu
-            (menu-item "Copy Key" (λ () (put-clipboard name)))
-            (menu-item "Copy Value" (λ () (put-clipboard (ResourceConfig-value entry))))
-            (if (ResourceConfig-is-sensitive entry)
-                (list
-                 (menu-item-separator)
-                 (if (hash-has-key? ^@revealed-names name)
-                     (menu-item
-                      "Hide"
-                      (λpdate-observable @revealed-names
-                        (hash-remove it name)))
-                     (menu-item
-                      "Reveal"
-                      (λpdate-observable @revealed-names
-                        (hash-set it name #t)))))
-                null))
-           context-pending-event)
-          (set! context-pending-event #f))]))))
+        (@selection:= (vector-ref entries selection))]))))
 
 (define (put-clipboard s)
   (send gui:the-clipboard set-clipboard-string s (current-seconds)))
