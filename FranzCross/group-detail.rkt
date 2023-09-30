@@ -245,6 +245,10 @@
   (define-observables
     [@target init-target]
     [@offset offset])
+  (define labeled*
+    (make-keyword-procedure
+     (lambda (kws kw-args . args)
+       (keyword-apply labeled kws kw-args #:width 60 args))))
   (dialog
    #:title "Reset Offset..."
    #:mixin
@@ -253,7 +257,7 @@
    (vpanel
     #:stretch '(#t #f)
     #:margin '(10 20)
-    (labeled
+    (labeled*
      "Reset to:"
      (choice
       targets
@@ -261,13 +265,13 @@
       #:selection @target
       @target:=))
     (match-view @target
-      ['offset (labeled
+      ['offset (labeled*
                 "Offset:"
                 (validated-input
                  #:text->value string->number
                  @offset (drop1 @offset:=)))]
       [_ (spacer)])
-    (labeled
+    (labeled*
      ""
      (hpanel
       #:alignment '(right center)
