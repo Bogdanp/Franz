@@ -33,7 +33,9 @@
        (@fetching?:= #t)
        (define new-records
          (get-records it max-size))
-       (unless (null? new-records)
+       (define have-new?
+         (not (null? new-records)))
+       (when have-new?
          (update-observable [old-records @records]
            (define ress (vector-append old-records (list->vector new-records)))
            (vector-sort! ress IteratorResult>)
@@ -46,14 +48,18 @@
            (if (< last-idx (sub1 (vector-length ress)))
                (vector-take ress last-idx)
                ress)))
-       (@fetching?:= #f))))
+       (begin0 have-new?
+         (@fetching?:= #f)))))
   (define fetch-thd
     (thread*
      (with-handlers ([exn:break? void])
-       (let loop ()
-         (when ^@live? (fetch))
-         (sleep (get-preference 'general:reload-interval 5))
-         (loop)))))
+       (let loop ([misses 0])
+         (define fetched-new-records?
+           (if ^@live? (fetch) #f))
+         (sleep
+          (min (* 0.05 (expt 2 misses))
+               (get-preference 'general:reload-interval 5)))
+         (loop (if fetched-new-records? 0 (add1 misses)))))))
   (define (get-column-widths*)
     (get-preference
      `(records-table ,topic column-widths)
@@ -90,16 +96,17 @@
         (~timestamp (quotient (IteratorRecord-timestamp r) 1000))
         (~data k)
         (~data v)))
-     #:mixin (λ (%)
-               (class %
-                 (inherit get-column-width)
-                 (super-new)
-                 (set! get-column-widths*
-                       (lambda ()
-                         (for/list ([i (in-range 5)])
-                           (define-values (width _min-width _max-width)
-                             (get-column-width i))
-                           (list i width))))))
+     #:mixin
+     (λ (%)
+       (class %
+         (inherit get-column-width)
+         (super-new)
+         (set! get-column-widths*
+               (lambda ()
+                 (for/list ([i (in-range 5)])
+                   (define-values (width _min-width _max-width)
+                     (get-column-width i))
+                   (list i width))))))
      void)
     (hpanel
      #:stretch '(#t #f)
@@ -114,7 +121,11 @@
         (if live?
             "Stop streaming"
             "Start streaming"))
-      (λ () (@live? . <~ . not)))
+      (λ ()
+        (update-observable [live? @live?]
+          (unless live?
+            (@records:= (vector)))
+          (not live?))))
      (button
       #:enabled?
       (let-observable ([live? @live?]
