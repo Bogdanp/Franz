@@ -8,6 +8,7 @@
          "config-table.rkt"
          "info-view.rkt"
          "observable.rkt"
+         "records-table.rkt"
          "thread.rkt"
          "view.rkt"
          (prefix-in m: "window-manager.rkt"))
@@ -88,7 +89,7 @@
             (string-join (map number->string (TopicPartition-replica-node-ids p)) ",")
             (string-join (map number->string (TopicPartition-in-sync-replica-node-ids p)) ",")))))]
       ['records
-       (text "Records")]
+       (records-table id (Topic-name t) call-with-status-proc)]
       ['groups
        (reload-topic-groups)
        (vpanel
@@ -115,19 +116,22 @@
         @config)]))))
 
 (module+ main
-  (render
-   (window
-    #:title "Topic Detail"
-    #:size '(800 600)
-    (topic-detail
-     1
-     (make-Topic
-      #:name "example-topic"
-      #:partitions (list
-                    (make-TopicPartition
-                     #:id 1
-                     #:leader-id 1
-                     #:replica-node-ids '(1 2 3)
-                     #:in-sync-replica-node-ids '(1 2 3)))
-      #:is-internal #f
-      #:stats (make-Stats))))))
+  (require "testing.rkt")
+  (call-with-testing-context
+   (lambda (id)
+     (render
+      (window
+       #:title "Topic Detail"
+       #:size '(800 600)
+       (topic-detail
+        id
+        (make-Topic
+         #:name "example-topic"
+         #:partitions (list
+                       (make-TopicPartition
+                        #:id 1
+                        #:leader-id 1
+                        #:replica-node-ids '(1 2 3)
+                        #:in-sync-replica-node-ids '(1 2 3)))
+         #:is-internal #f
+         #:stats (make-Stats))))))))

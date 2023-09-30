@@ -4,6 +4,7 @@
   (require franz/appdata
            franz/main
            (prefix-in rpc: (submod franz/workspace rpc))
+           racket/date
            racket/port
            "auto-update.rkt"
            "keychain.rkt"
@@ -38,7 +39,8 @@
      (lambda ()
        (parameterize ([current-keychain
                        (make-filesystem-keychain
-                        (build-application-path "keychain.rktd"))])
+                        (build-application-path "keychain.rktd"))]
+                      [date-display-format 'iso-8601])
          (set! eventspace (gui:make-eventspace))
          (parameterize ([gui:current-eventspace eventspace])
            (start-auto-updater)

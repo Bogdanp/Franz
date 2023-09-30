@@ -4,6 +4,7 @@
          franz/connection-details
          franz/metadata
          franz/pool
+         racket/date
          racket/gui)
 
 (provide
@@ -11,7 +12,8 @@
 
 (define (call-with-testing-context proc)
   (define conn (sqlite3-connect #:database 'memory))
-  (parameterize ([current-connection conn])
+  (parameterize ([current-connection conn]
+                 [date-display-format 'iso-8601])
     (migrate!)
     (define id #f)
     (define eventspace (make-eventspace))
