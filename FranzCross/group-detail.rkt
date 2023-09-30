@@ -13,13 +13,14 @@
          "mixin.rkt"
          "preference.rkt"
          "thread.rkt"
-         "view.rkt")
+         "view.rkt"
+         (prefix-in m: "window-manager.rkt"))
 
 (provide
  group-detail)
 
 (define (group-detail id g [call-with-status-proc (λ (proc) (proc void))]
-                      #:get-parent-proc [get-parent-renderer void])
+                      #:get-parent-proc [get-parent-renderer (λ () (m:get-workspace-renderer id))])
   (define-observables
     [@offsets #f]
     [@current #f]
@@ -100,7 +101,8 @@
        (@lag . ~> . ~a))))
     (state-pill @offsets)
     (match-view @selection+topics
-      [#f (text "No committed offsets.")]
+      [#f (spacer)]
+      [`(#f) (text "No committed offsets.")]
       [`(,topic . ,topics)
        (vpanel
         #:alignment '(left top)
