@@ -185,7 +185,7 @@
 (define (positive-number s)
   (define maybe-number
     (string->number s))
-  (and maybe-number (> maybe-number 0)))
+  (and maybe-number (> maybe-number 0) maybe-number))
 
 (define completions
   (hash
