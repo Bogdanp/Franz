@@ -62,10 +62,10 @@
     (table
      '("Partition" "Offset" "Timestamp" "Key" "Value")
      #:column-widths
-     '((0 80)
-       (1 80)
+     '((0 60)
+       (1 70)
        (2 150)
-       (3 150)
+       (3 100)
        (4 300))
      @records
      #:entry->row
@@ -86,7 +86,7 @@
       (let-observable ([records @records])
         (format "Records: ~a (~a)"
                 (vector-length records)
-                (~size records))))
+                (~size (get-size records)))))
      (spacer)
      (button
       (let-observable ([live? @live?])
@@ -133,8 +133,12 @@
   (for/sum ([res (in-vector ress)])
     (IteratorResult-size res)))
 
-(define (~size ress)
-  (format "~aMiB" (quotient (quotient (get-size ress) 1024) 1024)))
+(define (~size n)
+  (let loop ([n n]
+             [s '("B" "KiB" "MiB" "GiB" "TiB" "PiB" "EiB" "ZiB" "YiB")])
+    (if (< n 1024)
+        (format "~a~a" n (car s))
+        (loop (quotient n 1024) (cdr s)))))
 
 (define (~data bs)
   (cond
