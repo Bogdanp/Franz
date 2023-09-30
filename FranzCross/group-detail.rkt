@@ -109,7 +109,6 @@
         (hpanel
          #:stretch '(#t #f)
          (choice
-          #:label "Topic: "
           topics
           #:choice->label
           GroupTopic-name
