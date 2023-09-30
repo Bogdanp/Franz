@@ -2,6 +2,7 @@
 
 (require franz/iterator
          (submod franz/workspace rpc)
+         racket/class
          racket/date
          racket/fixnum
          racket/match
@@ -53,20 +54,30 @@
          (when ^@live? (fetch))
          (sleep (get-preference 'general:reload-interval 5))
          (loop)))))
-  (add-hooks
-   #:on-destroy
-   (lambda ()
-     (break-thread fetch-thd)
-     (close-iterator it))
-   (vpanel
-    (table
-     '("Partition" "Offset" "Timestamp" "Key" "Value")
-     #:column-widths
+  (define (get-column-widths*)
+    (get-preference
+     `(records-table ,topic column-widths)
      '((0 60)
        (1 70)
        (2 150)
        (3 100)
-       (4 300))
+       (4 300))))
+  (add-hooks
+   #:on-destroy
+   (lambda ()
+     (call-with-status-proc
+      (lambda (status)
+        (status "Closing iterator...")
+        (break-thread fetch-thd)
+        (close-iterator it)
+        (put-preference
+         `(records-table ,topic column-widths)
+         (get-column-widths*)))))
+   (vpanel
+    (table
+     '("Partition" "Offset" "Timestamp" "Key" "Value")
+     #:column-widths
+     (get-column-widths*)
      @records
      #:entry->row
      (lambda (res)
@@ -79,6 +90,16 @@
         (~timestamp (quotient (IteratorRecord-timestamp r) 1000))
         (~data k)
         (~data v)))
+     #:mixin (λ (%)
+               (class %
+                 (inherit get-column-width)
+                 (super-new)
+                 (set! get-column-widths*
+                       (lambda ()
+                         (for/list ([i (in-range 5)])
+                           (define-values (width _min-width _max-width)
+                             (get-column-width i))
+                           (list i width))))))
      void)
     (hpanel
      #:stretch '(#t #f)
@@ -174,9 +195,11 @@
 
 (module+ main
   (require "testing.rkt")
-  (call-with-testing-context
-   (lambda (id)
-     (render
-      (window
-       #:size '(800 600)
-       (records-table id "example-topic"))))))
+  (define r
+    (call-with-testing-context
+     (lambda (id)
+       (render
+        (window
+         #:size '(800 600)
+         (records-table id "example-topic"))))))
+  (renderer-destroy r))
