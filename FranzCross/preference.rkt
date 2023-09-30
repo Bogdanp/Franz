@@ -21,7 +21,7 @@
   (build-application-path "preferences.rktd"))
 
 (define (read-prefs)
-  (with-handlers ([exn:fail:filesystem? (λ (_) (hasheq))])
+  (with-handlers ([exn:fail:filesystem? (λ (_) (hash))])
     (call-with-input-file (get-preferences-path) read)))
 
 (define (write-prefs ht)
