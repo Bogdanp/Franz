@@ -2,6 +2,7 @@
 
 (require franz/broker
          racket/class
+         "clipboard.rkt"
          "hacks.rkt"
          "mixin.rkt"
          "observable.rkt")
@@ -64,10 +65,7 @@
    (λ (event entries selection)
      (case event
        [(select)
-        (@selection:= (vector-ref entries selection))]))))
-
-(define (put-clipboard s)
-  (send gui:the-clipboard set-clipboard-string s (current-seconds)))
+        (@selection:= (and selection (vector-ref entries selection)))]))))
 
 (module+ main
   (define root
