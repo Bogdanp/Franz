@@ -109,7 +109,7 @@
         (hpanel
          #:stretch '(#t #f)
          (choice
-          #:label "Topic:"
+          #:label "Topic: "
           topics
           #:choice->label
           GroupTopic-name
@@ -134,6 +134,13 @@
              (get-parent-renderer)))))
         (table
          '("Partition" "Offset" "Lag" "Member ID" "Host" "Client ID")
+         #:column-widths
+         '((0 100)
+           (1 80)
+           (2 80)
+           (3 150)
+           (4 150)
+           (5 150))
          (list->vector (GroupTopic-partitions topic))
          #:entry->row
          (lambda (p)
@@ -246,7 +253,7 @@
                             (set! close! close!-proc)))
    (vpanel
     #:stretch '(#t #f)
-    #:margin '(0 20)
+    #:margin '(10 20)
     (labeled
      "Reset to:"
      (choice
