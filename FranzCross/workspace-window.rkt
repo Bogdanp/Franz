@@ -117,6 +117,7 @@
                               #:message message
                               #:renderer workspace-renderer)
                  (delete-group (Group-id item) id)
+                 (@selected-item:= #f)
                  (reload-metadata)))))
            event)]
          [(Topic? item)
@@ -132,6 +133,7 @@
                               #:message message
                               #:renderer workspace-renderer)
                  (delete-topic (Topic-name item) id)
+                 (@selected-item:= #f)
                  (reload-metadata)))))
            event)]
          [else (void)]))
