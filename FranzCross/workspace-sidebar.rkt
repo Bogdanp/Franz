@@ -25,6 +25,7 @@
 (define chevron-s (p:bitmap chevron-s-bmp))
 
 (define (workspace-sidebar @metadata
+                           #:selected-item [@selected-item #f]
                            #:select-action [select-action void]
                            #:context-action [context-action void]
                            #:new-topic-action [new-topic-action void])
@@ -80,6 +81,7 @@
            [else (error 'workspace-sidebar "unexpected item: ~s" item)])
          item state w h))
       (p:draw-pict pict dc 0 0))
+    #:selected-item @selected-item
     #:item=? item=?
     #:action
     (λ (type item event)
@@ -257,7 +259,7 @@
      (λ (item)
        (eprintf "select: ~s~n" item))
      #:context-action
-     (λ (item)
+     (λ (item _event)
        (eprintf "context: ~s~n" item))
      (@ (make-Metadata
          #:brokers (list

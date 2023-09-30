@@ -96,6 +96,7 @@
   (reload-metadata #:force? #f)
   (define sidebar
     (workspace-sidebar
+     #:selected-item @selected-item
      #:select-action
      (λ:= @selected-item)
      #:context-action
@@ -270,13 +271,12 @@
   (activate-schema-registry registry password id))
 
 (module+ main
-  (require db franz/metadata)
-  (current-connection
-   (sqlite3-connect #:database 'memory))
-  (migrate!)
-  (m:open-workspace
-   (make-ConnectionDetails
-    #:id 1
-    #:name "Example"
-    #:bootstrap-host "kafka-1"
-    #:bootstrap-port 9092)))
+  (require "testing.rkt")
+  (call-with-testing-context
+   (lambda (_id)
+     (m:open-workspace
+      (make-ConnectionDetails
+       #:id 1
+       #:name "Example"
+       #:bootstrap-host "kafka-1"
+       #:bootstrap-port 9092)))))
