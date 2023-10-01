@@ -28,6 +28,10 @@
     [@records (vector)]
     [@live? #t]
     [@fetching? #f])
+  (define/obs @buttons-enabled?
+    (let-observable ([live? @live?]
+                     [fetching? @fetching?])
+      (not (or live? fetching?))))
   (define it
     (call-with-status-proc
      (lambda (status)
@@ -134,11 +138,12 @@
              (@records:= (vector)))
            (@live?:= (not live?))))))
      (button
-      #:enabled?
-      (let-observable ([live? @live?]
-                       [fetching? @fetching?])
-        (not (or live? fetching?)))
+      gear-bmp
+      #:enabled? @buttons-enabled?
+      void)
+     (button
       chevron-e-bmp
+      #:enabled? @buttons-enabled?
       (λ () (thread fetch)))))))
 
 (define (IteratorResult->record res)

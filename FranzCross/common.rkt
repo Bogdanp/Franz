@@ -90,6 +90,7 @@
 (define-assets
   chevron-s.png
   chevron-e.png
+  gear.png
   icon_512x512.png
   pause.png
   play.png
@@ -104,6 +105,7 @@
 (define-bitmaps
   [chevron-s-bmp chevron-s.png]
   [chevron-e-bmp chevron-e.png]
+  [gear-bmp gear.png]
   [icon_512x512-bmp icon_512x512.png]
   [pause-bmp pause.png]
   [play-bmp play.png]
