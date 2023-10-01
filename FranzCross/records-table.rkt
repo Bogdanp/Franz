@@ -128,6 +128,8 @@
                 (vector-length records)
                 (~size (get-size records)))))
      (spacer)
+     (button code-bmp void)
+     (spacer)
      (observable-view
       @live?
       (lambda (live?)
