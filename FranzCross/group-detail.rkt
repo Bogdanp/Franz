@@ -27,12 +27,10 @@
     [@poffset #f])
   (define/obs @lag
     (let-observable ([offsets @offsets])
-      (if offsets
-          (for*/sum ([t (GroupOffsets-topics offsets)]
-                     [p (GroupTopic-partitions t)])
-            (- (GroupPartitionOffset-high-watermark p)
-               (GroupPartitionOffset-offset p)))
-          0)))
+      (for*/sum ([t (in-list (if offsets (GroupOffsets-topics offsets) null))]
+                 [p (in-list (GroupTopic-partitions t))])
+        (- (GroupPartitionOffset-high-watermark p)
+           (GroupPartitionOffset-offset p)))))
   (define/obs @selection+topics
     (let-observable ([offsets @offsets]
                      [current @current])
