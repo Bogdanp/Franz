@@ -158,6 +158,7 @@
 (provide
  open-workspace
  close-workspace
+ get-workspace-details
  get-workspace-renderer)
 
 (struct workspace (details renderer)
@@ -198,6 +199,9 @@
   (hash-remove! workspaces id)
   (renderer-destroy renderer)
   (rpc:close-workspace id))
+
+(define (get-workspace-details id)
+  (workspace-details (hash-ref workspaces id)))
 
 (define (get-workspace-renderer id)
   (workspace-renderer (hash-ref workspaces id)))

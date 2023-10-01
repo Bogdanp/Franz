@@ -1,6 +1,7 @@
 #lang racket/gui/easy
 
-(require franz/iterator
+(require franz/connection-details
+         franz/iterator
          (submod franz/workspace rpc)
          racket/class
          racket/date
@@ -10,15 +11,19 @@
          "common.rkt"
          "observable.rkt"
          "preference.rkt"
-         "thread.rkt")
+         "thread.rkt"
+         (prefix-in m: "window-manager.rkt"))
 
 (provide
  records-table)
 
-(define (records-table id topic [call-with-status-proc (λ (proc) (proc void))])
+(define (records-table id topic
+                       [call-with-status-proc (λ (proc) (proc void))]
+                       #:get-details-proc [get-details (λ () (m:get-workspace-details id))])
   (define max-rows (* 10 1000))
   (define max-size (* 1 1024 1024))
   (define max-buffer (* 2 1024 1024))
+  (define details-id (ConnectionDetails-id (get-details)))
   (define-observables
     [@records (vector)]
     [@live? #t]
@@ -65,7 +70,7 @@
          (loop (if fetched-new-records? 0 (add1 misses)))))))
   (define (get-column-widths*)
     (get-preference
-     `(records-table ,topic column-widths)
+     `(records-table ,details-id ,topic column-widths)
      '((0 60)
        (1 70)
        (2 150)
@@ -80,7 +85,7 @@
         (break-thread fetch-thd)
         (close-iterator it)
         (put-preference
-         `(records-table ,topic column-widths)
+         `(records-table ,details-id ,topic column-widths)
          (get-column-widths*)))))
    (vpanel
     (table
@@ -214,5 +219,11 @@
        (render
         (window
          #:size '(800 600)
-         (records-table id "example-topic"))))))
+         (records-table
+          id "example-topic"
+          #:get-details-proc
+          (λ ()
+            (make-ConnectionDetails
+             #:id 1
+             #:name "Example"))))))))
   (renderer-destroy r))
