@@ -15,6 +15,7 @@
  records-table)
 
 (define (records-table id topic [call-with-status-proc (λ (proc) (proc void))])
+  (define max-rows (* 10 1000))
   (define max-size (* 1 1024 1024))
   (define max-buffer (* 2 1024 1024))
   (define-observables
@@ -43,7 +44,8 @@
              (for/fold ([total 0] [idx 0] #:result idx)
                        ([(res idx) (in-indexed (in-vector ress))])
                (define next-total (+ (IteratorResult-size res) total))
-               #:break (> next-total max-buffer)
+               #:break (or (= idx max-rows)
+                           (> next-total max-buffer))
                (values next-total idx)))
            (if (< last-idx (sub1 (vector-length ress)))
                (vector-take ress last-idx)
