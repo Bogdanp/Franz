@@ -1,7 +1,6 @@
 #lang racket/base
 
-(require racket/class
-         (prefix-in gui: racket/gui)
+(require (prefix-in gui: racket/gui)
          racket/gui/easy/color
          racket/gui/easy/font
          racket/runtime-path)
@@ -92,6 +91,8 @@
   chevron-s.png
   chevron-e.png
   icon_512x512.png
+  pause.png
+  play.png
   plus.png)
 
 (define-syntax-rule (define-bitmaps [id path-expr] ...)
@@ -104,4 +105,6 @@
   [chevron-s-bmp chevron-s.png]
   [chevron-e-bmp chevron-e.png]
   [icon_512x512-bmp icon_512x512.png]
+  [pause-bmp pause.png]
+  [play-bmp play.png]
   [plus-bmp plus.png])

@@ -7,6 +7,7 @@
          racket/fixnum
          racket/match
          racket/vector
+         "common.rkt"
          "observable.rkt"
          "preference.rkt"
          "thread.rkt")
@@ -118,22 +119,21 @@
                 (vector-length records)
                 (~size (get-size records)))))
      (spacer)
-     (button
-      (let-observable ([live? @live?])
-        (if live?
-            "Stop streaming"
-            "Start streaming"))
-      (λ ()
-        (update-observable [live? @live?]
-          (unless live?
-            (@records:= (vector)))
-          (not live?))))
+     (observable-view
+      @live?
+      (lambda (live?)
+        (button
+         (if live? pause-bmp play-bmp)
+         (lambda ()
+           (unless live?
+             (@records:= (vector)))
+           (@live?:= (not live?))))))
      (button
       #:enabled?
       (let-observable ([live? @live?]
                        [fetching? @fetching?])
         (not (or live? fetching?)))
-      "Load more..."
+      chevron-e-bmp
       (λ () (thread fetch)))))))
 
 (define (IteratorResult->record res)
