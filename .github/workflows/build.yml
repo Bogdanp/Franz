@@ -212,10 +212,12 @@ jobs:
           raco pkg install -D --batch --auto Noise/Racket/noise-serde-lib/
       - name: Prepare secrets
         run: |
+          echo -n "$DEVELOPER_ID_CER_P12" | base64 -d > developer_id.p12
           echo -n "$LICENSE_SECRET" | base64 -d > core/secrets/license-secret.txt
           echo -n "$SENTRY_DSN" | base64 -d > core/secrets/sentry-dsn.txt
         shell: bash
         env:
+          DEVELOPER_ID_CER_P12: ${{ secrets.DEVELOPER_ID_CER_P12 }}
           LICENSE_SECRET: ${{ secrets.LICENSE_SECRET }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
       - name: Install core
@@ -228,6 +230,17 @@ jobs:
         run: |
           ./build.bat
         working-directory: FranzCross
+      - name: Sign executable
+        run: |
+          &"C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe" sign `
+            /p "$Env:DEVELOPER_ID_CER_P12_PASSWORD" `
+            /f developer_id.p12 `
+            /fd SHA256 `
+            /tr http://timestamp.digicert.com `
+            /td SHA256 `
+            FranzCross/dist/Franz.exe
+        env:
+          DEVELOPER_ID_CER_P12_PASSWORD: ${{ secrets.DEVELOPER_ID_CER_P12_PASSWORD }}
       - name: Upload distribution
         uses: actions/upload-artifact@v3
         with:
