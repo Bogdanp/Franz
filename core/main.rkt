@@ -46,10 +46,11 @@
        (build-application-path "metadata.sqlite3")]))
   (log-franz-debug "database path: ~a" database-path)
   (parameterize ([current-connection (make-database database-path)]
-                 [current-sentry (make-sentry sentry-dsn)])
+                 [current-sentry (make-sentry sentry-dsn #:release franz-version)])
     (migrate!)
     (maybe-adjust-trial-deadline)
-    (parameterize ([http:current-user-agent (make-user-agent)])
+    (parameterize ([current-sentry-user (make-sentry-user #:id (get-buid))]
+                   [http:current-user-agent (make-user-agent)])
       (proc))))
 
 (define (main in-fd out-fd)
