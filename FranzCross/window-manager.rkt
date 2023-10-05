@@ -7,6 +7,7 @@
          racket/class
          racket/lazy-require
          racket/match
+         (prefix-in ~ threading)
          "about-window.rkt"
          "auto-update.rkt"
          "connection-dialog.rkt"
@@ -17,6 +18,7 @@
 
 (lazy-require
  ["alert.rkt" (confirm)]
+ ["scripting-window.rkt" (scripting-window)]
  ["workspace-window.rkt" (workspace-window)])
 
 (provide
@@ -151,6 +153,60 @@
 
 (define (render-check-for-updates-dialog)
   (render (check-for-updates-dialog)))
+
+
+;; scripting windows ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(provide
+ open-scripting-window
+ disable-scripting-window
+ enable-scripting-window)
+
+(struct scripting-ctx (@enabled? renderer [apply-proc #:mutable]))
+
+;; (cons workspace-id topic) -> scripting-ctx
+(define scripting-windows (make-hash))
+
+(define (open-scripting-window id topic apply-proc)
+  (define k (cons id topic))
+  (cond
+    [(hash-ref scripting-windows k #f)
+     => (lambda (ctx)
+          (define r (scripting-ctx-renderer ctx))
+          (set-scripting-ctx-apply-proc! ctx apply-proc)
+          (send (renderer-root r) show #t))]
+    [else
+     (define/obs @enabled? #t)
+     (define r
+       (render
+        (scripting-window
+         #:enabled? @enabled?
+         #:apply-proc (λ (script)
+                        ((scripting-ctx-apply-proc ctx) script))
+         id topic)))
+     (define ctx (scripting-ctx @enabled? r apply-proc))
+     (begin0 r
+       (hash-set! scripting-windows k ctx))]))
+
+(define (disable-scripting-window id topic)
+  (try-update-scripting-window!
+   id topic
+   (lambda (ctx)
+     (set-scripting-ctx-apply-proc! ctx void)
+     ((scripting-ctx-@enabled? ctx) . := . #f))))
+
+(define (enable-scripting-window id topic apply-proc)
+  (try-update-scripting-window!
+   id topic
+   (lambda (ctx)
+     (set-scripting-ctx-apply-proc! ctx apply-proc)
+     ((scripting-ctx-@enabled? ctx) . := . #t))))
+
+(define (try-update-scripting-window! id topic proc)
+  (define maybe-ctx
+    (hash-ref scripting-windows (cons id topic) #f))
+  (when maybe-ctx
+    (proc maybe-ctx)))
 
 
 ;; workspaces ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

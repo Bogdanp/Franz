@@ -307,4 +307,4 @@
           id
           (make-Group #:id "example-group")
           #:get-parent-proc (λ () root)))))
-     (void))))
+     root)))

@@ -2,6 +2,7 @@
 
 (require franz/connection-details
          franz/iterator
+         (submod franz/script rpc)
          (submod franz/workspace rpc)
          racket/class
          racket/date
@@ -80,9 +81,20 @@
        (2 150)
        (3 100)
        (4 300))))
+  (define (do-apply-script script)
+    (update-observable [ress @records]
+      (define originals
+        (for/list ([res (in-vector ress)])
+          (IteratorResult->original res)))
+      (list->vector
+       (apply-script script originals id))))
   (add-hooks
+   #:on-create
+   (lambda ()
+     (m:enable-scripting-window id topic do-apply-script))
    #:on-destroy
    (lambda ()
+     (m:disable-scripting-window id topic)
      (call-with-status-proc
       (lambda (status)
         (status "Closing iterator...")
@@ -128,7 +140,10 @@
                 (vector-length records)
                 (~size (get-size records)))))
      (spacer)
-     (button code-bmp void)
+     (button
+      code-bmp
+      (lambda ()
+        (m:open-scripting-window id topic do-apply-script)))
      (spacer)
      (observable-view
       @live?
@@ -148,10 +163,15 @@
       #:enabled? @buttons-enabled?
       (λ () (thread fetch)))))))
 
+(define (IteratorResult->original res)
+  (match res
+    [(IteratorResult.original record) record]
+    [(IteratorResult.transformed _record original) original]))
+
 (define (IteratorResult->record res)
   (match res
     [(IteratorResult.original record) record]
-    [(IteratorResult.transformed _original record) record]))
+    [(IteratorResult.transformed record _original) record]))
 
 (define (IteratorResult-size res)
   (define r (IteratorResult->record res))
@@ -220,17 +240,15 @@
 
 (module+ main
   (require "testing.rkt")
-  (define r
-    (call-with-testing-context
-     (lambda (id)
-       (render
-        (window
-         #:size '(800 600)
-         (records-table
-          id "example-topic"
-          #:get-details-proc
-          (λ ()
-            (make-ConnectionDetails
-             #:id 1
-             #:name "Example"))))))))
-  (renderer-destroy r))
+  (call-with-testing-context
+   (lambda (id)
+     (render
+      (window
+       #:size '(800 600)
+       (records-table
+        id "example-topic"
+        #:get-details-proc
+        (λ ()
+          (make-ConnectionDetails
+           #:id 1
+           #:name "Example"))))))))

@@ -5,7 +5,8 @@
          franz/metadata
          franz/pool
          racket/date
-         racket/gui)
+         racket/gui
+         racket/gui/easy)
 
 (provide
  call-with-testing-context)
@@ -24,10 +25,12 @@
          #:name "Example"
          #:bootstrap-host "kafka-1"
          #:bootstrap-port 9092))
-      (dynamic-wind
-        (λ () (set! id (pool-open conf)))
-        (λ () (proc id))
-        (λ ()
-          (with-handlers ([exn:break? void])
-            (yield eventspace))
-          (pool-close id))))))
+      (define r
+        (dynamic-wind
+          (λ () (set! id (pool-open conf)))
+          (λ () (proc id))
+          (λ ()
+            (with-handlers ([exn:break? void])
+              (yield eventspace))
+            (pool-close id))))
+      (renderer-destroy r))))
