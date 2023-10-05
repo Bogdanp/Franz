@@ -51,7 +51,10 @@
     (maybe-adjust-trial-deadline)
     (parameterize ([current-sentry-user (make-sentry-user #:id (get-buid))]
                    [http:current-user-agent (make-user-agent)])
-      (proc))))
+      (dynamic-wind
+        (λ () (void))
+        (λ () (proc))
+        (λ () (sentry-stop))))))
 
 (define (main in-fd out-fd)
   (call-with-main-parameterization
