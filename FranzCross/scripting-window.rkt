@@ -1,6 +1,7 @@
 #lang racket/gui/easy
 
 (require (submod franz/script rpc)
+         racket/port
          "editor.rkt"
          "observable.rkt")
 
@@ -10,46 +11,115 @@
 (define (scripting-window id topic
                           #:enabled? [@enabled? (@ #t)]
                           #:apply-proc [apply-proc void])
+  ;; HACK: Use @script/init to feed "Open"ed scripts to editor to
+  ;; avoid update cycles. Editor could be improved to avoid this, but
+  ;; this is less work and good enough for now.
   (define-observables
     [@script (get-script topic id)]
-    [@active? #f])
+    [@script/init (get-script topic id)]
+    [@active? #f]
+    [@changed? #f]
+    [@filename #f])
+  (define/obs @can-apply?
+    (let-observable ([active? @active?]
+                     [enabled? @enabled?])
+      (and enabled? (not active?))))
+  (define/obs @activate-label
+    (let-observable ([active? @active?])
+      (if active? "&Deactivate" "&Activate")))
   (obs-observe!
    @enabled?
    (lambda (enabled?)
      (unless enabled?
        (@active?:= #f)
        (deactivate-script topic id))))
+  (define (do-apply)
+    (apply-proc (obs-peek @script)))
+  (define (do-toggle-active)
+    (let-observable ([active? @active?])
+      (if active?
+          (deactivate-script topic id)
+          (activate-script (obs-peek @script) topic id))
+      (@active?:= (not active?))))
+  (define (do-open)
+    (define maybe-filename
+      (gui:get-file
+       #f ;message
+       #f ;parent
+       #f ;directory
+       #f ;filename
+       #f ;extension
+       null ;style
+       '(("Lua Script" "*.lua"))))
+    (when maybe-filename
+      (define text (call-with-input-file maybe-filename port->string))
+      (@script:= text)
+      (@script/init:= text)
+      (@filename:= maybe-filename)))
+  (define (do-save filename)
+    (call-with-output-file filename
+      #:exists 'truncate/replace
+      (lambda (out)
+        (display (obs-peek @script) out)))
+    (@changed?:= #f))
+  (define (do-save-as)
+    (define maybe-filename
+      (gui:put-file
+       #f ;message
+       #f ;parent
+       #f ;directory
+       #f ;filename
+       #f ;extension
+       null ;style
+       '(("Lua Script" "*.lua"))))
+    (when maybe-filename
+      (do-save maybe-filename)
+      (@filename:= maybe-filename)))
   (window
-   #:title (format "[~a] Script" topic)
+   #:title (let-observable ([changed? @changed?])
+             (format "[~a] Script~a" topic (if changed? "*" "")))
    #:size '(800 600)
+   (menu-bar
+    (menu
+     "&File"
+     (menu-item
+      "&Open..."
+      do-open)
+     (menu-item
+      (let-observable ([filename @filename])
+        (if filename "&Save" "&Save..."))
+      (lambda ()
+        (cond
+          [(obs-peek @filename) => do-save]
+          [else (do-save-as)])))
+     (menu-item
+      "Save &as..."
+      do-save-as))
+    (menu
+     "&Script"
+     (menu-item "&Apply" do-apply)
+     (menu-item
+      @activate-label
+      do-toggle-active)))
    (vpanel
     (hpanel
      #:stretch '(#t #f)
      #:alignment '(right center)
      (button
-      #:enabled?
-      (let-observable ([active? @active?]
-                       [enabled? @enabled?])
-        (and enabled? (not active?)))
       "Apply"
-      (lambda ()
-        (apply-proc (obs-peek @script))))
+      #:enabled? @can-apply?
+      do-apply)
      (button
       #:style '(border)
       #:enabled? @enabled?
-      (let-observable ([active? @active?])
-        (if active? "Deactivate" "Activate"))
-      (lambda ()
-        (let-observable ([active? @active?])
-          (if active?
-              (deactivate-script topic id)
-              (activate-script (obs-peek @script) topic id))
-          (@active?:= (not active?))))))
+      @activate-label
+      do-toggle-active))
     (editor
-     (obs-peek @script)
+     @script/init
      (lambda (script)
        (deactivate-script topic id)
        (@active?:= #f)
+       (@changed?:= #t)
        (@script:= script))))))
 
 (module+ main
