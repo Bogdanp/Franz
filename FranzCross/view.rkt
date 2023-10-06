@@ -1,6 +1,7 @@
 #lang racket/base
 
 (require (for-syntax racket/base)
+         racket/date
          racket/format
          racket/gui/easy
          racket/gui/easy/operator
@@ -15,6 +16,7 @@
  validated-input
  ~optional-str
  ->optional-str
+ ~timestamp
  ~truncate)
 
 (define-syntax-rule (match-view obs-expr clause0 clause ...)
@@ -71,6 +73,9 @@
 
 (define (->optional-str v)
   (if (string=? v "") #f v))
+
+(define (~timestamp s)
+  (date->string (seconds->date s #t) #t))
 
 (define (~truncate s [max-len 50])
   (if (>= (string-length s) max-len)

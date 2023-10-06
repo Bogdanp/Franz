@@ -219,30 +219,31 @@
           [(json) (Lexer.json)]
           [(lua) (Lexer.lua)]
           [(protobuf) (Lexer.protobuf)]
-          [else (error 'highlight "unexpected lang")]))
-      (send editor begin-edit-sequence #f)
-      (define-values (start-pos end-pos)
-        (let ([sb (box #f)]
-              [eb (box #f)])
-          (send editor get-visible-position-range sb eb)
-          (values (unbox sb) (unbox eb))))
-      (for ([token (in-list (lex text lexer))])
-        (define span (Token-span token))
-        (define token-start-pos (TokenSpan-pos span))
-        (define token-end-pos (+ token-start-pos (TokenSpan-len span)))
-        (when (or (and (>= token-start-pos start-pos)
-                       (<= token-start-pos end-pos))
-                  (and (>= token-end-pos start-pos)
-                       (<= token-end-pos end-pos)))
-          (define style
-            (match (Token-type token)
-              [(TokenType.comment) comment-style]
-              [(TokenType.keyword) keyword-style]
-              [(TokenType.string) string-style]
-              [(TokenType.number) number-style]
-              [_ base-style]))
-          (send editor change-style style token-start-pos token-end-pos)))
-      (send editor end-edit-sequence))))
+          [else #f]))
+      (when lexer
+        (send editor begin-edit-sequence #f)
+        (define-values (start-pos end-pos)
+          (let ([sb (box #f)]
+                [eb (box #f)])
+            (send editor get-visible-position-range sb eb)
+            (values (unbox sb) (unbox eb))))
+        (for ([token (in-list (lex text lexer))])
+          (define span (Token-span token))
+          (define token-start-pos (TokenSpan-pos span))
+          (define token-end-pos (+ token-start-pos (TokenSpan-len span)))
+          (when (or (and (>= token-start-pos start-pos)
+                         (<= token-start-pos end-pos))
+                    (and (>= token-end-pos start-pos)
+                         (<= token-end-pos end-pos)))
+            (define style
+              (match (Token-type token)
+                [(TokenType.comment) comment-style]
+                [(TokenType.keyword) keyword-style]
+                [(TokenType.string) string-style]
+                [(TokenType.number) number-style]
+                [_ base-style]))
+            (send editor change-style style token-start-pos token-end-pos)))
+        (send editor end-edit-sequence)))))
 
 (define (editor code
                 [action void]

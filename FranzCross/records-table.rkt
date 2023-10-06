@@ -5,14 +5,15 @@
          (submod franz/script rpc)
          (submod franz/workspace rpc)
          racket/class
-         racket/date
          racket/fixnum
          racket/match
          racket/vector
          "common.rkt"
          "observable.rkt"
          "preference.rkt"
+         "record-detail.rkt"
          "thread.rkt"
+         "view.rkt"
          (prefix-in m: "window-manager.rkt"))
 
 (provide
@@ -131,7 +132,14 @@
                    (define-values (width _min-width _max-width)
                      (get-column-width i))
                    (list i width))))))
-     void)
+     (lambda (event entries selection)
+       (case event
+         [(dclick)
+          (when selection
+            (define r
+              (IteratorResult->record (vector-ref entries selection)))
+            (render
+             (record-detail-window r topic)))])))
     (hpanel
      #:stretch '(#t #f)
      (text
@@ -215,9 +223,6 @@
        (if (text? bs)
            (bytes->string/utf-8 bs)
            "BINARY DATA"))]))
-
-(define (~timestamp s)
-  (date->string (seconds->date s #t) #t))
 
 (define (bytes-take bs n)
   (if (> (bytes-length bs) n)
