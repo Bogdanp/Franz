@@ -9,10 +9,12 @@
          racket/match
          racket/vector
          "common.rkt"
+         "mixin.rkt"
          "observable.rkt"
          "preference.rkt"
          "record-detail.rkt"
          "thread.rkt"
+         "topic-config.rkt"
          "view.rkt"
          (prefix-in m: "window-manager.rkt"))
 
@@ -21,12 +23,12 @@
 
 (define (records-table id topic
                        [call-with-status-proc (λ (proc) (proc void))]
-                       #:get-details-proc [get-details (λ () (m:get-workspace-details id))])
-  (define max-rows (* 10 1000))
-  (define max-size (* 1 1024 1024))
-  (define max-buffer (* 2 1024 1024))
-  (define details-id (ConnectionDetails-id (get-details)))
+                       #:get-details-proc [get-details (λ () (m:get-workspace-details id))]
+                       #:get-parent-proc [get-parent (λ () (m:get-workspace-renderer id))])
+  (define conn (get-details))
+  (define conn-id (ConnectionDetails-id conn))
   (define-observables
+    [@config (get-topic-config conn topic)]
     [@records (vector)]
     [@live? #t]
     [@fetching? #f])
@@ -40,6 +42,9 @@
        (status "Opening iterator...")
        (open-iterator topic (IteratorOffset.recent 20) id))))
   (define (fetch)
+    (define max-rows (* 10 1000))
+    (define max-size (topic-config-request-bytes ^@config))
+    (define max-buffer (topic-config-buffer-bytes ^@config))
     (call-with-status-proc
      (lambda (status)
        (status "Fetching records...")
@@ -76,7 +81,7 @@
          (loop (if fetched-new-records? 0 (add1 misses)))))))
   (define (get-column-widths*)
     (get-preference
-     `(records-table ,details-id ,topic column-widths)
+     `(records-table ,conn-id ,topic column-widths)
      '((0 60)
        (1 70)
        (2 150)
@@ -102,7 +107,7 @@
         (break-thread fetch-thd)
         (close-iterator it)
         (put-preference
-         `(records-table ,details-id ,topic column-widths)
+         `(records-table ,conn-id ,topic column-widths)
          (get-column-widths*)))))
    (vpanel
     (table
@@ -139,7 +144,10 @@
             (define r
               (IteratorResult->record (vector-ref entries selection)))
             (render
-             (record-detail-window r topic)))])))
+             (record-detail-window
+              #:key-format (topic-config-key-format ^@config)
+              #:val-format (topic-config-val-format ^@config)
+              r topic)))])))
     (hpanel
      #:stretch '(#t #f)
      (text
@@ -165,7 +173,20 @@
      (button
       gear-bmp
       #:enabled? @buttons-enabled?
-      void)
+      (lambda ()
+        (define close! void)
+        (render
+         (dialog
+          #:title (format "~a Preferences" topic)
+          #:mixin (mix-close-window void (λ (close!-proc)
+                                           (set! close! close!-proc)))
+          (topic-config-form
+           (get-details) topic
+           (lambda (conf)
+             (put-topic-config conn topic conf)
+             (@config:= conf)
+             (close!))))
+         (get-parent))))
      (button
       chevron-e-bmp
       #:enabled? @buttons-enabled?
@@ -247,13 +268,17 @@
   (require "testing.rkt")
   (call-with-testing-context
    (lambda (id)
-     (render
-      (window
-       #:size '(800 600)
-       (records-table
-        id "example-topic"
-        #:get-details-proc
-        (λ ()
-          (make-ConnectionDetails
-           #:id 1
-           #:name "Example"))))))))
+     (define r
+       (render
+        (window
+         #:size '(800 600)
+         (records-table
+          id "example-topic"
+          #:get-details-proc
+          (λ ()
+            (make-ConnectionDetails
+             #:id 1
+             #:name "Example"))
+          #:get-parent-proc
+          (λ () r)))))
+     r)))

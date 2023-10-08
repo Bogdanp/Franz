@@ -3,6 +3,7 @@
 (require franz/iterator
          (submod franz/lexer rpc)
          racket/format
+         racket/list
          "common.rkt"
          "editor.rkt"
          "observable.rkt"
@@ -95,6 +96,7 @@
     #:stretch '(#t #f)
     (choice
      '(binary json text)
+     #:selection fmt
      #:choice->label
      (lambda (choice)
        (case choice
@@ -105,7 +107,9 @@
     (spacer)
     (button
      "Format"
-     #:enabled? (@fmt . ~> . (λ (fmt) (eq? fmt 'json)))
+     #:enabled?
+     (let-observable ([fmt @fmt])
+       (eq? fmt 'json))
      (lambda ()
        (update-observable [bs @data]
          (string->bytes/utf-8
@@ -121,7 +125,7 @@
            (~hex (bytes-ref bs pos))
            ""))
      (table
-      '("Addr" "c0" "c1" "c2" "c3" "c4" "c5" "c6" "c7")
+      (make-list 9 "")
       #:font system-mono-font-s
       #:style '(single)
       #:column-widths

@@ -1,7 +1,6 @@
 #lang racket/gui/easy
 
 (require franz/broker
-         racket/class
          "clipboard.rkt"
          "hacks.rkt"
          "mixin.rkt"
