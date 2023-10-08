@@ -25,8 +25,8 @@
                 #:color (color #xDDDDDDFF)
                 #:border-color (color #xCCCCCCFF)
                 #:border-width 1
-                (- w 10)
-                (- h 7)
+                (max 0 (- w 10))
+                (max 0 (- h 7))
                 3 ;radius
                 )
                (p:inset

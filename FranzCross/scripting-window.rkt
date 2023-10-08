@@ -3,7 +3,8 @@
 (require (submod franz/script rpc)
          racket/port
          "editor.rkt"
-         "observable.rkt")
+         "observable.rkt"
+         "shortcut.rkt")
 
 (provide
  scripting-window)
@@ -84,22 +85,29 @@
      "&File"
      (menu-item
       "&Open..."
+      #:shortcut (kbd cmd #\o)
       do-open)
      (menu-item
       (let-observable ([filename @filename])
         (if filename "&Save" "&Save..."))
+      #:shortcut (kbd cmd #\s)
       (lambda ()
         (cond
           [(obs-peek @filename) => do-save]
           [else (do-save-as)])))
      (menu-item
       "Save &as..."
+      #:shortcut (kbd cmd shift #\s)
       do-save-as))
     (menu
      "&Script"
-     (menu-item "&Apply" do-apply)
+     (menu-item
+      "&Apply"
+      #:shortcut (kbd cmd shift #\return)
+      do-apply)
      (menu-item
       @activate-label
+      #:shortcut (kbd cmd #\return)
       do-toggle-active)))
    (vpanel
     (hpanel

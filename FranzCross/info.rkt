@@ -6,7 +6,7 @@
                "buid"
                "canvas-list"
                ["franz" #:version "1.1"]
-               ["gui-easy-lib" #:version "0.14"]
+               ["gui-easy-lib" #:version "0.15"]
                "gui-lib"
                "http-easy-lib"
                "json-lexer-lib"

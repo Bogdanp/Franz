@@ -7,6 +7,7 @@
          "common.rkt"
          "editor.rkt"
          "observable.rkt"
+         "shortcut.rkt"
          "view.rkt")
 
 (provide
@@ -28,6 +29,7 @@
      "&File"
      (menu-item
       "Save &as..."
+      #:shortcut (kbd cmd shift #\s)
       (lambda ()
         (define-values (what bs)
           (case (obs-peek @tab)

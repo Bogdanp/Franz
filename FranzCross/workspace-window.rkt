@@ -20,6 +20,7 @@
          "new-topic-dialog.rkt"
          "schema-detail.rkt"
          "schema-registry-dialog.rkt"
+         "shortcut.rkt"
          "split-view.rkt"
          "status-bar.rkt"
          "thread.rkt"
@@ -163,10 +164,12 @@
      "&File"
      (menu-item
       "New &Window"
+      #:shortcut (kbd cmd shift #\n)
       (λ () (m:open-workspace details #t)))
      (menu-item-separator)
      (menu-item
       "&Preferences"
+      #:shortcut (kbd cmd #\;)
       m:render-preferences-window)
      (menu-item-separator)
      (menu-item
@@ -176,15 +179,18 @@
      "&Connection"
      (menu-item
       "&Reload"
+      #:shortcut (kbd cmd #\r)
       reload-metadata)
      (menu-item-separator)
      (menu-item
       "&Close"
+      #:shortcut (kbd cmd #\w)
       (λ () (close!))))
     (menu
      "&Topic"
      (menu-item
       "&New Topic..."
+      #:shortcut (kbd cmd #\n)
       new-topic))
     (menu
      "Schema &Registry"
@@ -224,6 +230,7 @@
     (menu
      "&View"
      (menu-item
+      #:shortcut (kbd cmd shift #\s)
       (let-observable ([visible? @sidebar-visible?])
         (~a (if visible? "Hide" "Show") " &Sidebar"))
       (λ<~ @sidebar-visible? not)))
@@ -234,6 +241,7 @@
       (λ () (send-url "https://franz.defn.io/manual/")))
      (menu-item
       "&Welcome to Franz"
+      #:shortcut (kbd cmd shift #\1)
       m:render-welcome-window)
      (menu-item-separator)
      (menu-item
@@ -281,4 +289,5 @@
        #:id 1
        #:name "Example"
        #:bootstrap-host "kafka-1"
-       #:bootstrap-port 9092)))))
+       #:bootstrap-port 9092))
+     (m:get-workspace-renderer 1))))
