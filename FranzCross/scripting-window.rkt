@@ -36,11 +36,11 @@
   (define (do-apply)
     (apply-proc (obs-peek @script)))
   (define (do-toggle-active)
-    (let-observable ([active? @active?])
+    (update-observable [active? @active?]
       (if active?
           (deactivate-script topic id)
           (activate-script (obs-peek @script) topic id))
-      (@active?:= (not active?))))
+      (not active?)))
   (define (do-open)
     (define maybe-filename
       (gui:get-file
