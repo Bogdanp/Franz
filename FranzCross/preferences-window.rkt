@@ -82,6 +82,7 @@
           #:min-size '(160 #f)
           (table
            '("Connection")
+           #:column-widths '((0 155))
            (list->vector (get-connections))
            #:entry->row
            (lambda (conn)
