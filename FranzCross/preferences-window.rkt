@@ -16,7 +16,8 @@
          "observable.rkt"
          "preference.rkt"
          "topic-config.rkt"
-         "view.rkt")
+         "view.rkt"
+         "workspace-sidebar-config.rkt")
 
 (provide
  preferences-window)
@@ -78,7 +79,7 @@
          (hpanel
           #:style '(border)
           #:stretch '(#f #t)
-          #:min-size '(120 #f)
+          #:min-size '(160 #f)
           (table
            '("Connection")
            (list->vector (get-connections))
@@ -103,8 +104,11 @@
              (hpanel
               #:alignment '(center center)
               (text "Please select a connection."))]
-            [`(sidebar ,_)
-             (spacer)]
+            [`(sidebar ,conn)
+             (workspace-sidebar-config-form
+              (get-workspace-sidebar-config conn)
+              (lambda (conf)
+                (put-workspace-sidebar-config conn conf)))]
             [`(iterators ,conn)
              (topic-config-form
               (get-topic-config* conn)
@@ -223,6 +227,9 @@
    (sqlite3-connect
     #:database 'memory))
   (migrate!)
+  (save-connection
+   (make-ConnectionDetails
+    #:name "Example"))
   (render
    (preferences-window
     (@ 'license))))

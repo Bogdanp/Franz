@@ -138,7 +138,7 @@
            event)]
          [else (void)]))
      #:new-topic-action new-topic
-     (@state . ~> . state-metadata)))
+     details (@state . ~> . state-metadata)))
   (define content
     (vpanel
      (status-bar

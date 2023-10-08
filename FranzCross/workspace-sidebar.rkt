@@ -1,6 +1,7 @@
 #lang racket/gui/easy
 
 (require franz/broker
+         franz/connection-details
          franz/schema-registry/schema
          (prefix-in p: pict)
          racket/format
@@ -13,7 +14,8 @@
          "common.rkt"
          "mixin.rkt"
          "observable.rkt"
-         "preference.rkt")
+         "preference.rkt"
+         "workspace-sidebar-config.rkt")
 
 (provide
  workspace-sidebar)
@@ -24,11 +26,14 @@
 (define chevron-e (p:bitmap chevron-e-bmp))
 (define chevron-s (p:bitmap chevron-s-bmp))
 
-(define (workspace-sidebar @metadata
+(define (workspace-sidebar conn
+                           @metadata
                            #:selected-item [@selected-item #f]
                            #:select-action [select-action void]
                            #:context-action [context-action void]
                            #:new-topic-action [new-topic-action void])
+  (define conf
+    (get-workspace-sidebar-config conn))
   (define/obs @collapse-states
     (get-preference
      'workspace-sidebar:collapse-states
@@ -79,7 +84,7 @@
            [(Group? item) Group-pict]
            [(Schema? item) Schema-pict]
            [else (error 'workspace-sidebar "unexpected item: ~s" item)])
-         item state w h))
+         item conf state w h))
       (p:draw-pict pict dc 0 0))
     #:selected-item @selected-item
     #:item=? item=?
@@ -136,7 +141,7 @@
          item))
        (string-downcase s))))
 
-(define (Header-pict hdr state w h)
+(define (Header-pict hdr conf state w h)
   (match-define (Header label collapsed?) hdr)
   (define bg-color
     (case state
@@ -159,7 +164,7 @@
      system-font-s)
     26 0)))
 
-(define (Broker-pict b state w h)
+(define (Broker-pict b _conf state w h)
   (define label
     (format
      "~a:~a"
@@ -169,22 +174,35 @@
    #:label label
    state w h))
 
-(define (Topic-pict t state w h)
+(define (Topic-pict t conf state w h)
   (standard-pict
    #:label (Topic-name t)
-   #:count (Stats-sum-lag (Topic-stats t))
+   #:count (let ([stat (workspace-sidebar-config-topic-stat conf)])
+             (case stat
+               [(partition-count) (length (Topic-partitions t))]
+               [else (get-stat stat (Topic-stats t))]))
    state w h))
 
-(define (Group-pict g state w h)
+(define (Group-pict g conf state w h)
   (standard-pict
    #:label (Group-id g)
-   #:count (Stats-sum-lag (Group-stats g))
+   #:count (get-stat
+            (workspace-sidebar-config-group-stat conf)
+            (Group-stats g))
    state w h))
 
-(define (Schema-pict s state w h)
+(define (Schema-pict s _conf state w h)
   (standard-pict
    #:label (Schema-name s)
    state w h))
+
+(define (get-stat stat stats)
+  (case stat
+    [(off) #f]
+    [(min-partition-lag) (Stats-min-lag stats)]
+    [(max-partition-lag) (Stats-max-lag stats)]
+    [(sum-partition-lag) (Stats-sum-lag stats)]
+    [else (raise-argument-error 'get-stat "stat/c" stat)]))
 
 (define (standard-pict state w h
                        #:label label
@@ -261,6 +279,9 @@
      #:context-action
      (λ (item _event)
        (eprintf "context: ~s~n" item))
+     (make-ConnectionDetails
+      #:id 1
+      #:name "example")
      (@ (make-Metadata
          #:brokers (list
                     (make-Broker
