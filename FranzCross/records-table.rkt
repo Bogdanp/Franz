@@ -46,9 +46,11 @@
        (status "Opening iterator...")
        (open-iterator topic (IteratorOffset.recent 20) id))))
   (define (fetch [replace? #f])
+    (define config ^@config)
     (define max-rows (* 10 1000))
-    (define max-size (topic-config-request-bytes ^@config))
-    (define max-buffer (topic-config-buffer-bytes ^@config))
+    (define max-size (topic-config-request-bytes config))
+    (define max-buffer (topic-config-buffer-bytes config))
+    (define sort-direction (topic-config-sort-direction config))
     (call-with-status-proc
      (lambda (status)
        (status "Fetching records...")
@@ -64,17 +66,32 @@
               (if replace?
                   (list->vector new-records)
                   (vector-append old-records (list->vector new-records))))
-            (vector-sort! ress IteratorResult>)
-            (define last-idx
-              (for/fold ([total 0] [idx 0] #:result idx)
-                        ([(res idx) (in-indexed (in-vector ress))])
-                (define next-total (+ (IteratorResult-size res) total))
-                #:break (or (= idx max-rows)
-                            (> next-total max-buffer))
-                (values next-total idx)))
-            (if (< last-idx (sub1 (vector-length ress)))
-                (vector-take ress last-idx)
-                ress))]
+            (case sort-direction
+              [(ascending)
+               (vector-sort! ress IteratorResult<)
+               (define last-idx ;; from the end
+                 (for/fold ([total 0] [idx 0] [n 0] #:result idx)
+                           ([idx (in-range (sub1 (vector-length ress)) 0 -1)])
+                   (define res (vector-ref ress idx))
+                   (define next-total (+ (IteratorResult-size res) total))
+                   #:break (or (= n max-rows)
+                               (> next-total max-buffer))
+                   (values next-total idx (add1 n))))
+               (if (> last-idx 0)
+                   (vector-drop ress (add1 last-idx))
+                   ress)]
+              [else
+               (vector-sort! ress IteratorResult>)
+               (define last-idx
+                 (for/fold ([total 0] [idx 0] #:result idx)
+                           ([(res idx) (in-indexed (in-vector ress))])
+                   (define next-total (+ (IteratorResult-size res) total))
+                   #:break (or (= idx max-rows)
+                               (> next-total max-buffer))
+                   (values next-total idx)))
+               (if (< last-idx (sub1 (vector-length ress)))
+                   (vector-take ress last-idx)
+                   ress)]))]
          [replace?
           (@records:= (vector))]
          [else
@@ -299,16 +316,22 @@
           (if v (bytes-length v) 0)))))
 
 (define (IteratorResult> a b)
+  (IteratorResult-cmp a b >))
+
+(define (IteratorResult< a b)
+  (IteratorResult-cmp a b <))
+
+(define (IteratorResult-cmp a b n>m)
   (let ([a (IteratorResult->record a)]
         [b (IteratorResult->record b)])
     (if (or (eqv? (IteratorRecord-partition-id a)
                   (IteratorRecord-partition-id b))
             (eqv? (IteratorRecord-timestamp a)
                   (IteratorRecord-timestamp b)))
-        (> (IteratorRecord-offset a)
-           (IteratorRecord-offset b))
-        (> (IteratorRecord-timestamp a)
-           (IteratorRecord-timestamp b)))))
+        (n>m (IteratorRecord-offset a)
+             (IteratorRecord-offset b))
+        (n>m (IteratorRecord-timestamp a)
+             (IteratorRecord-timestamp b)))))
 
 (define (get-size ress)
   (for/sum ([res (in-vector ress)])
