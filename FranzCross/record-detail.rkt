@@ -29,11 +29,11 @@
      (menu-item
       "Save &as..."
       (lambda ()
-        (define-values (what ext bs)
+        (define-values (what bs)
           (case (obs-peek @tab)
-            [(key) (values "key" "dat" (or (IteratorRecord-key r) #""))]
-            [(value) (values "value" "dat" (or (IteratorRecord-value r) #""))]
-            [else (values #f #f #f)]))
+            [(key) (values "key" (or (IteratorRecord-key r) #""))]
+            [(value) (values "value" (or (IteratorRecord-value r) #""))]
+            [else (values #f #f)]))
         (when what
           (define path
             (gui:put-file
@@ -41,10 +41,12 @@
              #f ;parent
              #f ;directory
              #f ;filename
-             ext ;extension
+             "" ;extension
              null ;style
-             null ;filters
-             ))
+             '(("All Files" "*.*")
+               ("Binary Files (*.bin)" "*.bin") ;filters
+               ("JSON Files (*.json)" "*.json")
+               ("Text Documents (*.txt)" "*.txt"))))
           (when path
             (call-with-output-file path
               #:exists 'truncate/replace
@@ -60,12 +62,17 @@
     #:alignment '(left top)
     (match-view @tab
       ['metadata
+       (define labeled*
+         (make-keyword-procedure
+          (lambda (kws kw-args . args)
+            (keyword-apply labeled kws kw-args #:width 80 args))))
        (vpanel
+        #:margin '(0 20)
         #:stretch '(#t #f)
         #:alignment '(left top)
-        (labeled "Partition ID:" (text (~a (IteratorRecord-partition-id r))))
-        (labeled "Offset:" (text (~a (IteratorRecord-offset r))))
-        (labeled "Timestamp:" (text (~timestamp (quotient (IteratorRecord-timestamp r) 1000)))))]
+        (labeled* "Partition ID:" (text (~a (IteratorRecord-partition-id r))))
+        (labeled* "Offset:" (text (~a (IteratorRecord-offset r))))
+        (labeled* "Timestamp:" (text (~timestamp (quotient (IteratorRecord-timestamp r) 1000)))))]
       ['key
        (data
         #:format key-format
@@ -77,6 +84,7 @@
       ['headers
        (table
         '("Header" "Value")
+        #:column-widths '((0 150) (1 300))
         (for/vector ([(k v) (in-hash (IteratorRecord-headers r))])
           (vector k (if v (bytes->string/utf-8 v #\uFFFD) ""))))]))))
 
@@ -129,7 +137,7 @@
       #:font system-mono-font-s
       #:style '(single)
       #:column-widths
-      (cons '(0 90) (for/list ([i (in-range 1 8)]) `(,i 35)))
+      (cons '(0 100) (for/list ([i (in-range 1 9)]) `(,i 50)))
       (for/vector ([addr (in-range 0 (bytes-length bs) 8)])
         (vector
          (~hex addr 8)
