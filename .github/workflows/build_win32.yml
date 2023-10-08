@@ -1,0 +1,58 @@
+on: [push]
+name: Build on Windows
+jobs:
+  build_win32_app:
+    runs-on: windows-2019
+    name: Build Franz on Windows 2019
+    steps:
+      - name: Set up Git
+        run: |
+          git config --system core.autocrlf false
+          git config --system core.eol lf
+      - uses: actions/checkout@master
+      - uses: Bogdanp/setup-racket@v1.10
+        with:
+          architecture: 'x64'
+          distribution: 'full'
+          variant: 'CS'
+          version: '8.10'
+      - name: Install Noise
+        run: |
+          git clone --depth 1 --branch racket-8.10 https://github.com/Bogdanp/Noise Noise
+          raco pkg install -D --batch --auto Noise/Racket/noise-serde-lib/
+      - name: Prepare secrets
+        run: |
+          echo -n "$DEVELOPER_ID_CER_P12" | base64 -d > developer_id.p12
+          echo -n "$LICENSE_SECRET" | base64 -d > core/secrets/license-secret.txt
+          echo -n "$SENTRY_DSN" | base64 -d > core/secrets/sentry-dsn.txt
+        shell: bash
+        env:
+          DEVELOPER_ID_CER_P12: ${{ secrets.DEVELOPER_ID_CER_P12 }}
+          LICENSE_SECRET: ${{ secrets.LICENSE_SECRET }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+      - name: Install core
+        run: |
+          raco pkg install -D --batch --auto --force libsqlite3
+          raco pkg install -D --batch --auto --name franz core/
+      - name: Install FranzCross
+        run: raco pkg install -D --batch --auto FranzCross/
+      - name: Build distribution
+        run: |
+          ./build.bat
+        working-directory: FranzCross
+      - name: Sign executable
+        run: |
+          &"C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe" sign `
+            /p "$Env:DEVELOPER_ID_CER_P12_PASSWORD" `
+            /f developer_id.p12 `
+            /fd SHA256 `
+            /tr http://timestamp.digicert.com `
+            /td SHA256 `
+            FranzCross/dist/Franz.exe
+        env:
+          DEVELOPER_ID_CER_P12_PASSWORD: ${{ secrets.DEVELOPER_ID_CER_P12_PASSWORD }}
+      - name: Upload distribution
+        uses: actions/upload-artifact@v3
+        with:
+          name: Franz.zip
+          path: FranzCross/dist
