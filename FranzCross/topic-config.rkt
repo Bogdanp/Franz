@@ -13,6 +13,7 @@
 (provide
  (struct-out topic-config)
  get-topic-config
+ get-topic-config*
  put-topic-config
  put-topic-config*
  topic-config-buffer-bytes
@@ -33,9 +34,12 @@
   (get-preference
    `(topic-config ,(ConnectionDetails-id conn) ,topic)
    (lambda ()
-     (get-preference
-      `(topic-config ,(ConnectionDetails-id conn))
-      make-default-config))))
+     (get-topic-config* conn))))
+
+(define (get-topic-config* conn)
+  (get-preference
+   `(topic-config ,(ConnectionDetails-id conn))
+   make-default-config))
 
 (define (put-topic-config conn topic conf)
   (put-preference `(topic-config ,(ConnectionDetails-id conn) ,topic) conf))
@@ -55,9 +59,9 @@
 (provide
  topic-config-form)
 
-(define (topic-config-form conn topic [action void])
+(define (topic-config-form conf [action void])
   (match-define (topic-config key-format val-format sort-direction request-size buffer-size)
-    (get-topic-config conn topic))
+    conf)
   (define-observables
     [@key-format key-format]
     [@val-format val-format]
@@ -146,7 +150,4 @@
      (render
       (dialog
        (topic-config-form
-        (make-ConnectionDetails
-         #:id "1"
-         #:name "Example")
-        "example-topic"))))))
+        (make-default-config)))))))

@@ -181,7 +181,7 @@
           #:mixin (mix-close-window void (λ (close!-proc)
                                            (set! close! close!-proc)))
           (topic-config-form
-           (get-details) topic
+           ^@config
            (lambda (conf)
              (put-topic-config conn topic conf)
              (@config:= conf)

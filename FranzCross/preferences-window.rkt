@@ -1,6 +1,8 @@
 #lang racket/gui/easy
 
 (require browser/external
+         franz/connection-details
+         (submod franz/connection-details rpc)
          (submod franz/metadata rpc)
          (prefix-in p: pict)
          racket/date
@@ -13,6 +15,7 @@
          "mixin.rkt"
          "observable.rkt"
          "preference.rkt"
+         "topic-config.rkt"
          "view.rkt")
 
 (provide
@@ -65,8 +68,48 @@
            (let-observable ([ival @reload-ival])
              (format "Every ~a seconds." ival))))))]
       ['connections
+       (define-observables
+         [@tab 'sidebar]
+         [@conn #f])
        (detail-view
-        "Connections")]
+        "Connections"
+        #:stretch '(#t #t)
+        (hpanel
+         (hpanel
+          #:style '(border)
+          #:stretch '(#f #t)
+          #:min-size '(120 #f)
+          (table
+           '("Connection")
+           (list->vector (get-connections))
+           #:entry->row
+           (lambda (conn)
+             (vector (ConnectionDetails-name conn)))
+           (lambda (event entries selection)
+             (case event
+               [(select)
+                (@conn:= (and selection (vector-ref entries selection)))]))))
+         (tabs
+          '(sidebar iterators)
+          #:choice->label (compose1 string-titlecase symbol->string)
+          #:selection @tab
+          (lambda (event _choices selection)
+            (case event
+              [(select) (@tab:= selection)]))
+          (match-view (let-observable ([tab @tab]
+                                       [conn @conn])
+                        (list tab conn))
+            [`(,_ #f)
+             (hpanel
+              #:alignment '(center center)
+              (text "Please select a connection."))]
+            [`(sidebar ,_)
+             (spacer)]
+            [`(iterators ,conn)
+             (topic-config-form
+              (get-topic-config* conn)
+              (lambda (prefs)
+                (put-topic-config* conn prefs)))]))))]
       ['license
        (define-observables
          [@activated? (and (get-license) #t)]
@@ -137,7 +180,9 @@
           #:enabled? @check-for-updates?
           (λ:= @update-interval))))]))))
 
-(define (detail-view title . content)
+(define (detail-view title
+                     #:stretch [stretch '(#t #f)]
+                     . content)
   (vpanel
    #:alignment '(left top)
    #:margin '(15 10)
@@ -147,7 +192,7 @@
    (apply
     vpanel
     #:alignment '(left top)
-    #:stretch '(#t #f)
+    #:stretch stretch
     #:margin '(0 25)
     content)))
 
