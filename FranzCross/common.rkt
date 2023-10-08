@@ -95,7 +95,8 @@
   icon_512x512.png
   pause.png
   play.png
-  plus.png)
+  plus.png
+  viewfinder-ellipsis.png)
 
 (define-syntax-rule (define-bitmaps [id path-expr] ...)
   (begin
@@ -111,4 +112,5 @@
   [icon_512x512-bmp icon_512x512.png]
   [pause-bmp pause.png]
   [play-bmp play.png]
-  [plus-bmp plus.png])
+  [plus-bmp plus.png]
+  [viewfinder-ellipsis-bmp viewfinder-ellipsis.png])

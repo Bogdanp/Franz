@@ -4,6 +4,7 @@
          "combinator.rkt"
          "mixin.rkt"
          "observable.rkt"
+         "validator.rkt"
          "view.rkt")
 
 (provide
@@ -178,14 +179,6 @@
       (lambda ()
         (action ^@name ^@value)
         (close!)))))))
-
-(define (non-empty-string s)
-  (and (> (string-length s) 0) s))
-
-(define (positive-number s)
-  (define maybe-number
-    (string->number s))
-  (and maybe-number (> maybe-number 0) maybe-number))
 
 (define completions
   (hash

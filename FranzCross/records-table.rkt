@@ -5,9 +5,12 @@
          (submod franz/script rpc)
          (submod franz/workspace rpc)
          racket/class
+         racket/date
          racket/fixnum
+         racket/list
          racket/match
          racket/vector
+         "combinator.rkt"
          "common.rkt"
          "mixin.rkt"
          "observable.rkt"
@@ -15,6 +18,7 @@
          "record-detail.rkt"
          "thread.rkt"
          "topic-config.rkt"
+         "validator.rkt"
          "view.rkt"
          (prefix-in m: "window-manager.rkt"))
 
@@ -41,7 +45,7 @@
      (lambda (status)
        (status "Opening iterator...")
        (open-iterator topic (IteratorOffset.recent 20) id))))
-  (define (fetch)
+  (define (fetch [replace? #f])
     (define max-rows (* 10 1000))
     (define max-size (topic-config-request-bytes ^@config))
     (define max-buffer (topic-config-buffer-bytes ^@config))
@@ -53,20 +57,28 @@
          (get-records it max-size))
        (define have-new?
          (not (null? new-records)))
-       (when have-new?
-         (update-observable [old-records @records]
-           (define ress (vector-append old-records (list->vector new-records)))
-           (vector-sort! ress IteratorResult>)
-           (define last-idx
-             (for/fold ([total 0] [idx 0] #:result idx)
-                       ([(res idx) (in-indexed (in-vector ress))])
-               (define next-total (+ (IteratorResult-size res) total))
-               #:break (or (= idx max-rows)
-                           (> next-total max-buffer))
-               (values next-total idx)))
-           (if (< last-idx (sub1 (vector-length ress)))
-               (vector-take ress last-idx)
-               ress)))
+       (cond
+         [have-new?
+          (update-observable [old-records @records]
+            (define ress
+              (if replace?
+                  (list->vector new-records)
+                  (vector-append old-records (list->vector new-records))))
+            (vector-sort! ress IteratorResult>)
+            (define last-idx
+              (for/fold ([total 0] [idx 0] #:result idx)
+                        ([(res idx) (in-indexed (in-vector ress))])
+                (define next-total (+ (IteratorResult-size res) total))
+                #:break (or (= idx max-rows)
+                            (> next-total max-buffer))
+                (values next-total idx)))
+            (if (< last-idx (sub1 (vector-length ress)))
+                (vector-take ress last-idx)
+                ress))]
+         [replace?
+          (@records:= (vector))]
+         [else
+          (void)])
        (begin0 have-new?
          (@fetching?:= #f)))))
   (define fetch-thd
@@ -188,6 +200,80 @@
              (close!))))
          (get-parent))))
      (button
+      viewfinder-ellipsis-bmp
+      #:enabled? @buttons-enabled?
+      (lambda ()
+        (define close! void)
+        (define-observables
+          [@target 'recent]
+          [@offset 0]
+          [@recent-n 20]
+          [@timestamp (current-seconds)])
+        (define labeled*
+          (make-keyword-procedure
+           (lambda (kws kw-args . args)
+             (keyword-apply labeled #:width 80 kws kw-args args))))
+        (render
+         (dialog
+          #:title "Jump..."
+          #:mixin (mix-close-window void (λ (close!-proc)
+                                           (set! close! close!-proc)))
+          (vpanel
+           #:margin '(10 10)
+           #:stretch '(#t #f)
+           (labeled*
+            "Target:"
+            (choice
+             '(earliest timestamp recent latest offset)
+             #:choice->label (compose1 string-titlecase symbol->string)
+             #:selection @target
+             @target:=))
+           (match-view @target
+             ['earliest (spacer)]
+             ['recent
+              (labeled*
+               "Delta:"
+               (validated-input
+                #:text->value positive-number
+                (@recent-n . ~> . number->string)
+                (drop1 @recent-n:=)))]
+             ['timestamp
+              (labeled*
+               "Timestamp:"
+               (validated-input
+                #:text->value parse-timestamp
+                (@timestamp . ~> . ~timestamp)
+                (drop1 @timestamp:=)))]
+             ['latest (spacer)]
+             ['offset
+              (labeled*
+               "Offset:"
+               (validated-input
+                #:text->value nonnegative-number
+                (@offset . ~> . number->string)
+                (drop1 @offset:=)))])
+           (labeled*
+            ""
+            (button
+             "Jump"
+             #:style '(border)
+             (lambda ()
+               (thread*
+                (call-with-status-proc
+                 (lambda (status)
+                   (status "Resetting iterator...")
+                   (reset-iterator
+                    it (case ^@target
+                         [(earliest) (IteratorOffset.earliest)]
+                         [(timestamp) (IteratorOffset.timestamp (* ^@timestamp 1000))]
+                         [(recent) (IteratorOffset.recent ^@recent-n)]
+                         [(latest) (IteratorOffset.latest)]
+                         [(offset) (IteratorOffset.exact ^@offset)]
+                         [else (raise-argument-error 'reset-iterator "target/c" ^@target)]))))
+                (fetch #t))
+               (close!))))))
+         (get-parent))))
+     (button
       chevron-e-bmp
       #:enabled? @buttons-enabled?
       (λ () (thread fetch)))))))
@@ -263,6 +349,15 @@
       [(fx= (fxand b #b11000000) #b11000000) (values #t 1)]
       [(fx= (fxand b #b10000000) #b10000000) (values (> cont 0) (sub1 cont))]
       [else (values (zero? cont) 0)])))
+
+(define (parse-timestamp s)
+  (define parts
+    (or (regexp-match #rx"(....)-(..)-(..)[T ](..):(..):(..)" s) null))
+  (match (filter-map string->number parts)
+    [(list y M d h m s)
+     (with-handlers ([exn:fail? (λ (_e) #f)])
+       (find-seconds s m h d M y #t))]
+    [_ #f]))
 
 (module+ main
   (require "testing.rkt")
