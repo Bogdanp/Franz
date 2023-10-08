@@ -1,7 +1,8 @@
 #lang racket/gui/easy
 
 (module+ main
-  (require franz/appdata
+  (require framework
+           franz/appdata
            franz/main
            (prefix-in rpc: (submod franz/workspace rpc))
            racket/date
@@ -11,6 +12,7 @@
            "window-manager.rkt")
 
   (define quit-evt (make-semaphore))
+  (application:current-app-name "Franz")
   (gui:application-quit-handler
    (lambda ()
      (semaphore-post quit-evt)))
