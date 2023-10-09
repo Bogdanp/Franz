@@ -16,7 +16,8 @@ jobs:
       - name: Clone Noise
         run: |
           mkdir ../../sandbox
-          git clone --depth 1 --branch racket-8.10 https://github.com/Bogdanp/Noise ../../sandbox/Noise
+          env GIT_LFS_SKIP_SMUDGE=1 \
+            git clone --depth 1 --branch racket-8.10 https://github.com/Bogdanp/Noise ../../sandbox/Noise
       - name: Prepare secrets
         run: |
           echo -n "$LICENSE_SECRET" | base64 --decode -o core/secrets/license-secret.txt
@@ -70,10 +71,9 @@ jobs:
       - name: Build Noise
         run: |
           mkdir ../../sandbox
-          git clone --depth 1 --branch racket-8.10 https://github.com/Bogdanp/Noise ../../sandbox/Noise
+          env GIT_LFS_SKIP_SMUDGE=1 \
+            git clone --depth 1 --branch racket-8.10 https://github.com/Bogdanp/Noise ../../sandbox/Noise
           raco pkg install -D --batch --auto ../../sandbox/noise/Racket/noise-serde-lib/
-          pushd ../../sandbox/Noise
-          make
       - name: Prepare secrets
         run: |
           echo -n "$LICENSE_SECRET" | base64 --decode -o core/secrets/license-secret.txt
