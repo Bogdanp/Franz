@@ -18,6 +18,7 @@ jobs:
           version: '8.10'
       - name: Install Noise
         run: |
+          $Env:GIT_LFS_SKIP_SMUDGE = 1
           git clone --depth 1 --branch racket-8.10 https://github.com/Bogdanp/Noise Noise
           raco pkg install -D --batch --auto Noise/Racket/noise-serde-lib/
       - name: Prepare secrets
