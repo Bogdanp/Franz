@@ -159,7 +159,8 @@
                            #:value (k:ResourceConfig-value c)
                            #:is-read-only (k:ResourceConfig-read-only? c)
                            #:is-default (k:ResourceConfig-default? c)
-                           #:is-sensitive (k:ResourceConfig-sensitive? c)))
+                           #:is-sensitive (k:ResourceConfig-sensitive? c)
+                           #:doc-url (maybe-make-doc-url type (k:ResourceConfig-name c))))
                         #:key ResourceConfig-name string<?)))
                     (state-add-req s (req described-resource res-ch nack))]
 
@@ -630,6 +631,20 @@
    #:min-lag (min (if (< min-lag 0) lag min-lag) lag)
    #:max-lag (max max-lag lag)
    #:sum-lag (+ sum-lag lag)))
+
+
+;; docs ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define doc-root
+  "https://kafka.apache.org/documentation/")
+
+(define (maybe-make-doc-url type key)
+  (define type-prefix
+    (case type
+      [(broker) "brokerconfigs"]
+      [(topic) "topicconfigs"]
+      [else #f]))
+  (and type-prefix (format "~a#~a_~a" doc-root type-prefix key)))
 
 
 ;; tests ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

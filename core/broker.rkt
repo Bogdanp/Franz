@@ -57,4 +57,5 @@
   [value : (Optional String)]
   [is-read-only : Bool]
   [is-default : Bool]
-  [is-sensitive : Bool])
+  [is-sensitive : Bool]
+  [(doc-url #f) : (Optional String)])
