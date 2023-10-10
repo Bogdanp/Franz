@@ -628,19 +628,22 @@ public struct ResourceConfig: Readable, Writable {
   public let isReadOnly: Bool
   public let isDefault: Bool
   public let isSensitive: Bool
+  public let docUrl: String?
 
   public init(
     name: String,
     value: String?,
     isReadOnly: Bool,
     isDefault: Bool,
-    isSensitive: Bool
+    isSensitive: Bool,
+    docUrl: String?
   ) {
     self.name = name
     self.value = value
     self.isReadOnly = isReadOnly
     self.isDefault = isDefault
     self.isSensitive = isSensitive
+    self.docUrl = docUrl
   }
 
   public static func read(from inp: InputPort, using buf: inout Data) -> ResourceConfig {
@@ -649,7 +652,8 @@ public struct ResourceConfig: Readable, Writable {
       value: String?.read(from: inp, using: &buf),
       isReadOnly: Bool.read(from: inp, using: &buf),
       isDefault: Bool.read(from: inp, using: &buf),
-      isSensitive: Bool.read(from: inp, using: &buf)
+      isSensitive: Bool.read(from: inp, using: &buf),
+      docUrl: String?.read(from: inp, using: &buf)
     )
   }
 
@@ -659,6 +663,7 @@ public struct ResourceConfig: Readable, Writable {
     isReadOnly.write(to: out)
     isDefault.write(to: out)
     isSensitive.write(to: out)
+    docUrl.write(to: out)
   }
 }
 

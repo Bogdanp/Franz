@@ -36,7 +36,8 @@ class ResourceConfigTableViewController: NSViewController {
           name: item.name,
           value: item.nonnullValue,
           isDefault: item.isDefault,
-          isSensitive: item.isSensitive)
+          isSensitive: item.isSensitive,
+          docUrl: item.docUrl)
         entries.append(e)
       }
     }
@@ -52,6 +53,7 @@ class ResourceConfigEntry: NSObject {
   var isDefault = true
   var isSensitive = false
   var isRevealed = false
+  var docUrl: String?
 
   var safeValue: String {
     !isSensitive || isRevealed ? value : "••••••••"
@@ -61,12 +63,14 @@ class ResourceConfigEntry: NSObject {
        value: String,
        isDefault: Bool = false,
        isSensitive: Bool = false,
-       isRevealed: Bool = false) {
+       isRevealed: Bool = false,
+       docUrl: String? = nil) {
     self.name = name
     self.value = value
     self.isDefault = isDefault
     self.isSensitive = isSensitive
     self.isRevealed = isRevealed
+    self.docUrl = docUrl
   }
 
   override func isEqual(to object: Any?) -> Bool {
@@ -108,6 +112,13 @@ extension ResourceConfigTableViewController: NSMenuDelegate {
       keyEquivalent: "c"
     ))
     let entry = entries[tableView.clickedRow]
+    if entry.docUrl != nil {
+      menu.addItem(.init(
+        title: "Open Docs...",
+        action: #selector(openDocs(_:)),
+        keyEquivalent: ""
+      ))
+    }
     guard entry.isSensitive else { return }
     menu.addItem(.separator())
     menu.addItem(.init(
@@ -133,6 +144,13 @@ extension ResourceConfigTableViewController: NSMenuDelegate {
   @objc func copy(_ sender: Any) {
     guard let entry = currentEntry else { return }
     Pasteboard.put(entry.value)
+  }
+
+  @objc func openDocs(_ sender: Any) {
+    guard let entry = currentEntry,
+          let docUrl = entry.docUrl,
+          let url = URL(string: docUrl) else { return }
+    NSWorkspace.shared.open(url)
   }
 
   private var currentEntry: ResourceConfigEntry? {
