@@ -1,6 +1,7 @@
 #lang racket/gui/easy
 
-(require franz/broker
+(require browser/external
+         franz/broker
          "clipboard.rkt"
          "hacks.rkt"
          "mixin.rkt"
@@ -47,19 +48,28 @@
           popup-menu
           (menu-item "Copy Key" (λ () (put-clipboard name)))
           (menu-item "Copy Value" (λ () (put-clipboard (ResourceConfig-value entry))))
-          (if (ResourceConfig-is-sensitive entry)
-              (list
-               (menu-item-separator)
-               (if (hash-has-key? ^@revealed-names name)
-                   (menu-item
-                    "Hide"
-                    (λpdate-observable @revealed-names
-                      (hash-remove it name)))
-                   (menu-item
-                    "Reveal"
-                    (λpdate-observable @revealed-names
-                      (hash-set it name #t)))))
-              null))
+          (append
+           (let ([doc-url (ResourceConfig-doc-url entry)])
+             (if doc-url
+                 (list
+                  (menu-item
+                   "Open Docs..."
+                   (lambda ()
+                     (send-url doc-url))))
+                 null))
+           (if (ResourceConfig-is-sensitive entry)
+               (list
+                (menu-item-separator)
+                (if (hash-has-key? ^@revealed-names name)
+                    (menu-item
+                     "Hide"
+                     (λpdate-observable @revealed-names
+                       (hash-remove it name)))
+                    (menu-item
+                     "Reveal"
+                     (λpdate-observable @revealed-names
+                       (hash-set it name #t)))))
+               null)))
          event))))
    (λ (event entries selection)
      (case event
@@ -79,7 +89,8 @@
             #:value "compact"
             #:is-read-only #f
             #:is-default #f
-            #:is-sensitive #f)
+            #:is-sensitive #f
+            #:doc-url "https://kafka.apache.org/documentation/#brokerconfigs_log.cleanup.policy")
            (make-ResourceConfig
             #:name "password"
             #:value "hunter2"
