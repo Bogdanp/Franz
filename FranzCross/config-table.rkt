@@ -2,6 +2,8 @@
 
 (require browser/external
          franz/broker
+         racket/list
+         "alert.rkt"
          "clipboard.rkt"
          "combinator.rkt"
          "hacks.rkt"
@@ -14,7 +16,8 @@
 
 (define (config-table @configs
                       #:get-parent-proc [get-parent-renderer void]
-                      #:update-action [update-action void])
+                      #:update-action [update-action void]
+                      #:delete-action [delete-action void])
   (define-observables
     [@revealed-names (hash)]
     [@selection #f])
@@ -23,16 +26,13 @@
      (edit-dialog
       entry
       #:save-action
-      (lambda (updated-c)
-        (update-observable [configs @configs]
-          (for/list ([c (in-list configs)])
-            (if (equal?
-                 (ResourceConfig-name c)
-                 (ResourceConfig-name updated-c))
-                updated-c
-                c)))
-        (update-action updated-c)))
+      update-action)
      (get-parent-renderer)))
+  (define (delete entry)
+    (when (confirm #:title "Delete config entry?"
+                   #:message "This action cannot be undone."
+                   #:renderer (get-parent-renderer))
+      (delete-action entry)))
   (table
    '("Name" "Value" "Default?")
    #:column-widths
@@ -79,7 +79,8 @@
                null
                (list
                 (menu-item-separator)
-                (menu-item "Edit..." (λ () (edit entry)))))
+                (menu-item "Edit..." (λ () (edit entry)))
+                (menu-item "Delete" (λ () (delete entry)))))
            (if (ResourceConfig-is-sensitive entry)
                (list
                 (menu-item-separator)

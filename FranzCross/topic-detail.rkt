@@ -123,7 +123,16 @@
            (hash
             (ResourceConfig-name c)
             (ResourceConfig-value c))
-           id))
+           id)
+          (reload-config))
+        #:delete-action
+        (lambda (c)
+          (update-resource-configs
+           (Topic-name t)
+           'topic
+           (hash (ResourceConfig-name c) #f)
+           id)
+          (reload-config))
         @config)]))))
 
 (module+ main
