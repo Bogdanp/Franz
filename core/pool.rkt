@@ -24,6 +24,7 @@
  pool-close
  pool-get-metadata
  pool-get-resource-configs
+ pool-update-resource-configs
  pool-create-topic
  pool-delete-topic
  pool-delete-group
@@ -163,6 +164,18 @@
                            #:doc-url (maybe-make-doc-url type (k:ResourceConfig-name c))))
                         #:key ResourceConfig-name string<?)))
                     (state-add-req s (req described-resource res-ch nack))]
+
+                   [`(update-resource-configs ,res-ch ,nack ,id ,type ,name ,configs)
+                    (define altered-resource
+                      (delay/thread
+                       (car
+                        (k:alter-configs
+                         (state-ref-client s id)
+                         (k:make-AlterResource
+                          #:type type
+                          #:name name
+                          #:configs configs)))))
+                    (state-add-req s (req altered-resource res-ch nack))]
 
                    [`(create-topic ,res-ch ,nack ,id ,topic-name ,partitions ,replication-factor ,options)
                     (define created-topic
@@ -406,6 +419,9 @@
 
 (define (pool-get-resource-configs id type name [p (current-pool)])
   (force (sync (pool-send p get-resource-configs id type name))))
+
+(define (pool-update-resource-configs id type name configs [p (current-pool)])
+  (force (sync (pool-send p update-resource-configs id type name configs))))
 
 (define (pool-create-topic id name partitions replication-factor options [p (current-pool)])
   (force (sync (pool-send p create-topic id name partitions replication-factor options))))
