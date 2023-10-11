@@ -112,7 +112,18 @@
       ['config
        (reload-config)
        (config-table
-        #:get-parent-proc (λ () (m:get-workspace-renderer id))
+        #:get-parent-proc
+        (lambda ()
+          (m:get-workspace-renderer id))
+        #:update-action
+        (lambda (c)
+          (update-resource-configs
+           (Topic-name t)
+           'topic
+           (hash
+            (ResourceConfig-name c)
+            (ResourceConfig-value c))
+           id))
         @config)]))))
 
 (module+ main

@@ -3,18 +3,36 @@
 (require browser/external
          franz/broker
          "clipboard.rkt"
+         "combinator.rkt"
          "hacks.rkt"
          "mixin.rkt"
-         "observable.rkt")
+         "observable.rkt"
+         "view.rkt")
 
 (provide
  config-table)
 
 (define (config-table @configs
-                      #:get-parent-proc [get-parent-renderer void])
+                      #:get-parent-proc [get-parent-renderer void]
+                      #:update-action [update-action void])
   (define-observables
     [@revealed-names (hash)]
     [@selection #f])
+  (define (edit entry)
+    (render
+     (edit-dialog
+      entry
+      #:save-action
+      (lambda (updated-c)
+        (update-observable [configs @configs]
+          (for/list ([c (in-list configs)])
+            (if (equal?
+                 (ResourceConfig-name c)
+                 (ResourceConfig-name updated-c))
+                updated-c
+                c)))
+        (update-action updated-c)))
+     (get-parent-renderer)))
   (table
    '("Name" "Value" "Default?")
    #:column-widths
@@ -57,6 +75,11 @@
                    (lambda ()
                      (send-url doc-url))))
                  null))
+           (if (ResourceConfig-is-read-only entry)
+               null
+               (list
+                (menu-item-separator)
+                (menu-item "Edit..." (λ () (edit entry)))))
            (if (ResourceConfig-is-sensitive entry)
                (list
                 (menu-item-separator)
@@ -74,7 +97,44 @@
    (λ (event entries selection)
      (case event
        [(select)
-        (@selection:= (and selection (vector-ref entries selection)))]))))
+        (@selection:= (and selection (vector-ref entries selection)))]
+       [(dclick)
+        (when selection
+          (edit (vector-ref entries selection)))]))))
+
+(define (edit-dialog c
+                     #:save-action [on-save void]
+                     #:cancel-action [on-cancel void])
+  (define close! void)
+  (define labeled* (make-labeled 50))
+  (define-observables
+    [@v (ResourceConfig-value c)])
+  (dialog
+   #:title (format "Edit ~a" (ResourceConfig-name c))
+   #:mixin (mix-close-window void (λ (close!-proc)
+                                    (set! close! close!-proc)))
+   (vpanel
+    #:margin '(10 10)
+    (labeled*
+     "Value:"
+     (input
+      (@v . ~> . ~optional-str)
+      (drop1 (compose1 @v:= ->optional-str))))
+    (labeled*
+     ""
+     (hpanel
+      (button
+       "Save"
+       #:style '(border)
+       (lambda ()
+         (close!)
+         (on-save
+          (set-ResourceConfig-value c ^@v))))
+      (button
+       "Cancel"
+       (lambda ()
+         (close!)
+         (on-cancel))))))))
 
 (module+ main
   (define root

@@ -56,7 +56,18 @@
       ['config
        (reload-config)
        (config-table
-        #:get-parent-proc (λ () (m:get-workspace-renderer id))
+        #:get-parent-proc
+        (lambda ()
+          (m:get-workspace-renderer id))
+        #:update-action
+        (lambda (e)
+          (update-resource-configs
+           (number->string (Broker-id b))
+           'broker
+           (hash
+            (ResourceConfig-name e)
+            (ResourceConfig-value e))
+           id))
         @config)]))))
 
 (module+ main

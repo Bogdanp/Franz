@@ -11,6 +11,7 @@
 
 (provide
  match-view
+ make-labeled
  labeled
  password
  validated-input
@@ -21,6 +22,11 @@
 
 (define-syntax-rule (match-view obs-expr clause0 clause ...)
   (observable-view obs-expr (match-lambda clause0 clause ...)))
+
+(define (make-labeled width)
+  (make-keyword-procedure
+   (lambda (kws kw-args . args)
+     (keyword-apply labeled kws kw-args #:width width args))))
 
 (define (labeled label v
                  #:width [width 120]
