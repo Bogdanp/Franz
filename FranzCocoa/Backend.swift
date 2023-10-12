@@ -1535,10 +1535,23 @@ public class Backend {
     )
   }
 
-  public func updateSchemaRegistry(_ r: SchemaRegistry) -> Future<String, SchemaRegistry> {
+  public func updateResourceConfigs(_ configs: [String: String], forResourceNamed name: String, andResourceType type: Symbol, inWorkspace id: UVarint) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0031).write(to: out)
+        configs.write(to: out)
+        name.write(to: out)
+        type.write(to: out)
+        id.write(to: out)
+      },
+      readProc: { (inp: InputPort, buf: inout Data) -> Void in }
+    )
+  }
+
+  public func updateSchemaRegistry(_ r: SchemaRegistry) -> Future<String, SchemaRegistry> {
+    return impl.send(
+      writeProc: { (out: OutputPort) in
+        UVarint(0x0032).write(to: out)
         r.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> SchemaRegistry in

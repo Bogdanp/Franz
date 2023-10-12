@@ -62,19 +62,19 @@
         #:update-action
         (lambda (c)
           (update-resource-configs
-           (number->string (Broker-id b))
-           'broker
            (hash
             (ResourceConfig-name c)
             (ResourceConfig-value c))
+           (number->string (Broker-id b))
+           'broker
            id)
           (reload-config))
         #:delete-action
         (lambda (c)
           (update-resource-configs
+           (hash (ResourceConfig-name c) "")
            (number->string (Broker-id b))
            'broker
-           (hash (ResourceConfig-name c) #f)
            id)
           (reload-config))
         @config)]))))

@@ -118,19 +118,19 @@
         #:update-action
         (lambda (c)
           (update-resource-configs
-           (Topic-name t)
-           'topic
            (hash
             (ResourceConfig-name c)
             (ResourceConfig-value c))
+           (Topic-name t)
+           'topic
            id)
           (reload-config))
         #:delete-action
         (lambda (c)
           (update-resource-configs
+           (hash (ResourceConfig-name c) "")
            (Topic-name t)
            'topic
-           (hash (ResourceConfig-name c) #f)
            id)
           (reload-config))
         @config)]))))

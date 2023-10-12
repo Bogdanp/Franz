@@ -29,15 +29,17 @@
                                   [in-workspace id : UVarint] : (Listof ResourceConfig))
   (pool-get-resource-configs id type name))
 
-(define-rpc (update-resource-configs [for-resource-named name : String]
+(define-rpc (update-resource-configs [_ configs : (HashTable String String)]
+                                     [for-resource-named name : String]
                                      [and-resource-type type : Symbol]
-                                     [and-configs configs : (HashTable String (Optional String))]
                                      [in-workspace id : UVarint])
-  (define maybe-error-message
-    (k:AlteredResource-error-message
-     (pool-update-resource-configs id type name configs)))
-  (when maybe-error-message
-    (error 'update-resource-configs maybe-error-message)))
+  (let ([configs (for/hash ([(k v) (in-hash configs)])
+                   (values k (if (equal? v "") #f v)))])
+    (define maybe-error-message
+      (k:AlteredResource-error-message
+       (pool-update-resource-configs id type name configs)))
+    (when maybe-error-message
+      (error 'update-resource-configs maybe-error-message))))
 
 (define-rpc (create-topic [named name : String]
                           [with-partitions partitions : UVarint]
