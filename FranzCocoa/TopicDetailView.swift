@@ -92,10 +92,17 @@ struct TopicDetailView: View {
                 delegate: delegate
               )
             case .config:
-              ResourceConfigTable(configs: $configs)
-                .onAppear {
-                  fetchConfigs()
+              ResourceConfigTable(configs: $configs) { action in
+                switch action {
+                case .edit(let entry):
+                  updateConfigEntry(named: entry.name, withValue: entry.value)
+                case .delete(let entry):
+                  deleteConfigEntry(named: entry.name)
                 }
+                fetchConfigs()
+              }.onAppear {
+                fetchConfigs()
+              }
             }
           }
         }
@@ -116,6 +123,34 @@ struct TopicDetailView: View {
       inWorkspace: id
     ).onComplete { configs in
       self.configs = configs
+      status("Ready")
+    }
+  }
+
+  private func updateConfigEntry(named name: String, withValue value: String) {
+    guard let delegate else { return }
+    let status = delegate.makeStatusProc()
+    status("Updating Configs")
+    Backend.shared.updateResourceConfigs(
+      [name: value],
+      forResourceNamed: topic.name,
+      andResourceType: "topic",
+      inWorkspace: id
+    ).onComplete { _ in
+      status("Ready")
+    }
+  }
+
+  private func deleteConfigEntry(named name: String) {
+    guard let delegate else { return }
+    let status = delegate.makeStatusProc()
+    status("Deleting Config")
+    Backend.shared.updateResourceConfigs(
+      [name: ""],
+      forResourceNamed: topic.name,
+      andResourceType: "topic",
+      inWorkspace: id
+    ).onComplete { _ in
       status("Ready")
     }
   }

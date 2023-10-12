@@ -4,6 +4,7 @@ import SwiftUI
 
 class ResourceConfigTableViewController: NSViewController {
   private var entries = [ResourceConfigEntry]()
+  private var actionHandler: (ResourceConfigTableAction) -> Void = { _ in }
 
   @IBOutlet weak var tableView: NSTableView!
   private var contextMenu: NSMenu!
@@ -20,7 +21,12 @@ class ResourceConfigTableViewController: NSViewController {
     tableView?.reloadData()
   }
 
-  func configure(withData data: [ResourceConfig]) {
+  func configure(
+    withData data: [ResourceConfig],
+    andActionHandler handler: @escaping (ResourceConfigTableAction) -> Void
+  ) {
+    actionHandler = handler
+
     var known = [String: ResourceConfigEntry]()
     for e in entries {
       known[e.name] = e
@@ -36,6 +42,7 @@ class ResourceConfigTableViewController: NSViewController {
           name: item.name,
           value: item.nonnullValue,
           isDefault: item.isDefault,
+          isReadOnly: item.isReadOnly,
           isSensitive: item.isSensitive,
           docUrl: item.docUrl)
         entries.append(e)
@@ -51,6 +58,7 @@ class ResourceConfigEntry: NSObject {
   var name: String
   var value: String
   var isDefault = true
+  var isReadOnly = false
   var isSensitive = false
   var isRevealed = false
   var docUrl: String?
@@ -62,12 +70,14 @@ class ResourceConfigEntry: NSObject {
   init(name: String,
        value: String,
        isDefault: Bool = false,
+       isReadOnly: Bool = false,
        isSensitive: Bool = false,
        isRevealed: Bool = false,
        docUrl: String? = nil) {
     self.name = name
     self.value = value
     self.isDefault = isDefault
+    self.isReadOnly = isReadOnly
     self.isSensitive = isSensitive
     self.isRevealed = isRevealed
     self.docUrl = docUrl
@@ -79,20 +89,27 @@ class ResourceConfigEntry: NSObject {
   }
 }
 
+// MARK: - ResourceConfigTableAction
+enum ResourceConfigTableAction {
+  case edit(ResourceConfigEntry)
+  case delete(ResourceConfigEntry)
+}
+
 // MARK: - ResourceConfigTable
 struct ResourceConfigTable: NSViewControllerRepresentable {
   typealias NSViewControllerType = ResourceConfigTableViewController
 
   @Binding var configs: [ResourceConfig]
+  var handler: (ResourceConfigTableAction) -> Void = { _ in }
 
   func makeNSViewController(context: Context) -> ResourceConfigTableViewController {
     let ctl = ResourceConfigTableViewController()
-    ctl.configure(withData: configs)
+    ctl.configure(withData: configs, andActionHandler: handler)
     return ctl
   }
 
   func updateNSViewController(_ nsViewController: ResourceConfigTableViewController, context: Context) {
-    nsViewController.configure(withData: configs)
+    nsViewController.configure(withData: configs, andActionHandler: handler)
   }
 }
 
@@ -119,6 +136,19 @@ extension ResourceConfigTableViewController: NSMenuDelegate {
         keyEquivalent: ""
       ))
     }
+    if !entry.isReadOnly {
+      menu.addItem(.separator())
+      menu.addItem(.init(
+        title: "Edit...",
+        action: #selector(didPressEditEntryItem(_:)),
+        keyEquivalent: ""
+      ))
+      menu.addItem(.init(
+        title: "Delete",
+        action: #selector(didPressDeleteEntryItem(_:)),
+        keyEquivalent: ""
+      ))
+    }
     guard entry.isSensitive else { return }
     menu.addItem(.separator())
     menu.addItem(.init(
@@ -134,6 +164,27 @@ extension ResourceConfigTableViewController: NSMenuDelegate {
     guard entry.isSensitive else { return }
     entry.isRevealed.toggle()
     tableView.reloadData(forRowIndexes: [row], columnIndexes: [0, 1])
+  }
+
+  @objc func didPressEditEntryItem(_ sender: Any) {
+    guard tableView.clickedRow >= 0 else { return }
+    tableView.editColumn(1, row: tableView.clickedRow, with: nil, select: true)
+  }
+
+  @objc func didPressDeleteEntryItem(_ sender: Any) {
+    guard let entry = currentEntry else { return }
+    let alert = NSAlert()
+    alert.alertStyle = .informational
+    alert.messageText = "Really delete entry?"
+    alert.informativeText = "This action cannot be undone."
+    alert.addButton(withTitle: "Delete")
+    alert.addButton(withTitle: "Cancel")
+    switch alert.runModal() {
+    case .alertFirstButtonReturn:
+      actionHandler(.delete(entry))
+    default:
+      ()
+    }
   }
 
   @objc func copyKey(_ sender: Any) {
@@ -200,8 +251,32 @@ extension ResourceConfigTableViewController: NSTableViewDelegate {
       if (entry.isSensitive && !entry.isRevealed) || !entry.isDefault {
         font = .systemFont(ofSize: 12, weight: .semibold)
       }
+      if !entry.isReadOnly {
+        view.textField?.isEditable = true
+        view.textField?.action = #selector(didEditEntry(_:))
+        view.textField?.target = self
+      }
     }
     view.textField?.font = font
     return view
+  }
+
+  @objc func didEditEntry(_ sender: NSTextField) {
+    guard tableView.selectedRow >= 0 else { return }
+    let entry = entries[tableView.selectedRow]
+    entry.value = sender.stringValue
+
+    let alert = NSAlert()
+    alert.alertStyle = .informational
+    alert.messageText = "Really edit entry?"
+    alert.informativeText = "This action cannot be undone."
+    alert.addButton(withTitle: "Edit")
+    alert.addButton(withTitle: "Cancel")
+    switch alert.runModal() {
+    case .alertFirstButtonReturn:
+      actionHandler(.edit(entry))
+    default:
+      ()
+    }
   }
 }
