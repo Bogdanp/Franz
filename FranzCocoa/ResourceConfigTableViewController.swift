@@ -4,9 +4,11 @@ import SwiftUI
 
 class ResourceConfigTableViewController: NSViewController {
   private var entries = [ResourceConfigEntry]()
+  private var pendingEdits = [ResourceConfigEntry]()
   private var actionHandler: (ResourceConfigTableAction) -> Void = { _ in }
 
   @IBOutlet weak var tableView: NSTableView!
+  @IBOutlet weak var segmentedControl: NSSegmentedControl!
   private var contextMenu: NSMenu!
 
   override func viewDidLoad() {
@@ -19,6 +21,8 @@ class ResourceConfigTableViewController: NSViewController {
     tableView?.delegate = self
     tableView?.dataSource = self
     tableView?.reloadData()
+
+    reset()
   }
 
   func configure(
@@ -50,6 +54,27 @@ class ResourceConfigTableViewController: NSViewController {
     }
 
     tableView?.reloadData()
+  }
+
+  private func pushPending(entry: ResourceConfigEntry) {
+    pendingEdits.removeAll { e in e.name == entry.name }
+    pendingEdits.append(entry)
+    reset()
+  }
+
+  private func reset() {
+    segmentedControl.isEnabled = !pendingEdits.isEmpty
+  }
+
+  @IBAction func didPushSegmentedControlButton(_ sender: NSSegmentedControl) {
+    switch sender.selectedSegment {
+    case 0:
+      actionHandler(.commit(pendingEdits))
+    default:
+      actionHandler(.clear)
+    }
+    pendingEdits.removeAll()
+    reset()
   }
 }
 
@@ -91,8 +116,8 @@ class ResourceConfigEntry: NSObject {
 
 // MARK: - ResourceConfigTableAction
 enum ResourceConfigTableAction {
-  case edit(ResourceConfigEntry)
-  case delete(ResourceConfigEntry)
+  case commit([ResourceConfigEntry])
+  case clear
 }
 
 // MARK: - ResourceConfigTable
@@ -173,18 +198,9 @@ extension ResourceConfigTableViewController: NSMenuDelegate {
 
   @objc func didPressDeleteEntryItem(_ sender: Any) {
     guard let entry = currentEntry else { return }
-    let alert = NSAlert()
-    alert.alertStyle = .informational
-    alert.messageText = "Really delete entry?"
-    alert.informativeText = "This action cannot be undone."
-    alert.addButton(withTitle: "Delete")
-    alert.addButton(withTitle: "Cancel")
-    switch alert.runModal() {
-    case .alertFirstButtonReturn:
-      actionHandler(.delete(entry))
-    default:
-      ()
-    }
+    entry.value = ""
+    pushPending(entry: entry)
+    tableView.reloadData()
   }
 
   @objc func copyKey(_ sender: Any) {
@@ -265,18 +281,6 @@ extension ResourceConfigTableViewController: NSTableViewDelegate {
     guard tableView.selectedRow >= 0 else { return }
     let entry = entries[tableView.selectedRow]
     entry.value = sender.stringValue
-
-    let alert = NSAlert()
-    alert.alertStyle = .informational
-    alert.messageText = "Really edit entry?"
-    alert.informativeText = "This action cannot be undone."
-    alert.addButton(withTitle: "Edit")
-    alert.addButton(withTitle: "Cancel")
-    switch alert.runModal() {
-    case .alertFirstButtonReturn:
-      actionHandler(.edit(entry))
-    default:
-      ()
-    }
+    pushPending(entry: entry)
   }
 }

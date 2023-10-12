@@ -41,10 +41,10 @@ struct BrokerDetailView: View {
             case .config:
               ResourceConfigTable(configs: $configs) { action in
                 switch action {
-                case .edit(let entry):
-                  updateConfigEntry(named: entry.name, withValue: entry.value)
-                case .delete(let entry):
-                  deleteConfigEntry(named: entry.name)
+                case .commit(let entries):
+                  updateConfig(entries: entries)
+                case .clear:
+                  ()
                 }
                 fetchConfig()
               }.onAppear {
@@ -74,26 +74,16 @@ struct BrokerDetailView: View {
     }
   }
 
-  private func updateConfigEntry(named name: String, withValue value: String) {
+  private func updateConfig(entries: [ResourceConfigEntry]) {
     guard let delegate else { return }
     let status = delegate.makeStatusProc()
     status("Updating Configs")
-    Backend.shared.updateResourceConfigs(
-      [name: value],
-      forResourceNamed: String(broker.id),
-      andResourceType: "broker",
-      inWorkspace: id
-    ).onComplete { _ in
-      status("Ready")
+    var updates = [String: String]()
+    for e in entries {
+      updates[e.name] = e.value
     }
-  }
-
-  private func deleteConfigEntry(named name: String) {
-    guard let delegate else { return }
-    let status = delegate.makeStatusProc()
-    status("Deleting Config")
     Backend.shared.updateResourceConfigs(
-      [name: ""],
+      updates,
       forResourceNamed: String(broker.id),
       andResourceType: "broker",
       inWorkspace: id
