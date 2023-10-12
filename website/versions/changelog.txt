@@ -3,6 +3,7 @@
 
 * Franz for Windows BETA release.
 * Support for looking up broker and topic config docs.
+* Support for updating broker and topic configs.
 
 ## Fixed
 
