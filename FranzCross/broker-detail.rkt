@@ -60,23 +60,17 @@
         (lambda ()
           (m:get-workspace-renderer id))
         #:update-action
-        (lambda (c)
+        (lambda (configs)
           (update-resource-configs
-           (hash
-            (ResourceConfig-name c)
-            (ResourceConfig-value c))
+           (for/hash ([c (in-list configs)])
+             (values
+              (ResourceConfig-name c)
+              (ResourceConfig-value c)))
            (number->string (Broker-id b))
            'broker
            id)
           (reload-config))
-        #:delete-action
-        (lambda (c)
-          (update-resource-configs
-           (hash (ResourceConfig-name c) "")
-           (number->string (Broker-id b))
-           'broker
-           id)
-          (reload-config))
+        #:reset-action reload-config
         @config)]))))
 
 (module+ main
