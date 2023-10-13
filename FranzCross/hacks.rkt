@@ -28,14 +28,20 @@
 ;; y positions to be absolute relative to the top-level window's
 ;; origin.
 (define (make-mouse-event-positions-absolute window event)
-  (define-values (x-pos y-pos)
-    (let loop ([x 0] [y 0] [w window])
+  (define root
+    (let loop ([w window])
       (define w-parent
         (send w get-parent))
-      (if w-parent
-          (loop (+ x (send w get-x))
-                (+ y (send w get-y))
-                w-parent)
-          (values x y))))
-  (send event set-x (+ x-pos (send event get-x)))
-  (send event set-y (+ y-pos (send event get-y))))
+      (if w-parent (loop w-parent) w)))
+  (define-values (screen-x screen-y)
+    (send window
+          client->screen
+          (send event get-x)
+          (send event get-y)))
+  (define-values (root-client-x root-client-y)
+    (send root
+          screen->client
+          screen-x
+          screen-y))
+  (send event set-x root-client-x)
+  (send event set-y root-client-y))
