@@ -121,7 +121,7 @@
     #:stretch '(#t #f)
     #:alignment '(right center)
     (button
-     "Save"
+     "Apply"
      #:enabled? @buttons-enabled?
      (lambda ()
        (update-action ^@pending)
