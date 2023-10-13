@@ -98,17 +98,19 @@
               (define item-height
                 (quotient
                  (send receiver get-height)
-                 (add1 (send receiver number-of-visible-items))))
+		 (case (system-type 'os)
+		   [(unix) (send receiver number-of-visible-items)]
+		   [else (add1 (send receiver number-of-visible-items))])))
               (define y-pos
                 (let ([y (send event get-y)])
                   (case (system-type 'os)
-                    [(windows) ;; does not include scroll offset
+                    [(unix windows) ;; does not include scroll offset
                      (+ y (* item-height (send receiver get-first-visible-item)))]
                     [else y])))
               (define item-index
                 (let* ([index (quotient y-pos item-height)]
                        [index (case (system-type 'os)
-                                [(macosx) index] ;; the first non-header row has y=0
+                                [(macosx unix) index] ;; the first non-header row has y=0
                                 [else (sub1 index)])])
                   (and (< index (send receiver get-number)) index)))
               (begin0 item-index
