@@ -98,9 +98,9 @@
               (define item-height
                 (quotient
                  (send receiver get-height)
-		 (case (system-type 'os)
-		   [(unix) (send receiver number-of-visible-items)]
-		   [else (add1 (send receiver number-of-visible-items))])))
+                 (case (system-type 'os)
+                   [(unix) (send receiver number-of-visible-items)]
+                   [else (add1 (send receiver number-of-visible-items))])))
               (define y-pos
                 (let ([y (send event get-y)])
                   (case (system-type 'os)
