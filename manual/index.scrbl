@@ -1,6 +1,8 @@
 #lang scribble/manual
 
 @(require racket/string
+          scribble/core
+          scribble/html-properties
           "shortcut.rkt")
 
 @(define-syntax-rule (kbd sym ...)
@@ -8,14 +10,15 @@
     (elemref `("kbd" ,text) text)))
 
 @(define-syntax-rule (defkbd (sym ...) pre-content ...)
-  (let ([text (shortcut 'sym ...)])
+  (let ([text (shortcut 'sym ...)]
+        [title (shortcut-alt 'sym ...)])
     (elem
       (elemtag `("kbd" ,text))
-      text
+      (elem text #:style (make-style "kbd" (list (make-attributes `((title . ,title))))))
       " --- "
       pre-content ...)))
 
-@title{Franz: macOS Client for Apache Kafka}
+@title{Franz: Mac and Windows Client for Apache Kafka}
 @author[(author+email "Bogdan Popa" "bogdan@defn.io")]
 
 @(define (homepage text)
@@ -24,31 +27,36 @@
 @(define (kafka . text)
   (apply link "https://kafka.apache.org/" text))
 
-@homepage{Franz} is a native macOS client for @kafka{Apache Kafka}.
-It helps you manage your Kafka clusters, topics and consumer groups
-and it provides convenient functionality for monitoring the data being
-published to topics.
+@homepage{Franz} is a native Mac and Windows client for @kafka{Apache
+Kafka}. It helps you manage your Kafka clusters, topics and consumer
+groups and it provides convenient functionality for monitoring the data
+being published to topics.
 
 
 @section{Connections}
 
 When you start Franz, you are presented with the @deftech{Welcome
-Window}.  From the Welcome Window you can connect to servers you've
+Window}. From the Welcome Window you can connect to servers you've
 previously used or create new connections.
 
-You can access the @tech{Welcome Window} using the ``Window'' @tt{->}
-``Welcome to Franz'' menu item or by pressing @kbd[shift cmd 1].
+On macOS, you can access the @tech{Welcome Window} using the ``Window''
+@tt{->} ``Welcome to Franz'' menu item or by pressing @kbd[shift cmd
+1]. On Windows, the window is accessible via the the ``Help'' @tt{->}
+``Welcome to Franz'' menu item or by pressing @kbd[shift ctl 1].
 
 @subsection{Security}
 
-Connection metadata is stored inside Franz' internal metadata
-database, but passwords are stored in the macOS Keychain.
+Connection metadata is stored inside Franz' internal metadata database,
+but passwords are stored in the macOS Keychain. On Windows, passwords
+are encrypted using the Windows @tt{CryptProtectData} API, meaning
+passwords can only be decrypted by the user account they were originally
+encrypted by.
 
 @subsection{Workspaces}
 
 When you connect to a Kafka cluster, a @deftech{Workspace Window} is
-opened for that cluster.  All operations within the workspace operate
-on the same connection.  When you close a Workspace Window, all of its
+opened for that cluster. All operations within the workspace operate
+on the same connection. When you close a Workspace Window, all of its
 associated connections and interface objects are closed.
 
 @subsection{Topics}
@@ -205,16 +213,23 @@ received until they reach it.
 @subsubsection{Consumer Groups Tab}
 
 The @deftech{Consumer Groups Tab} (@kbd[cmd 3]) displays the active
-consumer groups for the selected topic.  This is an easy way to
-discover what groups are actively reading from individual topics.
+consumer groups for the selected topic. This is an easy way to discover
+what groups are actively reading from individual topics.
 
 @subsubsection{Configuration Table Tab}
 
 The @deftech{Configuration Table} (@kbd[cmd 4]) tab displays the
-selected topic's configuration.  Non-default values are presented in
-bold and sensitive values are hidden by default.  You may reveal
-sensitive values by right clicking on them and pressing the ``Reveal''
-context menu item.
+selected topic's configuration. Non-default values are presented in bold
+and sensitive values are hidden by default. You may reveal sensitive
+values by right clicking on them and pressing the ``Reveal'' context
+menu item.
+
+Certain configuration options may be editable. The context menu for
+those entries will have ``Edit...'' and ``Delete'' menu items on their
+context menus. Edits are made in batches and have to be manually applied
+by pushing the ``Apply'' button at the bottom of the table. Edits can
+be reset by pressing the ``Reset'' button. Switching tabs after making
+edits will discard all unapplied changes.
 
 @subsection{Record Detail Window}
 
@@ -250,7 +265,7 @@ registry, open the configuration window and remove its URL then press
 See @registry-yt{this YouTube video} for a live demo.
 
 
-@section{Keyboard Shortcuts}
+@section{Keyboard Shortcuts (macOS)}
 
 @defkbd[(shift cmd 1)]{
   Displays the @tech{Welcome Window}.
@@ -294,13 +309,46 @@ See @registry-yt{this YouTube video} for a live demo.
   window.
 }
 
+@defkbd[(cmd shift return)]{
+  Within a @tech{Scripting Window}, runs the script against the current
+  batch of loaded records.
+}
+
 @defkbd[(cmd return)]{
-  Within a @tech{Scripting Window}, activates or deactivates the
-  script.
+  Within a @tech{Scripting Window}, activates or deactivates the script.
 }
 
 @defkbd[(cmd @",")]{
   Opens the Preferences Window.
+}
+
+
+@section{Keyboard Shortcuts (Windows)}
+
+@defkbd[(shift ctl 1)]{
+  Displays the @tech{Welcome Window}.
+}
+
+@defkbd[(shift ctl N)]{
+  Within a @tech{Workspace Window}, duplicates the Workspace in a new
+  window.
+}
+
+@defkbd[(ctl R)]{
+  Within a @tech{Workspace Window}, reloads the connection metadata.
+}
+
+@defkbd[(ctl shift return)]{
+  Within a @tech{Scripting Window}, runs the script against the current
+  batch of loaded records.
+}
+
+@defkbd[(ctl return)]{
+  Within a @tech{Scripting Window}, activates or deactivates the script.
+}
+
+@defkbd[(ctl @";")]{
+  Within a @tech{Workspace Window}, opens the Preferences Window.
 }
 
 
