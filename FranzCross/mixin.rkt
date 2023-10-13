@@ -100,7 +100,10 @@
                  (send receiver get-height)
                  (send receiver number-of-visible-items)))
               (define item-index
-                (let ([index (quotient (send event get-y) item-height)])
+                (let* ([index (quotient (send event get-y) item-height)]
+                       [index (case (system-type 'os)
+                                [(macosx) index] ;; the first non-header row has y=0
+                                [else (sub1 index)])])
                   (and (< index (send receiver get-number)) index)))
               (begin0 item-index
                 (when item-index
