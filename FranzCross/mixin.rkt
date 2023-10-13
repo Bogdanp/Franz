@@ -92,9 +92,23 @@
     (define/override (on-subwindow-event receiver event)
       (case (send event get-event-type)
         [(right-down)
+         (define maybe-item-index
+           (cond
+             [(is-a? receiver gui:list-box%)
+              (define item-height
+                (quotient
+                 (send receiver get-height)
+                 (send receiver number-of-visible-items)))
+              (define item-index
+                (let ([index (quotient (send event get-y) item-height)])
+                  (and (< index (send receiver get-number)) index)))
+              (begin0 item-index
+                (when item-index
+                  (send receiver select item-index #t)))]
+             [else #f]))
          (make-mouse-event-positions-absolute receiver event)
          (begin0 #t
-           (proc event))]
+           (proc event maybe-item-index))]
         [else #f]))))
 
 (define (mix-initial-focus %)

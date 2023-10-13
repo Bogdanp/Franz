@@ -22,6 +22,14 @@
     [@pending null])
   (define/obs @buttons-enabled?
     (@pending . ~> . (compose1 not null?)))
+  (define/obs @entries
+    (let-observable ([configs @configs]
+                     [revealed @revealed-names])
+      (for/vector ([c (in-list configs)])
+        (if (and (ResourceConfig-is-sensitive c)
+                 (not (hash-has-key? revealed (ResourceConfig-name c))))
+            (set-ResourceConfig-value c "********")
+            c))))
   (define (push-pending entry)
     (update-observable [configs @configs]
       (for/list ([c (in-list configs)])
@@ -62,17 +70,14 @@
        (if (ResourceConfig-is-default c)
            "yes"
            "no")))
-    (let-observable ([configs @configs]
-                     [revealed @revealed-names])
-      (for/vector ([c (in-list configs)])
-        (if (and (ResourceConfig-is-sensitive c)
-                 (not (hash-has-key? revealed (ResourceConfig-name c))))
-            (set-ResourceConfig-value c "********")
-            c)))
+    @entries
     #:mixin
     (mix-context-event
-     (lambda (event)
-       (define entry ^@selection)
+     (lambda (event maybe-index)
+       (when maybe-index
+         (@selection:= (vector-ref (obs-peek @entries) maybe-index)))
+       (define entry
+         ^@selection)
        (when entry
          (define name (ResourceConfig-name entry))
          (render-popup-menu*

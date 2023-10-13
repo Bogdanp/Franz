@@ -102,6 +102,9 @@
       [#f (spacer)]
       [`(#f) (text "No committed offsets.")]
       [`(,topic . ,topics)
+       (define entries
+         (list->vector
+          (GroupTopic-partitions topic)))
        (vpanel
         #:alignment '(left top)
         (hpanel
@@ -138,7 +141,7 @@
            (3 150)
            (4 150)
            (5 150))
-         (list->vector (GroupTopic-partitions topic))
+         entries
          #:entry->row
          (lambda (p)
            (vector
@@ -151,8 +154,11 @@
             (~optional-str (GroupPartitionOffset-client-host p))))
          #:mixin
          (mix-context-event
-          (lambda (event)
-            (define poffset ^@poffset)
+          (lambda (event maybe-index)
+            (when maybe-index
+              (@poffset:= (vector-ref entries maybe-index)))
+            (define poffset
+              ^@poffset)
             (when poffset
               (render-popup-menu*
                (get-parent-renderer)
