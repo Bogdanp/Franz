@@ -5,6 +5,19 @@
          "hacks.rkt")
 
 
+;; combinator ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(provide
+ compose-mixins)
+
+(define ((compose-mixins . ms) %)
+  (let loop ([ms ms])
+    ((car ms)
+     (if (pair? (cdr ms))
+         (loop (cdr ms))
+         %))))
+
+
 ;; text ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide
@@ -135,9 +148,10 @@
    (window
     #:size '(320 #f)
     (input
-     #:mixin (λ (%)
-               (let ([mix-typeahead (mix-typeahead
-                                     '("cleanup.policy"
-                                       "compression.type"))])
-                 (mix-initial-focus (mix-typeahead %))))
+     #:mixin
+     (compose-mixins
+      (mix-typeahead
+       '("cleanup.policy"
+         "compression.type"))
+      mix-initial-focus)
      ""))))

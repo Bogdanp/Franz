@@ -10,8 +10,10 @@
          racket/list
          racket/match
          racket/vector
+         "alert.rkt"
          "combinator.rkt"
          "common.rkt"
+         "hacks.rkt"
          "mixin.rkt"
          "observable.rkt"
          "preference.rkt"
@@ -123,6 +125,27 @@
           (IteratorResult->original res)))
       (list->vector
        (apply-script script originals id))))
+  (define (do-publish-tombstone r)
+    (when (confirm #:title "Really publish tombstone?"
+                   #:message "This action cannot be undone."
+                   #:action-label "Publish"
+                   #:renderer (get-parent))
+      (call-with-status-proc
+       (lambda (status)
+         (status "Publishing tombstone...")
+         (publish-record
+          topic
+          (IteratorRecord-partition-id r)
+          (IteratorRecord-key r)
+          #f
+          id)))
+      (fetch)))
+  (define (view-record r)
+    (render
+     (record-detail-window
+      #:key-format (topic-config-key-format ^@config)
+      #:val-format (topic-config-val-format ^@config)
+      r topic)))
   (add-hooks
    #:on-create
    (lambda ()
@@ -156,27 +179,39 @@
         (~data k)
         (~data v)))
      #:mixin
-     (λ (%)
-       (class %
-         (inherit get-column-width)
-         (super-new)
-         (set! get-column-widths*
-               (lambda ()
-                 (for/list ([i (in-range 5)])
-                   (define-values (width _min-width _max-width)
-                     (get-column-width i))
-                   (list i width))))))
+     (compose-mixins
+      (λ (%)
+        (class %
+          (inherit get-column-width)
+          (super-new)
+          (set! get-column-widths*
+                (lambda ()
+                  (for/list ([i (in-range 5)])
+                    (define-values (width _min-width _max-width)
+                      (get-column-width i))
+                    (list i width))))))
+      (mix-context-event
+       (lambda (event maybe-index)
+         (when (and maybe-index (not ^@live?))
+           (define r (IteratorResult->record (vector-ref ^@records maybe-index)))
+           (render-popup-menu*
+            (get-parent)
+            (apply
+             popup-menu
+             (menu-item "View" (λ () (view-record r)))
+             (if (IteratorRecord-key r)
+                 (list
+                  (menu-item
+                   "Publish tombstone..."
+                   (λ () (do-publish-tombstone r))))
+                 null))
+            event)))))
      (lambda (event entries selection)
        (case event
          [(dclick)
           (when selection
-            (define r
-              (IteratorResult->record (vector-ref entries selection)))
-            (render
-             (record-detail-window
-              #:key-format (topic-config-key-format ^@config)
-              #:val-format (topic-config-val-format ^@config)
-              r topic)))])))
+            (view-record
+             (IteratorResult->record (vector-ref entries selection))))])))
     (hpanel
      #:stretch '(#t #f)
      (text
