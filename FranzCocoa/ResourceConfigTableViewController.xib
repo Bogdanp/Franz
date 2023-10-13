@@ -48,7 +48,7 @@
                                                 <rect key="frame" x="8" y="0.0" width="248" height="24"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="yaa-Pg-jfI">
+                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="yaa-Pg-jfI">
                                                         <rect key="frame" x="0.0" y="4" width="248" height="16"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                                         <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="cNv-zk-HYf">
@@ -80,7 +80,7 @@
                                                 <rect key="frame" x="273" y="0.0" width="247" height="24"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xnB-jk-usC">
+                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xnB-jk-usC">
                                                         <rect key="frame" x="0.0" y="4" width="247" height="16"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                                         <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="2KE-cV-Fob">
@@ -136,8 +136,8 @@
                             <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="momentary" id="Jq3-FD-W2I">
                                 <font key="font" metaFont="system"/>
                                 <segments>
-                                    <segment toolTip="Commit" image="square.and.pencil" catalog="system" width="32"/>
-                                    <segment toolTip="Clear" image="clear" catalog="system" width="32" tag="1"/>
+                                    <segment toolTip="Apply" image="square.and.pencil" catalog="system" width="32"/>
+                                    <segment toolTip="Reset" image="clear" catalog="system" width="32" tag="1"/>
                                 </segments>
                             </segmentedCell>
                             <connections>
