@@ -117,7 +117,7 @@
                     <rect key="frame" x="0.0" y="0.0" width="500" height="28"/>
                     <subviews>
                         <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="5b9-TT-6Xt">
-                            <rect key="frame" x="0.0" y="-2" width="500" height="5"/>
+                            <rect key="frame" x="1" y="-2" width="498" height="5"/>
                         </box>
                         <box horizontalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="Vku-3G-ivF">
                             <rect key="frame" x="-2" y="0.0" width="5" height="28"/>
@@ -149,14 +149,14 @@
                         <constraint firstAttribute="bottom" secondItem="5b9-TT-6Xt" secondAttribute="bottom" id="1Fb-Sh-oM1"/>
                         <constraint firstAttribute="bottom" secondItem="Vku-3G-ivF" secondAttribute="bottom" id="5Kn-nF-cS0"/>
                         <constraint firstAttribute="trailing" secondItem="fxC-zK-sJr" secondAttribute="trailing" id="5Mi-fh-gBk"/>
-                        <constraint firstAttribute="trailing" secondItem="5b9-TT-6Xt" secondAttribute="trailing" id="Ga5-04-a9M"/>
+                        <constraint firstAttribute="trailing" secondItem="5b9-TT-6Xt" secondAttribute="trailing" constant="1" id="Ga5-04-a9M"/>
                         <constraint firstItem="5b9-TT-6Xt" firstAttribute="top" secondItem="F3K-lh-6Py" secondAttribute="bottom" constant="3" id="MDb-vM-6mO"/>
                         <constraint firstAttribute="height" constant="28" id="SS5-4G-Sb4"/>
                         <constraint firstItem="Vku-3G-ivF" firstAttribute="leading" secondItem="Q85-lA-FMc" secondAttribute="leading" id="eIF-9c-IDu"/>
                         <constraint firstItem="F3K-lh-6Py" firstAttribute="top" secondItem="Q85-lA-FMc" secondAttribute="top" constant="4" id="oO0-QR-Lgu"/>
                         <constraint firstAttribute="trailing" secondItem="F3K-lh-6Py" secondAttribute="trailing" constant="5" id="r5i-xe-8c9"/>
                         <constraint firstAttribute="bottom" secondItem="fxC-zK-sJr" secondAttribute="bottom" id="sKs-GW-Dt7"/>
-                        <constraint firstItem="5b9-TT-6Xt" firstAttribute="leading" secondItem="Q85-lA-FMc" secondAttribute="leading" id="zQn-ND-KMg"/>
+                        <constraint firstItem="5b9-TT-6Xt" firstAttribute="leading" secondItem="Q85-lA-FMc" secondAttribute="leading" constant="1" id="zQn-ND-KMg"/>
                     </constraints>
                 </visualEffectView>
             </subviews>

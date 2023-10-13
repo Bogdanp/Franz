@@ -238,7 +238,7 @@
                             </segmentedCell>
                         </segmentedControl>
                         <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="jsI-LL-yRY">
-                            <rect key="frame" x="0.0" y="-2" width="634" height="5"/>
+                            <rect key="frame" x="1" y="-2" width="632" height="5"/>
                         </box>
                         <box horizontalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="RoJ-Xe-vsH">
                             <rect key="frame" x="-2" y="0.0" width="5" height="30"/>
@@ -281,9 +281,9 @@
                         <constraint firstAttribute="bottom" secondItem="jsI-LL-yRY" secondAttribute="bottom" id="aTL-Qb-g43"/>
                         <constraint firstItem="e9Q-le-xZQ" firstAttribute="centerY" secondItem="zvF-UQ-lrL" secondAttribute="centerY" id="b0s-Af-C8z"/>
                         <constraint firstAttribute="bottom" secondItem="RoJ-Xe-vsH" secondAttribute="bottom" id="bmM-bd-rW9"/>
-                        <constraint firstAttribute="trailing" secondItem="jsI-LL-yRY" secondAttribute="trailing" id="ju2-VO-04V"/>
+                        <constraint firstAttribute="trailing" secondItem="jsI-LL-yRY" secondAttribute="trailing" constant="1" id="ju2-VO-04V"/>
                         <constraint firstItem="jsI-LL-yRY" firstAttribute="top" secondItem="5m5-1S-yET" secondAttribute="bottom" constant="8" id="kzD-5k-GO6"/>
-                        <constraint firstItem="jsI-LL-yRY" firstAttribute="leading" secondItem="zvF-UQ-lrL" secondAttribute="leading" id="mS7-xy-U1S"/>
+                        <constraint firstItem="jsI-LL-yRY" firstAttribute="leading" secondItem="zvF-UQ-lrL" secondAttribute="leading" constant="1" id="mS7-xy-U1S"/>
                         <constraint firstItem="e9Q-le-xZQ" firstAttribute="centerX" secondItem="zvF-UQ-lrL" secondAttribute="centerX" id="spi-N5-ZjS"/>
                         <constraint firstAttribute="trailing" secondItem="gda-pO-K8h" secondAttribute="trailing" id="wpx-NZ-Pmh"/>
                     </constraints>
