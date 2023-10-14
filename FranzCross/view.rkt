@@ -36,7 +36,9 @@
     #:min-size `(,width #f)
     #:alignment alignment
     #:stretch '(#f #t)
-    (text label))
+    (if (string? label)
+        (text label)
+        label))
    v))
 
 (define password

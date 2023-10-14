@@ -17,6 +17,7 @@
          "keychain.rkt"
          "mixin.rkt"
          "observable.rkt"
+         "publish-dialog.rkt"
          "new-topic-dialog.rkt"
          "schema-detail.rkt"
          "schema-registry-dialog.rkt"
@@ -83,6 +84,21 @@
         (create-topic name partitions replication-factor the-options id)
         (reload-metadata)))
      (m:get-workspace-renderer id)))
+  (define (publish [item ^@selected-item])
+    (render
+     (publish-dialog
+      id (and item
+              (Topic? item)
+              (Topic-name item))
+      #:publish-action
+      (lambda (topic-name partition-id key value)
+        (publish-record
+         topic-name
+         partition-id
+         (and key (string->bytes/utf-8 key))
+         (and value (string->bytes/utf-8 value))
+         id)))
+     (m:get-workspace-renderer id)))
   (define (open-consumer-group gid)
     (define group
       (for/first ([g (in-list (Metadata-groups (state-metadata ^@state)))]
@@ -125,6 +141,10 @@
           (render-popup-menu*
            workspace-renderer
            (popup-menu
+            (menu-item
+             "Publish Record..."
+             (λ () (publish item)))
+            (menu-item-separator)
             (menu-item
              "Delete"
              (lambda ()
@@ -191,7 +211,8 @@
      (menu-item
       "&New Topic..."
       #:shortcut (kbd cmd #\n)
-      new-topic))
+      new-topic)
+     (menu-item "&Publish Record..." publish))
     (menu
      "Schema &Registry"
      (menu-item
