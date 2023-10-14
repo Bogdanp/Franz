@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/png" href="favicon.png">
-    <title>Franz: Native macOS Kafka Client</title>
+    <title>Franz: Native macOS and Windows Desktop Client for Apache Kafka</title>
     <link rel="stylesheet" type="text/css" href="screen.css">
   </head>
   <body>
@@ -19,32 +19,25 @@
               <img alt="logo" class="logo" src="assets/logo.png">
             </a>
             <h1 class="title">Franz</h1>
-            <h2 class="subtitle">A macOS Client for <a href="https://kafka.apache.org">Apache Kafka</a></h2>
+            <h2 class="subtitle">Native macOS and Windows Desktop Client for <a href="https://kafka.apache.org">Apache Kafka</a></h2>
 
             <br/>
             <div class="ctas">
-              <a class="ctas__download-button" href="https://franz.defn.io/releases/Franz%20Latest.universal.dmg">
-                Download
-              </a>
+              <select id="variant-selector">
+                <option value="https://franz.defn.io/releases/Franz%20Latest.universal.dmg">macOS 13+ (Universal)</option>
+                <option value="https://franz.defn.io/releases/Franz%20Latest.win32.x86_64.zip">Windows 10+ (x86_64)</option>
+              </select>
+              <br/>
+              <br/>
 
-              <a id="purchase" class="ctas__purchase-button" href="/buy.html">
-                Purchase a License
+              <a id="download-button" class="ctas__download-button" href="https://franz.defn.io/releases/Franz%20Latest.universal.dmg">
+                Download
               </a>
             </div>
 
             <br/>
             <br/>
             <br/>
-            <p>
-              <small>
-                <strong>Supported platforms:</strong>
-                macOS 13.0 and up
-              </small>
-              <br/>
-              <a href="http://eepurl.com/ihFfa9">
-                <small><strong>Franz for Windows Early Access</strong></small>
-              </a>
-            </p>
           </div>
         </div>
       </div>
@@ -158,5 +151,11 @@
         </p>
       </div>
     </section>
+
+    <script>
+      document.querySelector("#variant-selector").addEventListener("change", function(e) {
+        document.querySelector("#download-button").href = e.target.value;
+      });
+    </script>
   </body>
 </html>
