@@ -20,7 +20,9 @@
 (define-record Release
   [arch : Symbol]
   [version : String]
-  [mac-url : String])
+  [mac-url : String]
+  [linux-url : String]
+  [windows-url : String])
 
 (define-rpc (get-changelog : String)
   (bytes->string/utf-8
@@ -37,7 +39,9 @@
       (make-Release
        #:arch release-arch
        #:version (hash-ref release-data 'version)
-       #:mac-url (hash-ref release-data 'macURL))))
+       #:mac-url (hash-ref release-data 'macURL #f)
+       #:linux-url (hash-ref release-data 'linuxURL #f)
+       #:windows-url (hash-ref release-data 'windowsURL #f))))
   (sort releases string>? #:key Release-version))
 
 (define-rpc (get-latest-release [for-arch arch : Symbol] : (Optional Release))

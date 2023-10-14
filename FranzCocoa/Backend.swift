@@ -596,22 +596,30 @@ public struct Release: Readable, Writable {
   public let arch: Symbol
   public let version: String
   public let macUrl: String
+  public let linuxUrl: String
+  public let windowsUrl: String
 
   public init(
     arch: Symbol,
     version: String,
-    macUrl: String
+    macUrl: String,
+    linuxUrl: String,
+    windowsUrl: String
   ) {
     self.arch = arch
     self.version = version
     self.macUrl = macUrl
+    self.linuxUrl = linuxUrl
+    self.windowsUrl = windowsUrl
   }
 
   public static func read(from inp: InputPort, using buf: inout Data) -> Release {
     return Release(
       arch: Symbol.read(from: inp, using: &buf),
       version: String.read(from: inp, using: &buf),
-      macUrl: String.read(from: inp, using: &buf)
+      macUrl: String.read(from: inp, using: &buf),
+      linuxUrl: String.read(from: inp, using: &buf),
+      windowsUrl: String.read(from: inp, using: &buf)
     )
   }
 
@@ -619,6 +627,8 @@ public struct Release: Readable, Writable {
     arch.write(to: out)
     version.write(to: out)
     macUrl.write(to: out)
+    linuxUrl.write(to: out)
+    windowsUrl.write(to: out)
   }
 }
 
