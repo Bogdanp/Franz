@@ -26,8 +26,8 @@
         (parameterize ([current-custodian (make-custodian)])
           (make-auto-updater
            (lambda (changelog release)
-             (when (and changelog release)
-               (void)))
+             (when (and changelog release (Release-url release))
+               (updates-available-window changelog release)))
            #:arch (system-type 'arch)
            #:version franz-version
            #:frequency (and
@@ -94,19 +94,33 @@
            (render
             (dialog
              #:title "Downloading Update"
-             #:min-size '(180 #f)
+             #:min-size '(240 #f)
              #:mixin (mix-close-window
                       void
                       (lambda (close!-proc)
                         (set! close-dialog! close!-proc)))
-             (vpanel
-              #:alignment '(right top)
-              (progress @progress)
-              (button "Cancel" (λ () (close-dialog!))))))
+             (hpanel
+              #:margin '(10 10)
+              #:alignment '(left top)
+              (image
+               #:size '(32 32)
+               icon_512x512.png)
+              (vpanel
+               #:alignment '(right top)
+               (progress @progress)
+               (button "Cancel" (λ () (close-dialog!)))))))
            (break-thread download-thd)))))))))
 
+(define (Release-url r)
+  ((case (system-type 'os)
+     [(unix) Release-linux-url]
+     [(macosx) Release-mac-url]
+     [(windows) Release-windows-url])
+   r))
+
 (define (download-release release dst-directory on-progress)
-  (define url (Release-mac-url release)) ;; FIXME
+  (define url
+    (Release-url release))
   (define head-response (http:head url))
   (define content-length
     (string->number
@@ -116,6 +130,7 @@
   (define res (http:get #:stream? #t url))
   (define ok?
     (call-with-output-file dst-path
+      #:exists 'truncate/replace
       (lambda (out)
         (with-handlers ([exn:break? (λ (_) #f)])
           (parameterize-break #t
@@ -151,7 +166,7 @@
        (auto-updater-check the-auto-updater))
      (stop-value-thd!)
      (render
-      (if (and changelog release)
+      (if (and changelog release (Release-url release))
           (updates-available-window changelog release)
           (up-to-date-dialog)))
      (gui:queue-callback close!)))
@@ -197,13 +212,17 @@
 (module+ main
   (require racket/port)
   (define here (syntax-source #'here))
+  (define-values (here-dir _filename _is-dir?)
+    (split-path here))
   (start-auto-updater)
   (render (check-for-updates-dialog))
   (render
    (updates-available-window
-    (call-with-input-file (build-path here 'up 'up "website" "versions" "changelog.txt")
+    (call-with-input-file (build-path here-dir 'up "website" "versions" "changelog.txt")
       port->string)
     (make-Release
      #:arch (system-type 'arch)
      #:version franz-version
-     #:mac-url "https://franz.defn.io/releases/Franz%201.0.0006.universal.dmg"))))
+     #:mac-url "https://franz.defn.io/releases/Franz%201.0.0006.universal.dmg"
+     #:linux-url #f
+     #:windows-url #f))))
