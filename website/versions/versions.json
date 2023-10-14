@@ -1,6 +1,17 @@
 [
   {
     "arch": "arm64",
+    "version": "1.2.0001",
+    "macURL": "https://franz.defn.io/releases/Franz%201.2.0001.universal.dmg"
+  },
+  {
+    "arch": "x86_64",
+    "version": "1.2.0001",
+    "macURL": "https://franz.defn.io/releases/Franz%201.2.0001.universal.dmg",
+    "windowsURL": "https://franz.defn.io/releases/Franz%201.2.0001.win32.x86_64.zip"
+  },
+  {
+    "arch": "arm64",
     "version": "1.1.0001",
     "macURL": "https://franz.defn.io/releases/Franz%201.1.0001.universal.dmg"
   },
