@@ -7,6 +7,7 @@ raco exe \
   --gui \
   --orig-exe \
   ++aux assets/icon.ico \
+  ++aux Franz.desktop \
   ++lang lua \
   ++lib lua/lang/runtime-config \
   ++lib racket/runtime-config \

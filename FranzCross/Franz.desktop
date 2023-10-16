@@ -1,0 +1,7 @@
+# https://wiki.archlinux.org/title/desktop_entries
+[Desktop Entry]
+Type=Application
+Version=1.2
+Name=Franz
+Comment=Desktop client for Apache Kafka
+Terminal=false
