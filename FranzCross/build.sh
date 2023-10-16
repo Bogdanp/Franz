@@ -5,7 +5,7 @@ set -euo pipefail
 raco exe \
   -o Franz \
   --gui \
-  --ico ./assets/icon.ico \
+  --orig-exe \
   ++lang lua \
   ++lib lua/lang/runtime-config \
   ++lib racket/runtime-config \
