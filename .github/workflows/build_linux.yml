@@ -1,0 +1,41 @@
+on: [push]
+name: Build on Linux
+jobs:
+  build_linux_app:
+    runs-on: ubuntu-22.04
+    name: Build Franz on Ubuntu 22.04
+    steps:
+      - uses: actions/checkout@master
+      - uses: Bogdanp/setup-racket@v1.10
+        with:
+          architecture: 'x64'
+          distribution: 'full'
+          variant: 'CS'
+          version: '8.10'
+      - name: Install Noise
+        run: |
+          env GIT_LFS_SKIP_SMUDGE=1 \
+            git clone \
+              --depth 1 \
+              --branch racket-8.10 \
+              https://github.com/Bogdanp/Noise Noise
+          raco pkg install -D --batch --auto Noise/Racket/noise-serde-lib/
+      - name: Prepare secrets
+        run: |
+          echo -n "$LICENSE_SECRET" | base64 -d > core/secrets/license-secret.txt
+          echo -n "$SENTRY_DSN" | base64 -d > core/secrets/sentry-dsn.txt
+        env:
+          LICENSE_SECRET: ${{ secrets.LICENSE_SECRET }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+      - name: Install core
+        run: raco pkg install -D --batch --auto --name franz core/
+      - name: Install FranzCross
+        run: raco pkg install -D --batch --auto FranzCross/
+      - name: Build distribution
+        run: bash ./build.sh
+        working-directory: FranzCross
+      - name: Upload distribution
+        uses: actions/upload-artifact@v3
+        with:
+          name: Franz.zip
+          path: FranzCross/dist
