@@ -138,19 +138,21 @@
                                                   #:secret-access-key secret-access-key
                                                   #:server-name host))))])
    #:ssl-ctx (and (ConnectionDetails-use-ssl c)
-                  (cond
-                    [(and (ConnectionDetails-ssl-key-path c)
-                          (ConnectionDetails-ssl-cert-path c))
-                     (define fmt
-                       (case (path-get-extension (ConnectionDetails-ssl-key-path c))
-                         [(#".der") 'der]
-                         [else 'pem]))
-                     (ssl-make-client-context
-                      #:private-key (list fmt (ConnectionDetails-ssl-key-path c))
-                      #:certificate-chain (ConnectionDetails-ssl-cert-path c)
-                      'auto)]
-                    [else
-                     (ssl-secure-client-context)]))
+                  (let ([key-path (ConnectionDetails-ssl-key-path c)]
+                        [crt-path (ConnectionDetails-ssl-cert-path c)])
+                    (cond
+                      [(or key-path crt-path)
+                       (define key
+                         (and key-path
+                              (case (path-get-extension key-path)
+                                [(#".der") `(der ,key-path)]
+                                [else `(pem ,key-path)])))
+                       (ssl-make-client-context
+                        #:private-key key
+                        #:certificate-chain crt-path
+                        'auto)]
+                      [else
+                       (ssl-secure-client-context)])))
    #:proxy (and (ConnectionDetails-http-proxy-addr c)
                 (match-let ([(regexp #rx"([^:]+):(.+)" (list _ host (app string->number port)))
                              (ConnectionDetails-http-proxy-addr c)])
