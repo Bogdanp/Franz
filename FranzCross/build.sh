@@ -17,4 +17,4 @@ cp assets/icon.svg dist/
 cp flatpak/io.defn.Franz.desktop  dist/
 tar cvzf \
     Franz.tar.gz \
-    -C dist bin lib icon.svg io.defn.franz.Destkop
+    -C dist bin lib icon.svg io.defn.Franz.destkop
