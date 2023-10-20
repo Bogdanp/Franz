@@ -8,8 +8,6 @@ finish-args:
   - --share=network
   - --socket=wayland
   - --socket=fallback-x11
-  - --filesystem=home
-  - --filesystem=/tmp
 modules:
   - name: Franz
     buildsystem: simple
