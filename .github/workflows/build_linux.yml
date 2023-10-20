@@ -37,5 +37,5 @@ jobs:
       - name: Upload distribution
         uses: actions/upload-artifact@v3
         with:
-          name: Franz.zip
-          path: FranzCross/dist
+          name: Franz.tar.gz
+          path: Franz.tar.gz
