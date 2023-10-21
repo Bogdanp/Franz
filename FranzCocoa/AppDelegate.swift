@@ -10,6 +10,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     FutureUtil.set(defaultErrorHandler: Error.alert(withError:))
     assert(Error.wait(Backend.shared.ping()) == "pong")
 
+#if !MAC_APP_STORE_BUILD
     AutoUpdater.shared.start(
       withInterval: Defaults.shared.checkForUpdates ? Defaults.shared.updateInterval.seconds * 1000 : nil,
       checkingImmediately: Defaults.shared.checkForUpdates
@@ -19,6 +20,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         andRelease: release
       )
     }
+#endif
 
     WindowManager.shared.showWelcomeWindow()
   }
@@ -44,6 +46,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     WindowManager.shared.openManual()
   }
 
+#if !MAC_APP_STORE_BUILD
   @IBAction func didPushCheckForUpdatesButton(_ sender: Any) {
     var canceled = false
     WindowManager.shared.showUpdatesProgressWindow {
@@ -66,4 +69,5 @@ class AppDelegate: NSObject, NSApplicationDelegate {
       }
     )
   }
+#endif
 }

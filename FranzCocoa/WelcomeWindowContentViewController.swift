@@ -12,6 +12,9 @@ class WelcomeWindowContentViewController: NSViewController {
     let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") ?? "Unknown"
     versionLabel.stringValue = "Version \(version) (Build \(build))"
 
+#if MAC_APP_STORE_BUILD
+    trialButton.isHidden = true
+#else
     trialButton.isHidden = true
     if Error.wait(Backend.shared.getLicense()) == nil {
       trialButton.isHidden = false
@@ -26,6 +29,7 @@ class WelcomeWindowContentViewController: NSViewController {
         }
       }
     }
+#endif
   }
 
   func newConnection() {

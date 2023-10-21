@@ -20,9 +20,11 @@ class WindowManager {
     preferringExisting preferExisting: Bool = true
   ) -> WorkspaceWindowController? {
     assert(Thread.isMainThread)
+#if !MAC_APP_STORE_BUILD
     guard checkLicense() else {
       return nil
     }
+#endif
     guard let id = conn.id else {
       preconditionFailure()
     }

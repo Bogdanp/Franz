@@ -35,6 +35,7 @@ class PreferencesWindowController: NSWindowController {
     connectionsItem.label = "Connections"
     connectionsItem.viewController = NSHostingController(rootView: ConnectionsView())
 
+#if !MAC_APP_STORE_BUILD
     let licenseItem = NSTabViewItem()
     licenseItem.image = .init(systemSymbolName: "checkmark.seal", accessibilityDescription: "License Tab")
     licenseItem.label = "License"
@@ -44,13 +45,16 @@ class PreferencesWindowController: NSWindowController {
     updatesItem.image = .init(systemSymbolName: "arrow.clockwise", accessibilityDescription: "Updates Tab")
     updatesItem.label = "Updates"
     updatesItem.viewController = NSHostingController(rootView: UpdatesView())
+#endif
 
     tabController.delegate = self
     tabController.tabStyle = .toolbar
     tabController.addTabViewItem(generalItem)
     tabController.addTabViewItem(connectionsItem)
+#if !MAC_APP_STORE_BUILD
     tabController.addTabViewItem(licenseItem)
     tabController.addTabViewItem(updatesItem)
+#endif
 
     window?.contentViewController = tabController
     window?.setContentSize(.init(width: 500, height: 150))

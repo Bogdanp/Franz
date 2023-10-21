@@ -75,6 +75,84 @@
 		43CD623F28CE289F00095144 /* WelcomeWindowContentViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43CD623C28CE282400095144 /* WelcomeWindowContentViewController.xib */; };
 		43CD624828CE3B5D00095144 /* ConnectionDetailsFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CD624628CE3B5D00095144 /* ConnectionDetailsFormViewController.swift */; };
 		43CD624928CE3B5D00095144 /* ConnectionDetailsFormViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43CD624728CE3B5D00095144 /* ConnectionDetailsFormViewController.xib */; };
+		43CDBAA82AE411A0003063D7 /* RecordDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43B3C06C2952FB9000E0289C /* RecordDetailViewController.swift */; };
+		43CDBAA92AE411A0003063D7 /* GroupDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43196F8B28F1DB94003C793B /* GroupDetailView.swift */; };
+		43CDBAAA2AE411A0003063D7 /* Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D3AEA728FFD96500D52E92 /* Defaults.swift */; };
+		43CDBAAB2AE411A0003063D7 /* RecordWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43B3C0702952FFFF00E0289C /* RecordWindowController.swift */; };
+		43CDBAAC2AE411A0003063D7 /* HexViewerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43B8DCC629546B200056E9FD /* HexViewerViewController.swift */; };
+		43CDBAAD2AE411A0003063D7 /* Backend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CD622E28CE258100095144 /* Backend.swift */; };
+		43CDBAAE2AE411A0003063D7 /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431C697E28F2C1A70082986A /* StringExtensions.swift */; };
+		43CDBAAF2AE411A0003063D7 /* WorkspaceSidebarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436E720028D759F400ECBF49 /* WorkspaceSidebarViewController.swift */; };
+		43CDBAB02AE411A0003063D7 /* ConnectionTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43804AB628D1A014002880FE /* ConnectionTableCellView.swift */; };
+		43CDBAB12AE411A0003063D7 /* SidebarOptionsForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43EE0EDE299BD276001A973A /* SidebarOptionsForm.swift */; };
+		43CDBAB22AE411A0003063D7 /* TopicRecordsOptionsForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 437669F12986B10B00307CFE /* TopicRecordsOptionsForm.swift */; };
+		43CDBAB32AE411A0003063D7 /* ScriptWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43E64A062928F2BF00FDBF29 /* ScriptWindowController.swift */; };
+		43CDBAB42AE411A0003063D7 /* WorkspaceDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436E720428D75B0500ECBF49 /* WorkspaceDetailViewController.swift */; };
+		43CDBAB52AE411A0003063D7 /* ResourceConfigTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4396EAD8290576A300A15D25 /* ResourceConfigTableViewController.swift */; };
+		43CDBAB62AE411A0003063D7 /* SchemaDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4352A29E296B1B2C0081AF19 /* SchemaDetailView.swift */; };
+		43CDBAB72AE411A0003063D7 /* NewTopicFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431C698028F2E0C60082986A /* NewTopicFormViewController.swift */; };
+		43CDBAB82AE411A0003063D7 /* UpdatesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43F987A7292A867B00E5E1DE /* UpdatesWindowController.swift */; };
+		43CDBAB92AE411A0003063D7 /* Editor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4322BBD82924DED8002358C3 /* Editor.swift */; };
+		43CDBABA2AE411A0003063D7 /* Timed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43453F3C291505A6000CE90E /* Timed.swift */; };
+		43CDBABB2AE411A0003063D7 /* HeadersTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4342530D2964A8C300CC05BC /* HeadersTableViewController.swift */; };
+		43CDBABC2AE411A0003063D7 /* DispatchQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43E5AE8B291245E000C74966 /* DispatchQueue.swift */; };
+		43CDBABD2AE411A0003063D7 /* ConnectionDetailsFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CD624628CE3B5D00095144 /* ConnectionDetailsFormViewController.swift */; };
+		43CDBABE2AE411A0003063D7 /* UpdatesProgressWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 439D6EAF292F7741005C9935 /* UpdatesProgressWindowController.swift */; };
+		43CDBABF2AE411A0003063D7 /* GroupOffsetsOutlineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4395503628FD45B000CC0050 /* GroupOffsetsOutlineViewController.swift */; };
+		43CDBAC02AE411A0003063D7 /* TopicDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43196F8928F1DAB2003C793B /* TopicDetailView.swift */; };
+		43CDBAC12AE411A0003063D7 /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D03DD328FAC6030049D44D /* Keychain.swift */; };
+		43CDBAC22AE411A0003063D7 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432C24622903F03B00C6F336 /* Error.swift */; };
+		43CDBAC32AE411A0003063D7 /* Identifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D03DD728FB03940049D44D /* Identifiers.swift */; };
+		43CDBAC42AE411A0003063D7 /* WelcomeWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CD623928CE27DB00095144 /* WelcomeWindowController.swift */; };
+		43CDBAC52AE411A0003063D7 /* PreferencesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D3AEA928FFDF3500D52E92 /* PreferencesWindowController.swift */; };
+		43CDBAC62AE411A0003063D7 /* WindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CD623628CE27B200095144 /* WindowManager.swift */; };
+		43CDBAC72AE411A0003063D7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CD621828CE24B000095144 /* AppDelegate.swift */; };
+		43CDBAC82AE411A0003063D7 /* AutoUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43F987A5292A81D400E5E1DE /* AutoUpdater.swift */; };
+		43CDBAC92AE411A0003063D7 /* WelcomeWindowConnectionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43804AB228D19ACD002880FE /* WelcomeWindowConnectionsViewController.swift */; };
+		43CDBACA2AE411A0003063D7 /* PublishRecordFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CBADD2290FB8D70066C7CE /* PublishRecordFormViewController.swift */; };
+		43CDBACB2AE411A0003063D7 /* BackendExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CD623028CE258F00095144 /* BackendExtensions.swift */; };
+		43CDBACC2AE411A0003063D7 /* DataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 435EBE5329542E7C00DCFEBF /* DataViewController.swift */; };
+		43CDBACD2AE411A0003063D7 /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D03DD528FAFE3B0049D44D /* Notifications.swift */; };
+		43CDBACE2AE411A0003063D7 /* Tabs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4396EAE02905B0D200A15D25 /* Tabs.swift */; };
+		43CDBACF2AE411A0003063D7 /* TopicRecordsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 437A77DD290D5AA1001965B0 /* TopicRecordsTableViewController.swift */; };
+		43CDBAD02AE411A0003063D7 /* WelcomeWindowContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CD623D28CE282400095144 /* WelcomeWindowContentViewController.swift */; };
+		43CDBAD12AE411A0003063D7 /* SidebarGroupCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4314EDF728D85E0E00431770 /* SidebarGroupCellView.swift */; };
+		43CDBAD22AE411A0003063D7 /* WorkspaceWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436E71F828D7511400ECBF49 /* WorkspaceWindowController.swift */; };
+		43CDBAD32AE411A0003063D7 /* Pasteboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D3AEA528FFD8D100D52E92 /* Pasteboard.swift */; };
+		43CDBAD42AE411A0003063D7 /* ConfigureSchemaRegistryFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43B3C0682952F15A00E0289C /* ConfigureSchemaRegistryFormViewController.swift */; };
+		43CDBAD52AE411A0003063D7 /* Infos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 433C5E8A29066310005F4C4B /* Infos.swift */; };
+		43CDBAD62AE411A0003063D7 /* BrokerDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 437887F528E9FE5900D0B263 /* BrokerDetailView.swift */; };
+		43CDBAD72AE411A0003063D7 /* SidebarEntryCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436E720C28D760BF00ECBF49 /* SidebarEntryCellView.swift */; };
+		43CDBAD92AE411A0003063D7 /* NoiseSerde in Frameworks */ = {isa = PBXBuildFile; productRef = 43CDBAA42AE411A0003063D7 /* NoiseSerde */; };
+		43CDBADA2AE411A0003063D7 /* NoiseBackend in Frameworks */ = {isa = PBXBuildFile; productRef = 43CDBAA32AE411A0003063D7 /* NoiseBackend */; };
+		43CDBADB2AE411A0003063D7 /* Noise in Frameworks */ = {isa = PBXBuildFile; productRef = 43CDBAA22AE411A0003063D7 /* Noise */; };
+		43CDBADD2AE411A0003063D7 /* HeadersTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4342530E2964A8C300CC05BC /* HeadersTableViewController.xib */; };
+		43CDBADE2AE411A0003063D7 /* ScriptWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43E64A072928F2BF00FDBF29 /* ScriptWindowController.xib */; };
+		43CDBADF2AE411A0003063D7 /* PublishRecordFormViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43CBADD3290FB8D70066C7CE /* PublishRecordFormViewController.xib */; };
+		43CDBAE02AE411A0003063D7 /* GroupOffsetsOutlineViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4395503728FD45B000CC0050 /* GroupOffsetsOutlineViewController.xib */; };
+		43CDBAE12AE411A0003063D7 /* WelcomeWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43CD623828CE27DB00095144 /* WelcomeWindowController.xib */; };
+		43CDBAE22AE411A0003063D7 /* RecordDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B3C06D2952FB9000E0289C /* RecordDetailViewController.xib */; };
+		43CDBAE32AE411A0003063D7 /* SidebarEntryCellView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 436E720E28D760D400ECBF49 /* SidebarEntryCellView.xib */; };
+		43CDBAE42AE411A0003063D7 /* WorkspaceWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 436E71F928D7511400ECBF49 /* WorkspaceWindowController.xib */; };
+		43CDBAE52AE411A0003063D7 /* NewTopicFormViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 431C698128F2E0C60082986A /* NewTopicFormViewController.xib */; };
+		43CDBAE62AE411A0003063D7 /* UpdatesProgressWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 439D6EB0292F7741005C9935 /* UpdatesProgressWindowController.xib */; };
+		43CDBAE72AE411A0003063D7 /* WelcomeWindowConnectionsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43804AB328D19ACD002880FE /* WelcomeWindowConnectionsViewController.xib */; };
+		43CDBAE82AE411A0003063D7 /* ConfigureSchemaRegistryFormViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B3C0692952F15A00E0289C /* ConfigureSchemaRegistryFormViewController.xib */; };
+		43CDBAE92AE411A0003063D7 /* ResourceConfigTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4396EAD9290576A300A15D25 /* ResourceConfigTableViewController.xib */; };
+		43CDBAEA2AE411A0003063D7 /* ConnectionDetailsFormViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43CD624728CE3B5D00095144 /* ConnectionDetailsFormViewController.xib */; };
+		43CDBAEB2AE411A0003063D7 /* WorkspaceDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 436E720528D75B0500ECBF49 /* WorkspaceDetailViewController.xib */; };
+		43CDBAEC2AE411A0003063D7 /* WelcomeWindowContentViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43CD623C28CE282400095144 /* WelcomeWindowContentViewController.xib */; };
+		43CDBAED2AE411A0003063D7 /* SidebarGroupCellView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4314EDF528D85DD800431770 /* SidebarGroupCellView.xib */; };
+		43CDBAEE2AE411A0003063D7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 43CD621A28CE24B100095144 /* Assets.xcassets */; };
+		43CDBAEF2AE411A0003063D7 /* resources in Resources */ = {isa = PBXBuildFile; fileRef = 43CD623228CE25F300095144 /* resources */; };
+		43CDBAF02AE411A0003063D7 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43CD621C28CE24B100095144 /* MainMenu.xib */; };
+		43CDBAF12AE411A0003063D7 /* ConnectionTableCellView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43804AB828D1A026002880FE /* ConnectionTableCellView.xib */; };
+		43CDBAF22AE411A0003063D7 /* HexViewerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8DCC729546B200056E9FD /* HexViewerViewController.xib */; };
+		43CDBAF32AE411A0003063D7 /* PreferencesWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D3AEAA28FFDF3500D52E92 /* PreferencesWindowController.xib */; };
+		43CDBAF42AE411A0003063D7 /* DataViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 435EBE5429542E7C00DCFEBF /* DataViewController.xib */; };
+		43CDBAF52AE411A0003063D7 /* TopicRecordsTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 437A77DE290D5AA1001965B0 /* TopicRecordsTableViewController.xib */; };
+		43CDBAF62AE411A0003063D7 /* RecordWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B3C0712952FFFF00E0289C /* RecordWindowController.xib */; };
+		43CDBAF72AE411A0003063D7 /* WorkspaceSidebarViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 436E720128D759F400ECBF49 /* WorkspaceSidebarViewController.xib */; };
 		43D03DD428FAC6030049D44D /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D03DD328FAC6030049D44D /* Keychain.swift */; };
 		43D03DD628FAFE3B0049D44D /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D03DD528FAFE3B0049D44D /* Notifications.swift */; };
 		43D03DD828FB03940049D44D /* Identifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D03DD728FB03940049D44D /* Identifiers.swift */; };
@@ -170,6 +248,7 @@
 		43CD623D28CE282400095144 /* WelcomeWindowContentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeWindowContentViewController.swift; sourceTree = "<group>"; };
 		43CD624628CE3B5D00095144 /* ConnectionDetailsFormViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionDetailsFormViewController.swift; sourceTree = "<group>"; };
 		43CD624728CE3B5D00095144 /* ConnectionDetailsFormViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ConnectionDetailsFormViewController.xib; sourceTree = "<group>"; };
+		43CDBAFB2AE411A0003063D7 /* Franz.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Franz.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		43D03DD328FAC6030049D44D /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
 		43D03DD528FAFE3B0049D44D /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
 		43D03DD728FB03940049D44D /* Identifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Identifiers.swift; sourceTree = "<group>"; };
@@ -203,6 +282,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		43CDBAD82AE411A0003063D7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				43CDBAD92AE411A0003063D7 /* NoiseSerde in Frameworks */,
+				43CDBADA2AE411A0003063D7 /* NoiseBackend in Frameworks */,
+				43CDBADB2AE411A0003063D7 /* Noise in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -232,6 +321,7 @@
 			children = (
 				43CD621528CE24B000095144 /* Franz.app */,
 				438241AE2911A9EB00BCC6E3 /* FranzCocoaUITests.xctest */,
+				43CDBAFB2AE411A0003063D7 /* Franz.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -379,6 +469,30 @@
 			productReference = 43CD621528CE24B000095144 /* Franz.app */;
 			productType = "com.apple.product-type.application";
 		};
+		43CDBAA12AE411A0003063D7 /* Franz MAS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 43CDBAF82AE411A0003063D7 /* Build configuration list for PBXNativeTarget "Franz MAS" */;
+			buildPhases = (
+				43CDBAA52AE411A0003063D7 /* Build Core */,
+				43CDBAA62AE411A0003063D7 /* Run Linter */,
+				43CDBAA72AE411A0003063D7 /* Sources */,
+				43CDBAD82AE411A0003063D7 /* Frameworks */,
+				43CDBADC2AE411A0003063D7 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Franz MAS";
+			packageProductDependencies = (
+				43CDBAA22AE411A0003063D7 /* Noise */,
+				43CDBAA32AE411A0003063D7 /* NoiseBackend */,
+				43CDBAA42AE411A0003063D7 /* NoiseSerde */,
+			);
+			productName = FranzCocoa;
+			productReference = 43CDBAFB2AE411A0003063D7 /* Franz.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -412,6 +526,7 @@
 			projectRoot = "";
 			targets = (
 				43CD621428CE24B000095144 /* Franz */,
+				43CDBAA12AE411A0003063D7 /* Franz MAS */,
 				438241AD2911A9EB00BCC6E3 /* FranzCocoaUITests */,
 			);
 		};
@@ -460,6 +575,40 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		43CDBADC2AE411A0003063D7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				43CDBADD2AE411A0003063D7 /* HeadersTableViewController.xib in Resources */,
+				43CDBADE2AE411A0003063D7 /* ScriptWindowController.xib in Resources */,
+				43CDBADF2AE411A0003063D7 /* PublishRecordFormViewController.xib in Resources */,
+				43CDBAE02AE411A0003063D7 /* GroupOffsetsOutlineViewController.xib in Resources */,
+				43CDBAE12AE411A0003063D7 /* WelcomeWindowController.xib in Resources */,
+				43CDBAE22AE411A0003063D7 /* RecordDetailViewController.xib in Resources */,
+				43CDBAE32AE411A0003063D7 /* SidebarEntryCellView.xib in Resources */,
+				43CDBAE42AE411A0003063D7 /* WorkspaceWindowController.xib in Resources */,
+				43CDBAE52AE411A0003063D7 /* NewTopicFormViewController.xib in Resources */,
+				43CDBAE62AE411A0003063D7 /* UpdatesProgressWindowController.xib in Resources */,
+				43CDBAE72AE411A0003063D7 /* WelcomeWindowConnectionsViewController.xib in Resources */,
+				43CDBAE82AE411A0003063D7 /* ConfigureSchemaRegistryFormViewController.xib in Resources */,
+				43CDBAE92AE411A0003063D7 /* ResourceConfigTableViewController.xib in Resources */,
+				43CDBAEA2AE411A0003063D7 /* ConnectionDetailsFormViewController.xib in Resources */,
+				43CDBAEB2AE411A0003063D7 /* WorkspaceDetailViewController.xib in Resources */,
+				43CDBAEC2AE411A0003063D7 /* WelcomeWindowContentViewController.xib in Resources */,
+				43CDBAED2AE411A0003063D7 /* SidebarGroupCellView.xib in Resources */,
+				43CDBAEE2AE411A0003063D7 /* Assets.xcassets in Resources */,
+				43CDBAEF2AE411A0003063D7 /* resources in Resources */,
+				43CDBAF02AE411A0003063D7 /* MainMenu.xib in Resources */,
+				43CDBAF12AE411A0003063D7 /* ConnectionTableCellView.xib in Resources */,
+				43CDBAF22AE411A0003063D7 /* HexViewerViewController.xib in Resources */,
+				43CDBAF32AE411A0003063D7 /* PreferencesWindowController.xib in Resources */,
+				43CDBAF42AE411A0003063D7 /* DataViewController.xib in Resources */,
+				43CDBAF52AE411A0003063D7 /* TopicRecordsTableViewController.xib in Resources */,
+				43CDBAF62AE411A0003063D7 /* RecordWindowController.xib in Resources */,
+				43CDBAF72AE411A0003063D7 /* WorkspaceSidebarViewController.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
@@ -481,6 +630,44 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "if [[ -z \"${GITHUB_ACTIONS}\" ]]; then\n  make\nfi\nBin/sign-dylibs\n";
+		};
+		43CDBAA52AE411A0003063D7 /* Build Core */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Build Core";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [[ -z \"${GITHUB_ACTIONS}\" ]]; then\n  make\nfi\nBin/sign-dylibs\n";
+		};
+		43CDBAA62AE411A0003063D7 /* Run Linter */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Run Linter";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if which swiftlint >/dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
 		};
 		43DF4FA929000BFE00E7BB98 /* Run Linter */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -565,6 +752,61 @@
 				433C5E8B29066310005F4C4B /* Infos.swift in Sources */,
 				437887F628E9FE5900D0B263 /* BrokerDetailView.swift in Sources */,
 				436E720D28D760BF00ECBF49 /* SidebarEntryCellView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		43CDBAA72AE411A0003063D7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				43CDBAA82AE411A0003063D7 /* RecordDetailViewController.swift in Sources */,
+				43CDBAA92AE411A0003063D7 /* GroupDetailView.swift in Sources */,
+				43CDBAAA2AE411A0003063D7 /* Defaults.swift in Sources */,
+				43CDBAAB2AE411A0003063D7 /* RecordWindowController.swift in Sources */,
+				43CDBAAC2AE411A0003063D7 /* HexViewerViewController.swift in Sources */,
+				43CDBAAD2AE411A0003063D7 /* Backend.swift in Sources */,
+				43CDBAAE2AE411A0003063D7 /* StringExtensions.swift in Sources */,
+				43CDBAAF2AE411A0003063D7 /* WorkspaceSidebarViewController.swift in Sources */,
+				43CDBAB02AE411A0003063D7 /* ConnectionTableCellView.swift in Sources */,
+				43CDBAB12AE411A0003063D7 /* SidebarOptionsForm.swift in Sources */,
+				43CDBAB22AE411A0003063D7 /* TopicRecordsOptionsForm.swift in Sources */,
+				43CDBAB32AE411A0003063D7 /* ScriptWindowController.swift in Sources */,
+				43CDBAB42AE411A0003063D7 /* WorkspaceDetailViewController.swift in Sources */,
+				43CDBAB52AE411A0003063D7 /* ResourceConfigTableViewController.swift in Sources */,
+				43CDBAB62AE411A0003063D7 /* SchemaDetailView.swift in Sources */,
+				43CDBAB72AE411A0003063D7 /* NewTopicFormViewController.swift in Sources */,
+				43CDBAB82AE411A0003063D7 /* UpdatesWindowController.swift in Sources */,
+				43CDBAB92AE411A0003063D7 /* Editor.swift in Sources */,
+				43CDBABA2AE411A0003063D7 /* Timed.swift in Sources */,
+				43CDBABB2AE411A0003063D7 /* HeadersTableViewController.swift in Sources */,
+				43CDBABC2AE411A0003063D7 /* DispatchQueue.swift in Sources */,
+				43CDBABD2AE411A0003063D7 /* ConnectionDetailsFormViewController.swift in Sources */,
+				43CDBABE2AE411A0003063D7 /* UpdatesProgressWindowController.swift in Sources */,
+				43CDBABF2AE411A0003063D7 /* GroupOffsetsOutlineViewController.swift in Sources */,
+				43CDBAC02AE411A0003063D7 /* TopicDetailView.swift in Sources */,
+				43CDBAC12AE411A0003063D7 /* Keychain.swift in Sources */,
+				43CDBAC22AE411A0003063D7 /* Error.swift in Sources */,
+				43CDBAC32AE411A0003063D7 /* Identifiers.swift in Sources */,
+				43CDBAC42AE411A0003063D7 /* WelcomeWindowController.swift in Sources */,
+				43CDBAC52AE411A0003063D7 /* PreferencesWindowController.swift in Sources */,
+				43CDBAC62AE411A0003063D7 /* WindowManager.swift in Sources */,
+				43CDBAC72AE411A0003063D7 /* AppDelegate.swift in Sources */,
+				43CDBAC82AE411A0003063D7 /* AutoUpdater.swift in Sources */,
+				43CDBAC92AE411A0003063D7 /* WelcomeWindowConnectionsViewController.swift in Sources */,
+				43CDBACA2AE411A0003063D7 /* PublishRecordFormViewController.swift in Sources */,
+				43CDBACB2AE411A0003063D7 /* BackendExtensions.swift in Sources */,
+				43CDBACC2AE411A0003063D7 /* DataViewController.swift in Sources */,
+				43CDBACD2AE411A0003063D7 /* Notifications.swift in Sources */,
+				43CDBACE2AE411A0003063D7 /* Tabs.swift in Sources */,
+				43CDBACF2AE411A0003063D7 /* TopicRecordsTableViewController.swift in Sources */,
+				43CDBAD02AE411A0003063D7 /* WelcomeWindowContentViewController.swift in Sources */,
+				43CDBAD12AE411A0003063D7 /* SidebarGroupCellView.swift in Sources */,
+				43CDBAD22AE411A0003063D7 /* WorkspaceWindowController.swift in Sources */,
+				43CDBAD32AE411A0003063D7 /* Pasteboard.swift in Sources */,
+				43CDBAD42AE411A0003063D7 /* ConfigureSchemaRegistryFormViewController.swift in Sources */,
+				43CDBAD52AE411A0003063D7 /* Infos.swift in Sources */,
+				43CDBAD62AE411A0003063D7 /* BrokerDetailView.swift in Sources */,
+				43CDBAD72AE411A0003063D7 /* SidebarEntryCellView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -803,6 +1045,72 @@
 			};
 			name = Release;
 		};
+		43CDBAF92AE411A0003063D7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_ENTITLEMENTS = FranzCocoa/FranzCocoa.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = H3YE679B58;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Franz;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainNibFile = MainMenu;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 1.3;
+				PRODUCT_BUNDLE_IDENTIFIER = io.defn.Franz;
+				PRODUCT_NAME = Franz;
+				"SWIFT_ACTIVE_COMPILATION_CONDITIONS[arch=*]" = MAC_APP_STORE_BUILD;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		43CDBAFA2AE411A0003063D7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_ENTITLEMENTS = FranzCocoa/FranzCocoa.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = H3YE679B58;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Franz;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainNibFile = MainMenu;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 1.3;
+				PRODUCT_BUNDLE_IDENTIFIER = io.defn.Franz;
+				PRODUCT_NAME = Franz;
+				"SWIFT_ACTIVE_COMPILATION_CONDITIONS[arch=*]" = MAC_APP_STORE_BUILD;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -833,6 +1141,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		43CDBAF82AE411A0003063D7 /* Build configuration list for PBXNativeTarget "Franz MAS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				43CDBAF92AE411A0003063D7 /* Debug */,
+				43CDBAFA2AE411A0003063D7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -845,6 +1162,18 @@
 			productName = NoiseBackend;
 		};
 		43CD622C28CE251F00095144 /* NoiseSerde */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = NoiseSerde;
+		};
+		43CDBAA22AE411A0003063D7 /* Noise */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Noise;
+		};
+		43CDBAA32AE411A0003063D7 /* NoiseBackend */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = NoiseBackend;
+		};
+		43CDBAA42AE411A0003063D7 /* NoiseSerde */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = NoiseSerde;
 		};
