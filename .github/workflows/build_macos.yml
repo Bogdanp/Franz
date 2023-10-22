@@ -194,3 +194,87 @@ jobs:
         with:
           name: Franz.dmg
           path: dist/Franz.dmg
+
+  build_mac_app_mas:
+    runs-on: macos-12
+    name: Build Franz.app on macOS 12 for the Mac App Store
+    needs:
+      - build_core_arm64
+      - build_core_x86_64
+    if: startsWith(github.event.ref, 'refs/tags/v')
+    steps:
+      - uses: actions/checkout@master
+      - uses: Bogdanp/setup-racket@v1.10
+        with:
+          architecture: 'x64'
+          distribution: 'full'
+          variant: 'CS'
+          version: '8.10'
+          packages: http-easy-lib
+      - name: Install Noise
+        run: |
+          mkdir ../../sandbox
+          git clone --depth 1 --branch racket-8.10 https://github.com/Bogdanp/Noise ../../sandbox/Noise
+          raco pkg install -D --batch --auto ../../sandbox/noise/Racket/noise-serde-lib/
+          pushd ../../sandbox/Noise
+          make
+      - name: Download core arm64
+        uses: actions/download-artifact@v3
+        with:
+          name: core-arm64
+          path: FranzCocoa/resources/
+      - name: Download core x86_64
+        uses: actions/download-artifact@v3
+        with:
+          name: core-x86_64
+          path: FranzCocoa/resources/
+      - name: Download manual x86_64
+        uses: actions/download-artifact@v3
+        with:
+          name: manual-x86_64
+          path: FranzCocoa/resources/manual/
+      - name: Show artifacts
+        run: find FranzCocoa/resources
+      - name: Install Certificates
+        run: |
+          # https://docs.github.com/en/actions/deployment/deploying-xcode-applications/installing-an-apple-certificate-on-macos-runners-for-xcode-development
+          MAC_DEV_CER_PATH=$RUNNER_TEMP/madev.p12
+          DEVELOPER_ID_CER_PATH=$RUNNER_TEMP/devid.p12
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          echo -n "$MAC_DEV_CER" | base64 --decode -o $MAC_DEV_CER_PATH
+          echo -n "$DEVELOPER_ID_CER" | base64 --decode -o $DEVELOPER_ID_CER_PATH
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security import $MAC_DEV_CER_PATH -P "$MAC_DEV_CER_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security import $DEVELOPER_ID_CER_PATH -P "$DEVELOPER_ID_CER_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security list-keychain -d user -s $KEYCHAIN_PATH
+        env:
+          DEVELOPER_ID_CER: ${{ secrets.DEVELOPER_ID_CER }}
+          DEVELOPER_ID_CER_PASSWORD: ${{ secrets.DEVELOPER_ID_CER_PASSWORD }}
+          MAC_DEV_CER: ${{ secrets.MAC_DEV_CER }}
+          MAC_DEV_CER_PASSWORD: ${{ secrets.MAC_DEV_CER_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+      - name: Build & Upload App
+        run: |
+          mkdir -p dist
+          xcodebuild \
+            archive \
+            -project FranzCocoa.xcodeproj/ \
+            -scheme 'Franz MAS' \
+            -destination 'generic/platform=macOS' \
+            -archivePath dist/Franz.xcarchive
+          xcodebuild \
+            -exportArchive \
+            -archivePath dist/Franz.xcarchive \
+            -exportOptionsPlist FranzCocoa/ExportOptions.plist \
+            -exportPath dist/ \
+            -allowProvisioningUpdates
+          xcrun altool \
+            --upload-app \
+            -f dist/Franz.app \
+            -t macos \
+            --username 'bogdan@defn.io' \
+            --password "$APPLE_ID_PASSWORD"
+        env:
+          APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
