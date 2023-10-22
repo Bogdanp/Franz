@@ -264,7 +264,7 @@ jobs:
           MAC_PROVISIONING_PROFILE_PATH=$RUNNER_TEMP/iodefnFranz.provisionprofile
           echo -n "$MAC_PROVISIONING_PROFILE" | base64 --decode -o $MAC_PROVISIONING_PROFILE_PATH
           mkdir -p "~/Library/MobileDevice/Provisioning Profiles"
-          mv $MAC_PROVISIONING_PROFILE_PATH "~/Library/MobileDevice/Provisioning Profiles"
+          mv $MAC_PROVISIONING_PROFILE_PATH "~/Library/MobileDevice/Provisioning Profiles/"
         env:
           DEVELOPER_ID_CER: ${{ secrets.DEVELOPER_ID_CER }}
           DEVELOPER_ID_CER_PASSWORD: ${{ secrets.DEVELOPER_ID_CER_PASSWORD }}
