@@ -280,15 +280,8 @@ jobs:
             -exportOptionsPlist FranzCocoa/MASExportOptions.plist \
             -exportPath dist/ \
             -allowProvisioningUpdates
-          xcrun productbuild \
-            --component dist/Franz.app /Applications/ \
-            Franz.unsigned.pkg
-          xcrun productsign \
-            --sign '3rd Party Mac Developer Installer: CLEARTYPE SOCIETATE CU RASPUNDERE LIMITATA (H3YE679B58)' \
-            Franz.unsigned.pkg \
-            Franz.pkg
           xcrun altool \
-            --upload-package Franz.pkg \
+            --upload-package dist/Franz.pkg \
             --type macos \
             --asc-public-id '69a6de7a-5947-47e3-e053-5b8c7c11a4d1' \
             --apple-id '6470144907' \
