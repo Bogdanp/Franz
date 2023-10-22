@@ -5,7 +5,6 @@
          noise/backend
          noise/serde
          racket/file
-         sentry
 
          "appdata.rkt"
          "logger.rkt"
@@ -45,16 +44,11 @@
       [else
        (build-application-path "metadata.sqlite3")]))
   (log-franz-debug "database path: ~a" database-path)
-  (parameterize ([current-connection (make-database database-path)]
-                 [current-sentry (make-sentry sentry-dsn #:release franz-version)])
+  (parameterize ([current-connection (make-database database-path)])
     (migrate!)
     (maybe-adjust-trial-deadline)
-    (parameterize ([current-sentry-user (make-sentry-user #:id (get-buid))]
-                   [http:current-user-agent (make-user-agent)])
-      (dynamic-wind
-        (λ () (void))
-        (λ () (proc))
-        (λ () (sentry-stop))))))
+    (parameterize ([http:current-user-agent (make-user-agent)])
+      (proc))))
 
 (define (main in-fd out-fd)
   (call-with-main-parameterization

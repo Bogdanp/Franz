@@ -6,7 +6,6 @@
          racket/list
          racket/match
          racket/promise
-         sentry
          threading
          "broker.rkt"
          "connection-details.rkt"
@@ -55,7 +54,6 @@
          (define res-state
            (with-handlers ([exn:fail?
                             (lambda (e)
-                              (sentry-capture-exception! e)
                               (begin0 s
                                 ((error-display-handler)
                                  (format "pool: ~a" (exn-message e))
@@ -492,7 +490,6 @@
    (lambda (res-or-err)
      (begin0 res-or-err
        (when (exn:fail? res-or-err)
-         (sentry-capture-exception! res-or-err)
          (raise res-or-err))))))
 
 

@@ -23,10 +23,8 @@ jobs:
       - name: Prepare secrets
         run: |
           echo -n "$LICENSE_SECRET" | base64 -d > core/secrets/license-secret.txt
-          echo -n "$SENTRY_DSN" | base64 -d > core/secrets/sentry-dsn.txt
         env:
           LICENSE_SECRET: ${{ secrets.LICENSE_SECRET }}
-          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
       - name: Install core
         run: raco pkg install -D --batch --auto --name franz core/
       - name: Install FranzCross

@@ -31,5 +31,4 @@
            (provide id)) ...)]))
 
 (define-secrets
-  [sentry-dsn "secrets/sentry-dsn.txt"]
   [license-secret "secrets/license-secret.txt"])

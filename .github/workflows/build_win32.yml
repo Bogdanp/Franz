@@ -25,12 +25,10 @@ jobs:
         run: |
           echo -n "$DEVELOPER_ID_CER_P12" | base64 -d > developer_id.p12
           echo -n "$LICENSE_SECRET" | base64 -d > core/secrets/license-secret.txt
-          echo -n "$SENTRY_DSN" | base64 -d > core/secrets/sentry-dsn.txt
         shell: bash
         env:
           DEVELOPER_ID_CER_P12: ${{ secrets.DEVELOPER_ID_CER_P12 }}
           LICENSE_SECRET: ${{ secrets.LICENSE_SECRET }}
-          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
       - name: Install core
         run: |
           raco pkg install -D --batch --auto --force libsqlite3
