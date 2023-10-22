@@ -1061,7 +1061,7 @@
 				DEVELOPMENT_TEAM = H3YE679B58;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "Franz-MAS-Info.plist";
+				INFOPLIST_FILE = "FranzCocoa/Franz-MAS-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Franz;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -1095,7 +1095,7 @@
 				DEVELOPMENT_TEAM = H3YE679B58;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "Franz-MAS-Info.plist";
+				INFOPLIST_FILE = "FranzCocoa/Franz-MAS-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Franz;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
