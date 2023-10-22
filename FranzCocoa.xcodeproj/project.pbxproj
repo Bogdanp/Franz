@@ -249,6 +249,7 @@
 		43CD624628CE3B5D00095144 /* ConnectionDetailsFormViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionDetailsFormViewController.swift; sourceTree = "<group>"; };
 		43CD624728CE3B5D00095144 /* ConnectionDetailsFormViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ConnectionDetailsFormViewController.xib; sourceTree = "<group>"; };
 		43CDBAFB2AE411A0003063D7 /* Franz.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Franz.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		43CDBAFD2AE54A34003063D7 /* Franz-MAS-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Franz-MAS-Info.plist"; sourceTree = "<group>"; };
 		43D03DD328FAC6030049D44D /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
 		43D03DD528FAFE3B0049D44D /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
 		43D03DD728FB03940049D44D /* Identifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Identifiers.swift; sourceTree = "<group>"; };
@@ -347,6 +348,7 @@
 				43E5AE8B291245E000C74966 /* DispatchQueue.swift */,
 				4322BBD82924DED8002358C3 /* Editor.swift */,
 				432C24622903F03B00C6F336 /* Error.swift */,
+				43CDBAFD2AE54A34003063D7 /* Franz-MAS-Info.plist */,
 				43CD621F28CE24B100095144 /* FranzCocoa.entitlements */,
 				43196F8B28F1DB94003C793B /* GroupDetailView.swift */,
 				4395503628FD45B000CC0050 /* GroupOffsetsOutlineViewController.swift */,
@@ -1059,6 +1061,7 @@
 				DEVELOPMENT_TEAM = H3YE679B58;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Franz-MAS-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Franz;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -1092,6 +1095,7 @@
 				DEVELOPMENT_TEAM = H3YE679B58;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Franz-MAS-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Franz;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
