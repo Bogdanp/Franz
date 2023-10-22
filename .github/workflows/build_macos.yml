@@ -263,8 +263,10 @@ jobs:
 
           MAC_PROVISIONING_PROFILE_PATH=$RUNNER_TEMP/iodefnFranz.provisionprofile
           echo -n "$MAC_PROVISIONING_PROFILE" | base64 --decode -o $MAC_PROVISIONING_PROFILE_PATH
+          /usr/bin/security cms -D -i $MAC_PROVISIONING_PROFILE_PATH > decoded.provisionprofile
+          MAC_PROVISIONING_PROFILE_UUID="$(/usr/libexec/PlistBuddy -c "Print UUID" decoded.provisionprofile)"
           mkdir -p "~/Library/MobileDevice/Provisioning Profiles"
-          mv $MAC_PROVISIONING_PROFILE_PATH "~/Library/MobileDevice/Provisioning Profiles/"
+          mv $MAC_PROVISIONING_PROFILE_PATH "~/Library/MobileDevice/Provisioning Profiles/$MAC_PROVISIONING_PROFILE_UUID.provisionprofile"
         env:
           DEVELOPER_ID_CER: ${{ secrets.DEVELOPER_ID_CER }}
           DEVELOPER_ID_CER_PASSWORD: ${{ secrets.DEVELOPER_ID_CER_PASSWORD }}
