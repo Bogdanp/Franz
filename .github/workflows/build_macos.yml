@@ -197,7 +197,7 @@ jobs:
 
   build_mac_app_mas:
     runs-on: macos-12
-    name: Build Franz.app on macOS 12 for the Mac App Store
+    name: Build Franz.app on macOS 12 (MAS)
     needs:
       - build_core_arm64
       - build_core_x86_64
@@ -277,4 +277,4 @@ jobs:
             --username 'bogdan@defn.io' \
             --password "$APPLE_ID_PASSWORD"
         env:
-          APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+          APPLE_ID_PASSWORD: ${{ secrets.NOTARY_PASSWORD }}
