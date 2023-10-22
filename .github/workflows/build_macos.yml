@@ -245,31 +245,24 @@ jobs:
           # https://docs.github.com/en/actions/deployment/deploying-xcode-applications/installing-an-apple-certificate-on-macos-runners-for-xcode-development
           MAC_DEV_CER_PATH=$RUNNER_TEMP/madev.p12
           MAC_DIST_CER_PATH=$RUNNER_TEMP/madist.p12
-          DEVELOPER_ID_CER_PATH=$RUNNER_TEMP/devid.p12
           DEVELOPER_INSTALLER_CER_PATH=$RUNNER_TEMP/devinst.p12
           KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
           echo -n "$MAC_DEV_CER" | base64 --decode -o $MAC_DEV_CER_PATH
           echo -n "$MAC_DIST_CER" | base64 --decode -o $MAC_DIST_CER_PATH
-          echo -n "$DEVELOPER_ID_CER" | base64 --decode -o $DEVELOPER_ID_CER_PATH
           echo -n "$DEVELOPER_INSTALLER_CER" | base64 --decode -o $DEVELOPER_INSTALLER_CER_PATH
           security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
           security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
           security import $MAC_DEV_CER_PATH -P "$MAC_DEV_CER_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
           security import $MAC_DIST_CER_PATH -P "$MAC_DIST_CER_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
-          security import $DEVELOPER_ID_CER_PATH -P "$DEVELOPER_ID_CER_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
           security import $DEVELOPER_INSTALLER_CER_PATH -P "$DEVELOPER_INSTALLER_CER_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
           security list-keychain -d user -s $KEYCHAIN_PATH
 
-          MAC_PROVISIONING_PROFILE_PATH=$RUNNER_TEMP/iodefnFranz.provisionprofile
-          echo -n "$MAC_PROVISIONING_PROFILE" | base64 --decode -o $MAC_PROVISIONING_PROFILE_PATH
-          security cms -D -i $MAC_PROVISIONING_PROFILE_PATH > decoded.provisionprofile
-          MAC_PROVISIONING_PROFILE_UUID="$(/usr/libexec/PlistBuddy -c "Print UUID" decoded.provisionprofile)"
-          mkdir -p "~/Library/MobileDevice/Provisioning Profiles"
-          mv $MAC_PROVISIONING_PROFILE_PATH "~/Library/MobileDevice/Provisioning Profiles/$MAC_PROVISIONING_PROFILE_UUID.provisionprofile"
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo -n "$MAC_PROVISIONING_PROFILE" | \
+            base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/franz.provisionprofile
+          ls -l ~/Library/MobileDevice/Provisioning\ Profiles/
         env:
-          DEVELOPER_ID_CER: ${{ secrets.DEVELOPER_ID_CER }}
-          DEVELOPER_ID_CER_PASSWORD: ${{ secrets.DEVELOPER_ID_CER_PASSWORD }}
           DEVELOPER_INSTALLER_CER: ${{ secrets.DEVELOPER_INSTALLER_CER }}
           DEVELOPER_INSTALLER_CER_PASSWORD: ${{ secrets.DEVELOPER_INSTALLER_CER_PASSWORD }}
           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
@@ -291,16 +284,15 @@ jobs:
             -exportArchive \
             -archivePath dist/Franz.xcarchive \
             -exportOptionsPlist FranzCocoa/MASExportOptions.plist \
-            -exportPath dist/ \
-            -allowProvisioningUpdates
+            -exportPath dist/
           xcrun altool \
             --upload-package dist/Franz.pkg \
             --type macos \
             --asc-public-id '69a6de7a-5947-47e3-e053-5b8c7c11a4d1' \
             --apple-id '6470144907' \
             --bundle-id 'io.defn.Franz' \
-            --bundle-short-version-string "$(defaults read "$(pwd)/dist/Franz.app/Contents/Info" CFBundleShortVersionString)" \
-            --bundle-version "$(defaults read "$(pwd)/dist/Franz.app/Contents/Info" CFBundleVersion)" \
+            --bundle-short-version-string "$(/usr/libexec/PlistBuddy -c 'Print ApplicationProperties:CFBundleShortVersionString' dist/Franz.xcarchive/Info.plist)" \
+            --bundle-version "$(/usr/libexec/PlistBuddy -c 'Print ApplicationProperties:CFBundleVersion' dist/Franz.xcarchive/Info.plist)" \
             --username 'bogdan@defn.io' \
             --password "$APPLE_ID_PASSWORD"
         env:
