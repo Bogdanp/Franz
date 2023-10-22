@@ -260,16 +260,22 @@ jobs:
           security import $DEVELOPER_ID_CER_PATH -P "$DEVELOPER_ID_CER_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
           security import $DEVELOPER_INSTALLER_CER_PATH -P "$DEVELOPER_INSTALLER_CER_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
           security list-keychain -d user -s $KEYCHAIN_PATH
+
+          MAC_PROVISIONING_PROFILE_PATH=$RUNNER_TEMP/iodefnFranz.provisionprofile
+          echo -n "$MAC_PROVISIONING_PROFILE" | base64 --decode -o $MAC_PROVISIONING_PROFILE_PATH
+          mkdir -p "~/Library/MobileDevice/Provisioning Profiles"
+          mv $MAC_PROVISIONING_PROFILE_PATH "~/Library/MobileDevice/Provisioning Profiles"
         env:
           DEVELOPER_ID_CER: ${{ secrets.DEVELOPER_ID_CER }}
           DEVELOPER_ID_CER_PASSWORD: ${{ secrets.DEVELOPER_ID_CER_PASSWORD }}
           DEVELOPER_INSTALLER_CER: ${{ secrets.DEVELOPER_INSTALLER_CER }}
           DEVELOPER_INSTALLER_CER_PASSWORD: ${{ secrets.DEVELOPER_INSTALLER_CER_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
           MAC_DEV_CER: ${{ secrets.MAC_DEV_CER }}
           MAC_DEV_CER_PASSWORD: ${{ secrets.MAC_DEV_CER_PASSWORD }}
           MAC_DIST_CER: ${{ secrets.MAC_DIST_CER }}
           MAC_DIST_CER_PASSWORD: ${{ secrets.MAC_DIST_CER_PASSWORD }}
-          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+          MAC_PROVISIONING_PROFILE: ${{ secrets.MAC_PROVISIONING_PROFILE }}
       - name: Build & Upload App
         run: |
           mkdir -p dist
