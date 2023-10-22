@@ -1,4 +1,8 @@
-on: [push]
+on:
+  - push:
+      branches:
+        - master
+  - workflow_dispatch
 name: Build on Linux
 jobs:
   build_linux_app:
