@@ -206,7 +206,7 @@ jobs:
     needs:
       - build_core_arm64
       - build_core_x86_64
-    if: startsWith(github.event.ref, 'refs/tags/v')
+    if: inputs.masBuild
     steps:
       - uses: actions/checkout@master
       - uses: Bogdanp/setup-racket@v1.10
