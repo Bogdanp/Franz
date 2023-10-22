@@ -277,7 +277,7 @@ jobs:
           xcodebuild \
             -exportArchive \
             -archivePath dist/Franz.xcarchive \
-            -exportOptionsPlist FranzCocoa/ExportOptions.plist \
+            -exportOptionsPlist FranzCocoa/MASExportOptions.plist \
             -exportPath dist/ \
             -allowProvisioningUpdates
           xcrun productbuild \
