@@ -1,13 +1,13 @@
 on:
-  - push:
-      branches:
-        - master
-  - workflow_dispatch:
-      inputs:
-        masBuild:
-          description: "Build for Mac App Store"
-          required: false
-          type: boolean
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+    inputs:
+      masBuild:
+        description: "Build for Mac App Store"
+        required: false
+        type: boolean
 name: Build on macOS
 jobs:
   build_core_arm64:

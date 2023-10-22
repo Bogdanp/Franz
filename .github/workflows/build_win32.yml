@@ -1,8 +1,8 @@
 on:
-  - push:
-      branches:
-        - master
-  - workflow_dispatch
+  push:
+    branches:
+      - master
+  workflow_dispatch:
 name: Build on Windows
 jobs:
   build_win32_app:
