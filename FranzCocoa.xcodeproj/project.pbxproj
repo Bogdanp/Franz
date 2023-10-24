@@ -260,6 +260,7 @@
 		43E5AE8B291245E000C74966 /* DispatchQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DispatchQueue.swift; sourceTree = "<group>"; };
 		43E64A062928F2BF00FDBF29 /* ScriptWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptWindowController.swift; sourceTree = "<group>"; };
 		43E64A072928F2BF00FDBF29 /* ScriptWindowController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ScriptWindowController.xib; sourceTree = "<group>"; };
+		43EB2CD92AE780E2000BDE33 /* FranzCocoaMAS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FranzCocoaMAS.entitlements; sourceTree = "<group>"; };
 		43EE0EDE299BD276001A973A /* SidebarOptionsForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarOptionsForm.swift; sourceTree = "<group>"; };
 		43F987A5292A81D400E5E1DE /* AutoUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoUpdater.swift; sourceTree = "<group>"; };
 		43F987A7292A867B00E5E1DE /* UpdatesWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdatesWindowController.swift; sourceTree = "<group>"; };
@@ -350,6 +351,7 @@
 				432C24622903F03B00C6F336 /* Error.swift */,
 				43CDBAFD2AE54A34003063D7 /* Franz-MAS-Info.plist */,
 				43CD621F28CE24B100095144 /* FranzCocoa.entitlements */,
+				43EB2CD92AE780E2000BDE33 /* FranzCocoaMAS.entitlements */,
 				43196F8B28F1DB94003C793B /* GroupDetailView.swift */,
 				4395503628FD45B000CC0050 /* GroupOffsetsOutlineViewController.swift */,
 				4395503728FD45B000CC0050 /* GroupOffsetsOutlineViewController.xib */,
@@ -1053,7 +1055,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
-				CODE_SIGN_ENTITLEMENTS = FranzCocoa/FranzCocoa.entitlements;
+				CODE_SIGN_ENTITLEMENTS = FranzCocoa/FranzCocoaMAS.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 5;
@@ -1087,7 +1089,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
-				CODE_SIGN_ENTITLEMENTS = FranzCocoa/FranzCocoa.entitlements;
+				CODE_SIGN_ENTITLEMENTS = FranzCocoa/FranzCocoaMAS.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 5;
