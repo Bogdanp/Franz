@@ -3,6 +3,7 @@
 
 * SSL Certs can be provided without associated SSL Keys. This makes it
   possible to provide custom CA certs without associated keys.
+* Updates are now checked on boot on Linux and Windows when enabled.
 
 # 2023.10.15 (Version 1.2, Build 1)
 ## Added
