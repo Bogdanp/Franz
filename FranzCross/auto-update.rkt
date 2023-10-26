@@ -21,25 +21,35 @@
 
 (define the-auto-updater #f)
 
-(define (start-auto-updater)
-  (set! the-auto-updater
-        (parameterize ([current-custodian (make-custodian)])
-          (make-auto-updater
-           (lambda (changelog release)
-             (when (and changelog release (Release-url release))
-               (updates-available-window changelog release)))
-           #:arch (system-type 'arch)
-           #:version franz-version
-           #:frequency (and
-                        (get-preference 'auto-update:check? #t)
-                        (* (get-preference 'auto-update:interval 3600) 1000))))))
+(define (start-auto-updater [check-now? #t])
+  (define check-for-updates?
+    (get-preference 'auto-update:check? #t))
+  (define check-interval
+    (* (get-preference 'auto-update:interval 3600) 1000))
+  (define updater
+    (parameterize ([current-custodian (make-custodian)])
+      (make-auto-updater
+       do-update-available
+       #:arch (system-type 'arch)
+       #:version franz-version
+       #:frequency (and check-for-updates? check-interval))))
+  (when (and check-for-updates? check-now?)
+    (match (auto-updater-check updater)
+      [`(#f #f) (void)]
+      [`(,changelog ,release)
+       (do-update-available changelog release)]))
+  (set! the-auto-updater updater))
 
 (define (stop-auto-updater)
   (void (auto-updater-stop the-auto-updater)))
 
 (define (restart-auto-updater)
   (stop-auto-updater)
-  (start-auto-updater))
+  (start-auto-updater #f))
+
+(define (do-update-available changelog release)
+  (when (and changelog release (Release-url release))
+    (updates-available-window changelog release)))
 
 (define (updates-available-window changelog release)
   (define close! void)
