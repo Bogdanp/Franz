@@ -323,7 +323,7 @@ See @registry-yt{this YouTube video} for a live demo.
 }
 
 
-@section{Keyboard Shortcuts (Windows)}
+@section{Keyboard Shortcuts (Linux & Windows)}
 
 @defkbd[(shift ctl 1)]{
   Displays the @tech{Welcome Window}.
