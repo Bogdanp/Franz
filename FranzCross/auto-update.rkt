@@ -11,7 +11,8 @@
          racket/string
          "common.rkt"
          "mixin.rkt"
-         "preference.rkt")
+         "preference.rkt"
+         "thread.rkt")
 
 (provide
  start-auto-updater
@@ -34,10 +35,11 @@
        #:version franz-version
        #:frequency (and check-for-updates? check-interval))))
   (when (and check-for-updates? check-now?)
-    (match (auto-updater-check updater)
-      [`(#f #f) (void)]
-      [`(,changelog ,release)
-       (do-update-available changelog release)]))
+    (thread*
+     (match (auto-updater-check updater)
+       [`(#f #f) (void)]
+       [`(,changelog ,release)
+        (do-update-available changelog release)])))
   (set! the-auto-updater updater))
 
 (define (stop-auto-updater)
