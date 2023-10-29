@@ -17,7 +17,7 @@
                ["lua-lib" #:version "0.1.2"]
                "messagepack-lib"
                ["noise-serde-lib" #:version "0.4"]
-               "protocol-buffers-lib"
+               ["protocol-buffers-lib" #:version "0.1.1"]
                ["sasl-lib" #:version "1.3"]
                "snappy-lib"
                "threading-lib"))
