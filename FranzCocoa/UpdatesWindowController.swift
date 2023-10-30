@@ -124,7 +124,7 @@ fileprivate struct Changelog: NSViewRepresentable {
   }
 
   func updateNSView(_ nsView: NSViewType, context: NSViewRepresentableContext<Changelog>) {
-    nsView.backgroundColor = .white
+    nsView.backgroundColor = .textBackgroundColor
     nsView.borderType = .lineBorder
     nsView.hasVerticalScroller = true
     nsView.hasHorizontalScroller = true
@@ -132,7 +132,7 @@ fileprivate struct Changelog: NSViewRepresentable {
 
     let contentSize = nsView.contentSize
     if let textView = nsView.documentView as? NSTextView {
-      textView.backgroundColor = .white
+      textView.backgroundColor = .textBackgroundColor
       textView.isEditable = false
       textView.isVerticallyResizable = true
       textView.isHorizontallyResizable = true
