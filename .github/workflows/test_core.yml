@@ -50,6 +50,10 @@ jobs:
       - name: Install core
         run: raco pkg install -D --batch --auto --name franz core/
       - name: Run tests
-        run: raco test core/
+        run: |
+          # HACK: Retry to get around 'coordinator not available' errors.
+          raco test core/ || \
+            raco test core/ || \
+            raco test core/
         env:
           FRANZ_INTEGRATION_TESTS: x
