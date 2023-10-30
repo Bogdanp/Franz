@@ -22,6 +22,13 @@
 
 (define the-auto-updater #f)
 
+(define (system-arch)
+  (define racket-arch
+    (system-type 'arch))
+  (case racket-arch
+    [(aarch64) 'arm64]
+    [else racket-arch]))
+
 (define (start-auto-updater [check-now? #t])
   (define check-for-updates?
     (get-preference 'auto-update:check? #t))
@@ -31,7 +38,7 @@
     (parameterize ([current-custodian (make-custodian)])
       (make-auto-updater
        do-update-available
-       #:arch (system-type 'arch)
+       #:arch (system-arch)
        #:version franz-version
        #:frequency (and check-for-updates? check-interval))))
   (when (and check-for-updates? check-now?)
@@ -51,7 +58,7 @@
 
 (define (do-update-available changelog release)
   (when (and changelog release (Release-url release))
-    (updates-available-window changelog release)))
+    (render (updates-available-window changelog release))))
 
 (define (updates-available-window changelog release)
   (define close! void)
@@ -226,14 +233,14 @@
   (define here (syntax-source #'here))
   (define-values (here-dir _filename _is-dir?)
     (split-path here))
-  (start-auto-updater)
+  (start-auto-updater #f)
   (render (check-for-updates-dialog))
   (render
    (updates-available-window
     (call-with-input-file (build-path here-dir 'up "website" "versions" "changelog.txt")
       port->string)
     (make-Release
-     #:arch (system-type 'arch)
+     #:arch (system-arch)
      #:version franz-version
      #:mac-url "https://franz.defn.io/releases/Franz%201.0.0006.universal.dmg"
      #:linux-url #f
