@@ -20,9 +20,9 @@
 (define-record Release
   [arch : Symbol]
   [version : String]
-  [mac-url : String]
-  [linux-url : String]
-  [windows-url : String])
+  [mac-url : (Optional String)]
+  [linux-url : (Optional String)]
+  [windows-url : (Optional String)])
 
 (define-rpc (get-changelog : String)
   (bytes->string/utf-8
