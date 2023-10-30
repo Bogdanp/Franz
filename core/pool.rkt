@@ -674,16 +674,6 @@
      #:bootstrap-port 9092
      #:use-ssl #f))
 
-  (define (wait-for-topic id topic)
-    (define deadline (+ (current-inexact-monotonic-milliseconds) 5000))
-    (let loop ()
-      (when (> (current-inexact-monotonic-milliseconds) deadline)
-        (error 'wait-for-topic "timed out"))
-      (unless (findf (λ (t) (equal? topic (Topic-name t)))
-                     (Metadata-topics (pool-get-metadata id #t)))
-        (sleep 0.1)
-        (loop))))
-
   (define integration-tests
     (test-suite
      "pool integration"
@@ -703,7 +693,6 @@
        (test-begin
          (define res (pool-create-topic id t 2 1 (hash)))
          (check-equal? (k:CreatedTopic-error-code res) 0)
-         (wait-for-topic id t)
          (define conf (pool-get-resource-configs id 'topic t))
          (check-false (null? conf)))
        (pool-delete-topic id t)
@@ -714,7 +703,6 @@
        (define id (pool-open test-details))
        (test-begin
          (pool-create-topic id t 2 1 (hash))
-         (wait-for-topic id t)
          (define it (pool-open-iterator id t 'latest))
          (let-values ([(registry script records) (pool-get-records it (* 1 1024 1024))])
            (check-false registry)
@@ -777,7 +765,6 @@
              (k:consumer-stop c))))
        (test-begin
          (pool-create-topic id t 2 1 (hash))
-         (wait-for-topic id t)
          (pool-publish-record id t 0 #"partition-0-record-0" #f)
          (pool-publish-record id t 0 #"partition-0-record-1" #f)
          (pool-publish-record id t 1 #"partition-1-record-0" #f)
