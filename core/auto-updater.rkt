@@ -4,6 +4,7 @@
                      racket/syntax
                      syntax/parse)
          racket/match
+         racket/string
          "logger.rkt"
          "release.rkt")
 
@@ -36,7 +37,7 @@
                         (exn-message e))
                        (values #f #f))])
       (define release (get-latest-release arch))
-      (if (and release (string>? (Release-version release) sw-version))
+      (if (and release (version>? (Release-version release) sw-version))
           (values (get-changelog) release)
           (values #f #f))))
   (define thd
@@ -112,3 +113,20 @@
 (define-auto-updater-methods
   [stop]
   [check])
+
+
+;; help ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define (version>? a b)
+  (> (version-number a)
+     (version-number b)))
+
+(define (version-number s)
+  (match-define
+    (list (app string->number major)
+          (app string->number minor)
+          (app string->number build))
+    (string-split s "."))
+  (+ (* major 1000000)
+     (* minor 10000)
+     build))
