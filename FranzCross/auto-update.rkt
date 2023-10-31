@@ -2,7 +2,6 @@
 
 (require franz/auto-updater
          franz/release
-         franz/version
          (prefix-in http: net/http-easy)
          net/sendurl
          racket/class
@@ -12,7 +11,8 @@
          "common.rkt"
          "mixin.rkt"
          "preference.rkt"
-         "thread.rkt")
+         "thread.rkt"
+         "version.rkt")
 
 (provide
  start-auto-updater
@@ -39,7 +39,7 @@
       (make-auto-updater
        do-update-available
        #:arch (system-arch)
-       #:version franz-version
+       #:version franz-cross-version
        #:frequency (and check-for-updates? check-interval))))
   (when (and check-for-updates? check-now?)
     (thread*
@@ -241,7 +241,7 @@
       port->string)
     (make-Release
      #:arch (system-arch)
-     #:version franz-version
+     #:version franz-cross-version
      #:mac-url "https://franz.defn.io/releases/Franz%201.0.0006.universal.dmg"
      #:linux-url #f
      #:windows-url #f))))
