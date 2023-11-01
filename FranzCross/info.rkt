@@ -8,7 +8,6 @@
                "buid-lib"
                "canvas-list"
                "db-lib"
-               "drracket" ;; browser/external FIXME
                ["franz" #:version "1.2"]
                ["gui-easy-lib" #:version "0.15"]
                "gui-lib"

@@ -1,9 +1,9 @@
 #lang racket/gui/easy
 
-(require browser/external
-         franz/connection-details
+(require franz/connection-details
          (submod franz/connection-details rpc)
          (submod franz/metadata rpc)
+         net/sendurl
          (prefix-in p: pict)
          racket/date
          racket/gui/easy/font

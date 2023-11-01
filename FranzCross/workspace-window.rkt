@@ -1,13 +1,13 @@
 #lang racket/gui/easy
 
-(require browser/external
-         franz/broker
+(require franz/broker
          franz/connection-details
          (submod franz/connection-details rpc)
          franz/schema-registry
          (submod franz/schema-registry rpc)
          franz/schema-registry/schema
          (submod franz/workspace rpc)
+         net/sendurl
          racket/format
          racket/match
          "alert.rkt"

@@ -1,7 +1,7 @@
 #lang racket/gui/easy
 
-(require browser/external
-         franz/broker
+(require franz/broker
+         net/sendurl
          "clipboard.rkt"
          "combinator.rkt"
          "hacks.rkt"
