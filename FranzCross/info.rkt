@@ -5,13 +5,18 @@
 
 (define collection "FranzCross")
 (define deps '("base"
-               "buid"
+               "buid-lib"
                "canvas-list"
+               "db-lib"
+               "drracket" ;; browser/external FIXME
                ["franz" #:version "1.2"]
                ["gui-easy-lib" #:version "0.15"]
                "gui-lib"
                "http-easy-lib"
                "json-lexer-lib"
+               "net-lib"
                "pict-lib"
+               "plot-lib"
+               "plot-gui-lib"
                "threading-lib"))
 (define build-deps '("rackunit-lib"))
