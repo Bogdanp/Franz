@@ -14,6 +14,50 @@
          "pool.rkt"
          "record.rkt")
 
+;; results ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(provide
+ (record-out ApplyResult)
+ (enum-out ReduceResult))
+
+(define-enum ReduceResult
+  [text {s : String}]
+  [integer {n : Varint}]
+  [lineChart
+   {xlabel : String}
+   {xs : (Listof Float64)}
+   {ylabel : String}
+   {ys : (Listof Float64)}])
+
+(define-record ApplyResult
+  [items : (Listof IteratorResult)]
+  [(reduced #f) : (Optional ReduceResult)])
+
+(define (->ReduceResult v)
+  (cond
+    [(nil? v) #f]
+    [(bytes? v) (ReduceResult.text (bytes->string/utf-8 v #\uFFFD))]
+    [(integer? v) (ReduceResult.integer v)]
+    [(table? v)
+     (define type
+       (table-ref v #"__type"))
+     (case type
+       [(equal? #"LineChart")
+        (define xs (table-ref v #"xs"))
+        (define ys (table-ref v #"ys"))
+        (ReduceResult.lineChart
+         (bytes->string/utf-8 (table-ref v #"xlabel"))
+         (for/list ([i (in-range 1 (add1 (table-length xs)))])
+           (table-ref xs i))
+         (bytes->string/utf-8 (table-ref v #"ylabel"))
+         (for/list ([i (in-range 1 (add1 (table-length ys)))])
+           (table-ref ys i)))]
+       [else (error '->ReduceResult "invalid table: ~s" v)])]
+    [else (error '->ReduceResult "unexpected result: ~s" v)]))
+
+
+;; scripts ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (define-rpc (get-script [for-topic topic : String]
                         [in-workspace id : UVarint] : String)
   (case topic
@@ -27,16 +71,43 @@
 
 (define-rpc (apply-script [_ script : String]
                           [to-records records : (Listof IteratorRecord)]
-                          [in-workspace id : UVarint] : (Listof IteratorResult))
-  (define proc (table-ref (make-script 'apply-script script) #"transform"))
-  (unless (procedure? proc)
+                          [in-workspace id : UVarint] : ApplyResult)
+  (define script-tbl (make-script 'apply-script script))
+  (define xform-proc (table-ref script-tbl #"transform"))
+  (unless (procedure? xform-proc)
     (error 'apply-script "script.transform is not a procedure"))
-  (for*/list ([r (in-list records)]
-              [t (in-value (proc (IteratorRecord->table r)))]
-              #:unless (nil? t))
-    (unless (table? t)
-      (error 'apply-script "script.transform must return a table or nil~n  received: ~s" t))
-    (IteratorResult.transformed (table->IteratorRecord t) r)))
+  (define reduce-proc (table-ref script-tbl #"reduce"))
+  (unless (or (nil? reduce-proc) (procedure? reduce-proc))
+    (error 'apply-script "script.reduce is not a procedure"))
+  (define (xform r)
+    (define table
+      (xform-proc (IteratorRecord->table r)))
+    (cond
+      [(table? table) table]
+      [(nil? table) nil]
+      [else (error 'apply-script "script.transform must return a table or nil~n  received: ~s" table)]))
+  (cond
+    [(nil? reduce-proc)
+     (define items
+       (for*/list ([r (in-list records)]
+                   [t (in-value (xform r))]
+                   #:unless (nil? t))
+         (IteratorResult.transformed (table->IteratorRecord t) r)))
+     (ApplyResult items #f)]
+    [else
+     (define-values (state items)
+       (for*/fold ([s nil] [items null])
+                  ([r (in-list records)]
+                   [t (in-value (xform r))]
+                   #:unless (nil? t))
+         (define res
+           (IteratorResult.transformed (table->IteratorRecord t) r))
+         (values
+          (reduce-proc t s)
+          (cons res items))))
+     (ApplyResult
+      (reverse items)
+      (->ReduceResult state))]))
 
 (define-rpc (deactivate-script [for-topic topic : String]
                                [in-workspace id : UVarint])
@@ -124,6 +195,7 @@ SCRIPT
 ;; extlib ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define-runtime-module-path-index avro.lua "extlib/avro.lua")
+(define-runtime-module-path-index collectors.lua "extlib/collectors.lua")
 (define-runtime-module-path-index kafka.lua "extlib/kafka.lua")
 (define-runtime-module-path-index msgpack.lua "extlib/msgpack.lua")
 
@@ -166,6 +238,9 @@ SCRIPT
                   (table-set! env #"#%avro-tolua" ->lua)
                   (define mod (car (dynamic-require avro.lua '#%chunk)))
                   (table-set! env name mod)))
+    (#"collectors" . ,(λ (env name)
+                        (define mod (car (dynamic-require collectors.lua '#%chunk)))
+                        (table-set! env name mod)))
     (#"kafka" . ,(λ (env name)
                    (table-set! env #"#%parse-Internal" parse-Internal)
                    (table-set! env #"#%InternalOffsetCommit?" InternalOffsetCommit?)

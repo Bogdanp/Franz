@@ -154,6 +154,52 @@ public enum Lexer: Readable, Writable {
   }
 }
 
+public enum ReduceResult: Readable, Writable {
+  case text(String)
+  case integer(Varint)
+  case lineChart(String, [Float64], String, [Float64])
+
+  public static func read(from inp: InputPort, using buf: inout Data) -> ReduceResult {
+    let tag = UVarint.read(from: inp, using: &buf)
+    switch tag {
+    case 0x0000:
+      return .text(
+        String.read(from: inp, using: &buf)
+      )
+    case 0x0001:
+      return .integer(
+        Varint.read(from: inp, using: &buf)
+      )
+    case 0x0002:
+      return .lineChart(
+        String.read(from: inp, using: &buf),
+        [Float64].read(from: inp, using: &buf),
+        String.read(from: inp, using: &buf),
+        [Float64].read(from: inp, using: &buf)
+      )
+    default:
+      preconditionFailure("ReduceResult: unexpected tag \(tag)")
+    }
+  }
+
+  public func write(to out: OutputPort) {
+    switch self {
+    case .text(let s):
+      UVarint(0x0000).write(to: out)
+      s.write(to: out)
+    case .integer(let n):
+      UVarint(0x0001).write(to: out)
+      n.write(to: out)
+    case .lineChart(let xlabel, let xs, let ylabel, let ys):
+      UVarint(0x0002).write(to: out)
+      xlabel.write(to: out)
+      xs.write(to: out)
+      ylabel.write(to: out)
+      ys.write(to: out)
+    }
+  }
+}
+
 public enum SchemaRegistryKind: Readable, Writable {
   case confluent
 
@@ -254,6 +300,31 @@ public enum TokenType: Readable, Writable {
     case .name:
       UVarint(0x0006).write(to: out)
     }
+  }
+}
+
+public struct ApplyResult: Readable, Writable {
+  public let items: [IteratorResult]
+  public let reduced: ReduceResult?
+
+  public init(
+    items: [IteratorResult],
+    reduced: ReduceResult?
+  ) {
+    self.items = items
+    self.reduced = reduced
+  }
+
+  public static func read(from inp: InputPort, using buf: inout Data) -> ApplyResult {
+    return ApplyResult(
+      items: [IteratorResult].read(from: inp, using: &buf),
+      reduced: ReduceResult?.read(from: inp, using: &buf)
+    )
+  }
+
+  public func write(to out: OutputPort) {
+    items.write(to: out)
+    reduced.write(to: out)
   }
 }
 
@@ -1000,7 +1071,7 @@ public class Backend {
     )
   }
 
-  public func applyScript(_ script: String, toRecords records: [IteratorRecord], inWorkspace id: UVarint) -> Future<String, [IteratorResult]> {
+  public func applyScript(_ script: String, toRecords records: [IteratorRecord], inWorkspace id: UVarint) -> Future<String, ApplyResult> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0003).write(to: out)
@@ -1008,8 +1079,8 @@ public class Backend {
         records.write(to: out)
         id.write(to: out)
       },
-      readProc: { (inp: InputPort, buf: inout Data) -> [IteratorResult] in
-        return [IteratorResult].read(from: inp, using: &buf)
+      readProc: { (inp: InputPort, buf: inout Data) -> ApplyResult in
+        return ApplyResult.read(from: inp, using: &buf)
       }
     )
   }
