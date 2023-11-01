@@ -579,9 +579,9 @@ extension TopicRecordsTableViewController: ScriptWindowDelegate {
       inWorkspace: id
     ).sink( onError: { err in
       Error.alert(withError: err)
-    }, onComplete: { [weak self] records in
+    }, onComplete: { [weak self] result in
       self?.setRecords(
-        records,
+        result.items,
         byAppending: false
       )
     })
