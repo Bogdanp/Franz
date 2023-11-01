@@ -2,6 +2,7 @@
 
 (require franz/connection-details
          franz/iterator
+         franz/script
          (submod franz/script rpc)
          (submod franz/workspace rpc)
          racket/class
@@ -18,6 +19,7 @@
          "observable.rkt"
          "preference.rkt"
          "record-detail.rkt"
+         "result-dialog.rkt"
          "thread.rkt"
          "topic-config.rkt"
          "validator.rkt"
@@ -123,8 +125,16 @@
       (define originals
         (for/list ([res (in-vector ress)])
           (IteratorResult->original res)))
+      (define res
+        (apply-script script originals id))
+      (when (ApplyResult-reduced res)
+        (render
+         (result-dialog
+          (format "[~a] Result" topic)
+          (ApplyResult-reduced res))
+         (get-parent)))
       (list->vector
-       (apply-script script originals id))))
+       (ApplyResult-items res))))
   (define (do-publish-tombstone r)
     (when (confirm #:title "Really publish tombstone?"
                    #:message "This action cannot be undone."
