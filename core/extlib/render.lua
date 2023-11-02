@@ -1,18 +1,24 @@
 #lang lua
 
-local LineChart = {}
-LineChart.__index = LineChart
+-- LineChart -----------------------------------------------------------
 
-function LineChart.make(xlabel, ylabel)
-    local ob = {
-        __type = "LineChart",
-        xlabel = xlabel or "x axis",
-        ylabel = ylabel or "y axis",
-        xs = {},
-        ys = {},
-    }
-    setmetatable(ob, LineChart)
-    return ob
+local LineChart = Class {
+    name = "LineChart",
+    constructor = function(xlabel, ylabel)
+        return {
+            __type = "LineChart",
+            xlabel = xlabel or "x axis",
+            ylabel = ylabel or "y axis",
+            xs = {},
+            ys = {},
+        }
+    end
+}
+
+function LineChart:clear()
+    self.xs = {}
+    self.ys = {}
+    return self
 end
 
 function LineChart:push(x, y)
@@ -33,8 +39,8 @@ end
 
 function LineChart:__tostring()
     return string.format(
-        "<LineChart xlabel=%q ylabel=%q xs=%q ys=%q>",
-        self.xlabel, self.ylabel, self.xs, self.ys
+        "<LineChart xlabel=%q ylabel=%q>",
+        self.xlabel, self.ylabel
     )
 end
 

@@ -211,6 +211,7 @@ SCRIPT
 ;; extlib ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define-runtime-module-path-index avro.lua "extlib/avro.lua")
+(define-runtime-module-path-index class.lua "extlib/class.lua")
 (define-runtime-module-path-index kafka.lua "extlib/kafka.lua")
 (define-runtime-module-path-index msgpack.lua "extlib/msgpack.lua")
 (define-runtime-module-path-index render.lua "extlib/render.lua")
@@ -254,6 +255,9 @@ SCRIPT
                   (table-set! env #"#%avro-tolua" ->lua)
                   (define mod (car (dynamic-require avro.lua '#%chunk)))
                   (table-set! env name mod)))
+    (#"class" . ,(λ (env _name)
+                   (define Class (car (dynamic-require class.lua '#%chunk)))
+                   (table-set! env #"Class" Class)))
     (#"kafka" . ,(λ (env name)
                    (table-set! env #"#%parse-Internal" parse-Internal)
                    (table-set! env #"#%InternalOffsetCommit?" InternalOffsetCommit?)
