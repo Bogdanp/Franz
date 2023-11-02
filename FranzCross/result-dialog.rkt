@@ -18,7 +18,7 @@
   (match v
     [(ReduceResult.text s)
      (text-detail s)]
-    [(ReduceResult.integer n)
+    [(ReduceResult.number n)
      (text-detail (number->string n))]
     [(ReduceResult.lineChart xlabel xs ylabel ys)
      (hpanel

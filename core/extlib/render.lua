@@ -3,7 +3,7 @@
 local LineChart = {}
 LineChart.__index = LineChart
 
-function LineChart.new(xlabel, ylabel)
+function LineChart.make(xlabel, ylabel)
     local ob = {
         __type = "LineChart",
         xlabel = xlabel or "x axis",
@@ -21,8 +21,21 @@ function LineChart:push(x, y)
     return self
 end
 
+function LineChart:setxs(xs)
+    self.xs = xs
+    return self
+end
+
+function LineChart:setys(ys)
+    self.ys = ys
+    return self
+end
+
 function LineChart:__tostring()
-    return string.format("<LineChart xlabel=%q ylabel=%q>", self.xlabel, self.ylabel)
+    return string.format(
+        "<LineChart xlabel=%q ylabel=%q xs=%q ys=%q>",
+        self.xlabel, self.ylabel, self.xs, self.ys
+    )
 end
 
 return {

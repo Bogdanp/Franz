@@ -22,7 +22,7 @@
 
 (define-enum ReduceResult
   [text {s : String}]
-  [integer {n : Varint}]
+  [number {n : Float64}]
   [lineChart
    {xlabel : String}
    {xs : (Listof Float64)}
@@ -35,9 +35,10 @@
 
 (define (->ReduceResult v)
   (cond
+    [(not v) #f]
     [(nil? v) #f]
     [(bytes? v) (ReduceResult.text (bytes->string/utf-8 v #\uFFFD))]
-    [(integer? v) (ReduceResult.integer v)]
+    [(number? v) (ReduceResult.number v)]
     [(table? v)
      (define type
        (table-ref v #"__type"))
@@ -73,41 +74,44 @@
                           [to-records records : (Listof IteratorRecord)]
                           [in-workspace id : UVarint] : ApplyResult)
   (define script-tbl (make-script 'apply-script script))
-  (define xform-proc (table-ref script-tbl #"transform"))
-  (unless (procedure? xform-proc)
+  (define transform-proc (table-ref script-tbl #"transform"))
+  (unless (procedure? transform-proc)
     (error 'apply-script "script.transform is not a procedure"))
   (define reduce-proc (table-ref script-tbl #"reduce"))
   (unless (or (nil? reduce-proc) (procedure? reduce-proc))
     (error 'apply-script "script.reduce is not a procedure"))
-  (define (xform r)
+  (define render-proc (table-ref script-tbl #"render"))
+  (unless (or (nil? render-proc) (procedure? render-proc))
+    (error 'apply-script "script.render is not a procedure"))
+  (define (transform r)
     (define table
-      (xform-proc (IteratorRecord->table r)))
+      (transform-proc (IteratorRecord->table r)))
     (cond
       [(table? table) table]
       [(nil? table) nil]
       [else (error 'apply-script "script.transform must return a table or nil~n  received: ~s" table)]))
-  (cond
-    [(nil? reduce-proc)
-     (define items
-       (for*/list ([r (in-list records)]
-                   [t (in-value (xform r))]
-                   #:unless (nil? t))
-         (IteratorResult.transformed (table->IteratorRecord t) r)))
-     (ApplyResult items #f)]
-    [else
-     (define-values (state items)
-       (for*/fold ([s nil] [items null])
-                  ([r (in-list records)]
-                   [t (in-value (xform r))]
-                   #:unless (nil? t))
-         (define res
-           (IteratorResult.transformed (table->IteratorRecord t) r))
-         (values
-          (reduce-proc t s)
-          (cons res items))))
-     (ApplyResult
-      (reverse items)
-      (->ReduceResult state))]))
+  (define (reduce r s)
+    (cond
+      [(nil? reduce-proc) s]
+      [else (reduce-proc r s)]))
+  (define (render s)
+    (cond
+      [(nil? render-proc) s]
+      [else (render-proc s)]))
+  (define-values (state items)
+    (for*/fold ([s nil] [items null])
+               ([r (in-list records)]
+                [t (in-value (transform r))]
+                #:unless (nil? t))
+      (define item
+        (IteratorResult.transformed (table->IteratorRecord t) r))
+      (values
+       (reduce t s)
+       (cons item items))))
+  (ApplyResult
+   (reverse items)
+   (->ReduceResult
+    (render state))))
 
 (define-rpc (deactivate-script [for-topic topic : String]
                                [in-workspace id : UVarint])
@@ -138,6 +142,18 @@ local script = {}
 -- See Help -> Manual... to learn more.
 function script.transform(record)
   return record
+end
+
+-- Use this function to aggregate records. The initial value of the
+-- `state` argument is `nil`.
+function script.reduce(record, state)
+  return (state or 0) + 1
+end
+
+-- Use this function to render the final state of `script.reduce`.
+-- Returning `nil` from this function avoids rendering anything.
+function script.render(state)
+  return nil
 end
 
 return script
@@ -195,9 +211,9 @@ SCRIPT
 ;; extlib ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define-runtime-module-path-index avro.lua "extlib/avro.lua")
-(define-runtime-module-path-index collectors.lua "extlib/collectors.lua")
 (define-runtime-module-path-index kafka.lua "extlib/kafka.lua")
 (define-runtime-module-path-index msgpack.lua "extlib/msgpack.lua")
+(define-runtime-module-path-index render.lua "extlib/render.lua")
 
 (define symbol->bytes
   (compose1 string->bytes/utf-8 symbol->string))
@@ -238,9 +254,6 @@ SCRIPT
                   (table-set! env #"#%avro-tolua" ->lua)
                   (define mod (car (dynamic-require avro.lua '#%chunk)))
                   (table-set! env name mod)))
-    (#"collectors" . ,(λ (env name)
-                        (define mod (car (dynamic-require collectors.lua '#%chunk)))
-                        (table-set! env name mod)))
     (#"kafka" . ,(λ (env name)
                    (table-set! env #"#%parse-Internal" parse-Internal)
                    (table-set! env #"#%InternalOffsetCommit?" InternalOffsetCommit?)
@@ -268,7 +281,10 @@ SCRIPT
                      (table-set! env #"#%msgpack-read" read-msgpack)
                      (table-set! env #"#%msgpack-tolua" ->lua)
                      (define mod (car (dynamic-require msgpack.lua '#%chunk)))
-                     (table-set! env name mod)))))
+                     (table-set! env name mod)))
+    (#"render" . ,(λ (env name)
+                    (define mod (car (dynamic-require render.lua '#%chunk)))
+                    (table-set! env name mod)))))
 
 (define (call-with-lua-extlib proc)
   (define mods
