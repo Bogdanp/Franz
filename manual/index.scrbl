@@ -532,8 +532,37 @@ Confluent Schema Registry.
   See @secref["decoding-msgpack-data"] for an example.
 }
 
+@deflua[render.LineChart (xlabel ylabel) render.LineChart]{
+  Returns an instance of a line chart renderer.  The first argument
+  represents the x-axis label and the second argument, the y-axis.
+}
+
+@deflua[render.LineChart:clear () render.LineChart]{
+  Empties the line chart. Returns the line chart.
+}
+
+@deflua[render.LineChart:push (x y) render.LineChart]{
+  Pushes a new entry to the end of the line chart. The first argument
+  is the x value and the second, the y value. Returns the line chart.
+}
+
+@deflua[render.LineChart:setxs (xs) render.LineChart]{
+  Replaces all the x-axis values with the given table. Returns the
+  line chart.
+}
+
+@deflua[render.LineChart:setys (ys) render.LineChart]{
+  Replaces all the y-axis values with the given table. Returns the
+  line chart.
+}
+
+@deflua[render.LineChart:sort (cmp) render.LineChart]{
+  Sorts the data contained by the line chart according to @tt{cmp}. If
+  not provided, @tt{cmp} defaults to @tt{<}. Returns the line chart.
+}
+
 @deflua[string.byte (str i j) table]{
-  Returns the bytes in @tt{str} between @tt{i} and @tt{j}.  The @tt{i}
+  Returns the bytes in @tt{str} between @tt{i} and @tt{j}. The @tt{i}
   argument defaults to @tt{1} and the @tt{j} argument defaults to the
   length of @tt{str}.
 }
