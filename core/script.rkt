@@ -23,6 +23,11 @@
 (define-enum ReduceResult
   [text {s : String}]
   [number {n : Float64}]
+  [barChart
+   {xlabel : String}
+   {xs : (Listof Float64)}
+   {ylabel : String}
+   {ys : (Listof Float64)}]
   [lineChart
    {xlabel : String}
    {xs : (Listof Float64)}
@@ -43,18 +48,27 @@
      (define type
        (table-ref v #"__type"))
      (case type
+       [(equal? #"BarChart")
+        (ReduceResult.barChart
+         (table-ref-string v #"xlabel")
+         (table->list (table-ref v #"xs"))
+         (table-ref-string v #"ylabel")
+         (table->list (table-ref v #"ys")))]
        [(equal? #"LineChart")
-        (define xs (table-ref v #"xs"))
-        (define ys (table-ref v #"ys"))
         (ReduceResult.lineChart
-         (bytes->string/utf-8 (table-ref v #"xlabel"))
-         (for/list ([i (in-range 1 (add1 (table-length xs)))])
-           (table-ref xs i))
-         (bytes->string/utf-8 (table-ref v #"ylabel"))
-         (for/list ([i (in-range 1 (add1 (table-length ys)))])
-           (table-ref ys i)))]
+         (table-ref-string v #"xlabel")
+         (table->list (table-ref v #"xs"))
+         (table-ref-string v #"ylabel")
+         (table->list (table-ref v #"ys")))]
        [else (error '->ReduceResult "invalid table: ~s" v)])]
     [else (error '->ReduceResult "unexpected result: ~s" v)]))
+
+(define (table-ref-string t k)
+  (bytes->string/utf-8 (table-ref t k)))
+
+(define (table->list t)
+  (for/list ([i (in-range 1 (add1 (table-length t)))])
+    (table-ref t i)))
 
 
 ;; scripts ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
