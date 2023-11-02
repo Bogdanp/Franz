@@ -19,7 +19,7 @@
          "observable.rkt"
          "preference.rkt"
          "record-detail.rkt"
-         "result-dialog.rkt"
+         "result-detail.rkt"
          "thread.rkt"
          "topic-config.rkt"
          "validator.rkt"
@@ -129,10 +129,10 @@
         (apply-script script originals id))
       (when (ApplyResult-reduced res)
         (render
-         (result-dialog
-          (format "[~a] Result" topic)
-          (ApplyResult-reduced res))
-         (get-parent)))
+         (window
+          #:title (format "[~a] Result" topic)
+          (result-detail
+           (ApplyResult-reduced res)))))
       (list->vector
        (ApplyResult-items res))))
   (define (do-publish-tombstone r)
