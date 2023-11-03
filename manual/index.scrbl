@@ -532,35 +532,6 @@ Confluent Schema Registry.
   See @secref["decoding-msgpack-data"] for an example.
 }
 
-@deflua[render.LineChart (xlabel ylabel) render.LineChart]{
-  Returns an instance of a line chart renderer.  The first argument
-  represents the x-axis label and the second argument, the y-axis.
-}
-
-@deflua[render.LineChart:clear () render.LineChart]{
-  Empties the line chart. Returns the line chart.
-}
-
-@deflua[render.LineChart:push (x y) render.LineChart]{
-  Pushes a new entry to the end of the line chart. The first argument
-  is the x value and the second, the y value. Returns the line chart.
-}
-
-@deflua[render.LineChart:setxs (xs) render.LineChart]{
-  Replaces all the x-axis values with the given table. Returns the
-  line chart.
-}
-
-@deflua[render.LineChart:setys (ys) render.LineChart]{
-  Replaces all the y-axis values with the given table. Returns the
-  line chart.
-}
-
-@deflua[render.LineChart:sort (cmp) render.LineChart]{
-  Sorts the data contained by the line chart according to @tt{cmp}. If
-  not provided, @tt{cmp} defaults to @tt{<}. Returns the line chart.
-}
-
 @deflua[string.byte (str i j) table]{
   Returns the bytes in @tt{str} between @tt{i} and @tt{j}. The @tt{i}
   argument defaults to @tt{1} and the @tt{j} argument defaults to the
@@ -607,6 +578,70 @@ Confluent Schema Registry.
   Returns a new string with the characters in @tt{str} uppercased
   according to the current locale.
 }
+
+@deflua[table.insert (t pos value) void]{
+  Inserts @tt{value} into the table @tt{t} at @tt{pos}. If @tt{pos}
+  is not provided, @tt{value} is inserted at the end of the table.
+}
+
+@deflua[table.remove (t pos) any]{
+  Removes the value at @tt{pos} from the table @tt{t}. If not
+  provided, @tt{pos} defaults to the last position in the table.
+}
+
+@deflua[table.sort (t cmp) void]{
+  Sorts the table @tt{t} in place according to @tt{cmp}. If not
+  provided, @tt{cmp} defaults to the @tt{<} operator. If provided,
+  @tt{cmp} must be a procedure of two arguments that returns a boolean
+  value representing whether the first argument is less than the
+  second.
+}
+
+@subsection{Renderers}
+
+The bindings documented in this section can be used to render
+aggregated data to a window when applying a script.
+
+@deflua[render.BarChart (xlabel ylabel) Chart]{
+  Returns an instance of a bar chart renderer.  The first argument
+  represents the x-axis label and the second argument, the y-axis.
+}
+
+@deflua[render.LineChart (xlabel ylabel) Chart]{
+  Returns an instance of a line chart renderer.  The first argument
+  represents the x-axis label and the second argument, the y-axis.
+}
+
+@subsubsection{Charts}
+
+These methods are available on all charts. Unless otherwise specified,
+the return value of every method is the chart itself.
+
+See @secref["rendering-a-bar-chart"] for a usage example.
+
+@deflua[Chart:clear () Chart]{
+  Empties the chart.
+}
+
+@deflua[Chart:push (x y) Chart]{
+  Pushes a new entry to the end of the chart. The first argument is
+  the x value and the second, the y value.
+}
+
+@deflua[Chart:setxs (xs) Chart]{
+  Replaces all the x-axis values with @tt{xs}.
+}
+
+@deflua[Chart:setys (ys) Chart]{
+  Replaces all the y-axis values with @tt{ys}.
+}
+
+@deflua[Chart:sort (cmp) Chart]{
+  Sorts the data contained by the chart according to @tt{cmp}. If not
+  provided, @tt{cmp} defaults to @tt{<}. The arguments to @tt{cmp} are
+  two tables with one field for the @tt{x} and @tt{y} values each.
+}
+
 
 @subsection{Examples}
 
@@ -707,6 +742,40 @@ Use @lua[msgpack.unpack] to decode your data.
     local object = msgpack.unpack(record.value)
     record.value = tostring(object.field)
     return record
+  end
+
+  return script
+}|
+
+@subsubsection[#:tag "rendering-a-bar-chart"]{Rendering a Bar Chart}
+
+The script below renders a bar chart with record offsets on the x axis
+and value lengths on the y axis when applied to some already-loaded
+data.
+
+@codeblock[#:keep-lang-line? #f]|{
+  #lang lua
+  local script = {}
+
+  function script.transform(record)
+    return record
+  end
+
+  function script.reduce(record, state)
+    state = state or { xs = {}; ys = {} }
+    table.insert(state.xs, record.offset)
+    table.insert(state.ys, #record.value)
+    return state
+  end
+
+  function script.render(state)
+    local function cmp(a, b)
+      return a.x < b.x
+    end
+    local chart = render.BarChart("offset", "length")
+    chart:setxs(state.xs)
+    chart:setys(state.ys)
+    return chart:sort(cmp)
   end
 
   return script
