@@ -409,23 +409,23 @@ Confluent Schema Registry.
       #'(let ([id-str (symbol->string 'id)]
               [args-str (string-join (map symbol->string '(arg ...)) ", ")])
           (define tag `("lua" ,id-str))
-          (tabular
-           #:style 'boxed
-           #:column-properties '(left right)
-           #:row-properties '(bottom-border ())
-           (list
-            (list @elem[(elemtag tag) @tt[@(elemref tag @(tt id-str)) "(" @args-str ")"]] @tt[@symbol->string['res]])
-            (list @nested[pre-content ...] 'cont))))]
+          @nested[
+            (tabular
+             #:style 'boxed
+             #:column-properties '(left right)
+             (list
+              (list @elem[(elemtag tag) @tt[@(elemref tag @(tt id-str)) "(" @args-str ")"]] @tt[@symbol->string['res]])))
+            pre-content ...])]
      [(_ id res pre-content ...)
       #'(let ([id-str (symbol->string 'id)])
           (define tag `("lua" ,id-str))
-          (tabular
-           #:style 'boxed
-           #:column-properties '(left right)
-           #:row-properties '(bottom-border ())
-           (list
-            (list @elem[(elemtag tag) @(elemref tag @(tt id-str))] @tt[@symbol->string['res]])
-            (list @nested[pre-content ...] 'cont))))]))
+          @nested[
+            (tabular
+             #:style 'boxed
+             #:column-properties '(left right)
+             (list
+              (list @elem[(elemtag tag) @(elemref tag @(tt id-str))] @tt[@symbol->string['res]])))
+            pre-content ...])]))
 
 @(define-syntax-rule (lua id)
   (let ([id-str (symbol->string 'id)])
@@ -464,10 +464,10 @@ Confluent Schema Registry.
   Flushes any pending output to the file.
 }
 
-@deflua[file:lines (...) procedure]{
-  Returns a procedure that iterates over lines in the file according
-  to the given format arguments. If no format arguments are given,
-  defaults to @tt{"l"}.
+@deflua[file:lines (...) function]{
+  Returns a function that iterates over lines in the file according to
+  the given format arguments. If no format arguments are given, defaults
+  to @tt{"l"}.
 
   @codeblock[#:keep-lang-line? #f]|{
     #lang lua
@@ -738,7 +738,7 @@ Confluent Schema Registry.
 }
 
 @deflua[table.pack (...) table]{
-  Pack the given variable set of arguments into a table.
+  Packs the given variable set of arguments into a table.
 
   @codeblock[#:keep-lang-line? #f]|{
     #lang lua
@@ -757,9 +757,8 @@ Confluent Schema Registry.
 @deflua[table.sort (t cmp) void]{
   Sorts the table @tt{t} in place according to @tt{cmp}. If not
   provided, @tt{cmp} defaults to the @tt{<} operator. If provided,
-  @tt{cmp} must be a procedure of two arguments that returns a boolean
-  value representing whether the first argument is less than the
-  second.
+  @tt{cmp} must be a function of two arguments that returns a boolean
+  value representing whether the first argument is less than the second.
 }
 
 @deflua[table.unpack (t) ...]{
