@@ -39,6 +39,131 @@ public enum AuthMechanism: Readable, Writable {
   }
 }
 
+public enum ChartScale: Readable, Writable {
+  case categorical([String])
+  case numerical(Float64, Float64, ChartScaleType)
+
+  public static func read(from inp: InputPort, using buf: inout Data) -> ChartScale {
+    let tag = UVarint.read(from: inp, using: &buf)
+    switch tag {
+    case 0x0000:
+      return .categorical(
+        [String].read(from: inp, using: &buf)
+      )
+    case 0x0001:
+      return .numerical(
+        Float64.read(from: inp, using: &buf),
+        Float64.read(from: inp, using: &buf),
+        ChartScaleType.read(from: inp, using: &buf)
+      )
+    default:
+      preconditionFailure("ChartScale: unexpected tag \(tag)")
+    }
+  }
+
+  public func write(to out: OutputPort) {
+    switch self {
+    case .categorical(let categories):
+      UVarint(0x0000).write(to: out)
+      categories.write(to: out)
+    case .numerical(let lo, let hi, let type):
+      UVarint(0x0001).write(to: out)
+      lo.write(to: out)
+      hi.write(to: out)
+      type.write(to: out)
+    }
+  }
+}
+
+public enum ChartScaleType: Readable, Writable {
+  case linear
+  case log
+
+  public static func read(from inp: InputPort, using buf: inout Data) -> ChartScaleType {
+    let tag = UVarint.read(from: inp, using: &buf)
+    switch tag {
+    case 0x0000:
+      return .linear
+    case 0x0001:
+      return .log
+    default:
+      preconditionFailure("ChartScaleType: unexpected tag \(tag)")
+    }
+  }
+
+  public func write(to out: OutputPort) {
+    switch self {
+    case .linear:
+      UVarint(0x0000).write(to: out)
+    case .log:
+      UVarint(0x0001).write(to: out)
+    }
+  }
+}
+
+public enum ChartStyle: Readable, Writable {
+  case bar
+  case line
+  case scatter
+
+  public static func read(from inp: InputPort, using buf: inout Data) -> ChartStyle {
+    let tag = UVarint.read(from: inp, using: &buf)
+    switch tag {
+    case 0x0000:
+      return .bar
+    case 0x0001:
+      return .line
+    case 0x0002:
+      return .scatter
+    default:
+      preconditionFailure("ChartStyle: unexpected tag \(tag)")
+    }
+  }
+
+  public func write(to out: OutputPort) {
+    switch self {
+    case .bar:
+      UVarint(0x0000).write(to: out)
+    case .line:
+      UVarint(0x0001).write(to: out)
+    case .scatter:
+      UVarint(0x0002).write(to: out)
+    }
+  }
+}
+
+public enum ChartValue: Readable, Writable {
+  case categorical(String)
+  case numerical(Float64)
+
+  public static func read(from inp: InputPort, using buf: inout Data) -> ChartValue {
+    let tag = UVarint.read(from: inp, using: &buf)
+    switch tag {
+    case 0x0000:
+      return .categorical(
+        String.read(from: inp, using: &buf)
+      )
+    case 0x0001:
+      return .numerical(
+        Float64.read(from: inp, using: &buf)
+      )
+    default:
+      preconditionFailure("ChartValue: unexpected tag \(tag)")
+    }
+  }
+
+  public func write(to out: OutputPort) {
+    switch self {
+    case .categorical(let s):
+      UVarint(0x0000).write(to: out)
+      s.write(to: out)
+    case .numerical(let n):
+      UVarint(0x0001).write(to: out)
+      n.write(to: out)
+    }
+  }
+}
+
 public enum IteratorOffset: Readable, Writable {
   case earliest
   case latest
@@ -155,49 +280,30 @@ public enum Lexer: Readable, Writable {
 }
 
 public enum ReduceResult: Readable, Writable {
-  case text(String)
+  case chart(Chart)
   case number(Float64)
-  case barChart(String, [String], String, [Float64])
-  case lineChart(String, [Float64], String, [Float64])
-  case scatterChart(String, [Float64], String, [Float64])
   case table([String], [TableRow])
+  case text(String)
 
   public static func read(from inp: InputPort, using buf: inout Data) -> ReduceResult {
     let tag = UVarint.read(from: inp, using: &buf)
     switch tag {
     case 0x0000:
-      return .text(
-        String.read(from: inp, using: &buf)
+      return .chart(
+        Chart.read(from: inp, using: &buf)
       )
     case 0x0001:
       return .number(
         Float64.read(from: inp, using: &buf)
       )
     case 0x0002:
-      return .barChart(
-        String.read(from: inp, using: &buf),
-        [String].read(from: inp, using: &buf),
-        String.read(from: inp, using: &buf),
-        [Float64].read(from: inp, using: &buf)
-      )
-    case 0x0003:
-      return .lineChart(
-        String.read(from: inp, using: &buf),
-        [Float64].read(from: inp, using: &buf),
-        String.read(from: inp, using: &buf),
-        [Float64].read(from: inp, using: &buf)
-      )
-    case 0x0004:
-      return .scatterChart(
-        String.read(from: inp, using: &buf),
-        [Float64].read(from: inp, using: &buf),
-        String.read(from: inp, using: &buf),
-        [Float64].read(from: inp, using: &buf)
-      )
-    case 0x0005:
       return .table(
         [String].read(from: inp, using: &buf),
         [TableRow].read(from: inp, using: &buf)
+      )
+    case 0x0003:
+      return .text(
+        String.read(from: inp, using: &buf)
       )
     default:
       preconditionFailure("ReduceResult: unexpected tag \(tag)")
@@ -206,34 +312,19 @@ public enum ReduceResult: Readable, Writable {
 
   public func write(to out: OutputPort) {
     switch self {
-    case .text(let s):
+    case .chart(let c):
       UVarint(0x0000).write(to: out)
-      s.write(to: out)
+      c.write(to: out)
     case .number(let n):
       UVarint(0x0001).write(to: out)
       n.write(to: out)
-    case .barChart(let xlabel, let xs, let ylabel, let ys):
+    case .table(let cols, let rows):
       UVarint(0x0002).write(to: out)
-      xlabel.write(to: out)
-      xs.write(to: out)
-      ylabel.write(to: out)
-      ys.write(to: out)
-    case .lineChart(let xlabel, let xs, let ylabel, let ys):
-      UVarint(0x0003).write(to: out)
-      xlabel.write(to: out)
-      xs.write(to: out)
-      ylabel.write(to: out)
-      ys.write(to: out)
-    case .scatterChart(let xlabel, let xs, let ylabel, let ys):
-      UVarint(0x0004).write(to: out)
-      xlabel.write(to: out)
-      xs.write(to: out)
-      ylabel.write(to: out)
-      ys.write(to: out)
-    case .table(let columns, let rows):
-      UVarint(0x0005).write(to: out)
-      columns.write(to: out)
+      cols.write(to: out)
       rows.write(to: out)
+    case .text(let s):
+      UVarint(0x0003).write(to: out)
+      s.write(to: out)
     }
   }
 }
@@ -408,6 +499,56 @@ public struct Broker: Readable, Writable {
     port.write(to: out)
     rack.write(to: out)
     isController.write(to: out)
+  }
+}
+
+public struct Chart: Readable, Writable {
+  public let style: ChartStyle
+  public let xDomain: ChartScale?
+  public let xLabel: String
+  public let xs: [ChartValue]
+  public let yDomain: ChartScale?
+  public let yLabel: String
+  public let ys: [ChartValue]
+
+  public init(
+    style: ChartStyle,
+    xDomain: ChartScale?,
+    xLabel: String,
+    xs: [ChartValue],
+    yDomain: ChartScale?,
+    yLabel: String,
+    ys: [ChartValue]
+  ) {
+    self.style = style
+    self.xDomain = xDomain
+    self.xLabel = xLabel
+    self.xs = xs
+    self.yDomain = yDomain
+    self.yLabel = yLabel
+    self.ys = ys
+  }
+
+  public static func read(from inp: InputPort, using buf: inout Data) -> Chart {
+    return Chart(
+      style: ChartStyle.read(from: inp, using: &buf),
+      xDomain: ChartScale?.read(from: inp, using: &buf),
+      xLabel: String.read(from: inp, using: &buf),
+      xs: [ChartValue].read(from: inp, using: &buf),
+      yDomain: ChartScale?.read(from: inp, using: &buf),
+      yLabel: String.read(from: inp, using: &buf),
+      ys: [ChartValue].read(from: inp, using: &buf)
+    )
+  }
+
+  public func write(to out: OutputPort) {
+    style.write(to: out)
+    xDomain.write(to: out)
+    xLabel.write(to: out)
+    xs.write(to: out)
+    yDomain.write(to: out)
+    yLabel.write(to: out)
+    ys.write(to: out)
   }
 }
 

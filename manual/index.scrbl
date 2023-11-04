@@ -792,20 +792,19 @@ aggregated data to a window when applying a script.
 @deflua[render.BarChart (xlabel ylabel) Chart]{
   Returns an instance of a bar @chart-ref{chart renderer}. The first
   argument represents the x-axis label and the second argument, the
-  y-axis. The x values of a bar chart must be strings and the y values
-  must be numbers.
+  y-axis.
 }
 
 @deflua[render.LineChart (xlabel ylabel) Chart]{
   Returns an instance of a line @chart-ref{chart renderer}. The first
   argument represents the x-axis label and the second argument, the
-  y-axis. The x and y values of a line chart must be numbers.
+  y-axis.
 }
 
 @deflua[render.ScatterChart (xlabel ylabel) Chart]{
   Returns an instance of a scatter @chart-ref{chart renderer}. The first
   argument represents the x-axis label and the second argument, the
-  y-axis. The x and y values of a line chart must be numbers.
+  y-axis.
 }
 
 @deflua[render.Table (columns ...) Table]{
@@ -837,8 +836,9 @@ See @secref["rendering-a-bar-chart"] for a usage example.
 }
 
 @deflua[Chart:push (x y) Chart]{
-  Pushes a new entry to the end of the chart. The first argument is
-  the x value and the second, the y value.
+  Pushes a new entry to the end of the chart. The first argument is the
+  x value and the second, the y value. Values may be either strings or
+  numbers, but the types should be internally consistent per axis.
 }
 
 @deflua[Chart:setxs (xs) Chart]{

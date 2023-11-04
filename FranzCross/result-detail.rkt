@@ -10,25 +10,10 @@
 
 (define (result-detail v)
   (match v
-    [(ReduceResult.text s)
-     (text-view s)]
+    [(ReduceResult.chart c)
+     (chart-view c)]
     [(ReduceResult.number n)
      (text-view (number->string n))]
-    [(ReduceResult.barChart xlabel xs ylabel ys)
-     (plot-view
-      #:x-label xlabel
-      #:y-label ylabel
-      (discrete-histogram (map list xs ys)))]
-    [(ReduceResult.lineChart xlabel xs ylabel ys)
-     (plot-view
-      #:x-label xlabel
-      #:y-label ylabel
-      (lines (map list xs ys)))]
-    [(ReduceResult.scatterChart xlabel xs ylabel ys)
-     (plot-view
-      #:x-label xlabel
-      #:y-label ylabel
-      (points (map list xs ys)))]
     [(ReduceResult.table columns rows)
      (hpanel
       #:min-size '(400 200)
@@ -36,7 +21,35 @@
        columns
        (for/vector ([row (in-list rows)])
          (for/vector ([col (in-list (TableRow-columns row))])
-           col))))]))
+           col))))]
+    [(ReduceResult.text s)
+     (text-view s)]))
+
+(define (ChartValue-> v)
+  (match v
+    [(ChartValue.categorical category) category]
+    [(ChartValue.numerical n) n]))
+
+(define (chart-view c)
+  (hpanel
+   #:min-size '(640 480)
+   (snip #f (λ (_ width height)
+              (apply
+               plot-snip
+               #:width width
+               #:height height
+               #:x-label (Chart-x-label c)
+               #:y-label (Chart-y-label c)
+               (list
+                ((match (Chart-style c)
+                   [(ChartStyle.bar) discrete-histogram]
+                   [(ChartStyle.line) lines]
+                   [(ChartStyle.scatter) points])
+                 (for/list ([x (in-list (Chart-xs c))]
+                            [y (in-list (Chart-ys c))])
+                   (list
+                    (ChartValue-> x)
+                    (ChartValue-> y))))))))))
 
 (define (text-view s)
   (hpanel
@@ -44,20 +57,6 @@
    #:min-size '(200 100)
    #:alignment '(center center)
    (text #:font system-font-xl s)))
-
-(define (plot-view #:x-label x-label
-                   #:y-label y-label
-                   . trees)
-  (hpanel
-   #:min-size '(800 600)
-   (snip #f (λ (_ width height)
-              (apply
-               plot-snip
-               #:width width
-               #:height height
-               #:x-label x-label
-               #:y-label y-label
-               trees)))))
 
 (module+ main
   (require "observable.rkt")
@@ -68,7 +67,7 @@
     (vpanel
      (choice
       #:stretch '(#t #f)
-      '(text number lineChart table)
+      '(chart number table text)
       #:choice->label symbol->string
       #:selection @kind
       @kind:=))
@@ -77,13 +76,19 @@
      (lambda (kind)
        (result-detail
         (match kind
-          ['text (ReduceResult.text "Hello")]
+          ['chart (ReduceResult.chart
+                   (make-Chart
+                    #:style (ChartStyle.bar)
+                    #:x-domain #f
+                    #:x-label "x"
+                    #:xs (map ChartValue.categorical '("a" "b" "c"))
+                    #:y-domain #f
+                    #:y-label "y"
+                    #:ys (map ChartValue.numerical '(4 5 6))))]
           ['number (ReduceResult.number 42)]
-          ['lineChart (ReduceResult.lineChart
-                       "x" '(1 2 3)
-                       "y" '(4 5 6))]
           ['table (ReduceResult.table
                    '("a" "b")
                    (list
                     (TableRow '("1" "2"))
-                    (TableRow '("3" "4"))))])))))))
+                    (TableRow '("3" "4"))))]
+          ['text (ReduceResult.text "Hello")])))))))

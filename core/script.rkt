@@ -18,67 +18,92 @@
 
 (provide
  (record-out ApplyResult)
+ (record-out Chart)
  (record-out TableRow)
+ (enum-out ChartScale)
+ (enum-out ChartScaleType)
+ (enum-out ChartStyle)
+ (enum-out ChartValue)
  (enum-out ReduceResult))
 
 (define-record TableRow
   [columns : (Listof String)])
 
+(define-enum ChartScaleType
+  [linear]
+  [log])
+
+(define-enum ChartScale
+  [categorical {categories : (Listof String)}]
+  [numerical
+   {lo : Float64}
+   {hi : Float64}
+   {type : ChartScaleType}])
+
+(define-enum ChartStyle
+  [bar]
+  [line]
+  [scatter])
+
+(define-enum ChartValue
+  [categorical {s : String}]
+  [numerical {n : Float64}])
+
+(define-record Chart
+  [style : ChartStyle]
+  [x-domain : (Optional ChartScale)]
+  [x-label : String]
+  [xs : (Listof ChartValue)]
+  [y-domain : (Optional ChartScale)]
+  [y-label : String]
+  [ys : (Listof ChartValue)])
+
 (define-enum ReduceResult
-  [text {s : String}]
+  [chart {c : Chart}]
   [number {n : Float64}]
-  [barChart
-   {xlabel : String}
-   {xs : (Listof String)}
-   {ylabel : String}
-   {ys : (Listof Float64)}]
-  [lineChart
-   {xlabel : String}
-   {xs : (Listof Float64)}
-   {ylabel : String}
-   {ys : (Listof Float64)}]
-  [scatterChart
-   {xlabel : String}
-   {xs  : (Listof Float64)}
-   {ylabel : String}
-   {ys : (Listof Float64)}]
   [table
-   {columns : (Listof String)}
-   {rows : (Listof TableRow)}])
+   {cols : (Listof String)}
+   {rows : (Listof TableRow)}]
+  [text {s : String}])
 
 (define-record ApplyResult
   [items : (Listof IteratorResult)]
   [(output #"") : Bytes]
   [(reduced #f) : (Optional ReduceResult)])
 
+(define (->ChartStyle v)
+  (case v
+    [(#"BarChart") (ChartStyle.bar)]
+    [(#"LineChart") (ChartStyle.line)]
+    [(#"ScatterChart") (ChartStyle.scatter)]
+    [else (error '->ReduceResult "invalid chart type: ~s" v)]))
+
+(define (->ChartValue v)
+  (cond
+    [(bytes? v) (ChartValue.categorical (bytes->string v))]
+    [(number? v) (ChartValue.numerical v)]
+    [else (error '->ChartValue "invalid value: ~s" v)]))
+
 (define (->ReduceResult v)
   (cond
     [(not v) #f]
     [(nil? v) #f]
-    [(bytes? v) (ReduceResult.text (bytes->string/utf-8 v #\uFFFD))]
+    [(bytes? v) (ReduceResult.text (bytes->string v))]
     [(number? v) (ReduceResult.number v)]
     [(table? v)
      (define type
        (table-ref v #"__type"))
      (case type
-       [(equal? #"BarChart")
-        (ReduceResult.barChart
-         (table-ref-string v #"xlabel")
-         (table->list (table-ref v #"xs") bytes->string)
-         (table-ref-string v #"ylabel")
-         (table->list (table-ref v #"ys")))]
-       [(equal? #"LineChart")
-        (ReduceResult.lineChart
-         (table-ref-string v #"xlabel")
-         (table->list (table-ref v #"xs"))
-         (table-ref-string v #"ylabel")
-         (table->list (table-ref v #"ys")))]
-       [(equal? #"ScatterChart")
-        (ReduceResult.scatterChart
-         (table-ref-string v #"xlabel")
-         (table->list (table-ref v #"xs"))
-         (table-ref-string v #"ylabel")
-         (table->list (table-ref v #"ys")))]
+       [(#"BarChart" #"LineChart" #"ScatterChart")
+        (ReduceResult.chart
+         (make-Chart
+          #:style (->ChartStyle type)
+          #:x-domain #f
+          #:x-label (table-ref-string v #"xlabel")
+          #:xs (table->list (table-ref v #"xs") ->ChartValue)
+          #:y-domain #f
+          #:y-label (table-ref-string v #"ylabel")
+          #:ys (table->list (table-ref v #"ys") ->ChartValue)))]
        [(equal? #"Table")
         (ReduceResult.table
          (for/list ([col-bs (in-list (table->list (table-ref v #"columns")))])
