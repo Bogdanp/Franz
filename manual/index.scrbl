@@ -1,6 +1,8 @@
 #lang scribble/manual
 
-@(require racket/string
+@(require (for-syntax racket/base
+                      syntax/parse)
+          racket/string
           scribble/core
           scribble/html-properties
           "shortcut.rkt")
@@ -112,25 +114,33 @@ bottom of the table -- to bring up the @deftech{scripting window}.
 Using the scripting window, you can edit the @tt{transform} function
 to control how data is presented in the @tech{Records Table}.
 
-To activate and deactivate a script, press the bolt icon in the
-@tech{scripting window} toolbar or use the @kbd[cmd return] keyboard
-shortcut.  After a script is activated, any changes made to the text
-of the script will cause it to be deactivated.
+To @deftech{apply} a script, press the play icon in the
+@tech{scripting window} toolbar or use the @kbd[cmd shift return]
+keyboard shortcut. Applying a script immediately runs the code against
+the records already loaded in the records table.
+
+To @deftech{activate} and @deftech{deactivate} a script, press the bolt
+icon in the @tech{scripting window} toolbar or use the @kbd[cmd return]
+keyboard shortcut. When a script is activated, it is automatically
+applied to any newly-loaded records in the records table. After a script
+is activated, any changes made to the text of the script will cause it
+to be deactivated.
 
 The @tt{record} argument to the @tt{transform} function is a Lua table
 with the following fields:
 
 @tabular[
-#:style 'boxed
-#:column-properties '(left right)
-#:row-properties '(bottom-border ())
-(list
- (list @bold{field}      @bold{description})
- (list @tt{partition_id} @elem{the partition the record was published to})
- (list @tt{offset}       @elem{the record's offset as a non-negative integer})
- (list @tt{timestamp}    @elem{the record's timestamp in milliseconds since the UNIX epoch})
- (list @tt{key}          @elem{the record's key as a string or @tt{nil}})
- (list @tt{value}        @elem{the record's value as a string or @tt{nil}}))]
+  #:style 'boxed
+  #:column-properties '(left right)
+  #:row-properties '(bottom-border ())
+  (list
+   (list @bold{Field}      @bold{Description})
+   (list @tt{partition_id} @elem{the partition the record was published to})
+   (list @tt{offset}       @elem{the record's offset as a non-negative integer})
+   (list @tt{timestamp}    @elem{the record's timestamp in milliseconds since the UNIX epoch})
+   (list @tt{key}          @elem{the record's key as a string or @tt{nil}})
+   (list @tt{value}        @elem{the record's value as a string or @tt{nil}}))
+]
 
 You may modify any of these fields to control how the record is
 displayed in the @tech{Records Table}.  Changing the data types of
@@ -152,7 +162,7 @@ this to, for example, filter records by partition:
 }|
 
 Within the scripting environment, a @tt{json} table is provided with
-functions for encoding and decoding JSON data.  For example, the
+functions for encoding and decoding JSON data. For example, the
 following script can be used to read the @tt{example} property of the
 record's JSON value:
 
@@ -168,8 +178,36 @@ record's JSON value:
   return script
 }|
 
-See the @secref{ref} for a list of all the functionality available
-within the scripting environment.
+See the @secref{ref} for a list of all the functions available in the
+scripting environment.
+
+When @tech[#:key "apply"]{applying} a script, you can aggregate data in
+memory by providing a @tt{reduce} function. For example, the following
+function counts the number of bytes across all the loaded records'
+values:
+
+@codeblock[#:keep-lang-line? #f]|{
+  #lang lua
+  function script.reduce(record, state)
+    return (state or 0) + #record.value
+  end
+}|
+
+Once aggregated, you can display the aggregated data by providing
+a @tt{render} function. For example, the display the output of the
+@tt{reduce} function from above, you can write:
+
+@codeblock[#:keep-lang-line? #f]|{
+  #lang lua
+  function script.render(state)
+    return string.format("Total bytes: %d", state)
+  end
+}|
+
+Strings and numbers may be returned directly from the @tt{render}
+functions. More complex visualizations are possible using the
+functions provided by the @tt{render} object. See
+@secref["rendering-a-bar-chart"] for an example.
 
 @subsubsection{Jumping to Offsets}
 
@@ -365,16 +403,29 @@ Confluent Schema Registry.
 
 @section[#:tag "ref"]{Scripting Reference}
 
-@(define-syntax-rule (deflua id (arg ...) res pre-content ...)
-   (let ([id-str (symbol->string 'id)]
-         [args-str (string-join (map symbol->string '(arg ...)) ", ")])
-     (tabular
-      #:style 'boxed
-      #:column-properties '(left right)
-      #:row-properties '(bottom-border ())
-      (list
-       (list @elem[(elemtag `("lua" ,id-str)) @tt[@|id-str| "(" @args-str ")"]] @tt[@symbol->string['res]])
-       (list @nested[pre-content ...] 'cont)))))
+@(define-syntax (deflua stx)
+   (syntax-parse stx
+     [(_ id (arg ...) res pre-content ...)
+      #'(let ([id-str (symbol->string 'id)]
+              [args-str (string-join (map symbol->string '(arg ...)) ", ")])
+          (define tag `("lua" ,id-str))
+          (tabular
+           #:style 'boxed
+           #:column-properties '(left right)
+           #:row-properties '(bottom-border ())
+           (list
+            (list @elem[(elemtag tag) @tt[@(elemref tag @(tt id-str)) "(" @args-str ")"]] @tt[@symbol->string['res]])
+            (list @nested[pre-content ...] 'cont))))]
+     [(_ id res pre-content ...)
+      #'(let ([id-str (symbol->string 'id)])
+          (define tag `("lua" ,id-str))
+          (tabular
+           #:style 'boxed
+           #:column-properties '(left right)
+           #:row-properties '(bottom-border ())
+           (list
+            (list @elem[(elemtag tag) @(elemref tag @(tt id-str))] @tt[@symbol->string['res]])
+            (list @nested[pre-content ...] 'cont))))]))
 
 @(define-syntax-rule (lua id)
   (let ([id-str (symbol->string 'id)])
@@ -401,6 +452,96 @@ Confluent Schema Registry.
   See @secref["decoding-avro-data"] for an example.
 }
 
+@deflua[file:close () void]{
+  Closes the file.
+}
+
+@deflua[file:isclosed () bool]{
+  Returns @tt{true} when the file is closed and @tt{false} otherwise.
+}
+
+@deflua[file:flush () void]{
+  Flushes any pending output to the file.
+}
+
+@deflua[file:lines (...) procedure]{
+  Returns a procedure that iterates over lines in the file according
+  to the given format arguments. If no format arguments are given,
+  defaults to @tt{"l"}.
+
+  @codeblock[#:keep-lang-line? #f]|{
+    #lang lua
+    local f = io.input("/etc/passwd")
+    for l in f:lines() do
+      print(l)
+    end
+  }|
+}
+
+@deflua[file.path string]{
+  The file's path on disk.
+}
+
+@deflua[file:read (...) ...]{
+  Reads bytes from the file according to the given set of read
+  instructions. Returns one string for every instruction given.
+
+  @tabular[
+    #:style 'boxed
+    (list
+     (list @bold{Instruction} @bold{Effect})
+     (list @tt{"a"} @elem{Reads the entire file.})
+     (list @tt{"*all"} @elem{Same as @tt{"a"}.})
+     (list @tt{"l"} @elem{Reads one line from the file.})
+     (list @tt{number} @elem{Reads @tt{number} number of bytes from the file.}))
+  ]
+}
+
+@deflua[file:write (...) void]{
+  Writes the given set of values to the file. Non-string values are
+  converted to strings using @tt{tostring} before writing.
+}
+
+@deflua[io.close (file) void]{
+  Closes the given @tt{file}.
+}
+
+@deflua[io.input (handle_or_path) file]{
+  Opens @tt{handle_or_path} for reading.
+}
+
+@deflua[io.open (path mode) file]{
+  Opens the file at @tt{path} in the given @tt{mode}. Supported modes
+  are @tt{"r"} for reading and @tt{"w"} for writing.
+}
+
+@deflua[io.output (handle_or_path) file]{
+  Opens @tt{handle_or_path} for writing.
+}
+
+@deflua[io.stdin handle]{
+  The handle for standard input. To be passed to @lua[io.input].
+}
+@deflua[io.stdout handle]{
+  The handle for standard output. To be passed to @lua[io.output].
+}
+@deflua[io.stderr handle]{
+  The handle for standard error. To be passed to @lua[io.output].
+}
+
+@deflua[io.tmpfile () file]{
+  Returns a temporary file, ready for writing.
+}
+
+@deflua[io.type (f) string]{
+  Returns @tt{"closed file"} when @tt{f} is closed, or @tt{"file"}
+  when it is open.
+}
+
+@deflua[io.write (...) void]{
+  Writes @tt{...} to standard output.
+}
+
 @deflua[json.decode (str) table]{
   Decodes the JSON data in @tt{str} to a Lua table.
 }
@@ -411,11 +552,12 @@ Confluent Schema Registry.
 
 @deflua[kafka.parse_committed_offset (record) tuple]{
   Decodes committed offset data off of the @tt{__committed_offsets}
-  topic.  On failure, returns @tt{nil}.  On success, returns a string
+  topic. On failure, returns @tt{nil}. On success, returns a string
   representing the type of event that was decoded and a value
-  representing that event.  The currently-supported event types are
-  @racket["offset_commit"] and @racket["group_metadata"].  For
-  example:
+  representing that event. The currently-supported event types are
+  @racket["offset_commit"] and @racket["group_metadata"].
+
+  For example:
 
   @codeblock[#:keep-lang-line? #f]|{
     #lang lua
@@ -532,6 +674,10 @@ Confluent Schema Registry.
   See @secref["decoding-msgpack-data"] for an example.
 }
 
+@deflua[print (...) void]{
+  Prints @tt{...} to standard output, separating the elements with tabs.
+}
+
 @deflua[string.byte (str i j) table]{
   Returns the bytes in @tt{str} between @tt{i} and @tt{j}. The @tt{i}
   argument defaults to @tt{1} and the @tt{j} argument defaults to the
@@ -579,9 +725,28 @@ Confluent Schema Registry.
   according to the current locale.
 }
 
+@deflua[table.concat (t sep i j) string]{
+  Joins the elements from @tt{i} to @tt{j} in the table @tt{t},
+  separated by @tt{s}, into a string. The @tt{sep} argument defaults to
+  @tt{""} if not provided. The @tt{i} argument defaults to the first
+  element in the table and the @tt{j} argument to the last element.
+}
+
 @deflua[table.insert (t pos value) void]{
   Inserts @tt{value} into the table @tt{t} at @tt{pos}. If @tt{pos}
   is not provided, @tt{value} is inserted at the end of the table.
+}
+
+@deflua[table.pack (...) table]{
+  Pack the given variable set of arguments into a table.
+
+  @codeblock[#:keep-lang-line? #f]|{
+    #lang lua
+    local t = table.pack(1, 2, 3)
+    print(t[1]) -- prints 1
+    print(t[2]) -- prints 2
+    print(t[3]) -- prints 3
+  }|
 }
 
 @deflua[table.remove (t pos) any]{
@@ -597,19 +762,61 @@ Confluent Schema Registry.
   second.
 }
 
+@deflua[table.unpack (t) ...]{
+  Unpacks the given table.
+
+  @codeblock[#:keep-lang-line? #f]|{
+    #lang lua
+    print(string.format("%d %d %s", table.unpack({1, 2, "hello"})))
+    -- is equivalent to --
+    print(string.format("%d %d %s", 1, 2, "hello"))
+  }|
+}
+
+@deflua[tostring (any) string]{
+  Converts the argument to a string.
+}
+
+@deflua[tonumber (str) number]{
+  Converts the argument to a number. If the argument cannot be
+  converted to a number, returns @tt{false}.
+}
+
 @subsection{Renderers}
 
 The bindings documented in this section can be used to render
 aggregated data to a window when applying a script.
 
+@(define (chart-ref . content)
+  (apply elemref '("lua" "Chart:clear") content))
+
 @deflua[render.BarChart (xlabel ylabel) Chart]{
-  Returns an instance of a bar chart renderer.  The first argument
-  represents the x-axis label and the second argument, the y-axis.
+  Returns an instance of a bar @chart-ref{chart renderer}. The first
+  argument represents the x-axis label and the second argument, the
+  y-axis.
 }
 
 @deflua[render.LineChart (xlabel ylabel) Chart]{
-  Returns an instance of a line chart renderer.  The first argument
-  represents the x-axis label and the second argument, the y-axis.
+  Returns an instance of a line @chart-ref{chart renderer}. The first
+  argument represents the x-axis label and the second argument, the
+  y-axis.
+}
+
+@deflua[render.Table (columns ...) Table]{
+  Returns an instance of a table renderer. The first argument is the
+  set of columns and the variadic arguments represent the rows. For
+  example:
+
+  @codeblock[#:keep-lang-line? #f]{
+    #lang lua
+    function script.render(state)
+      return render.Table(
+        {"a", "b"},
+        {"1", "2"},
+        {"3", "4"}
+      )
+    end
+  }
 }
 
 @subsubsection{Charts}
@@ -701,8 +908,7 @@ use that codec to decode your record data.
 }|
 
 You can write your schema as a Lua table and convert it to JSON using
-@lua[json.encode].  For example, you could rewrite the above example
-to:
+@lua[json.encode]. For example, you could rewrite the above example to:
 
 @codeblock[#:keep-lang-line? #f]|{
   #lang lua
