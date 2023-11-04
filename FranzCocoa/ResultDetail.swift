@@ -12,8 +12,9 @@ struct ResultDetail: View {
           ChartResult(chart)
         case .number(let n):
           TextResult(text: String(format: "%f", n))
-        case .table:
-          Text("table") // FIXME
+        case .table(let cols, let rows):
+          TableResult(cols, rows)
+            .frame(minWidth: 400, minHeight: 200)
         case .text(let s):
           TextResult(text: s)
         }
@@ -116,6 +117,77 @@ fileprivate struct ChartResult: View {
       pairs.append(.init(id: i, x: x, y: y))
     }
     return pairs
+  }
+}
+
+fileprivate struct TableResult: NSViewRepresentable {
+  typealias NSViewType = NSScrollView
+
+  let cols: [String]
+  let rows: [TableRow]
+
+  init(_ cols: [String], _ rows: [TableRow]) {
+    self.cols = cols
+    self.rows = rows
+  }
+
+  class Coordinator: NSObject, NSTableViewDataSource, NSTableViewDelegate {
+    var rows: [TableRow]
+
+    init(_ rows: [TableRow]) {
+      self.rows = rows
+    }
+
+    func numberOfRows(in tableView: NSTableView) -> Int {
+      return self.rows.count
+    }
+
+    func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any? {
+      guard let tableColumn else { return nil }
+      guard let col = Int(tableColumn.identifier.rawValue, radix: 10) else { return nil }
+      guard row < rows.count else { return nil }
+      let theRow = rows[row]
+      guard col < theRow.columns.count else { return nil }
+      return theRow.columns[col]
+    }
+
+    func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
+      return 18
+    }
+
+    func tableView(_ tableView: NSTableView, shouldEdit tableColumn: NSTableColumn?, row: Int) -> Bool {
+      return false
+    }
+  }
+
+  func makeCoordinator() -> Coordinator {
+    return Coordinator(rows)
+  }
+
+  func makeNSView(context: Context) -> NSScrollView {
+    let scrollView = NSScrollView()
+    let tableView = NSTableView()
+    tableView.dataSource = context.coordinator
+    tableView.delegate = context.coordinator
+    tableView.style = .plain
+    scrollView.documentView = tableView
+    scrollView.hasVerticalScroller = true
+    return scrollView
+  }
+
+  func updateNSView(_ nsView: NSScrollView, context: Context) {
+    guard let tableView = nsView.documentView as? NSTableView else { return }
+    context.coordinator.rows = rows
+    for column in tableView.tableColumns {
+      tableView.removeTableColumn(column)
+    }
+    for (i, col) in cols.enumerated() {
+      let nsCol = NSTableColumn(identifier: NSUserInterfaceItemIdentifier(String(format: "%d", i)))
+      nsCol.title = col
+      nsCol.width = 120
+      tableView.addTableColumn(nsCol)
+    }
+    tableView.reloadData()
   }
 }
 
