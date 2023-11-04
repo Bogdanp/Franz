@@ -156,8 +156,11 @@ public enum Lexer: Readable, Writable {
 
 public enum ReduceResult: Readable, Writable {
   case text(String)
-  case integer(Varint)
+  case number(Float64)
+  case barChart(String, [Float64], String, [Float64])
   case lineChart(String, [Float64], String, [Float64])
+  case scatterChart(String, [Float64], String, [Float64])
+  case table([String], [[String]])
 
   public static func read(from inp: InputPort, using buf: inout Data) -> ReduceResult {
     let tag = UVarint.read(from: inp, using: &buf)
@@ -167,15 +170,34 @@ public enum ReduceResult: Readable, Writable {
         String.read(from: inp, using: &buf)
       )
     case 0x0001:
-      return .integer(
-        Varint.read(from: inp, using: &buf)
+      return .number(
+        Float64.read(from: inp, using: &buf)
       )
     case 0x0002:
+      return .barChart(
+        String.read(from: inp, using: &buf),
+        [Float64].read(from: inp, using: &buf),
+        String.read(from: inp, using: &buf),
+        [Float64].read(from: inp, using: &buf)
+      )
+    case 0x0003:
       return .lineChart(
         String.read(from: inp, using: &buf),
         [Float64].read(from: inp, using: &buf),
         String.read(from: inp, using: &buf),
         [Float64].read(from: inp, using: &buf)
+      )
+    case 0x0004:
+      return .scatterChart(
+        String.read(from: inp, using: &buf),
+        [Float64].read(from: inp, using: &buf),
+        String.read(from: inp, using: &buf),
+        [Float64].read(from: inp, using: &buf)
+      )
+    case 0x0005:
+      return .table(
+        [String].read(from: inp, using: &buf),
+        [[String]].read(from: inp, using: &buf)
       )
     default:
       preconditionFailure("ReduceResult: unexpected tag \(tag)")
@@ -187,15 +209,31 @@ public enum ReduceResult: Readable, Writable {
     case .text(let s):
       UVarint(0x0000).write(to: out)
       s.write(to: out)
-    case .integer(let n):
+    case .number(let n):
       UVarint(0x0001).write(to: out)
       n.write(to: out)
-    case .lineChart(let xlabel, let xs, let ylabel, let ys):
+    case .barChart(let xlabel, let xs, let ylabel, let ys):
       UVarint(0x0002).write(to: out)
       xlabel.write(to: out)
       xs.write(to: out)
       ylabel.write(to: out)
       ys.write(to: out)
+    case .lineChart(let xlabel, let xs, let ylabel, let ys):
+      UVarint(0x0003).write(to: out)
+      xlabel.write(to: out)
+      xs.write(to: out)
+      ylabel.write(to: out)
+      ys.write(to: out)
+    case .scatterChart(let xlabel, let xs, let ylabel, let ys):
+      UVarint(0x0004).write(to: out)
+      xlabel.write(to: out)
+      xs.write(to: out)
+      ylabel.write(to: out)
+      ys.write(to: out)
+    case .table(let columns, let rows):
+      UVarint(0x0005).write(to: out)
+      columns.write(to: out)
+      rows.write(to: out)
     }
   }
 }
@@ -305,25 +343,30 @@ public enum TokenType: Readable, Writable {
 
 public struct ApplyResult: Readable, Writable {
   public let items: [IteratorResult]
+  public let output: Data
   public let reduced: ReduceResult?
 
   public init(
     items: [IteratorResult],
+    output: Data,
     reduced: ReduceResult?
   ) {
     self.items = items
+    self.output = output
     self.reduced = reduced
   }
 
   public static func read(from inp: InputPort, using buf: inout Data) -> ApplyResult {
     return ApplyResult(
       items: [IteratorResult].read(from: inp, using: &buf),
+      output: Data.read(from: inp, using: &buf),
       reduced: ReduceResult?.read(from: inp, using: &buf)
     )
   }
 
   public func write(to out: OutputPort) {
     items.write(to: out)
+    output.write(to: out)
     reduced.write(to: out)
   }
 }
