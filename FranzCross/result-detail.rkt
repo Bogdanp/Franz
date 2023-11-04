@@ -35,7 +35,7 @@
       (table
        columns
        (for/vector ([row (in-list rows)])
-         (for/vector ([col (in-list row)])
+         (for/vector ([col (in-list (TableRow-columns row))])
            col))))]))
 
 (define (text-view s)
@@ -68,7 +68,7 @@
     (vpanel
      (choice
       #:stretch '(#t #f)
-      '(text number lineChart)
+      '(text number lineChart table)
       #:choice->label symbol->string
       #:selection @kind
       @kind:=))
@@ -81,4 +81,9 @@
           ['number (ReduceResult.number 42)]
           ['lineChart (ReduceResult.lineChart
                        "x" '(1 2 3)
-                       "y" '(4 5 6))])))))))
+                       "y" '(4 5 6))]
+          ['table (ReduceResult.table
+                   '("a" "b")
+                   (list
+                    (TableRow '("1" "2"))
+                    (TableRow '("3" "4"))))])))))))

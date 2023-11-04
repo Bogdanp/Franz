@@ -583,7 +583,11 @@ extension TopicRecordsTableViewController: ScriptWindowDelegate {
       self?.setRecords(
         result.items,
         byAppending: false
-      )
+      ) {
+        if result.reduced != nil || result.output.count > 0 {
+          WindowManager.shared.showResultWindow(result)
+        }
+      }
     })
   }
 

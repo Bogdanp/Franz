@@ -1,6 +1,7 @@
 import AppKit
 import Foundation
 import NoiseSerde
+import SwiftUI
 
 class WindowManager {
   static var shared = WindowManager()
@@ -150,6 +151,15 @@ class WindowManager {
   func closeUpdatesProgressWindow() {
     updatesProgressWindowController?.close()
     updatesProgressWindowController = nil
+  }
+
+  func showResultWindow(_ res: ApplyResult) {
+    let frame = NSPanel()
+    frame.title = "Result"
+    frame.styleMask = [.titled, .closable, .resizable]
+    frame.contentView = NSHostingView(rootView: ResultDetail(res: res))
+    frame.center()
+    frame.makeKeyAndOrderFront(nil)
   }
 
   // XXX: Kind of a strange place for this to be in.

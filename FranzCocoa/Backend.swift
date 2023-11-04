@@ -157,10 +157,10 @@ public enum Lexer: Readable, Writable {
 public enum ReduceResult: Readable, Writable {
   case text(String)
   case number(Float64)
-  case barChart(String, [Float64], String, [Float64])
+  case barChart(String, [String], String, [Float64])
   case lineChart(String, [Float64], String, [Float64])
   case scatterChart(String, [Float64], String, [Float64])
-  case table([String], [[String]])
+  case table([String], [TableRow])
 
   public static func read(from inp: InputPort, using buf: inout Data) -> ReduceResult {
     let tag = UVarint.read(from: inp, using: &buf)
@@ -176,7 +176,7 @@ public enum ReduceResult: Readable, Writable {
     case 0x0002:
       return .barChart(
         String.read(from: inp, using: &buf),
-        [Float64].read(from: inp, using: &buf),
+        [String].read(from: inp, using: &buf),
         String.read(from: inp, using: &buf),
         [Float64].read(from: inp, using: &buf)
       )
@@ -197,7 +197,7 @@ public enum ReduceResult: Readable, Writable {
     case 0x0005:
       return .table(
         [String].read(from: inp, using: &buf),
-        [[String]].read(from: inp, using: &buf)
+        [TableRow].read(from: inp, using: &buf)
       )
     default:
       preconditionFailure("ReduceResult: unexpected tag \(tag)")
@@ -898,6 +898,26 @@ public struct Stats: Readable, Writable {
     minLag.write(to: out)
     maxLag.write(to: out)
     sumLag.write(to: out)
+  }
+}
+
+public struct TableRow: Readable, Writable {
+  public let columns: [String]
+
+  public init(
+    columns: [String]
+  ) {
+    self.columns = columns
+  }
+
+  public static func read(from inp: InputPort, using buf: inout Data) -> TableRow {
+    return TableRow(
+      columns: [String].read(from: inp, using: &buf)
+    )
+  }
+
+  public func write(to out: OutputPort) {
+    columns.write(to: out)
   }
 }
 

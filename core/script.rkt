@@ -18,14 +18,18 @@
 
 (provide
  (record-out ApplyResult)
+ (record-out TableRow)
  (enum-out ReduceResult))
+
+(define-record TableRow
+  [columns : (Listof String)])
 
 (define-enum ReduceResult
   [text {s : String}]
   [number {n : Float64}]
   [barChart
    {xlabel : String}
-   {xs : (Listof Float64)}
+   {xs : (Listof String)}
    {ylabel : String}
    {ys : (Listof Float64)}]
   [lineChart
@@ -40,7 +44,7 @@
    {ys : (Listof Float64)}]
   [table
    {columns : (Listof String)}
-   {rows : (Listof (Listof String))}])
+   {rows : (Listof TableRow)}])
 
 (define-record ApplyResult
   [items : (Listof IteratorResult)]
@@ -60,7 +64,7 @@
        [(equal? #"BarChart")
         (ReduceResult.barChart
          (table-ref-string v #"xlabel")
-         (table->list (table-ref v #"xs"))
+         (table->list (table-ref v #"xs") bytes->string)
          (table-ref-string v #"ylabel")
          (table->list (table-ref v #"ys")))]
        [(equal? #"LineChart")
@@ -78,19 +82,23 @@
        [(equal? #"Table")
         (ReduceResult.table
          (for/list ([col-bs (in-list (table->list (table-ref v #"columns")))])
-           (bytes->string/utf-8 col-bs #\uFFFD))
+           (bytes->string col-bs))
          (for/list ([row (in-list (table->list (table-ref v #"rows")))])
-           (for/list ([col-bs (in-list (table->list row))])
-             (bytes->string/utf-8 col-bs #\uFFFD))))]
+           (TableRow
+            (for/list ([col-bs (in-list (table->list row))])
+              (bytes->string col-bs)))))]
        [else (error '->ReduceResult "invalid table: ~s" v)])]
     [else (error '->ReduceResult "unexpected result: ~s" v)]))
 
-(define (table-ref-string t k)
-  (bytes->string/utf-8 (table-ref t k)))
+(define (bytes->string bs)
+  (bytes->string/utf-8 bs #\uFFFD))
 
-(define (table->list t)
+(define (table-ref-string t k)
+  (bytes->string (table-ref t k)))
+
+(define (table->list t [proc values])
   (for/list ([i (in-range 1 (add1 (table-length t)))])
-    (table-ref t i)))
+    (proc (table-ref t i))))
 
 
 ;; scripts ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

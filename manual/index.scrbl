@@ -792,19 +792,20 @@ aggregated data to a window when applying a script.
 @deflua[render.BarChart (xlabel ylabel) Chart]{
   Returns an instance of a bar @chart-ref{chart renderer}. The first
   argument represents the x-axis label and the second argument, the
-  y-axis.
+  y-axis. The x values of a bar chart must be strings and the y values
+  must be numbers.
 }
 
 @deflua[render.LineChart (xlabel ylabel) Chart]{
   Returns an instance of a line @chart-ref{chart renderer}. The first
   argument represents the x-axis label and the second argument, the
-  y-axis.
+  y-axis. The x and y values of a line chart must be numbers.
 }
 
 @deflua[render.ScatterChart (xlabel ylabel) Chart]{
   Returns an instance of a scatter @chart-ref{chart renderer}. The first
   argument represents the x-axis label and the second argument, the
-  y-axis.
+  y-axis. The x and y values of a line chart must be numbers.
 }
 
 @deflua[render.Table (columns ...) Table]{
@@ -974,7 +975,7 @@ data.
 
   function script.reduce(record, state)
     state = state or { xs = {}; ys = {} }
-    table.insert(state.xs, record.offset)
+    table.insert(state.xs, tostring(record.offset))
     table.insert(state.ys, #record.value)
     return state
   end
