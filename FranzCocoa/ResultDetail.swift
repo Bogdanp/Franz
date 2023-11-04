@@ -13,7 +13,7 @@ struct ResultDetail: View {
         case .number(let n):
           TextResult(text: String(format: "%f", n))
         case .barChart(let xlabel, let xs, let ylabel, let ys):
-          Chart(pairs(xs, ys), id: \.x) { p in
+          Chart(pairs(xs, ys)) { p in
             BarMark(
               x: .value(xlabel, p.x),
               y: .value(ylabel, p.y)
@@ -21,9 +21,8 @@ struct ResultDetail: View {
           }
           .padding(.all, 20)
           .frame(minWidth: 640, minHeight: 320)
-          .background()
         case .lineChart(let xlabel, let xs, let ylabel, let ys):
-          Chart(pairs(xs, ys), id: \.x) { p in
+          Chart(pairs(xs, ys)) { p in
             LineMark(
               x: .value(xlabel, p.x),
               y: .value(ylabel, p.y)
@@ -31,7 +30,16 @@ struct ResultDetail: View {
           }
           .padding(.all, 20)
           .frame(minWidth: 640, minHeight: 320)
-          .background()
+        case .scatterChart(let xlabel, let xs, let ylabel, let ys):
+          Chart(pairs(xs, ys)) { p in
+            PointMark(
+              x: .value(xlabel, p.x),
+              y: .value(ylabel, p.y)
+            )
+          }
+          .chartXScale(domain: [xs.min() ?? 0, xs.max() ?? 0])
+          .padding(.all, 20)
+          .frame(minWidth: 640, minHeight: 320)
         default:
           Text("Renderer Missing")
             .font(.title)
@@ -43,15 +51,21 @@ struct ResultDetail: View {
           .frame(minWidth: 400, minHeight: 120, maxHeight: 240)
       }
     }
+    .background()
   }
 
-  private struct Pair<K> {
+  private struct Pair<K>: Identifiable {
+    let id: Int
     let x: K
     let y: Float64
   }
 
   private func pairs<K>(_ xs: [K], _ ys: [Float64]) -> [Pair<K>] {
-    return Array(zip(xs, ys).map { (x, y) in Pair(x: x, y: y) })
+    var pairs = [Pair<K>]()
+    for (i, (x, y)) in zip(xs, ys).enumerated() {
+      pairs.append(.init(id: i, x: x, y: y))
+    }
+    return pairs
   }
 }
 
