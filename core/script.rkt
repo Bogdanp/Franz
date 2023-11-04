@@ -33,6 +33,11 @@
    {xs : (Listof Float64)}
    {ylabel : String}
    {ys : (Listof Float64)}]
+  [scatterChart
+   {xlabel : String}
+   {xs  : (Listof Float64)}
+   {ylabel : String}
+   {ys : (Listof Float64)}]
   [table
    {columns : (Listof String)}
    {rows : (Listof (Listof String))}])
@@ -60,6 +65,12 @@
          (table->list (table-ref v #"ys")))]
        [(equal? #"LineChart")
         (ReduceResult.lineChart
+         (table-ref-string v #"xlabel")
+         (table->list (table-ref v #"xs"))
+         (table-ref-string v #"ylabel")
+         (table->list (table-ref v #"ys")))]
+       [(equal? #"ScatterChart")
+        (ReduceResult.scatterChart
          (table-ref-string v #"xlabel")
          (table->list (table-ref v #"xs"))
          (table-ref-string v #"ylabel")

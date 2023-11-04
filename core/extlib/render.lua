@@ -84,5 +84,6 @@ local Table = Class {
 return {
     BarChart = makeChartClass("BarChart"),
     LineChart = makeChartClass("LineChart"),
+    ScatterChart = makeChartClass("ScatterChart"),
     Table = Table
 }

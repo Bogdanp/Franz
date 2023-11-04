@@ -801,6 +801,12 @@ aggregated data to a window when applying a script.
   y-axis.
 }
 
+@deflua[render.ScatterChart (xlabel ylabel) Chart]{
+  Returns an instance of a scatter @chart-ref{chart renderer}. The first
+  argument represents the x-axis label and the second argument, the
+  y-axis.
+}
+
 @deflua[render.Table (columns ...) Table]{
   Returns an instance of a table renderer. The first argument is the
   set of columns and the variadic arguments represent the rows. For

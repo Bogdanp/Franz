@@ -24,6 +24,11 @@
       #:x-label xlabel
       #:y-label ylabel
       (lines (map list xs ys)))]
+    [(ReduceResult.scatterChart xlabel xs ylabel ys)
+     (plot-view
+      #:x-label xlabel
+      #:y-label ylabel
+      (points (map list xs ys)))]
     [(ReduceResult.table columns rows)
      (hpanel
       #:min-size '(400 200)
