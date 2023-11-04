@@ -23,7 +23,15 @@
      (plot-view
       #:x-label xlabel
       #:y-label ylabel
-      (lines (map list xs ys)))]))
+      (lines (map list xs ys)))]
+    [(ReduceResult.table columns rows)
+     (hpanel
+      #:min-size '(400 200)
+      (table
+       columns
+       (for/vector ([row (in-list rows)])
+         (for/vector ([col (in-list row)])
+           col))))]))
 
 (define (text-view s)
   (hpanel

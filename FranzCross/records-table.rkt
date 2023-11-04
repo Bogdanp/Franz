@@ -11,9 +11,11 @@
          racket/list
          racket/match
          racket/vector
+         (prefix-in ~ threading)
          "alert.rkt"
          "combinator.rkt"
          "common.rkt"
+         "editor.rkt"
          "hacks.rkt"
          "mixin.rkt"
          "observable.rkt"
@@ -127,12 +129,30 @@
           (IteratorResult->original res)))
       (define res
         (apply-script script originals id))
-      (when (ApplyResult-reduced res)
+      (define res-detail-view
+        (~and~>
+         (ApplyResult-reduced res)
+         (result-detail)))
+      (define output
+        (ApplyResult-output res))
+      (define output-view
+        (and (not (bytes=? output #""))
+             (vpanel
+              #:alignment '(left top)
+              #:min-size '(480 120)
+              (text "Output:")
+              (editor
+               #:lang 'plain
+               (bytes->string/utf-8
+                (ApplyResult-output res)
+                #\uFFFD)))))
+      (define views
+        (filter values (list res-detail-view output-view)))
+      (unless (null? views)
         (render
          (window
           #:title (format "[~a] Result" topic)
-          (result-detail
-           (ApplyResult-reduced res)))))
+          (apply vpanel views))))
       (list->vector
        (ApplyResult-items res))))
   (define (do-publish-tombstone r)

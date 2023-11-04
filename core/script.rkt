@@ -32,10 +32,14 @@
    {xlabel : String}
    {xs : (Listof Float64)}
    {ylabel : String}
-   {ys : (Listof Float64)}])
+   {ys : (Listof Float64)}]
+  [table
+   {columns : (Listof String)}
+   {rows : (Listof (Listof String))}])
 
 (define-record ApplyResult
   [items : (Listof IteratorResult)]
+  [(output #"") : Bytes]
   [(reduced #f) : (Optional ReduceResult)])
 
 (define (->ReduceResult v)
@@ -60,6 +64,13 @@
          (table->list (table-ref v #"xs"))
          (table-ref-string v #"ylabel")
          (table->list (table-ref v #"ys")))]
+       [(equal? #"Table")
+        (ReduceResult.table
+         (for/list ([col-bs (in-list (table->list (table-ref v #"columns")))])
+           (bytes->string/utf-8 col-bs #\uFFFD))
+         (for/list ([row (in-list (table->list (table-ref v #"rows")))])
+           (for/list ([col-bs (in-list (table->list row))])
+             (bytes->string/utf-8 col-bs #\uFFFD))))]
        [else (error '->ReduceResult "invalid table: ~s" v)])]
     [else (error '->ReduceResult "unexpected result: ~s" v)]))
 
@@ -112,20 +123,25 @@
     (cond
       [(nil? render-proc) s]
       [else (render-proc s)]))
-  (define-values (state items)
-    (for*/fold ([s nil] [items null])
-               ([r (in-list records)]
-                [t (in-value (transform r))]
-                #:unless (nil? t))
-      (define item
-        (IteratorResult.transformed (table->IteratorRecord t) r))
-      (values
-       (reduce t s)
-       (cons item items))))
+  (define output (open-output-bytes))
+  (define-values (result items)
+    (parameterize ([current-output-port output]
+                   [current-error-port output])
+      (define-values (state items)
+        (for*/fold ([s nil] [items null])
+                   ([r (in-list records)]
+                    [t (in-value (transform r))]
+                    #:unless (nil? t))
+          (define item
+            (IteratorResult.transformed (table->IteratorRecord t) r))
+          (values
+           (reduce t s)
+           (cons item items))))
+      (values (render state) items)))
   (ApplyResult
    (reverse items)
-   (->ReduceResult
-    (render state))))
+   (get-output-bytes output)
+   (->ReduceResult result)))
 
 (define-rpc (deactivate-script [for-topic topic : String]
                                [in-workspace id : UVarint])

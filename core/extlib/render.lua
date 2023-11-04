@@ -1,5 +1,7 @@
 #lang lua
 
+-- Chart ---------------------------------------------------------------
+
 local function makeChartClass(name)
     local Chart = Class {
         name = name,
@@ -66,7 +68,21 @@ local function makeChartClass(name)
     return Chart
 end
 
+-- Table ---------------------------------------------------------------
+
+local Table = Class {
+    name = "Table",
+    constructor = function(columns, ...)
+        return {
+            __type = "Table",
+            columns = columns,
+            rows = table.pack(...)
+        }
+    end
+}
+
 return {
     BarChart = makeChartClass("BarChart"),
-    LineChart = makeChartClass("LineChart")
+    LineChart = makeChartClass("LineChart"),
+    Table = Table
 }
