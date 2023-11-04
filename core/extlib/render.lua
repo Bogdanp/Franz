@@ -28,8 +28,37 @@ local function makeChartClass(name)
         return self
     end
 
+    function check_type(who, typ)
+        if typ ~= nil and
+            typ ~= "linear" and
+            typ ~= "log" then
+            error(who .. ": type must be 'linear' or 'log'")
+        end
+    end
+
+    local function make_scale(who, lo, hi, typ)
+        check_type(who, typ)
+        return {
+            lo = lo,
+            hi = hi,
+            typ = typ or "linear"
+        }
+    end
+
+    function Chart:setxscale(...)
+        check_type("Chart:setxscale", typ)
+        self.xscale = make_scale("Chart:setxscale", ...)
+        return self
+    end
+
     function Chart:setxs(xs)
         self.xs = xs
+        return self
+    end
+
+    function Chart:setyscale(...)
+        check_type("Chart:setyscale", typ)
+        self.yscale = make_scale("Chart:setyscale", ...)
         return self
     end
 

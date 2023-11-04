@@ -40,17 +40,12 @@ public enum AuthMechanism: Readable, Writable {
 }
 
 public enum ChartScale: Readable, Writable {
-  case categorical([String])
   case numerical(Float64, Float64, ChartScaleType)
 
   public static func read(from inp: InputPort, using buf: inout Data) -> ChartScale {
     let tag = UVarint.read(from: inp, using: &buf)
     switch tag {
     case 0x0000:
-      return .categorical(
-        [String].read(from: inp, using: &buf)
-      )
-    case 0x0001:
       return .numerical(
         Float64.read(from: inp, using: &buf),
         Float64.read(from: inp, using: &buf),
@@ -63,11 +58,8 @@ public enum ChartScale: Readable, Writable {
 
   public func write(to out: OutputPort) {
     switch self {
-    case .categorical(let categories):
-      UVarint(0x0000).write(to: out)
-      categories.write(to: out)
     case .numerical(let lo, let hi, let type):
-      UVarint(0x0001).write(to: out)
+      UVarint(0x0000).write(to: out)
       lo.write(to: out)
       hi.write(to: out)
       type.write(to: out)
@@ -504,27 +496,27 @@ public struct Broker: Readable, Writable {
 
 public struct Chart: Readable, Writable {
   public let style: ChartStyle
-  public let xDomain: ChartScale?
+  public let xScale: ChartScale?
   public let xLabel: String
   public let xs: [ChartValue]
-  public let yDomain: ChartScale?
+  public let yScale: ChartScale?
   public let yLabel: String
   public let ys: [ChartValue]
 
   public init(
     style: ChartStyle,
-    xDomain: ChartScale?,
+    xScale: ChartScale?,
     xLabel: String,
     xs: [ChartValue],
-    yDomain: ChartScale?,
+    yScale: ChartScale?,
     yLabel: String,
     ys: [ChartValue]
   ) {
     self.style = style
-    self.xDomain = xDomain
+    self.xScale = xScale
     self.xLabel = xLabel
     self.xs = xs
-    self.yDomain = yDomain
+    self.yScale = yScale
     self.yLabel = yLabel
     self.ys = ys
   }
@@ -532,10 +524,10 @@ public struct Chart: Readable, Writable {
   public static func read(from inp: InputPort, using buf: inout Data) -> Chart {
     return Chart(
       style: ChartStyle.read(from: inp, using: &buf),
-      xDomain: ChartScale?.read(from: inp, using: &buf),
+      xScale: ChartScale?.read(from: inp, using: &buf),
       xLabel: String.read(from: inp, using: &buf),
       xs: [ChartValue].read(from: inp, using: &buf),
-      yDomain: ChartScale?.read(from: inp, using: &buf),
+      yScale: ChartScale?.read(from: inp, using: &buf),
       yLabel: String.read(from: inp, using: &buf),
       ys: [ChartValue].read(from: inp, using: &buf)
     )
@@ -543,10 +535,10 @@ public struct Chart: Readable, Writable {
 
   public func write(to out: OutputPort) {
     style.write(to: out)
-    xDomain.write(to: out)
+    xScale.write(to: out)
     xLabel.write(to: out)
     xs.write(to: out)
-    yDomain.write(to: out)
+    yScale.write(to: out)
     yLabel.write(to: out)
     ys.write(to: out)
   }

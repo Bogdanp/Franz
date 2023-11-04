@@ -841,8 +841,18 @@ See @secref["rendering-a-bar-chart"] for a usage example.
   numbers, but the types should be internally consistent per axis.
 }
 
+@deflua[Chart:setxscale (lo hi) Chart]{
+  Sets the scale of the x axis. Undefined when the x values are
+  strings.
+}
+
 @deflua[Chart:setxs (xs) Chart]{
   Replaces all the x-axis values with @tt{xs}.
+}
+
+@deflua[Chart:setyscale (lo hi) Chart]{
+  Sets the scale of the y axis. Undefined when the y values are
+  strings.
 }
 
 @deflua[Chart:setys (ys) Chart]{

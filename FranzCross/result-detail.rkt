@@ -25,6 +25,11 @@
     [(ReduceResult.text s)
      (text-view s)]))
 
+(define (ChartScale-> v)
+  (match v
+    [#f (values #f #f)]
+    [(ChartScale.numerical lo hi _) (values lo hi)]))
+
 (define (ChartValue-> v)
   (match v
     [(ChartValue.categorical category) category]
@@ -34,11 +39,19 @@
   (hpanel
    #:min-size '(640 480)
    (snip #f (λ (_ width height)
+              (define-values (x-min x-max)
+                (ChartScale-> (Chart-x-scale c)))
+              (define-values (y-min y-max)
+                (ChartScale-> (Chart-y-scale c)))
               (apply
                plot-snip
                #:width width
                #:height height
+               #:x-min x-min
+               #:x-max x-max
                #:x-label (Chart-x-label c)
+               #:y-min y-min
+               #:y-max y-max
                #:y-label (Chart-y-label c)
                (list
                 ((match (Chart-style c)
@@ -79,10 +92,10 @@
           ['chart (ReduceResult.chart
                    (make-Chart
                     #:style (ChartStyle.bar)
-                    #:x-domain #f
+                    #:x-scale #f
                     #:x-label "x"
                     #:xs (map ChartValue.categorical '("a" "b" "c"))
-                    #:y-domain #f
+                    #:y-scale #f
                     #:y-label "y"
                     #:ys (map ChartValue.numerical '(4 5 6))))]
           ['number (ReduceResult.number 42)]

@@ -34,7 +34,6 @@
   [log])
 
 (define-enum ChartScale
-  [categorical {categories : (Listof String)}]
   [numerical
    {lo : Float64}
    {hi : Float64}
@@ -51,10 +50,10 @@
 
 (define-record Chart
   [style : ChartStyle]
-  [x-domain : (Optional ChartScale)]
+  [x-scale : (Optional ChartScale)]
   [x-label : String]
   [xs : (Listof ChartValue)]
-  [y-domain : (Optional ChartScale)]
+  [y-scale : (Optional ChartScale)]
   [y-label : String]
   [ys : (Listof ChartValue)])
 
@@ -70,6 +69,19 @@
   [items : (Listof IteratorResult)]
   [(output #"") : Bytes]
   [(reduced #f) : (Optional ReduceResult)])
+
+(define (->ChartScale v)
+  (cond
+    [(nil? v) #f]
+    [(table? v)
+     (ChartScale.numerical
+      (table-ref v #"lo")
+      (table-ref v #"hi")
+      (case (table-ref v #"typ")
+        [(#"linear") (ChartScaleType.linear)]
+        [(#"log") (ChartScaleType.log)]
+        [else (error '->ChartScale "invalid scale type")]))]
+    [else (error '->ChartScale "invalid scale value: ~s" v)]))
 
 (define (->ChartStyle v)
   (case v
@@ -98,10 +110,10 @@
         (ReduceResult.chart
          (make-Chart
           #:style (->ChartStyle type)
-          #:x-domain #f
+          #:x-scale (->ChartScale (table-ref v #"xscale"))
           #:x-label (table-ref-string v #"xlabel")
           #:xs (table->list (table-ref v #"xs") ->ChartValue)
-          #:y-domain #f
+          #:y-scale (->ChartScale (table-ref v #"yscale"))
           #:y-label (table-ref-string v #"ylabel")
           #:ys (table->list (table-ref v #"ys") ->ChartValue)))]
        [(equal? #"Table")

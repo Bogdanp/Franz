@@ -35,7 +35,13 @@ fileprivate struct ChartResult: View {
   }
 
   var body: some View {
-    Charts.Chart(pairs(chart.xs, chart.ys)) { p in
+    AnyView(chartView())
+      .padding(.all, 20)
+      .frame(minWidth: 640, minHeight: 320)
+  }
+
+  private func chartView() -> any View {
+    let view = Charts.Chart(pairs(chart.xs, chart.ys)) { p in
       switch chart.style {
       case .bar:
         p.barMark(xLabel: chart.xLabel, yLabel: chart.yLabel)
@@ -45,8 +51,18 @@ fileprivate struct ChartResult: View {
         p.pointMark(xLabel: chart.xLabel, yLabel: chart.yLabel)
       }
     }
-    .padding(.all, 20)
-    .frame(minWidth: 640, minHeight: 320)
+    switch (chart.xScale, chart.yScale) {
+    case (.none, .none):
+      return view
+    case (.numerical(let lo, let hi, _), .none):
+      return view.chartXScale(domain: lo...hi, type: .linear)
+    case (.none, .numerical(let lo, let hi, _)):
+      return view.chartYScale(domain: lo...hi, type: .linear)
+    case (.numerical(let xlo, let xhi, _), .numerical(let ylo, let yhi, _)):
+      return view
+        .chartXScale(domain: xlo...xhi, type: .linear)
+        .chartYScale(domain: ylo...yhi, type: .linear)
+    }
   }
 
   private struct Pair: Identifiable {
