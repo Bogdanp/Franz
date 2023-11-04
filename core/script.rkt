@@ -154,7 +154,20 @@
 (define-rpc (apply-script [_ script : String]
                           [to-records records : (Listof IteratorRecord)]
                           [in-workspace id : UVarint] : ApplyResult)
-  (define script-tbl (make-script 'apply-script script))
+  (define output
+    (open-output-bytes))
+  (define-values (result items)
+    (parameterize ([current-output-port output]
+                   [current-error-port output])
+      (do-apply-script script records)))
+  (ApplyResult
+   (reverse items)
+   (get-output-bytes output)
+   (->ReduceResult result)))
+
+(define (do-apply-script script records)
+  (define script-tbl
+    (make-script 'apply-script script))
   (define transform-proc (table-ref script-tbl #"transform"))
   (unless (procedure? transform-proc)
     (error 'apply-script "script.transform is not a procedure"))
@@ -179,25 +192,17 @@
     (cond
       [(nil? render-proc) s]
       [else (render-proc s)]))
-  (define output (open-output-bytes))
-  (define-values (result items)
-    (parameterize ([current-output-port output]
-                   [current-error-port output])
-      (define-values (state items)
-        (for*/fold ([s nil] [items null])
-                   ([r (in-list records)]
-                    [t (in-value (transform r))]
-                    #:unless (nil? t))
-          (define item
-            (IteratorResult.transformed (table->IteratorRecord t) r))
-          (values
-           (reduce t s)
-           (cons item items))))
-      (values (render state) items)))
-  (ApplyResult
-   (reverse items)
-   (get-output-bytes output)
-   (->ReduceResult result)))
+  (define-values (state items)
+    (for*/fold ([s nil] [items null])
+               ([r (in-list records)]
+                [t (in-value (transform r))]
+                #:unless (nil? t))
+      (define item
+        (IteratorResult.transformed (table->IteratorRecord t) r))
+      (values
+       (reduce t s)
+       (cons item items))))
+  (values (render state) items))
 
 (define-rpc (deactivate-script [for-topic topic : String]
                                [in-workspace id : UVarint])
