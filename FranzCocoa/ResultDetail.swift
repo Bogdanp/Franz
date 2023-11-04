@@ -39,7 +39,7 @@ struct ResultDetail: View {
         }
       }
       if res.output.count > 0 {
-        Console(String(data: res.output, encoding: .utf8) ?? "")
+        Textarea(String(data: res.output, encoding: .utf8) ?? "", textColor: .secondaryLabelColor)
           .frame(minWidth: 400, minHeight: 120, maxHeight: 240)
       }
     }
@@ -63,53 +63,5 @@ fileprivate struct TextResult: View {
       .font(.title)
       .padding(.all, 20)
       .frame(minWidth: 400, minHeight: 200)
-  }
-}
-
-fileprivate struct Console: NSViewRepresentable {
-  typealias NSViewType = NSScrollView
-
-  let output: String
-
-  init(_ output: String) {
-    self.output = output
-  }
-
-  func makeNSView(context: NSViewRepresentableContext<Console>) -> NSViewType {
-    let scrollView = NSTextView.scrollableTextView()
-    scrollView.borderType = .noBorder
-    scrollView.hasVerticalScroller = true
-    scrollView.hasHorizontalScroller = true
-    scrollView.autoresizingMask = [.width, .height]
-
-    let textView = NSTextView()
-    textView.font = .monospacedSystemFont(ofSize: 12, weight: .regular)
-    textView.textColor = .secondaryLabelColor
-    textView.string = output
-    scrollView.addSubview(textView)
-    scrollView.documentView = textView
-
-    return scrollView
-  }
-
-  func updateNSView(_ nsView: NSViewType, context: NSViewRepresentableContext<Console>) {
-    nsView.backgroundColor = .textBackgroundColor
-    nsView.borderType = .noBorder
-    nsView.hasVerticalScroller = true
-    nsView.hasHorizontalScroller = true
-    nsView.autoresizingMask = [.width, .height]
-
-    print("update")
-    let contentSize = nsView.contentSize
-    if let textView = nsView.documentView as? NSTextView {
-      textView.backgroundColor = .textBackgroundColor
-      textView.isEditable = false
-      textView.isVerticallyResizable = true
-      textView.isHorizontallyResizable = true
-      textView.autoresizingMask = [.height, .width]
-      textView.textContainer?.size = NSSize(width: contentSize.width, height: .greatestFiniteMagnitude)
-      textView.textContainer?.widthTracksTextView = true
-      textView.string = output
-    }
   }
 }

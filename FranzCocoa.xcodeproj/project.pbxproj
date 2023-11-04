@@ -155,6 +155,8 @@
 		43CDBAF72AE411A0003063D7 /* WorkspaceSidebarViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 436E720128D759F400ECBF49 /* WorkspaceSidebarViewController.xib */; };
 		43CDCD472AF623EF002CF3AC /* ResultDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CDCD462AF623EF002CF3AC /* ResultDetail.swift */; };
 		43CDCD482AF623EF002CF3AC /* ResultDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CDCD462AF623EF002CF3AC /* ResultDetail.swift */; };
+		43CDCD4A2AF6A496002CF3AC /* Textarea.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CDCD492AF6A496002CF3AC /* Textarea.swift */; };
+		43CDCD4B2AF6A496002CF3AC /* Textarea.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CDCD492AF6A496002CF3AC /* Textarea.swift */; };
 		43D03DD428FAC6030049D44D /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D03DD328FAC6030049D44D /* Keychain.swift */; };
 		43D03DD628FAFE3B0049D44D /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D03DD528FAFE3B0049D44D /* Notifications.swift */; };
 		43D03DD828FB03940049D44D /* Identifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D03DD728FB03940049D44D /* Identifiers.swift */; };
@@ -253,6 +255,7 @@
 		43CDBAFB2AE411A0003063D7 /* Franz.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Franz.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		43CDBAFD2AE54A34003063D7 /* Franz-MAS-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Franz-MAS-Info.plist"; sourceTree = "<group>"; };
 		43CDCD462AF623EF002CF3AC /* ResultDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultDetail.swift; sourceTree = "<group>"; };
+		43CDCD492AF6A496002CF3AC /* Textarea.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Textarea.swift; sourceTree = "<group>"; };
 		43D03DD328FAC6030049D44D /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
 		43D03DD528FAFE3B0049D44D /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
 		43D03DD728FB03940049D44D /* Identifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Identifiers.swift; sourceTree = "<group>"; };
@@ -392,6 +395,7 @@
 				43EE0EDE299BD276001A973A /* SidebarOptionsForm.swift */,
 				431C697E28F2C1A70082986A /* StringExtensions.swift */,
 				4396EAE02905B0D200A15D25 /* Tabs.swift */,
+				43CDCD492AF6A496002CF3AC /* Textarea.swift */,
 				43453F3C291505A6000CE90E /* Timed.swift */,
 				43196F8928F1DAB2003C793B /* TopicDetailView.swift */,
 				437669F12986B10B00307CFE /* TopicRecordsOptionsForm.swift */,
@@ -737,6 +741,7 @@
 				439D6EB1292F7741005C9935 /* UpdatesProgressWindowController.swift in Sources */,
 				4395503828FD45B000CC0050 /* GroupOffsetsOutlineViewController.swift in Sources */,
 				43196F8A28F1DAB2003C793B /* TopicDetailView.swift in Sources */,
+				43CDCD4A2AF6A496002CF3AC /* Textarea.swift in Sources */,
 				43D03DD428FAC6030049D44D /* Keychain.swift in Sources */,
 				432C24632903F03B00C6F336 /* Error.swift in Sources */,
 				43D03DD828FB03940049D44D /* Identifiers.swift in Sources */,
@@ -793,6 +798,7 @@
 				43CDBABE2AE411A0003063D7 /* UpdatesProgressWindowController.swift in Sources */,
 				43CDBABF2AE411A0003063D7 /* GroupOffsetsOutlineViewController.swift in Sources */,
 				43CDBAC02AE411A0003063D7 /* TopicDetailView.swift in Sources */,
+				43CDCD4B2AF6A496002CF3AC /* Textarea.swift in Sources */,
 				43CDBAC12AE411A0003063D7 /* Keychain.swift in Sources */,
 				43CDBAC22AE411A0003063D7 /* Error.swift in Sources */,
 				43CDBAC32AE411A0003063D7 /* Identifiers.swift in Sources */,
