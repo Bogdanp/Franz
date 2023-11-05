@@ -181,6 +181,7 @@ jobs:
             -exportOptionsPlist FranzCocoa/ExportOptions.plist \
             -exportPath dist/ \
             -allowProvisioningUpdates
+          npm install -g create-dmg@6
           npx create-dmg dist/Franz.app dist/
           mv dist/Franz*.dmg dist/Franz.dmg
       - name: Notarize Franz.dmg
