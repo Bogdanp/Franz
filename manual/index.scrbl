@@ -812,6 +812,9 @@ aggregated data to a window when applying a script.
   chart. The width of a candle must be the length of the interval (in
   seconds) between x ticks on the chart. For example, if the chart is to
   display daily candles, the width of each candle would be @tt{86400}.
+
+  On macOS, this method controls the pixel width of the candles. Use it
+  to make thinner candles when necessary.
 }
 
 @deflua[render.Candlestick (o h l c) Candlestick]{

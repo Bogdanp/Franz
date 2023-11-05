@@ -45,7 +45,7 @@
 (define-enum ChartStyle
   [bar]
   [candlestick
-   {width : UVarint}]
+   {width : (Optional UVarint)}]
   [line]
   [scatter])
 
@@ -106,7 +106,7 @@
     [(#"CandlestickChart")
      (ChartStyle.candlestick
       (let ([width (table-ref v #"candlestick_width")])
-        (if (nil? width) 1 (inexact->exact width))))]
+        (if (nil? width) #f (inexact->exact width))))]
     [(#"LineChart")
      (ChartStyle.line)]
     [(#"ScatterChart")

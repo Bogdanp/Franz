@@ -57,8 +57,9 @@
                 (ormap ChartValue.timestamp? (Chart-ys c)))
               (parameterize ([candlestick-width
                               (match (Chart-style c)
-                                [(ChartStyle.candlestick width) width]
-                                [_ 1])]
+                                [(ChartStyle.candlestick width)
+                                 (or width 60)]
+                                [_ 60])]
                              [plot-x-ticks
                               (if x-date-ticks?
                                   (date-ticks)

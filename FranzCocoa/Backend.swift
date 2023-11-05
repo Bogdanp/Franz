@@ -95,7 +95,7 @@ public enum ChartScaleType: Readable, Writable {
 
 public enum ChartStyle: Readable, Writable {
   case bar
-  case candlestick(UVarint)
+  case candlestick(UVarint?)
   case line
   case scatter
 
@@ -106,7 +106,7 @@ public enum ChartStyle: Readable, Writable {
       return .bar
     case 0x0001:
       return .candlestick(
-        UVarint.read(from: inp, using: &buf)
+        UVarint?.read(from: inp, using: &buf)
       )
     case 0x0002:
       return .line

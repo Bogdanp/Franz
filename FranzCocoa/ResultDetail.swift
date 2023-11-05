@@ -1,4 +1,5 @@
 import Charts
+import NoiseSerde
 import SwiftUI
 
 struct ResultDetail: View {
@@ -61,11 +62,11 @@ fileprivate struct ChartResult: View {
       switch chart.style {
       case .bar:
         try? p.barMark(xLabel: chart.xLabel, yLabel: chart.yLabel)
-      case .candlestick:
+      case .candlestick(let width):
         try? p.candlestickMark(
           xLabel: chart.xLabel,
           yLabel: chart.yLabel,
-          previous: p.id > 0 && p.id < ps.endIndex ? ps[p.id-1] : nil
+          width: width
         )
       case .line:
         try? p.lineMark(xLabel: chart.xLabel, yLabel: chart.yLabel)
@@ -91,21 +92,17 @@ fileprivate struct ChartResult: View {
     case badMarks
   }
 
-  private enum CandlestickDirection {
-    case up
-    case down
-  }
-
   private struct CandlestickMark<X: Plottable, Y: Plottable>: ChartContent {
     let x: PlottableValue<X>
     let o: PlottableValue<Y>
     let h: PlottableValue<Y>
     let l: PlottableValue<Y>
     let c: PlottableValue<Y>
+    let w: UVarint?
 
     var body: some ChartContent {
       RectangleMark(x: x, yStart: l, yEnd: h, width: 1)
-      RectangleMark(x: x, yStart: o, yEnd: c, width: 14)
+      RectangleMark(x: x, yStart: o, yEnd: c, width: MarkDimension(integerLiteral: Int(w ?? 14)))
     }
   }
 
@@ -132,25 +129,19 @@ fileprivate struct ChartResult: View {
     func candlestickMark(
       xLabel: String,
       yLabel: String,
-      previous: Pair?
+      width: UVarint?
     ) throws -> some ChartContent {
       switch (x, y) {
       case (.timestamp(let ts), .candlestick(let o, let h, let l, let c)):
-        var direction: CandlestickDirection
-        switch previous?.y {
-        case .some(.candlestick(_, _, _, let oc)):
-          direction = oc > c ? .down : .up
-        default:
-          direction = .up
-        }
         return CandlestickMark(
           x: .value("Date", Date(timeIntervalSince1970: Double(ts))),
           o: .value("Open", o),
           h: .value("High", h),
           l: .value("Low", l),
-          c: .value("Close", c)
+          c: .value("Close", c),
+          w: width
         )
-        .foregroundStyle(direction == .down ? .red : .green)
+        .foregroundStyle(o > c ? .red : .green)
       default:
         throw ChartError.badMarks
       }
