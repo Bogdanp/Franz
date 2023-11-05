@@ -827,6 +827,44 @@ aggregated data to a window when applying a script.
   }
 }
 
+@deflua[render.HStack (...) Stack]{
+  Returns an instance of a view that renders its children
+  horizontally.
+
+  @codeblock[#:keep-lang-line? #f]{
+    #lang lua
+    function script.render(state)
+      local total = 0
+      for _, age in ipairs(state.ys) do
+        total = total + age
+      end
+      local avg = total / state.n
+      return render.VStack(
+        render.HStack(
+          string.format("Total Records: %d", state.n),
+          render.Table(
+            {"min", "max", "avg"},
+            {
+              math.min(table.unpack(state.ys)),
+              math.max(table.unpack(state.ys)),
+              avg
+            }
+          )
+        ),
+        render.BarChart("Name", "Age")
+          :setxs(state.xs)
+          :setys(state.ys)
+          :sort()
+          :setyscale(0, 105)
+      )
+    end
+  }
+}
+
+@deflua[render.VStack (...) Stack]{
+  Returns an instance of a view that renders its children vertically.
+}
+
 @subsubsection{Charts}
 
 These methods are available on all charts. Unless otherwise specified,

@@ -97,6 +97,26 @@ local function makeChartClass(name)
     return Chart
 end
 
+-- Stack ---------------------------------------------------------------
+
+local function makeStackClass(name)
+    local Stack = Class {
+        name = name,
+        constructor = function(...)
+            return {
+                __type = name,
+                children = {...}
+            }
+        end
+    }
+
+    function Stack:__tostring()
+        return string.format("<Stack #children=%d>", #self.children)
+    end
+
+    return Stack
+end
+
 -- Table ---------------------------------------------------------------
 
 local Table = Class {
@@ -110,9 +130,13 @@ local Table = Class {
     end
 }
 
+
+
 return {
     BarChart = makeChartClass("BarChart"),
     LineChart = makeChartClass("LineChart"),
     ScatterChart = makeChartClass("ScatterChart"),
+    HStack = makeStackClass("HStack"),
+    VStack = makeStackClass("VStack"),
     Table = Table
 }

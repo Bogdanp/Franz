@@ -3,10 +3,12 @@
 (require avro
          kafka/private/serde/internal
          lua/env
+         lua/private/string  ;; FIXME
          lua/value
          messagepack
          noise/backend
          noise/serde
+         racket/contract
          racket/file
          racket/port
          racket/runtime-path
@@ -19,6 +21,7 @@
 (provide
  (record-out ApplyResult)
  (record-out Chart)
+ (record-out Stack)
  (record-out TableRow)
  (enum-out ChartScale)
  (enum-out ChartScaleType)
@@ -60,10 +63,15 @@
 (define-enum ReduceResult
   [chart {c : Chart}]
   [number {n : Float64}]
+  [stack {s : (Delay Stack)}]
   [table
    {cols : (Listof String)}
    {rows : (Listof TableRow)}]
   [text {s : String}])
+
+(define-record Stack
+  [direction : Symbol #:contract (or/c 'horizontal 'vertical)]
+  [children : (Listof ReduceResult)])
 
 (define-record ApplyResult
   [items : (Listof IteratorResult)]
@@ -116,13 +124,22 @@
           #:y-scale (->ChartScale (table-ref v #"yscale"))
           #:y-label (table-ref-string v #"ylabel")
           #:ys (table->list (table-ref v #"ys") ->ChartValue)))]
-       [(equal? #"Table")
+       [(#"HStack" #"VStack")
+        (ReduceResult.stack
+         (make-Stack
+          #:direction
+          (case type
+            [(#"HStack") 'horizontal]
+            [(#"VStack") 'vertical]
+            [else (error '->ReduceResult "invalid stack type: ~s" type)])
+          #:children (table->list (table-ref v #"children") ->ReduceResult)))]
+       [(#"Table")
         (ReduceResult.table
          (for/list ([col-bs (in-list (table->list (table-ref v #"columns")))])
            (bytes->string col-bs))
          (for/list ([row (in-list (table->list (table-ref v #"rows")))])
            (TableRow
-            (for/list ([col-bs (in-list (table->list row))])
+            (for/list ([col-bs (in-list (table->list row lua:tostring))])
               (bytes->string col-bs)))))]
        [else (error '->ReduceResult "invalid table: ~s" v)])]
     [else (error '->ReduceResult "unexpected result: ~s" v)]))
