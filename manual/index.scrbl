@@ -465,9 +465,9 @@ Confluent Schema Registry.
 }
 
 @deflua[file:lines (...) function]{
-  Returns a function that iterates over lines in the file according to
-  the given format arguments. If no format arguments are given, defaults
-  to @tt{"l"}.
+  Returns a function that iterates over lines in the file according
+  to the given read instructions. If no read instructions are given,
+  defaults to @tt{"l"}.
 
   @codeblock[#:keep-lang-line? #f]|{
     #lang lua
@@ -476,6 +476,9 @@ Confluent Schema Registry.
       print(l)
     end
   }|
+
+  See @lua[file:read] for a description of the supported read
+  instructions.
 }
 
 @deflua[file.path string]{
