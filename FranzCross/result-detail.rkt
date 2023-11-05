@@ -14,6 +14,12 @@
      (chart-view c)]
     [(ReduceResult.number n)
      (text-view (number->string n))]
+    [(ReduceResult.stack s)
+     (apply
+      (case (Stack-direction s)
+        [(horizontal) hpanel]
+        [(vertical) vpanel])
+      (map result-detail (Stack-children s)))]
     [(ReduceResult.table columns rows)
      (hpanel
       #:min-size '(400 200)
@@ -80,7 +86,7 @@
     (vpanel
      (choice
       #:stretch '(#t #f)
-      '(chart number table text)
+      '(chart number stack table text)
       #:choice->label symbol->string
       #:selection @kind
       @kind:=))
@@ -99,6 +105,12 @@
                     #:y-label "y"
                     #:ys (map ChartValue.numerical '(4 5 6))))]
           ['number (ReduceResult.number 42)]
+          ['stack (ReduceResult.stack
+                   (make-Stack
+                    #:direction 'horizontal
+                    #:children (list
+                                (ReduceResult.text "hello")
+                                (ReduceResult.table '("a" "b") null))))]
           ['table (ReduceResult.table
                    '("a" "b")
                    (list
