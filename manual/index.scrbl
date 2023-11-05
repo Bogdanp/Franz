@@ -798,6 +798,33 @@ aggregated data to a window when applying a script.
   y-axis.
 }
 
+@deflua[render.CandlestickChart (xlabel ylabel) Chart]{
+  Returns an instance of a candlestick @chart-ref{chart renderer}. The
+  first argument represents the x axis label and the second argument,
+  the y axis.
+
+  The values of the x axis values must be @lua[render.Timestamp]
+  values the y axis values must be @lua[render.Candlestick]s.
+}
+
+@deflua[render.CandlestickChart:setwidth (width) Chart]{
+  On Windows and Linux, you must set the width of the candles in the
+  chart. The width of a candle must be the length of the interval (in
+  seconds) between x ticks on the chart. For example, if the chart is to
+  display daily candles, the width of each candle would be @tt{86400}.
+}
+
+@deflua[render.Candlestick (o h l c) Candlestick]{
+  Returns an instance of a candlestick. The arguments must be numbers
+  representing the ope, high, low and close price, respectively, of
+  some asset.
+}
+
+@deflua[render.Timestamp (seconds) Timestamp]{
+  Returns an instance of a timestamp value. The argument must be the
+  number of seconds since the UNIX epoch.
+}
+
 @deflua[render.LineChart (xlabel ylabel) Chart]{
   Returns an instance of a line @chart-ref{chart renderer}. The first
   argument represents the x-axis label and the second argument, the

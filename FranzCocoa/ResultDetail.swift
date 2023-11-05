@@ -56,14 +56,21 @@ fileprivate struct ChartResult: View {
   }
 
   private func chartView() -> any View {
-    let view = Charts.Chart(pairs(chart.xs, chart.ys)) { p in
+    let ps = pairs(chart.xs, chart.ys)
+    let view = Charts.Chart(ps) { p in
       switch chart.style {
       case .bar:
-        p.barMark(xLabel: chart.xLabel, yLabel: chart.yLabel)
+        try? p.barMark(xLabel: chart.xLabel, yLabel: chart.yLabel)
+      case .candlestick:
+        try? p.candlestickMark(
+          xLabel: chart.xLabel,
+          yLabel: chart.yLabel,
+          previous: p.id > 0 && p.id < ps.endIndex ? ps[p.id-1] : nil
+        )
       case .line:
-        p.lineMark(xLabel: chart.xLabel, yLabel: chart.yLabel)
+        try? p.lineMark(xLabel: chart.xLabel, yLabel: chart.yLabel)
       case .scatter:
-        p.pointMark(xLabel: chart.xLabel, yLabel: chart.yLabel)
+        try? p.pointMark(xLabel: chart.xLabel, yLabel: chart.yLabel)
       }
     }
     switch (chart.xScale, chart.yScale) {
@@ -80,12 +87,34 @@ fileprivate struct ChartResult: View {
     }
   }
 
+  enum ChartError: Swift.Error {
+    case badMarks
+  }
+
+  private enum CandlestickDirection {
+    case up
+    case down
+  }
+
+  private struct CandlestickMark<X: Plottable, Y: Plottable>: ChartContent {
+    let x: PlottableValue<X>
+    let o: PlottableValue<Y>
+    let h: PlottableValue<Y>
+    let l: PlottableValue<Y>
+    let c: PlottableValue<Y>
+
+    var body: some ChartContent {
+      RectangleMark(x: x, yStart: l, yEnd: h, width: 1)
+      RectangleMark(x: x, yStart: o, yEnd: c, width: 14)
+    }
+  }
+
   private struct Pair: Identifiable {
     let id: Int
     let x: ChartValue
     let y: ChartValue
 
-    func barMark(xLabel: String, yLabel: String) -> BarMark {
+    func barMark(xLabel: String, yLabel: String) throws -> BarMark {
       switch (x, y) {
       case (.categorical(let xcat), .categorical(let ycat)):
         return BarMark(x: .value(xLabel, xcat), y: .value(yLabel, ycat))
@@ -95,10 +124,39 @@ fileprivate struct ChartResult: View {
         return BarMark(x: .value(xLabel, x), y: .value(yLabel, ycat))
       case (.numerical(let x), .numerical(let y)):
         return BarMark(x: .value(xLabel, x), y: .value(yLabel, y))
+      default:
+        throw ChartError.badMarks
       }
     }
 
-    func lineMark(xLabel: String, yLabel: String) -> LineMark {
+    func candlestickMark(
+      xLabel: String,
+      yLabel: String,
+      previous: Pair?
+    ) throws -> some ChartContent {
+      switch (x, y) {
+      case (.timestamp(let ts), .candlestick(let o, let h, let l, let c)):
+        var direction: CandlestickDirection
+        switch previous?.y {
+        case .some(.candlestick(_, _, _, let oc)):
+          direction = oc > c ? .down : .up
+        default:
+          direction = .up
+        }
+        return CandlestickMark(
+          x: .value("Date", Date(timeIntervalSince1970: Double(ts))),
+          o: .value("Open", o),
+          h: .value("High", h),
+          l: .value("Low", l),
+          c: .value("Close", c)
+        )
+        .foregroundStyle(direction == .down ? .red : .green)
+      default:
+        throw ChartError.badMarks
+      }
+    }
+
+    func lineMark(xLabel: String, yLabel: String) throws -> LineMark {
       switch (x, y) {
       case (.categorical(let xcat), .categorical(let ycat)):
         return LineMark(x: .value(xLabel, xcat), y: .value(yLabel, ycat))
@@ -108,10 +166,12 @@ fileprivate struct ChartResult: View {
         return LineMark(x: .value(xLabel, x), y: .value(yLabel, ycat))
       case (.numerical(let x), .numerical(let y)):
         return LineMark(x: .value(xLabel, x), y: .value(yLabel, y))
+      default:
+        throw ChartError.badMarks
       }
     }
 
-    func pointMark(xLabel: String, yLabel: String) -> PointMark {
+    func pointMark(xLabel: String, yLabel: String) throws -> PointMark {
       switch (x, y) {
       case (.categorical(let xcat), .categorical(let ycat)):
         return PointMark(x: .value(xLabel, xcat), y: .value(yLabel, ycat))
@@ -121,6 +181,8 @@ fileprivate struct ChartResult: View {
         return PointMark(x: .value(xLabel, x), y: .value(yLabel, ycat))
       case (.numerical(let x), .numerical(let y)):
         return PointMark(x: .value(xLabel, x), y: .value(yLabel, y))
+      default:
+        throw ChartError.badMarks
       }
     }
   }

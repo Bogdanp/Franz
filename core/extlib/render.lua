@@ -1,5 +1,17 @@
 #lang lua
 
+local render = {}
+
+local function check(who, v, typ, n)
+    if type(v) ~= typ then
+        if n == nil then
+            error(string.format("%s: expected a %s, but got %s", who, typ, type(v)))
+        else
+            error(string.format("%s: arg #%d must be a %s, but got %s", who, n, typ, type(v)))
+        end
+    end
+end
+
 -- Chart ---------------------------------------------------------------
 
 local function makeChartClass(name)
@@ -97,6 +109,50 @@ local function makeChartClass(name)
     return Chart
 end
 
+render.BarChart = makeChartClass("BarChart")
+render.CandlestickChart = makeChartClass("CandlestickChart")
+render.LineChart = makeChartClass("LineChart")
+render.ScatterChart = makeChartClass("ScatterChart")
+
+function render.CandlestickChart:setwidth(w)
+    check("CandlestickChart:setwidth", w, "number")
+    self.candlestick_width = w
+    return self
+end
+
+render.Candlestick = Class {
+    name = "Candlestick",
+    constructor = function(o, h, l, c)
+        check("Candlestick", o, "number", 1)
+        check("Candlestick", h, "number", 2)
+        check("Candlestick", l, "number", 3)
+        check("Candlestick", c, "number", 4)
+        return {
+            __type = "Candlestick",
+            o = o,
+            h = h,
+            l = l,
+            c = c
+        }
+    end
+}
+
+render.Timestamp = Class {
+    name = "Timestamp",
+    constructor = function(ts)
+        check("Timestamp", ts, "number")
+        return {
+            __type = "Timestamp",
+            ts = ts
+        }
+    end
+}
+
+function render.Timestamp:__lt(other)
+    return self.ts < other.ts
+end
+
+
 -- Stack ---------------------------------------------------------------
 
 local function makeStackClass(name)
@@ -117,26 +173,22 @@ local function makeStackClass(name)
     return Stack
 end
 
+render.HStack = makeStackClass("HStack")
+render.VStack = makeStackClass("VStack")
+
+
 -- Table ---------------------------------------------------------------
 
-local Table = Class {
+render.Table = Class {
     name = "Table",
     constructor = function(columns, ...)
         return {
             __type = "Table",
             columns = columns,
-            rows = table.pack(...)
+            rows = {...}
         }
     end
 }
 
 
-
-return {
-    BarChart = makeChartClass("BarChart"),
-    LineChart = makeChartClass("LineChart"),
-    ScatterChart = makeChartClass("ScatterChart"),
-    HStack = makeStackClass("HStack"),
-    VStack = makeStackClass("VStack"),
-    Table = Table
-}
+return render

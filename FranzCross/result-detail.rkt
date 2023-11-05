@@ -38,8 +38,10 @@
 
 (define (ChartValue-> v)
   (match v
+    [(ChartValue.candlestick o h l c) (list o h l c)]
     [(ChartValue.categorical category) category]
-    [(ChartValue.numerical n) n]))
+    [(ChartValue.numerical n) n]
+    [(ChartValue.timestamp t) t]))
 
 (define (chart-view c)
   (hpanel
@@ -49,26 +51,45 @@
                 (ChartScale-> (Chart-x-scale c)))
               (define-values (y-min y-max)
                 (ChartScale-> (Chart-y-scale c)))
-              (apply
-               plot-snip
-               #:width width
-               #:height height
-               #:x-min x-min
-               #:x-max x-max
-               #:x-label (Chart-x-label c)
-               #:y-min y-min
-               #:y-max y-max
-               #:y-label (Chart-y-label c)
-               (list
-                ((match (Chart-style c)
-                   [(ChartStyle.bar) discrete-histogram]
-                   [(ChartStyle.line) lines]
-                   [(ChartStyle.scatter) points])
-                 (for/list ([x (in-list (Chart-xs c))]
-                            [y (in-list (Chart-ys c))])
-                   (list
-                    (ChartValue-> x)
-                    (ChartValue-> y))))))))))
+              (define x-date-ticks?
+                (ormap ChartValue.timestamp? (Chart-xs c)))
+              (define y-date-ticks?
+                (ormap ChartValue.timestamp? (Chart-ys c)))
+              (parameterize ([candlestick-width
+                              (match (Chart-style c)
+                                [(ChartStyle.candlestick width) width]
+                                [_ 1])]
+                             [plot-x-ticks
+                              (if x-date-ticks?
+                                  (date-ticks)
+                                  (linear-ticks))]
+                             [plot-y-ticks
+                              (if y-date-ticks?
+                                  (date-ticks)
+                                  (linear-ticks))])
+                (apply
+                 plot-snip
+                 #:width width
+                 #:height height
+                 #:x-min x-min
+                 #:x-max x-max
+                 #:x-label (Chart-x-label c)
+                 #:y-min y-min
+                 #:y-max y-max
+                 #:y-label (Chart-y-label c)
+                 (list
+                  ((match (Chart-style c)
+                     [(ChartStyle.bar) discrete-histogram]
+                     [(ChartStyle.candlestick _) candlesticks]
+                     [(ChartStyle.line) lines]
+                     [(ChartStyle.scatter) points])
+                   (for/list ([x (in-list (Chart-xs c))]
+                              [y (in-list (Chart-ys c))])
+                     ((match (Chart-style c)
+                        [(ChartStyle.candlestick _) list*]
+                        [_ list])
+                      (ChartValue-> x)
+                      (ChartValue-> y)))))))))))
 
 (define (text-view s)
   (hpanel

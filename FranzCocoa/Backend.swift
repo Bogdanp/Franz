@@ -95,6 +95,7 @@ public enum ChartScaleType: Readable, Writable {
 
 public enum ChartStyle: Readable, Writable {
   case bar
+  case candlestick(UVarint)
   case line
   case scatter
 
@@ -104,8 +105,12 @@ public enum ChartStyle: Readable, Writable {
     case 0x0000:
       return .bar
     case 0x0001:
-      return .line
+      return .candlestick(
+        UVarint.read(from: inp, using: &buf)
+      )
     case 0x0002:
+      return .line
+    case 0x0003:
       return .scatter
     default:
       preconditionFailure("ChartStyle: unexpected tag \(tag)")
@@ -116,28 +121,44 @@ public enum ChartStyle: Readable, Writable {
     switch self {
     case .bar:
       UVarint(0x0000).write(to: out)
-    case .line:
+    case .candlestick(let width):
       UVarint(0x0001).write(to: out)
-    case .scatter:
+      width.write(to: out)
+    case .line:
       UVarint(0x0002).write(to: out)
+    case .scatter:
+      UVarint(0x0003).write(to: out)
     }
   }
 }
 
 public enum ChartValue: Readable, Writable {
+  case candlestick(Float64, Float64, Float64, Float64)
   case categorical(String)
   case numerical(Float64)
+  case timestamp(UVarint)
 
   public static func read(from inp: InputPort, using buf: inout Data) -> ChartValue {
     let tag = UVarint.read(from: inp, using: &buf)
     switch tag {
     case 0x0000:
+      return .candlestick(
+        Float64.read(from: inp, using: &buf),
+        Float64.read(from: inp, using: &buf),
+        Float64.read(from: inp, using: &buf),
+        Float64.read(from: inp, using: &buf)
+      )
+    case 0x0001:
       return .categorical(
         String.read(from: inp, using: &buf)
       )
-    case 0x0001:
+    case 0x0002:
       return .numerical(
         Float64.read(from: inp, using: &buf)
+      )
+    case 0x0003:
+      return .timestamp(
+        UVarint.read(from: inp, using: &buf)
       )
     default:
       preconditionFailure("ChartValue: unexpected tag \(tag)")
@@ -146,12 +167,21 @@ public enum ChartValue: Readable, Writable {
 
   public func write(to out: OutputPort) {
     switch self {
-    case .categorical(let s):
+    case .candlestick(let o, let h, let l, let c):
       UVarint(0x0000).write(to: out)
+      o.write(to: out)
+      h.write(to: out)
+      l.write(to: out)
+      c.write(to: out)
+    case .categorical(let s):
+      UVarint(0x0001).write(to: out)
       s.write(to: out)
     case .numerical(let n):
-      UVarint(0x0001).write(to: out)
+      UVarint(0x0002).write(to: out)
       n.write(to: out)
+    case .timestamp(let t):
+      UVarint(0x0003).write(to: out)
+      t.write(to: out)
     }
   }
 }

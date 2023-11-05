@@ -44,12 +44,20 @@
 
 (define-enum ChartStyle
   [bar]
+  [candlestick
+   {width : UVarint}]
   [line]
   [scatter])
 
 (define-enum ChartValue
+  [candlestick
+   {o : Float64}
+   {h : Float64}
+   {l : Float64}
+   {c : Float64}]
   [categorical {s : String}]
-  [numerical {n : Float64}])
+  [numerical {n : Float64}]
+  [timestamp {t : UVarint}])
 
 (define-record Chart
   [style : ChartStyle]
@@ -91,17 +99,42 @@
         [else (error '->ChartScale "invalid scale type")]))]
     [else (error '->ChartScale "invalid scale value: ~s" v)]))
 
-(define (->ChartStyle v)
-  (case v
-    [(#"BarChart") (ChartStyle.bar)]
-    [(#"LineChart") (ChartStyle.line)]
-    [(#"ScatterChart") (ChartStyle.scatter)]
-    [else (error '->ReduceResult "invalid chart type: ~s" v)]))
+(define (->ChartStyle type v)
+  (case type
+    [(#"BarChart")
+     (ChartStyle.bar)]
+    [(#"CandlestickChart")
+     (ChartStyle.candlestick
+      (let ([width (table-ref v #"candlestick_width")])
+        (if (nil? width) 1 (inexact->exact width))))]
+    [(#"LineChart")
+     (ChartStyle.line)]
+    [(#"ScatterChart")
+     (ChartStyle.scatter)]
+    [else (error '->ReduceResult "invalid chart type: ~s" type)]))
 
 (define (->ChartValue v)
   (cond
-    [(bytes? v) (ChartValue.categorical (bytes->string v))]
-    [(number? v) (ChartValue.numerical v)]
+    [(bytes? v)
+     (ChartValue.categorical (bytes->string v))]
+    [(number? v)
+     (ChartValue.numerical v)]
+    [(table? v)
+     (define type
+       (table-ref v #"__type"))
+     (case type
+       [(#"Candlestick")
+        (ChartValue.candlestick
+         (table-ref-number v #"o")
+         (table-ref-number v #"h")
+         (table-ref-number v #"l")
+         (table-ref-number v #"c"))]
+       [(#"Timestamp")
+        (ChartValue.timestamp
+         (inexact->exact
+          (table-ref-number v #"ts")))]
+       [else
+        (error '->ChartValue "invalid table: ~s" v)])]
     [else (error '->ChartValue "invalid value: ~s" v)]))
 
 (define (->ReduceResult v)
@@ -114,10 +147,10 @@
      (define type
        (table-ref v #"__type"))
      (case type
-       [(#"BarChart" #"LineChart" #"ScatterChart")
+       [(#"BarChart" #"CandlestickChart" #"LineChart" #"ScatterChart")
         (ReduceResult.chart
          (make-Chart
-          #:style (->ChartStyle type)
+          #:style (->ChartStyle type v)
           #:x-scale (->ChartScale (table-ref v #"xscale"))
           #:x-label (table-ref-string v #"xlabel")
           #:xs (table->list (table-ref v #"xs") ->ChartValue)
@@ -146,6 +179,12 @@
 
 (define (bytes->string bs)
   (bytes->string/utf-8 bs #\uFFFD))
+
+(define (table-ref-number t k)
+  (define v (table-ref t k))
+  (begin0 v
+    (unless (number? v)
+      (error 'table-ref-number "expected a number, but found: ~s" v))))
 
 (define (table-ref-string t k)
   (bytes->string (table-ref t k)))
