@@ -677,6 +677,30 @@ Confluent Schema Registry.
   See @secref["decoding-msgpack-data"] for an example.
 }
 
+@deflua[os.clock () number]{
+  Returns the number of milliseconds the process has been running for.
+}
+
+@deflua[os.getenv (name) string]{
+  Returns the value of the environment variable named @tt{name}.
+}
+
+@deflua[os.remove (path) void]{
+  Removes the file found at the given path.
+}
+
+@deflua[os.rename (src dst) void]{
+  Moves the file at @tt{src} to @tt{dst}.
+}
+
+@deflua[os.time () number]{
+  Returns the current number of seconds since the UNIX epoch.
+}
+
+@deflua[os.tmpname () string]{
+  Creates a new temporary file and returns its path.
+}
+
 @deflua[print (...) void]{
   Prints @tt{...} to standard output, separating the elements with tabs.
 }
@@ -819,7 +843,7 @@ aggregated data to a window when applying a script.
 
 @deflua[render.Candlestick (o h l c) Candlestick]{
   Returns an instance of a candlestick. The arguments must be numbers
-  representing the ope, high, low and close price, respectively, of
+  representing the open, high, low and close price, respectively, of
   some asset.
 }
 
