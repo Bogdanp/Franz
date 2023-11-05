@@ -274,6 +274,7 @@ public enum Lexer: Readable, Writable {
 public enum ReduceResult: Readable, Writable {
   case chart(Chart)
   case number(Float64)
+  case stack(Stack)
   case table([String], [TableRow])
   case text(String)
 
@@ -289,11 +290,15 @@ public enum ReduceResult: Readable, Writable {
         Float64.read(from: inp, using: &buf)
       )
     case 0x0002:
+      return .stack(
+        Stack.read(from: inp, using: &buf)
+      )
+    case 0x0003:
       return .table(
         [String].read(from: inp, using: &buf),
         [TableRow].read(from: inp, using: &buf)
       )
-    case 0x0003:
+    case 0x0004:
       return .text(
         String.read(from: inp, using: &buf)
       )
@@ -310,12 +315,15 @@ public enum ReduceResult: Readable, Writable {
     case .number(let n):
       UVarint(0x0001).write(to: out)
       n.write(to: out)
-    case .table(let cols, let rows):
+    case .stack(let s):
       UVarint(0x0002).write(to: out)
+      s.write(to: out)
+    case .table(let cols, let rows):
+      UVarint(0x0003).write(to: out)
       cols.write(to: out)
       rows.write(to: out)
     case .text(let s):
-      UVarint(0x0003).write(to: out)
+      UVarint(0x0004).write(to: out)
       s.write(to: out)
     }
   }
@@ -1001,6 +1009,31 @@ public struct SchemaRegistry: Readable, Writable {
     url.write(to: out)
     username.write(to: out)
     passwordId.write(to: out)
+  }
+}
+
+public struct Stack: Readable, Writable {
+  public let direction: Symbol
+  public let children: [ReduceResult]
+
+  public init(
+    direction: Symbol,
+    children: [ReduceResult]
+  ) {
+    self.direction = direction
+    self.children = children
+  }
+
+  public static func read(from inp: InputPort, using buf: inout Data) -> Stack {
+    return Stack(
+      direction: Symbol.read(from: inp, using: &buf),
+      children: [ReduceResult].read(from: inp, using: &buf)
+    )
+  }
+
+  public func write(to out: OutputPort) {
+    direction.write(to: out)
+    children.write(to: out)
   }
 }
 

@@ -7,17 +7,7 @@ struct ResultDetail: View {
   var body: some View {
     VSplitView {
       if let reduced = res.reduced {
-        switch reduced {
-        case .chart(let chart):
-          ChartResult(chart)
-        case .number(let n):
-          TextResult(text: String(format: "%f", n))
-        case .table(let cols, let rows):
-          TableResult(cols, rows)
-            .frame(minWidth: 400, minHeight: 200)
-        case .text(let s):
-          TextResult(text: s)
-        }
+        Result(reduced)
       }
       if res.output.count > 0 {
         Textarea(String(data: res.output, encoding: .utf8) ?? "", textColor: .secondaryLabelColor)
@@ -25,6 +15,30 @@ struct ResultDetail: View {
       }
     }
     .background()
+  }
+}
+
+fileprivate struct Result: View {
+  let r: ReduceResult
+
+  init(_ r: ReduceResult) {
+    self.r = r
+  }
+
+  var body: some View {
+    switch r {
+    case .chart(let chart):
+      ChartResult(chart)
+    case .number(let n):
+      TextResult(text: String(format: "%f", n))
+    case .stack(let s):
+      StackResult(s)
+    case .table(let cols, let rows):
+      TableResult(cols, rows)
+        .frame(minWidth: 400, minHeight: 200)
+    case .text(let s):
+      TextResult(text: s)
+    }
   }
 }
 
@@ -117,6 +131,43 @@ fileprivate struct ChartResult: View {
       pairs.append(.init(id: i, x: x, y: y))
     }
     return pairs
+  }
+}
+
+fileprivate struct StackResult: View {
+  let stack: Stack
+
+  init(_ stack: Stack) {
+    self.stack = stack
+  }
+
+  var body: some View {
+    if stack.direction == "horizontal" {
+      HStack {
+        ForEach(children) { c in
+          Result(c.data)
+        }
+      }
+    } else {
+      VStack {
+        ForEach(children) { c in
+          Result(c.data)
+        }
+      }
+    }
+  }
+
+  private struct Child: Identifiable {
+    let id: Int
+    let data: ReduceResult
+  }
+
+  private var children: [Child] {
+    var children = [Child]()
+    for (i, c) in stack.children.enumerated() {
+      children.append(.init(id: i, data: c))
+    }
+    return children
   }
 }
 
