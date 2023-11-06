@@ -810,11 +810,11 @@ Confluent Schema Registry.
 
 @subsection{Renderers}
 
-The bindings documented in this section can be used to render
-aggregated data to a window when applying a script.
+The bindings documented in this section can be used to render aggregated
+data to a window when @tech[#:key "apply"]{applying} a script.
 
 @(define (chart-ref . content)
-  (apply elemref '("lua" "Chart:clear") content))
+  (apply elemref '("lua" "Chart:push") content))
 
 @deflua[render.BarChart (xlabel ylabel) Chart]{
   Returns an instance of a bar @chart-ref{chart renderer}. The first
@@ -825,10 +825,8 @@ aggregated data to a window when applying a script.
 @deflua[render.CandlestickChart (xlabel ylabel) Chart]{
   Returns an instance of a candlestick @chart-ref{chart renderer}. The
   first argument represents the x axis label and the second argument,
-  the y axis.
-
-  The values of the x axis values must be @lua[render.Timestamp]
-  values the y axis values must be @lua[render.Candlestick]s.
+  the y axis. The values of the x axis must be @lua[render.Timestamp]s
+  and the y axis values must be @lua[render.Candlestick]s.
 }
 
 @deflua[render.CandlestickChart:setwidth (width) Chart]{
@@ -845,6 +843,8 @@ aggregated data to a window when applying a script.
   Returns an instance of a candlestick. The arguments must be numbers
   representing the open, high, low and close price, respectively, of
   some asset.
+
+  For use on the y axis of @lua[render.CandlestickChart]s.
 }
 
 @deflua[render.Timestamp (seconds) Timestamp]{
@@ -933,10 +933,6 @@ the return value of every method is the chart itself.
 
 See @secref["rendering-a-bar-chart"] for a usage example.
 
-@deflua[Chart:clear () Chart]{
-  Empties the chart.
-}
-
 @deflua[Chart:push (x y) Chart]{
   Pushes a new entry to the end of the chart. The first argument is
   the x value and the second, the y value. Values may be @tt{number}s,
@@ -960,10 +956,11 @@ See @secref["rendering-a-bar-chart"] for a usage example.
 }
 
 @deflua[Chart:sort (cmp) Chart]{
-  Sorts the data contained by the chart according to @tt{cmp}. If not
-  provided, @tt{cmp} defaults to comparing the @tt{x} values using the
-  @tt{<} operator. The arguments to @tt{cmp} are two tables with one
-  field for the @tt{x} and @tt{y} values each.
+  Sorts the data contained by the chart according to the given @tt{cmp}
+  function. If not provided, @tt{cmp} defaults to a function that
+  compares @tt{x} values using the @tt{<} operator. The arguments to
+  @tt{cmp} are two tables with one field for the @tt{x} and @tt{y}
+  values each.
 }
 
 
@@ -1073,8 +1070,8 @@ Use @lua[msgpack.unpack] to decode your data.
 @subsubsection[#:tag "rendering-a-bar-chart"]{Rendering a Bar Chart}
 
 The script below renders a bar chart with record offsets on the x axis
-and value lengths on the y axis when applied to some already-loaded
-data.
+and value lengths on the y axis when @tech[#:key "apply"]{applied} to
+some already-loaded data.
 
 @codeblock[#:keep-lang-line? #f]|{
   #lang lua
@@ -1085,8 +1082,8 @@ data.
   end
 
   function script.reduce(record, state)
-    state = state or { values = {} }
-    table.insert(state.values, {
+    state = state or {}
+    table.insert(state, {
       x = tostring(record.offset),
       y = #record.value
     })
@@ -1098,7 +1095,7 @@ data.
       return a.x < b.x
     end
     return render.BarChart("offset", "length")
-      :setvalues(table.unpack(state.values))
+      :setvalues(table.unpack(state))
       :sort(cmp)
   end
 
