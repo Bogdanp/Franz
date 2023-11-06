@@ -51,9 +51,18 @@ fileprivate struct ChartResult: View {
   }
 
   var body: some View {
-    AnyView(chartView())
-      .padding(.all, 20)
-      .frame(minWidth: 640, minHeight: 320)
+    GeometryReader { reader in
+      AnyView(chartView())
+        .contextMenu {
+          Button {
+            export(frame: reader.frame(in: .local))
+          } label: {
+            Label("Export...", systemImage: "square.and.arrow.down")
+          }
+        }
+    }
+    .padding(.all, 20)
+    .frame(minWidth: 640, minHeight: 320)
   }
 
   private func chartView() -> any View {
@@ -84,6 +93,29 @@ fileprivate struct ChartResult: View {
       return view
         .chartXScale(domain: xlo...xhi, type: .linear)
         .chartYScale(domain: ylo...yhi, type: .linear)
+    }
+  }
+
+  @MainActor
+  private func export(frame: CGRect) {
+    guard let image = ImageRenderer(content: AnyView(
+      chartView()
+        .padding(.all, 20)
+        .background()
+    ).frame(
+      width: frame.width * 2,
+      height: frame.height * 2
+    )).nsImage else { return }
+    guard let data = image.tiffRepresentation else { return }
+    let dialog = NSSavePanel()
+    dialog.allowedContentTypes = [.init(filenameExtension: "tiff")!]
+    dialog.isExtensionHidden = false
+    switch dialog.runModal() {
+    case .OK:
+      guard let url = dialog.url else { return }
+      try? data.write(to: url)
+    default:
+      return
     }
   }
 
