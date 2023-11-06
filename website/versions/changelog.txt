@@ -2,6 +2,7 @@
 ## Added
 
 * Documentation for many new Lua functions.
+* Improved Lua script error reporting output.
 * Initial support for rendering data from Lua scripts.
 
 ## Fixed
