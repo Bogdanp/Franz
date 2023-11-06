@@ -14,7 +14,7 @@
                ["kafka-lib" #:version "0.11"]
                ["libsqlite3" #:version "3.43.1"]
                "libzstd"
-               ["lua-lib" #:version "0.1.6"]
+               ["lua-lib" #:version "0.2"]
                "messagepack-lib"
                ["noise-serde-lib" #:version "0.5"]
                ["protocol-buffers-lib" #:version "0.1.2"]
