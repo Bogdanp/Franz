@@ -27,11 +27,6 @@ local function makeChartClass(name)
         end
     }
 
-    function Chart:clear()
-        self.values = {}
-        return self
-    end
-
     function Chart:push(x, y)
         table.insert(self.values, { x = x; y = y })
         return self

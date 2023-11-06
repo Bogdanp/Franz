@@ -908,7 +908,7 @@ aggregated data to a window when applying a script.
             {
               math.min(table.unpack(state.ys)),
               math.max(table.unpack(state.ys)),
-              (total / state.n)
+              total / state.n
             }
           )
         ),
@@ -922,7 +922,8 @@ aggregated data to a window when applying a script.
 }
 
 @deflua[render.VStack (...) Stack]{
-  Returns an instance of a view that renders its children vertically.
+  Returns an instance of a view that renders its children
+  vertically. See @lua[render.HStack] for a usage example.
 }
 
 @subsubsection{Charts}
@@ -937,14 +938,15 @@ See @secref["rendering-a-bar-chart"] for a usage example.
 }
 
 @deflua[Chart:push (x y) Chart]{
-  Pushes a new entry to the end of the chart. The first argument is the
-  x value and the second, the y value. Values may be either strings or
-  numbers, but the types should be internally consistent per axis.
+  Pushes a new entry to the end of the chart. The first argument is
+  the x value and the second, the y value. Values may be @tt{number}s,
+  @tt{string}s, @lua[render.Timestamp]s or @lua[render.Candlestick]s,
+  but the types should be internally consistent per axis.
 }
 
 @deflua[Chart:setvalues (...) Chart]{
-  Replaces all the chart values with @tt{...}. Each individual value
-  must be a table with @tt{x} and @tt{y} fields.
+  Replaces all the chart values with the given set of tables. Each
+  given value must be a table with @tt{x} and @tt{y} fields.
 }
 
 @deflua[Chart:setxscale (lo hi) Chart]{
