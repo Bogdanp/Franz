@@ -52,9 +52,9 @@
               (define-values (y-min y-max)
                 (ChartScale-> (Chart-y-scale c)))
               (define x-date-ticks?
-                (ormap ChartValue.timestamp? (Chart-xs c)))
+                (ormap (compose1 ChartValue.timestamp? ChartPair-x) (Chart-pairs c)))
               (define y-date-ticks?
-                (ormap ChartValue.timestamp? (Chart-ys c)))
+                (ormap (compose1 ChartValue.timestamp? ChartPair-y) (Chart-pairs c)))
               (parameterize ([candlestick-width
                               (match (Chart-style c)
                                 [(ChartStyle.candlestick width)
@@ -84,13 +84,12 @@
                      [(ChartStyle.candlestick _) candlesticks]
                      [(ChartStyle.line) lines]
                      [(ChartStyle.scatter) points])
-                   (for/list ([x (in-list (Chart-xs c))]
-                              [y (in-list (Chart-ys c))])
+                   (for/list ([p (in-list (Chart-pairs c))])
                      ((match (Chart-style c)
                         [(ChartStyle.candlestick _) list*]
                         [_ list])
-                      (ChartValue-> x)
-                      (ChartValue-> y)))))))))))
+                      (ChartValue-> (ChartPair-x p))
+                      (ChartValue-> (ChartPair-y p))))))))))))
 
 (define (text-view s)
   (hpanel

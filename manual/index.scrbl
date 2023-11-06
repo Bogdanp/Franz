@@ -887,12 +887,19 @@ aggregated data to a window when applying a script.
 
   @codeblock[#:keep-lang-line? #f]{
     #lang lua
+    -- Assuming `state' looks like:
+    --   {
+    --     n  = number,
+    --     xs = {...},
+    --     ys = {...}
+    --   }
     function script.render(state)
       local total = 0
-      for _, age in ipairs(state.ys) do
+      local pairs = {}
+      for i, age in ipairs(state.ys) do
         total = total + age
+        pairs[i] = { x = state.xs[i]; y = age }
       end
-      local avg = total / state.n
       return render.VStack(
         render.HStack(
           string.format("Total Records: %d", state.n),
@@ -901,15 +908,14 @@ aggregated data to a window when applying a script.
             {
               math.min(table.unpack(state.ys)),
               math.max(table.unpack(state.ys)),
-              avg
+              (total / state.n)
             }
           )
         ),
         render.BarChart("Name", "Age")
-          :setxs(state.xs)
-          :setys(state.ys)
-          :sort()
+          :setvalues(table.unpack(pairs))
           :setyscale(0, 105)
+          :sort()
       )
     end
   }
@@ -936,13 +942,14 @@ See @secref["rendering-a-bar-chart"] for a usage example.
   numbers, but the types should be internally consistent per axis.
 }
 
+@deflua[Chart:setvalues (...) Chart]{
+  Replaces all the chart values with @tt{...}. Each individual value
+  must be a table with @tt{x} and @tt{y} fields.
+}
+
 @deflua[Chart:setxscale (lo hi) Chart]{
   Sets the scale of the x axis. Undefined when the x values are
   strings.
-}
-
-@deflua[Chart:setxs (xs) Chart]{
-  Replaces all the x-axis values with @tt{xs}.
 }
 
 @deflua[Chart:setyscale (lo hi) Chart]{
@@ -950,14 +957,11 @@ See @secref["rendering-a-bar-chart"] for a usage example.
   strings.
 }
 
-@deflua[Chart:setys (ys) Chart]{
-  Replaces all the y-axis values with @tt{ys}.
-}
-
 @deflua[Chart:sort (cmp) Chart]{
   Sorts the data contained by the chart according to @tt{cmp}. If not
-  provided, @tt{cmp} defaults to @tt{<}. The arguments to @tt{cmp} are
-  two tables with one field for the @tt{x} and @tt{y} values each.
+  provided, @tt{cmp} defaults to comparing the @tt{x} values using the
+  @tt{<} operator. The arguments to @tt{cmp} are two tables with one
+  field for the @tt{x} and @tt{y} values each.
 }
 
 
@@ -1079,9 +1083,11 @@ data.
   end
 
   function script.reduce(record, state)
-    state = state or { xs = {}; ys = {} }
-    table.insert(state.xs, tostring(record.offset))
-    table.insert(state.ys, #record.value)
+    state = state or { values = {} }
+    table.insert(state.values, {
+      x = tostring(record.offset),
+      y = #record.value
+    })
     return state
   end
 
@@ -1089,10 +1095,9 @@ data.
     local function cmp(a, b)
       return a.x < b.x
     end
-    local chart = render.BarChart("offset", "length")
-    chart:setxs(state.xs)
-    chart:setys(state.ys)
-    return chart:sort(cmp)
+    return render.BarChart("offset", "length")
+      :setvalues(table.unpack(state.values))
+      :sort(cmp)
   end
 
   return script

@@ -57,8 +57,7 @@ fileprivate struct ChartResult: View {
   }
 
   private func chartView() -> any View {
-    let ps = pairs(chart.xs, chart.ys)
-    let view = Charts.Chart(ps) { p in
+    let view = Charts.Chart(pairs) { p in
       switch chart.style {
       case .bar:
         try? p.barMark(xLabel: chart.xLabel, yLabel: chart.yLabel)
@@ -178,10 +177,10 @@ fileprivate struct ChartResult: View {
     }
   }
 
-  private func pairs(_ xs: [ChartValue], _ ys: [ChartValue]) -> [Pair] {
+  private var pairs: [Pair] {
     var pairs = [Pair]()
-    for (i, (x, y)) in zip(xs, ys).enumerated() {
-      pairs.append(.init(id: i, x: x, y: y))
+    for (i, p) in chart.pairs.enumerated() {
+      pairs.append(.init(id: i, x: p.x, y: p.y))
     }
     return pairs
   }

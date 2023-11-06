@@ -22,21 +22,18 @@ local function makeChartClass(name)
                 __type = name,
                 xlabel = xlabel or "x axis",
                 ylabel = ylabel or "y axis",
-                xs = {},
-                ys = {},
+                values = {},
             }
         end
     }
 
     function Chart:clear()
-        self.xs = {}
-        self.ys = {}
+        self.values = {}
         return self
     end
 
     function Chart:push(x, y)
-        table.insert(self.xs, x)
-        table.insert(self.ys, y)
+        table.insert(self.values, { x = x; y = y })
         return self
     end
 
@@ -49,6 +46,8 @@ local function makeChartClass(name)
     end
 
     local function make_scale(who, lo, hi, typ)
+        check(who, lo, "number", 1)
+        check(who, hi, "number", 2)
         check_type(who, typ)
         return {
             lo = lo,
@@ -57,14 +56,14 @@ local function makeChartClass(name)
         }
     end
 
-    function Chart:setxscale(...)
-        check_type("Chart:setxscale", typ)
-        self.xscale = make_scale("Chart:setxscale", ...)
+    function Chart:setvalues(...)
+        self.values = {...}
         return self
     end
 
-    function Chart:setxs(xs)
-        self.xs = xs
+    function Chart:setxscale(...)
+        check_type("Chart:setxscale", typ)
+        self.xscale = make_scale("Chart:setxscale", ...)
         return self
     end
 
@@ -74,28 +73,11 @@ local function makeChartClass(name)
         return self
     end
 
-    function Chart:setys(ys)
-        self.ys = ys
-        return self
-    end
-
     function Chart:sort(cmp)
         cmp = cmp or function(a, b)
             return a.x < b.x
         end
-        local ps = {}
-        for i, x in ipairs(self.xs) do
-            table.insert(ps, {x = x, y = self.ys[i] })
-        end
-        table.sort(ps, cmp)
-        local xs = {}
-        local ys = {}
-        for i, p in ipairs(ps) do
-            xs[i] = p.x
-            ys[i] = p.y
-        end
-        self.xs = xs
-        self.ys = ys
+        table.sort(self.values, cmp)
         return self
     end
 

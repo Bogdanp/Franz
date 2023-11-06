@@ -1,6 +1,8 @@
 #lang racket/base
 
-(require avro
+(require (for-syntax racket/base
+                     syntax/parse)
+         avro
          kafka/private/serde/internal
          lua/env
          lua/private/string  ;; FIXME
@@ -21,6 +23,7 @@
 (provide
  (record-out ApplyResult)
  (record-out Chart)
+ (record-out ChartPair)
  (record-out Stack)
  (record-out TableRow)
  (enum-out ChartScale)
@@ -59,14 +62,17 @@
   [numerical {n : Float64}]
   [timestamp {t : UVarint}])
 
+(define-record ChartPair
+  [x : ChartValue]
+  [y : ChartValue])
+
 (define-record Chart
   [style : ChartStyle]
+  [pairs : (Listof ChartPair)]
   [x-scale : (Optional ChartScale)]
   [x-label : String]
-  [xs : (Listof ChartValue)]
   [y-scale : (Optional ChartScale)]
-  [y-label : String]
-  [ys : (Listof ChartValue)])
+  [y-label : String])
 
 (define-enum ReduceResult
   [chart {c : Chart}]
@@ -137,6 +143,11 @@
         (error '->ChartValue "invalid table: ~s" v)])]
     [else (error '->ChartValue "invalid value: ~s" v)]))
 
+(define (->ChartPair t)
+  (make-ChartPair
+   #:x (->ChartValue (table-ref t #"x"))
+   #:y (->ChartValue (table-ref t #"y"))))
+
 (define (->ReduceResult v)
   (cond
     [(not v) #f]
@@ -151,12 +162,11 @@
         (ReduceResult.chart
          (make-Chart
           #:style (->ChartStyle type v)
+          #:pairs (table->list (table-ref v #"values") ->ChartPair)
           #:x-scale (->ChartScale (table-ref v #"xscale"))
           #:x-label (table-ref-string v #"xlabel")
-          #:xs (table->list (table-ref v #"xs") ->ChartValue)
           #:y-scale (->ChartScale (table-ref v #"yscale"))
-          #:y-label (table-ref-string v #"ylabel")
-          #:ys (table->list (table-ref v #"ys") ->ChartValue)))]
+          #:y-label (table-ref-string v #"ylabel")))]
        [(#"HStack" #"VStack")
         (ReduceResult.stack
          (make-Stack
@@ -357,11 +367,21 @@ SCRIPT
 
 ;; extlib ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define-runtime-module-path-index avro.lua "extlib/avro.lua")
-(define-runtime-module-path-index class.lua "extlib/class.lua")
-(define-runtime-module-path-index kafka.lua "extlib/kafka.lua")
-(define-runtime-module-path-index msgpack.lua "extlib/msgpack.lua")
-(define-runtime-module-path-index render.lua "extlib/render.lua")
+(define-syntax (defmod stx)
+  (syntax-parse stx
+    [(_ name:id)
+     #:with path (datum->syntax #'name (format "extlib/~a" (syntax->datum #'name)))
+     #'(define-runtime-module-path-index name path)]))
+
+(define-syntax-rule (defmods name ...)
+  (begin (defmod name) ...))
+
+(defmods
+  avro.lua
+  class.lua
+  kafka.lua
+  msgpack.lua
+  render.lua)
 
 (define symbol->bytes
   (compose1 string->bytes/utf-8 symbol->string))

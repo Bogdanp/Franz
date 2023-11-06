@@ -534,51 +534,71 @@ public struct Broker: Readable, Writable {
 
 public struct Chart: Readable, Writable {
   public let style: ChartStyle
+  public let pairs: [ChartPair]
   public let xScale: ChartScale?
   public let xLabel: String
-  public let xs: [ChartValue]
   public let yScale: ChartScale?
   public let yLabel: String
-  public let ys: [ChartValue]
 
   public init(
     style: ChartStyle,
+    pairs: [ChartPair],
     xScale: ChartScale?,
     xLabel: String,
-    xs: [ChartValue],
     yScale: ChartScale?,
-    yLabel: String,
-    ys: [ChartValue]
+    yLabel: String
   ) {
     self.style = style
+    self.pairs = pairs
     self.xScale = xScale
     self.xLabel = xLabel
-    self.xs = xs
     self.yScale = yScale
     self.yLabel = yLabel
-    self.ys = ys
   }
 
   public static func read(from inp: InputPort, using buf: inout Data) -> Chart {
     return Chart(
       style: ChartStyle.read(from: inp, using: &buf),
+      pairs: [ChartPair].read(from: inp, using: &buf),
       xScale: ChartScale?.read(from: inp, using: &buf),
       xLabel: String.read(from: inp, using: &buf),
-      xs: [ChartValue].read(from: inp, using: &buf),
       yScale: ChartScale?.read(from: inp, using: &buf),
-      yLabel: String.read(from: inp, using: &buf),
-      ys: [ChartValue].read(from: inp, using: &buf)
+      yLabel: String.read(from: inp, using: &buf)
     )
   }
 
   public func write(to out: OutputPort) {
     style.write(to: out)
+    pairs.write(to: out)
     xScale.write(to: out)
     xLabel.write(to: out)
-    xs.write(to: out)
     yScale.write(to: out)
     yLabel.write(to: out)
-    ys.write(to: out)
+  }
+}
+
+public struct ChartPair: Readable, Writable {
+  public let x: ChartValue
+  public let y: ChartValue
+
+  public init(
+    x: ChartValue,
+    y: ChartValue
+  ) {
+    self.x = x
+    self.y = y
+  }
+
+  public static func read(from inp: InputPort, using buf: inout Data) -> ChartPair {
+    return ChartPair(
+      x: ChartValue.read(from: inp, using: &buf),
+      y: ChartValue.read(from: inp, using: &buf)
+    )
+  }
+
+  public func write(to out: OutputPort) {
+    x.write(to: out)
+    y.write(to: out)
   }
 }
 
