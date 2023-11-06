@@ -94,6 +94,7 @@ public enum ChartScaleType: Readable, Writable {
 }
 
 public enum ChartStyle: Readable, Writable {
+  case area
   case bar
   case candlestick(UVarint?)
   case line
@@ -103,14 +104,16 @@ public enum ChartStyle: Readable, Writable {
     let tag = UVarint.read(from: inp, using: &buf)
     switch tag {
     case 0x0000:
-      return .bar
+      return .area
     case 0x0001:
+      return .bar
+    case 0x0002:
       return .candlestick(
         UVarint?.read(from: inp, using: &buf)
       )
-    case 0x0002:
-      return .line
     case 0x0003:
+      return .line
+    case 0x0004:
       return .scatter
     default:
       preconditionFailure("ChartStyle: unexpected tag \(tag)")
@@ -119,15 +122,17 @@ public enum ChartStyle: Readable, Writable {
 
   public func write(to out: OutputPort) {
     switch self {
-    case .bar:
+    case .area:
       UVarint(0x0000).write(to: out)
-    case .candlestick(let width):
+    case .bar:
       UVarint(0x0001).write(to: out)
+    case .candlestick(let width):
+      UVarint(0x0002).write(to: out)
       width.write(to: out)
     case .line:
-      UVarint(0x0002).write(to: out)
-    case .scatter:
       UVarint(0x0003).write(to: out)
+    case .scatter:
+      UVarint(0x0004).write(to: out)
     }
   }
 }

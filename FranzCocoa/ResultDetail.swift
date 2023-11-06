@@ -68,8 +68,16 @@ fileprivate struct ChartResult: View {
   private func chartView() -> any View {
     let view = Charts.Chart(pairs) { p in
       switch chart.style {
+      case .area:
+        try? p.areaMark(
+          xLabel: chart.xLabel,
+          yLabel: chart.yLabel
+        )
       case .bar:
-        try? p.barMark(xLabel: chart.xLabel, yLabel: chart.yLabel)
+        try? p.barMark(
+          xLabel: chart.xLabel,
+          yLabel: chart.yLabel
+        )
       case .candlestick(let width):
         try? p.candlestickMark(
           xLabel: chart.xLabel,
@@ -77,9 +85,15 @@ fileprivate struct ChartResult: View {
           width: width
         )
       case .line:
-        try? p.lineMark(xLabel: chart.xLabel, yLabel: chart.yLabel)
+        try? p.lineMark(
+          xLabel: chart.xLabel,
+          yLabel: chart.yLabel
+        )
       case .scatter:
-        try? p.pointMark(xLabel: chart.xLabel, yLabel: chart.yLabel)
+        try? p.pointMark(
+          xLabel: chart.xLabel,
+          yLabel: chart.yLabel
+        )
       }
     }
     switch (chart.xScale, chart.yScale) {
@@ -98,15 +112,17 @@ fileprivate struct ChartResult: View {
 
   @MainActor
   private func export(frame: CGRect) {
-    guard let image = ImageRenderer(content: AnyView(
+    guard let data = ImageRenderer(content: AnyView(
       chartView()
         .padding(.all, 20)
         .background()
     ).frame(
       width: frame.width * 2,
       height: frame.height * 2
-    )).nsImage else { return }
-    guard let data = image.tiffRepresentation else { return }
+    )).nsImage?.tiffRepresentation else {
+      return
+    }
+
     let dialog = NSSavePanel()
     dialog.allowedContentTypes = [.init(filenameExtension: "tiff")!]
     dialog.isExtensionHidden = false
@@ -142,6 +158,20 @@ fileprivate struct ChartResult: View {
     let x: ChartValue
     let y: ChartValue
 
+    func areaMark(xLabel: String, yLabel: String) throws -> AreaMark {
+      switch (x, y) {
+      case (.categorical(let xcat), .numerical(let y)):
+        return AreaMark(x: .value(xLabel, xcat), y: .value(yLabel, y))
+      case (.timestamp(let ts), .numerical(let y)):
+        return AreaMark(
+          x: .value(xLabel, Date(timeIntervalSince1970: Double(ts))),
+          y: .value(yLabel, y)
+        )
+      default:
+        throw ChartError.badMarks
+      }
+    }
+
     func barMark(xLabel: String, yLabel: String) throws -> BarMark {
       switch (x, y) {
       case (.categorical(let xcat), .categorical(let ycat)):
@@ -152,6 +182,11 @@ fileprivate struct ChartResult: View {
         return BarMark(x: .value(xLabel, x), y: .value(yLabel, ycat))
       case (.numerical(let x), .numerical(let y)):
         return BarMark(x: .value(xLabel, x), y: .value(yLabel, y))
+      case (.timestamp(let ts), .numerical(let y)):
+        return BarMark(
+          x: .value(xLabel, Date(timeIntervalSince1970: Double(ts))),
+          y: .value(yLabel, y)
+        )
       default:
         throw ChartError.badMarks
       }
@@ -188,6 +223,11 @@ fileprivate struct ChartResult: View {
         return LineMark(x: .value(xLabel, x), y: .value(yLabel, ycat))
       case (.numerical(let x), .numerical(let y)):
         return LineMark(x: .value(xLabel, x), y: .value(yLabel, y))
+      case (.timestamp(let ts), .numerical(let y)):
+        return LineMark(
+          x: .value(xLabel, Date(timeIntervalSince1970: Double(ts))),
+          y: .value(yLabel, y)
+        )
       default:
         throw ChartError.badMarks
       }
@@ -203,6 +243,11 @@ fileprivate struct ChartResult: View {
         return PointMark(x: .value(xLabel, x), y: .value(yLabel, ycat))
       case (.numerical(let x), .numerical(let y)):
         return PointMark(x: .value(xLabel, x), y: .value(yLabel, y))
+      case (.timestamp(let ts), .numerical(let y)):
+        return PointMark(
+          x: .value(xLabel, Date(timeIntervalSince1970: Double(ts))),
+          y: .value(yLabel, y)
+        )
       default:
         throw ChartError.badMarks
       }

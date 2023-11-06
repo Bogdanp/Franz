@@ -86,6 +86,7 @@ local function makeChartClass(name)
     return Chart
 end
 
+render.AreaChart = makeChartClass("AreaChart")
 render.BarChart = makeChartClass("BarChart")
 render.CandlestickChart = makeChartClass("CandlestickChart")
 render.LineChart = makeChartClass("LineChart")

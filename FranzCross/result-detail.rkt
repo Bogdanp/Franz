@@ -80,6 +80,7 @@
                  #:y-label (Chart-y-label c)
                  (list
                   ((match (Chart-style c)
+                     [(ChartStyle.area) area]
                      [(ChartStyle.bar) discrete-histogram]
                      [(ChartStyle.candlestick _) candlesticks]
                      [(ChartStyle.line) lines]
@@ -90,6 +91,14 @@
                         [_ list])
                       (ChartValue-> (ChartPair-x p))
                       (ChartValue-> (ChartPair-y p))))))))))))
+
+(define (area ps)
+  (define min-y
+    (apply min (map cadr ps)))
+  (lines-interval
+   (for/list ([p (in-list ps)])
+     (list (car p) min-y))
+   ps))
 
 (define (text-view s)
   (hpanel

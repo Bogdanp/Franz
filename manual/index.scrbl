@@ -816,10 +816,17 @@ data to a window when @tech[#:key "apply"]{applying} a script.
 @(define (chart-ref . content)
   (apply elemref '("lua" "Chart:push") content))
 
+@deflua[render.AreaChart (xlabel ylabel) Chart]{
+  Returns an instance of an area @chart-ref{chart renderer}. The first
+  argument represents the x axis label and the second argument, the y
+  axis label. The values of the x axis must be @lua[render.Timestamp]s
+  or @tt{string}s and the y axis values must be @tt{number}s.
+}
+
 @deflua[render.BarChart (xlabel ylabel) Chart]{
   Returns an instance of a bar @chart-ref{chart renderer}. The first
-  argument represents the x-axis label and the second argument, the
-  y-axis.
+  argument represents the x axis label and the second argument, the
+  y axis.
 }
 
 @deflua[render.CandlestickChart (xlabel ylabel) Chart]{
@@ -854,14 +861,14 @@ data to a window when @tech[#:key "apply"]{applying} a script.
 
 @deflua[render.LineChart (xlabel ylabel) Chart]{
   Returns an instance of a line @chart-ref{chart renderer}. The first
-  argument represents the x-axis label and the second argument, the
-  y-axis.
+  argument represents the x axis label and the second argument, the
+  y axis.
 }
 
 @deflua[render.ScatterChart (xlabel ylabel) Chart]{
   Returns an instance of a scatter @chart-ref{chart renderer}. The first
-  argument represents the x-axis label and the second argument, the
-  y-axis.
+  argument represents the x axis label and the second argument, the
+  y axis.
 }
 
 @deflua[render.Table (columns ...) Table]{

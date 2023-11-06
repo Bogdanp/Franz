@@ -46,6 +46,7 @@
    {type : ChartScaleType}])
 
 (define-enum ChartStyle
+  [area]
   [bar]
   [candlestick
    {width : (Optional UVarint)}]
@@ -107,6 +108,8 @@
 
 (define (->ChartStyle type v)
   (case type
+    [(#"AreaChart")
+     (ChartStyle.area)]
     [(#"BarChart")
      (ChartStyle.bar)]
     [(#"CandlestickChart")
@@ -158,7 +161,7 @@
      (define type
        (table-ref v #"__type"))
      (case type
-       [(#"BarChart" #"CandlestickChart" #"LineChart" #"ScatterChart")
+       [(#"AreaChart" #"BarChart" #"CandlestickChart" #"LineChart" #"ScatterChart")
         (ReduceResult.chart
          (make-Chart
           #:style (->ChartStyle type v)
