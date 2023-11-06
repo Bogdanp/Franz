@@ -346,10 +346,12 @@ SCRIPT
        (close-output-port out)))))
 
 (define (lua-eval str)
+  (define dir #f)
   (define path #f)
   (dynamic-wind
     (lambda ()
-      (set! path (make-temporary-file "franz-~a.lua")))
+      (set! dir (make-temporary-directory "franz-~a"))
+      (set! path (build-path dir "script.lua")))
     (lambda ()
       (call-with-output-file path
         #:exists 'truncate/replace
@@ -362,7 +364,7 @@ SCRIPT
          (dynamic-require `(submod ,modpath configure-runtime) #f void)
          (dynamic-require modpath '#%chunk))))
     (lambda ()
-      (delete-file path))))
+      (delete-directory/files dir))))
 
 
 ;; extlib ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
