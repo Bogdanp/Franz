@@ -2,6 +2,7 @@
 
 (require franz/script
          plot
+         racket/class
          racket/match
          "common.rkt")
 
@@ -46,51 +47,87 @@
 (define (chart-view c)
   (hpanel
    #:min-size '(640 480)
-   (snip #f (λ (_ width height)
-              (define-values (x-min x-max)
-                (ChartScale-> (Chart-x-scale c)))
-              (define-values (y-min y-max)
-                (ChartScale-> (Chart-y-scale c)))
-              (define x-date-ticks?
-                (ormap (compose1 ChartValue.timestamp? ChartPair-x) (Chart-pairs c)))
-              (define y-date-ticks?
-                (ormap (compose1 ChartValue.timestamp? ChartPair-y) (Chart-pairs c)))
-              (parameterize ([candlestick-width
-                              (match (Chart-style c)
-                                [(ChartStyle.candlestick width)
-                                 (or width 60)]
-                                [_ 60])]
-                             [plot-x-ticks
-                              (if x-date-ticks?
-                                  (date-ticks)
-                                  (linear-ticks))]
-                             [plot-y-ticks
-                              (if y-date-ticks?
-                                  (date-ticks)
-                                  (linear-ticks))])
-                (apply
-                 plot-snip
-                 #:width width
-                 #:height height
-                 #:x-min x-min
-                 #:x-max x-max
-                 #:x-label (Chart-x-label c)
-                 #:y-min y-min
-                 #:y-max y-max
-                 #:y-label (Chart-y-label c)
-                 (list
-                  ((match (Chart-style c)
-                     [(ChartStyle.area) area]
-                     [(ChartStyle.bar) discrete-histogram]
-                     [(ChartStyle.candlestick _) candlesticks]
-                     [(ChartStyle.line) lines]
-                     [(ChartStyle.scatter) points])
-                   (for/list ([p (in-list (Chart-pairs c))])
-                     ((match (Chart-style c)
-                        [(ChartStyle.candlestick _) list*]
-                        [_ list])
-                      (ChartValue-> (ChartPair-x p))
-                      (ChartValue-> (ChartPair-y p))))))))))))
+   (snip
+    #f
+    #:mixin
+    (λ (%)
+      (class %
+        (super-new)
+        (define/override (on-event event)
+          (case (send event get-event-type)
+            [(right-up)
+             ;; TODO: render-popup-menu should be able to take a frame
+             ;; for cases like this where we can't easily get access to
+             ;; the root renderer.
+             (define x (send event get-x))
+             (define y (send event get-y))
+             (define m (new gui:popup-menu%))
+             (define f (send this get-top-level-window))
+             (define-values (w h)
+               (send this get-scaled-client-size))
+             (new gui:menu-item%
+                  [label "Export..."]
+                  [parent m]
+                  [callback (lambda (_self _event)
+                              (define the-bitmap
+                                (plot-chart c w h plot-bitmap))
+                              (define maybe-filename
+                                (gui:put-file
+                                 #f ;message
+                                 #f ;parent
+                                 #f ;directory
+                                 #f ;filename
+                                 #f ;extension
+                                 null ;style
+                                 '(("PNG Image" "*.png"))))
+                              (when maybe-filename
+                                (send the-bitmap save-file maybe-filename 'png 100)))])
+             (send f popup-menu m x y)]
+            [else
+             (super on-event event)]))))
+    (λ (_ width height)
+      (plot-chart c width height)))))
+
+(define (plot-chart c width height [plotter plot-snip])
+  (define-values (x-min x-max)
+    (ChartScale-> (Chart-x-scale c)))
+  (define-values (y-min y-max)
+    (ChartScale-> (Chart-y-scale c)))
+  (define x-date-ticks?
+    (ormap (compose1 ChartValue.timestamp? ChartPair-x) (Chart-pairs c)))
+  (define y-date-ticks?
+    (ormap (compose1 ChartValue.timestamp? ChartPair-y) (Chart-pairs c)))
+  (define the-candlestick-width
+    (match (Chart-style c)
+      [(ChartStyle.candlestick width)
+       (or width 60)]
+      [_ 60]))
+  (parameterize ([candlestick-width the-candlestick-width]
+                 [plot-x-ticks (if x-date-ticks? (date-ticks) (linear-ticks))]
+                 [plot-y-ticks (if y-date-ticks? (date-ticks) (linear-ticks))])
+    (apply
+     plotter
+     #:width width
+     #:height height
+     #:x-min x-min
+     #:x-max x-max
+     #:x-label (Chart-x-label c)
+     #:y-min y-min
+     #:y-max y-max
+     #:y-label (Chart-y-label c)
+     (list
+      ((match (Chart-style c)
+         [(ChartStyle.area) area]
+         [(ChartStyle.bar) discrete-histogram]
+         [(ChartStyle.candlestick _) candlesticks]
+         [(ChartStyle.line) lines]
+         [(ChartStyle.scatter) points])
+       (for/list ([p (in-list (Chart-pairs c))])
+         ((match (Chart-style c)
+            [(ChartStyle.candlestick _) list*]
+            [_ list])
+          (ChartValue-> (ChartPair-x p))
+          (ChartValue-> (ChartPair-y p)))))))))
 
 (define (area ps)
   (define min-y
@@ -128,12 +165,16 @@
           ['chart (ReduceResult.chart
                    (make-Chart
                     #:style (ChartStyle.bar)
+                    #:pairs
+                    (for/list ([x (in-list '("a" "b" "c"))]
+                               [y (in-list '(1 2 3))])
+                      (ChartPair
+                       (ChartValue.categorical x)
+                       (ChartValue.numerical y)))
                     #:x-scale #f
                     #:x-label "x"
-                    #:xs (map ChartValue.categorical '("a" "b" "c"))
                     #:y-scale #f
-                    #:y-label "y"
-                    #:ys (map ChartValue.numerical '(4 5 6))))]
+                    #:y-label "y"))]
           ['number (ReduceResult.number 42)]
           ['stack (ReduceResult.stack
                    (make-Stack
