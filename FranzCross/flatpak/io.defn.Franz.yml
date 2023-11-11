@@ -21,6 +21,6 @@ modules:
       no-debuginfo: true
     sources:
       - type: archive
-        url: 'https://franz.defn.io/releases/Franz 1.3.0001.linux.x86_64.tar.gz'
-        sha256: 54bc56f382ffc81dca7571bf60a98a92d0d04780f20a217178a94484d46ac5a8
+        url: 'https://franz.defn.io/releases/Franz 1.4.0001.linux.x86_64.tar.gz'
+        sha256: a1a57ecbda78fd613e30442b61f70a1843370eddf8e20456c9d0041a34338f80
         strip-components: 0
