@@ -1109,6 +1109,11 @@ some already-loaded data.
   return script
 }|
 
+@(define (candlesticks-yt . pre-content)
+   (apply link "https://www.youtube.com/watch?v=SUH5DABOQIc" pre-content))
+
+See @candlesticks-yt{this YouTube video} for a live demo of chart
+rendering.
 
 @section{Guides}
 
