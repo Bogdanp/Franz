@@ -86,13 +86,15 @@ class WorkspaceWindowController: NSWindowController {
     connectFuture?.sink(
       onError: { err in
         self.status("Connection Failed")
-        let alert = NSAlert()
-        alert.messageText = "Connection Error"
-        alert.informativeText = err
-        alert.alertStyle = .critical
-        alert.addButton(withTitle: "OK")
-        alert.addButton(withTitle: "Retry")
-        switch alert.runModal() {
+        let result = Error.alert(
+          withError: err,
+          andMessageText: "Connection Error",
+          andInformativeText: "Failed to connect to cluster."
+        ) { alert in
+          alert.addButton(withTitle: "OK")
+          alert.addButton(withTitle: "Retry")
+        }
+        switch result {
         case .alertFirstButtonReturn:
           return
         case .alertSecondButtonReturn:

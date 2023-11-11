@@ -7,7 +7,9 @@ import SwiftUI
 @main
 class AppDelegate: NSObject, NSApplicationDelegate {
   func applicationDidFinishLaunching(_ aNotification: Notification) {
-    FutureUtil.set(defaultErrorHandler: Error.alert(withError:))
+    FutureUtil.set(defaultErrorHandler: { err in
+      Error.alert(withError: err)
+    })
     assert(Error.wait(Backend.shared.ping()) == "pong")
 
 #if !MAC_APP_STORE_BUILD

@@ -11,23 +11,30 @@ class Error {
     }
   }
 
-  static func alert(withError err: Any) {
+  @discardableResult
+  static func alert(
+    withError err: Any,
+    andMessageText messageText: String = "Error",
+    andInformativeText informativeText: String = "Franz encountered an unexpected error.",
+    andHandler handler: @escaping (NSAlert) -> Void = { _ in }
+  ) -> NSApplication.ModalResponse {
     var str = "\(err)"
     if let err = err as? LocalizedError {
       str = err.localizedDescription
     }
     let textField = NSTextField()
-    textField.isEditable = true
+    textField.isEditable = false
     textField.isSelectable = true
     textField.stringValue = str
     textField.frame = NSRect(x: 0, y: 0, width: 400, height: 200)
     textField.font = .monospacedSystemFont(ofSize: 12, weight: .regular)
     let alert = NSAlert()
     alert.alertStyle = .critical
-    alert.messageText = "Error"
-    alert.informativeText = "Franz encountered an unexpected error."
+    alert.messageText = messageText
+    alert.informativeText = informativeText
     alert.accessoryView = textField
-    alert.runModal()
+    handler(alert)
+    return alert.runModal()
   }
 
   @discardableResult
