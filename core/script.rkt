@@ -5,7 +5,6 @@
          avro
          kafka/private/serde/internal
          lua/env
-         lua/private/string  ;; FIXME
          lua/value
          messagepack
          noise/backend
@@ -125,7 +124,7 @@
 (define (->ChartValue v)
   (cond
     [(bytes? v)
-     (ChartValue.categorical (bytes->string v))]
+     (ChartValue.categorical (~lua v))]
     [(number? v)
      (ChartValue.numerical v)]
     [(table? v)
@@ -155,7 +154,7 @@
   (cond
     [(not v) #f]
     [(nil? v) #f]
-    [(bytes? v) (ReduceResult.text (bytes->string v))]
+    [(bytes? v) (ReduceResult.text (~lua v))]
     [(number? v) (ReduceResult.number v)]
     [(table? v)
      (define type
@@ -165,11 +164,12 @@
         (ReduceResult.chart
          (make-Chart
           #:style (->ChartStyle type v)
-          #:pairs (table->list (table-ref v #"values") ->ChartPair)
+          #:pairs (for/list ([p (in-table (table-ref v #"values"))])
+                    (->ChartPair p))
           #:x-scale (->ChartScale (table-ref v #"xscale"))
-          #:x-label (table-ref-string v #"xlabel")
+          #:x-label (~lua (table-ref v #"xlabel"))
           #:y-scale (->ChartScale (table-ref v #"yscale"))
-          #:y-label (table-ref-string v #"ylabel")))]
+          #:y-label (~lua (table-ref v #"ylabel"))))]
        [(#"HStack" #"VStack")
         (ReduceResult.stack
          (make-Stack
@@ -178,33 +178,24 @@
             [(#"HStack") 'horizontal]
             [(#"VStack") 'vertical]
             [else (error '->ReduceResult "invalid stack type: ~s" type)])
-          #:children (table->list (table-ref v #"children") ->ReduceResult)))]
+          #:children (for/list ([r (in-table (table-ref v #"children"))])
+                       (->ReduceResult r))))]
        [(#"Table")
         (ReduceResult.table
-         (for/list ([col-bs (in-list (table->list (table-ref v #"columns")))])
-           (bytes->string col-bs))
-         (for/list ([row (in-list (table->list (table-ref v #"rows")))])
+         (for/list ([col-bs (in-table (table-ref v #"columns"))])
+           (~lua col-bs))
+         (for/list ([row (in-table (table-ref v #"rows"))])
            (TableRow
-            (for/list ([col-bs (in-list (table->list row lua:tostring))])
-              (bytes->string col-bs)))))]
+            (for/list ([v (in-table row)])
+              (~lua v)))))]
        [else (error '->ReduceResult "invalid table: ~s" v)])]
     [else (error '->ReduceResult "unexpected result: ~s" v)]))
-
-(define (bytes->string bs)
-  (bytes->string/utf-8 bs #\uFFFD))
 
 (define (table-ref-number t k)
   (define v (table-ref t k))
   (begin0 v
     (unless (number? v)
       (error 'table-ref-number "expected a number, but found: ~s" v))))
-
-(define (table-ref-string t k)
-  (bytes->string (table-ref t k)))
-
-(define (table->list t [proc values])
-  (for/list ([i (in-range 1 (add1 (table-length t)))])
-    (proc (table-ref t i))))
 
 
 ;; scripts ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
