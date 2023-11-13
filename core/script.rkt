@@ -344,7 +344,7 @@ SCRIPT
   (define path #f)
   (dynamic-wind
     (lambda ()
-      (set! dir (make-temporary-directory "franz-~a"))
+      (set! dir (make-temporary-directory "~a-franz-scripts"))
       (set! path (build-path dir "script.lua")))
     (lambda ()
       (call-with-output-file path
@@ -358,7 +358,8 @@ SCRIPT
          (dynamic-require `(submod ,modpath configure-runtime) #f void)
          (dynamic-require modpath '#%chunk))))
     (lambda ()
-      (delete-directory/files dir))))
+      (delete-directory/files dir)
+      (module-cache-clear!))))
 
 
 ;; extlib ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
