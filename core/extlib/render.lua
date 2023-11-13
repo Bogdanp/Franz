@@ -78,8 +78,8 @@ local function makeChartClass(name)
 
     function Chart:__tostring()
         return string.format(
-            "<%s xlabel=%q ylabel=%q #xs=%d #ys=%d>",
-            name, self.xlabel, self.ylabel, #self.xs, #self.ys
+            "<%s xlabel=%q ylabel=%q #values=%d>",
+            name, self.xlabel, self.ylabel, #self.values
         )
     end
 
