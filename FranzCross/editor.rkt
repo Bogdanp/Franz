@@ -147,6 +147,40 @@
     (define/augment (on-display-size)
       (queue-highlight))
 
+    (define dclick-deadline 0)
+    (define dclick-duration 250)
+    (define/override (on-event e)
+      (define t
+        (current-inexact-monotonic-milliseconds))
+      (case (send e get-event-type)
+        [(left-down)
+         (when (> t dclick-deadline)
+           (super on-event e))]
+        [(left-up)
+         (define x (send e get-x))
+         (define y (send e get-y))
+         (when (< t dclick-deadline)
+           (send this begin-edit-sequence)
+           (define pos
+             (send this find-position x y))
+           (cond
+             [(or (= (send this get-start-position)
+                     (send this get-end-position))
+                  (< pos (send this get-start-position))
+                  (> pos (send this get-end-position)))
+              (define sb (box pos))
+              (define eb (box pos))
+              (send this find-wordbreak sb eb 'selection)
+              (send this set-position (unbox sb) (unbox eb))]
+             [else
+              (define-values (start end)
+                (get-line-span this))
+              (send this set-position start end)])
+           (send this end-edit-sequence))
+         (set! dclick-deadline (+ t dclick-duration))]
+        [else
+         (super on-event e)]))
+
     (define/augment (after-insert _start _len)
       (maybe-dedent this))
 
