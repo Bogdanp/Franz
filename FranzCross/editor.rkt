@@ -150,26 +150,26 @@
     (define dclick-deadline 0)
     (define dclick-duration 250)
     (define/override (on-event e)
-      (define t
-        (current-inexact-monotonic-milliseconds))
+      (define t (current-inexact-monotonic-milliseconds))
+      (define p (send this find-position (send e get-x) (send e get-y)))
       (case (send e get-event-type)
         [(left-down)
-         (when (> t dclick-deadline)
+         ;; Prevent position change when inside the double click
+         ;; window, unless the position has actually changed.
+         (when (or (> t dclick-deadline)
+                   (< p (send this get-start-position))
+                   (> p (send this get-end-position)))
            (super on-event e))]
         [(left-up)
-         (define x (send e get-x))
-         (define y (send e get-y))
          (when (< t dclick-deadline)
            (send this begin-edit-sequence)
-           (define pos
-             (send this find-position x y))
            (cond
              [(or (= (send this get-start-position)
                      (send this get-end-position))
-                  (< pos (send this get-start-position))
-                  (> pos (send this get-end-position)))
-              (define sb (box pos))
-              (define eb (box pos))
+                  (< p (send this get-start-position))
+                  (> p (send this get-end-position)))
+              (define sb (box p))
+              (define eb (box p))
               (send this find-wordbreak sb eb 'selection)
               (send this set-position (unbox sb) (unbox eb))]
              [else
