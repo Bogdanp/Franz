@@ -124,6 +124,22 @@
     (get-line-span editor))
   (send editor delete start-pos (+ start-pos tab-size)))
 
+(define (select-word editor event)
+  (define-values (x y)
+    (send editor dc-location-to-editor-location
+          (send event get-x)
+          (send event get-y)))
+  (define p (send editor find-position x y))
+  (define sb (box p))
+  (define eb (box p))
+  (send editor find-wordbreak sb eb 'selection)
+  (send editor set-position (unbox sb) (unbox eb)))
+
+(define (select-line editor _event)
+  (define-values (start end)
+    (get-line-span editor))
+  (send editor set-position start end))
+
 (define keymap
   (let ([keymap (new gui:keymap%)])
     (begin0 keymap
@@ -134,6 +150,10 @@
       (send keymap map-function "tab" "indent")
       (send keymap add-function "dedent" dedent)
       (send keymap map-function "s:tab" "dedent")
+      (send keymap add-function "select-word" select-word)
+      (send keymap map-function "leftbuttondouble" "select-word")
+      (send keymap add-function "select-line" select-line)
+      (send keymap map-function "leftbuttontriple" "select-line")
       (send keymap chain-to-keymap the-default-keymap #f))))
 
 (define (make-code-editor% highlight-proc action-proc)
@@ -146,40 +166,6 @@
 
     (define/augment (on-display-size)
       (queue-highlight))
-
-    (define dclick-deadline 0)
-    (define dclick-duration 250)
-    (define/override (on-event e)
-      (define t (current-inexact-monotonic-milliseconds))
-      (define p (send this find-position (send e get-x) (send e get-y)))
-      (case (send e get-event-type)
-        [(left-down)
-         ;; Prevent position change when inside the double click
-         ;; window, unless the position has actually changed.
-         (when (or (> t dclick-deadline)
-                   (< p (send this get-start-position))
-                   (> p (send this get-end-position)))
-           (super on-event e))]
-        [(left-up)
-         (when (< t dclick-deadline)
-           (send this begin-edit-sequence)
-           (cond
-             [(or (= (send this get-start-position)
-                     (send this get-end-position))
-                  (< p (send this get-start-position))
-                  (> p (send this get-end-position)))
-              (define sb (box p))
-              (define eb (box p))
-              (send this find-wordbreak sb eb 'selection)
-              (send this set-position (unbox sb) (unbox eb))]
-             [else
-              (define-values (start end)
-                (get-line-span this))
-              (send this set-position start end)])
-           (send this end-edit-sequence))
-         (set! dclick-deadline (+ t dclick-duration))]
-        [else
-         (super on-event e)]))
 
     (define/augment (after-insert _start _len)
       (maybe-dedent this))
