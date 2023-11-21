@@ -7,7 +7,9 @@
          racket/gui/easy/private/view/keymap
          racket/match
          racket/string
-         "common.rkt")
+         "common.rkt"
+         "mixin.rkt"
+         "observable.rkt")
 
 (provide
  editor)
@@ -140,6 +142,32 @@
     (get-line-span editor))
   (send editor set-position start end))
 
+(define (jump-to-line editor _event)
+  (define close! void)
+  (define-observables
+    [@line (send editor position-line (send editor get-start-position))])
+  (render
+   (dialog
+    #:title "Jump to Line"
+    #:mixin (mix-close-window void (λ (close!-proc)
+                                     (set! close! close!-proc)))
+    (hpanel
+     (text "Line:")
+     (input
+      (@line . ~> . number->string)
+      (lambda (_ text)
+        (@line:= (or (string->number text) 0)))))
+    (hpanel
+     #:alignment '(right center)
+     (button "Cancel" (λ () (close!)))
+     (button
+      "Jump"
+      #:style '(border)
+      (lambda ()
+        (define pos (send editor line-start-position ^@line))
+        (send editor set-position pos)
+        (close!)))))))
+
 (define keymap
   (let ([keymap (new gui:keymap%)])
     (begin0 keymap
@@ -154,6 +182,8 @@
       (send keymap map-function "leftbuttondouble" "select-word")
       (send keymap add-function "select-line" select-line)
       (send keymap map-function "leftbuttontriple" "select-line")
+      (send keymap add-function "jump-to-line" jump-to-line)
+      (send keymap map-function "c:s:j" "jump-to-line")
       (send keymap chain-to-keymap the-default-keymap #f))))
 
 (define (make-code-editor% highlight-proc action-proc)
