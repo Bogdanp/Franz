@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21701" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="22155" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21701"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="22155"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="WelcomeWindowContentViewController" customModule="Franz" customModuleProvider="target">
             <connections>
+                <outlet property="logoContainer" destination="Dtk-QF-tbv" id="Arg-eK-3gn"/>
                 <outlet property="trialButton" destination="rmh-xI-JLK" id="vr6-3Q-YL6"/>
                 <outlet property="versionLabel" destination="dRy-B7-EOO" id="bXP-UJ-5YR"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
@@ -24,18 +25,21 @@
                     <rect key="frame" x="0.0" y="0.0" width="460" height="355"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <subviews>
-                        <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="poU-xV-48F">
+                        <box borderType="none" title="LogoBox" titlePosition="noTitle" transparent="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Dtk-QF-tbv">
                             <rect key="frame" x="166" y="207" width="128" height="128"/>
+                            <view key="contentView" id="bBi-Lh-cpe">
+                                <rect key="frame" x="0.0" y="0.0" width="128" height="128"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            </view>
                             <constraints>
-                                <constraint firstAttribute="width" constant="128" id="Sue-lj-LXq"/>
-                                <constraint firstAttribute="height" constant="128" id="q8W-v9-u5D"/>
+                                <constraint firstAttribute="height" constant="128" id="PzN-Jf-1FP"/>
+                                <constraint firstAttribute="width" constant="128" id="oQf-p9-280"/>
                             </constraints>
-                            <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSApplicationIcon" id="rQR-Tq-Alh"/>
-                        </imageView>
+                        </box>
                         <stackView distribution="fill" orientation="horizontal" alignment="centerY" spacing="20" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="luV-df-HLp">
                             <rect key="frame" x="75" y="40" width="311" height="17"/>
                             <subviews>
-                                <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="buc-Nk-xYX">
+                                <button imageHugsTitle="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="buc-Nk-xYX">
                                     <rect key="frame" x="0.0" y="0.0" width="114" height="17"/>
                                     <buttonCell key="cell" type="bevel" title=" Documentation" bezelStyle="regularSquare" image="doc.text" catalog="system" imagePosition="leading" alignment="center" imageScaling="proportionallyDown" inset="2" id="9rL-Vp-lz6">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -46,7 +50,7 @@
                                         <action selector="didPushDocumentationButton:" target="-2" id="tG3-kK-1qL"/>
                                     </connections>
                                 </button>
-                                <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EZI-ln-abM">
+                                <button imageHugsTitle="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="EZI-ln-abM">
                                     <rect key="frame" x="134" y="1" width="75" height="16"/>
                                     <buttonCell key="cell" type="bevel" title=" Support" bezelStyle="rounded" image="NSTouchBarMailTemplate" imagePosition="leading" alignment="center" imageScaling="proportionallyDown" inset="2" id="h7Y-Hb-awC">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -57,7 +61,7 @@
                                         <action selector="didPushSupportButton:" target="-2" id="lJP-n0-zue"/>
                                     </connections>
                                 </button>
-                                <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XEL-TI-nsu">
+                                <button imageHugsTitle="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="XEL-TI-nsu">
                                     <rect key="frame" x="229" y="1" width="82" height="16"/>
                                     <buttonCell key="cell" type="bevel" title=" Mastodon" bezelStyle="rounded" image="person.fill" catalog="system" imagePosition="leading" alignment="center" imageScaling="proportionallyDown" inset="2" id="f8y-44-03z">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -82,10 +86,10 @@
                         </stackView>
                     </subviews>
                     <constraints>
-                        <constraint firstAttribute="bottom" secondItem="poU-xV-48F" secondAttribute="bottom" constant="207" id="9pe-Kq-bhE"/>
+                        <constraint firstItem="Dtk-QF-tbv" firstAttribute="centerX" secondItem="L4W-Xl-P75" secondAttribute="centerX" id="CAA-60-l41"/>
+                        <constraint firstAttribute="bottom" secondItem="Dtk-QF-tbv" secondAttribute="bottom" constant="207" id="CdQ-73-A7C"/>
                         <constraint firstItem="luV-df-HLp" firstAttribute="centerX" secondItem="L4W-Xl-P75" secondAttribute="centerX" id="R8X-gS-lVd"/>
                         <constraint firstAttribute="bottom" secondItem="luV-df-HLp" secondAttribute="bottom" constant="40" id="mye-Ab-T4V"/>
-                        <constraint firstItem="poU-xV-48F" firstAttribute="centerX" secondItem="L4W-Xl-P75" secondAttribute="centerX" id="zsH-eo-ZyB"/>
                     </constraints>
                 </visualEffectView>
                 <button id="f0k-Md-MNf">
@@ -99,7 +103,7 @@
                         <action selector="didPushCloseButton:" target="-2" id="tuj-CS-zHB"/>
                     </connections>
                 </button>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="b2Y-Vs-r0i">
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="b2Y-Vs-r0i">
                     <rect key="frame" x="111" y="160" width="239" height="35"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="Welcome to Franz" id="mxE-sh-ehq">
                         <font key="font" metaFont="system" size="30"/>
@@ -107,7 +111,7 @@
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="dRy-B7-EOO">
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="dRy-B7-EOO">
                     <rect key="frame" x="170" y="140" width="120" height="15"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="Version 1 (Build 123)" id="Hm4-VM-rkw">
                         <font key="font" metaFont="cellTitle"/>
@@ -154,7 +158,6 @@
         </customView>
     </objects>
     <resources>
-        <image name="NSApplicationIcon" width="32" height="32"/>
         <image name="NSTouchBarMailTemplate" width="22" height="17"/>
         <image name="doc.text" catalog="system" width="14" height="16"/>
         <image name="person.fill" catalog="system" width="14" height="14"/>

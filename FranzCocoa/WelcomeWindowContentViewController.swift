@@ -1,12 +1,15 @@
 import Cocoa
+import SpriteKit
 import SwiftUI
 
 class WelcomeWindowContentViewController: NSViewController {
+  @IBOutlet weak var logoContainer: NSImageView!
   @IBOutlet weak var versionLabel: NSTextField!
   @IBOutlet weak var trialButton: NSButton!
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    logoContainer.addSubview(makeLogoView())
 
     let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") ?? "1"
     let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") ?? "Unknown"
@@ -30,6 +33,44 @@ class WelcomeWindowContentViewController: NSViewController {
       }
     }
 #endif
+  }
+
+  private func makeLogoView() -> NSView {
+    let xmasTime: Bool = {
+      let components = Calendar.current.dateComponents([.month, .day], from: .now)
+      guard let month = components.month, let day = components.day else {
+        return false
+      }
+      let composite = month*100+day
+      return composite <= 115 || composite >= 1115
+    }()
+    let sceneView = SKView()
+    sceneView.allowsTransparency = true
+    sceneView.frame = .init(x: 0, y: 0, width: 128, height: 128)
+    sceneView.presentScene(makeLogoScene(forXmas: xmasTime))
+    return sceneView
+  }
+
+  private func makeLogoScene(forXmas xmas: Bool = false) -> SKScene {
+    let size = CGSize(width: 128, height: 128)
+    let scene = SKScene(size: size)
+    scene.anchorPoint = .init(x: 0, y: 0)
+    scene.backgroundColor = .clear
+    let sprite = SKSpriteNode(imageNamed: "AppIcon")
+    if xmas {
+      let frames = 25
+      let animation = SKAction.animate(
+        with: (0..<frames).map {
+          SKTexture(imageNamed: String(format: "AppIconXmas-%02d", $0))
+        },
+        timePerFrame: 1/Double(frames)*2
+      )
+      sprite.run(SKAction.repeatForever(animation))
+    }
+    sprite.anchorPoint = .init(x: 0, y: 0)
+    sprite.size = size
+    scene.addChild(sprite)
+    return scene
   }
 
   func newConnection() {
