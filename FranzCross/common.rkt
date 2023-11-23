@@ -1,6 +1,7 @@
 #lang racket/base
 
-(require (prefix-in gui: racket/gui)
+(require racket/format
+         (prefix-in gui: racket/gui)
          racket/gui/easy/color
          racket/gui/easy/font
          racket/runtime-path)
@@ -93,6 +94,7 @@
   code.png
   gear.png
   icon_512x512.png
+  icon-xmas
   pause.png
   play.png
   plus.png
@@ -114,3 +116,12 @@
   [play-bmp play.png]
   [plus-bmp plus.png]
   [viewfinder-ellipsis-bmp viewfinder-ellipsis.png])
+
+(provide
+ xmas-icon-bmps)
+
+(define xmas-icon-bmps
+  (for/vector ([i (in-range 25)])
+    (define path
+      (build-path icon-xmas (format "icon-~a.png" (~r i #:min-width 2 #:pad-string "0"))))
+    (gui:read-bitmap #:try-@2x? #t path)))

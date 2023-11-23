@@ -6,10 +6,13 @@
          (prefix-in p: pict)
          racket/gui/easy
          racket/gui/easy/operator
+         racket/math
          (prefix-in ~ threading)
          "canvas-list.rkt"
          "common.rkt"
-         "mixin.rkt")
+         "mixin.rkt"
+         "observable.rkt"
+         "xmas-icon.rkt")
 
 (provide
  welcome-window)
@@ -25,9 +28,11 @@
    (hpanel
     (vpanel
      #:alignment '(center center)
-     (image
-      #:size '(128 128)
-      icon_512x512.png)
+     (if xmas?
+         (xmas-icon)
+         (image
+          #:size '(128 128)
+          icon_512x512.png))
      (text
       #:font system-font-xl
       "Welcome to Franz")
