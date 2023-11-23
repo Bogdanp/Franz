@@ -3,6 +3,11 @@
 
 * Further improvements to Lua error reporting.
 
+## Fixed
+
+* Double & triple click to select words in the Scripting Window on
+  Windows and Linux.
+
 # 2023.11.12 (Version 1.4, Build 1)
 ## Added
 
