@@ -275,6 +275,7 @@ protocol WorkspaceSidebarDelegate: AnyObject {
   func sidebar(didDeselectEntry entry: Any?)
   func sidebar(didDeleteTopic topic: Topic)
   func sidebar(didDeleteConsumerGroup group: Group)
+  func sidebar(didDeleteSchema schema: Schema)
   func sidebarRequestsReload(withNewTopic name: String)
 }
 
@@ -305,6 +306,12 @@ extension WorkspaceSidebarViewController: NSMenuDelegate {
         menu.addItem(.init(
           title: "Delete...",
           action: #selector(didPressDeleteConsumerGroup(_:)),
+          keyEquivalent: .backspaceKeyEquivalent
+        ))
+      case .schema:
+        menu.addItem(.init(
+          title: "Delete...",
+          action: #selector(didPressDeleteSchema(_:)),
           keyEquivalent: .backspaceKeyEquivalent
         ))
       default:
@@ -346,6 +353,25 @@ extension WorkspaceSidebarViewController: NSMenuDelegate {
     switch alert.runModal() {
     case .alertFirstButtonReturn:
       delegate?.sidebar(didDeleteConsumerGroup: group)
+    default:
+      ()
+    }
+  }
+
+  @objc func didPressDeleteSchema(_ sender: NSMenuItem) {
+    assert(tableView.clickedRow >= 0)
+    guard let schema = filteredEntries[tableView.clickedRow].data as? Schema else {
+      return
+    }
+    let alert = NSAlert()
+    alert.alertStyle = .warning
+    alert.messageText = "Delete schema \(schema.name)?"
+    alert.informativeText = "This action cannot be undone."
+    alert.addButton(withTitle: "Delete")
+    alert.addButton(withTitle: "Cancel")
+    switch alert.runModal() {
+    case .alertFirstButtonReturn:
+      delegate?.sidebar(didDeleteSchema: schema)
     default:
       ()
     }

@@ -473,6 +473,13 @@ extension WorkspaceWindowController: WorkspaceSidebarDelegate {
     }
   }
 
+  func sidebar(didDeleteSchema schema: Schema) {
+    status("Deleting Schema \(schema.name)")
+    Backend.shared.deleteSchema(named: schema.name, inWorkspace: id).onComplete { _ in
+      self.loadMetadata()
+    }
+  }
+
   func sidebarRequestsReload(withNewTopic name: String) {
     loadMetadata(andSelectTopic: name)
   }
