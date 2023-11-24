@@ -97,3 +97,7 @@
 (define-rpc (get-schema [named name : String]
                         [in-workspace id : UVarint] : Schema)
   (pool-get-schema id name))
+
+(define-rpc (delete-schema [named name : String]
+                           [in-workspace id : UVarint])
+  (pool-delete-schema id name))

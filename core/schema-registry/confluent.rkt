@@ -37,6 +37,10 @@
       #:version (impl:Schema-version schema)
       #:schema (impl:Schema-schema schema)))
 
+   (define (delete-schema self name)
+     (define client (confluent-registry-client self))
+     (impl:delete-subject client name))
+
    (define (decode-record self r)
      (match-define (record _ _ _ k v _) r)
      (struct-copy record r

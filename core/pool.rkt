@@ -36,6 +36,7 @@
  pool-activate-registry
  pool-deactivate-registry
  pool-get-schema
+ pool-delete-schema
  pool-open-iterator
  pool-get-records
  pool-reset-iterator
@@ -333,6 +334,15 @@
                        (sr:get-schema registry name)))
                     (state-add-req s (req result res-ch nack))]
 
+                   [`(delete-schema ,res-ch ,nack ,id ,name)
+                    (define result
+                      (delay/thread
+                       (define registry (state-ref-registry s id))
+                       (unless registry
+                         (error 'delete-schema "Schema Registry not configured"))
+                       (sr:delete-schema registry name)))
+                    (state-add-req s (req result res-ch nack))]
+
                    [`(open-iterator ,res-ch ,nack ,id ,topic ,offset)
                     (with-handlers ([exn:fail? (λ (e) (state-add-req s (req e res-ch nack)))])
                       (define c (state-ref-client s id))
@@ -456,6 +466,9 @@
 
 (define (pool-get-schema id name [p (current-pool)])
   (force (sync (pool-send p get-schema id name))))
+
+(define (pool-delete-schema id name [p (current-pool)])
+  (force (sync (pool-send p delete-schema id name))))
 
 (define (pool-open-iterator id topic offset [p (current-pool)])
   (sync (pool-send p open-iterator id topic offset)))
