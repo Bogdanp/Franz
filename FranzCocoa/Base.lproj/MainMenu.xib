@@ -410,6 +410,12 @@ DQ
                                     <action selector="toggleScript:" target="-1" id="Dey-MT-QfY"/>
                                 </connections>
                             </menuItem>
+                            <menuItem isSeparatorItem="YES" id="UpN-HH-VbW"/>
+                            <menuItem title="Jump to Line..." keyEquivalent="l" id="B5u-q8-x6N">
+                                <connections>
+                                    <action selector="jumpToLine:" target="-1" id="amY-RT-Nch"/>
+                                </connections>
+                            </menuItem>
                         </items>
                     </menu>
                 </menuItem>

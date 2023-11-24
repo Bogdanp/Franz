@@ -161,6 +161,33 @@ class EditorViewController: NSViewController {
   private func didChangeCode() {
     delegate?.codeDidChange(self)
   }
+
+  @objc func jumpToLine(_ sender: Any) {
+    let ctl = WindowManager.shared.showJumpToLineWindow()
+    ctl.delegate = self
+  }
+}
+
+// MARK: - JumpToLineWindowDelegate
+extension EditorViewController: JumpToLineWindowDelegate {
+  func willJumpToLine(_ lineNumber: Int) -> Bool {
+    guard lineNumber > 0 else { return false }
+    let idx = lineNumber-1
+    let lines = textView.string.split(
+      separator: "\n",
+      omittingEmptySubsequences: false
+    )
+    if idx >= lines.count {
+      return false
+    }
+    var lo = 0
+    for i in 0..<idx {
+      lo += lines[i].count + 1
+    }
+    let hi = lo + lines[idx].count + 1
+    textView.setSelectedRange(.init(lo..<hi))
+    return true
+  }
 }
 
 // MARK: - EditorViewControllerDelegate

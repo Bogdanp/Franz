@@ -10,6 +10,7 @@ class WindowManager {
   private var preferencesWindowController: PreferencesWindowController?
   private var updatesWindowController: UpdatesWindowController?
   private var updatesProgressWindowController: UpdatesProgressWindowController?
+  private var jumpToLineWindowController: JumpToLineWindowController?
   private var workspaces = [WorkspaceWindowController]()
   private var scripts = [ScriptWindowKey: ScriptWindowController]() // workspace id -> ctl
   private var secureURLs = [UVarint: [URL]]() // connection id -> URLs
@@ -160,6 +161,26 @@ class WindowManager {
     frame.contentView = NSHostingView(rootView: ResultDetail(res: res))
     frame.center()
     frame.makeKeyAndOrderFront(nil)
+  }
+
+  func showJumpToLineWindow() -> JumpToLineWindowController {
+    if jumpToLineWindowController == nil {
+      jumpToLineWindowController = JumpToLineWindowController()
+    }
+    let ctl = jumpToLineWindowController!
+    ctl.window?.center()
+    ctl.window?.makeKeyAndOrderFront(nil)
+    ctl.showWindow(nil)
+    return ctl
+  }
+
+  func closeJumpToLineWindow() {
+    guard let ctl = jumpToLineWindowController else {
+      return
+    }
+    ctl.window?.close()
+    ctl.dismissController(nil)
+    jumpToLineWindowController = nil
   }
 
   // XXX: Kind of a strange place for this to be in.
