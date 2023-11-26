@@ -1,0 +1,14 @@
+{
+  "$id": "https://example.com/record",
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "title": "Record",
+  "description": "Record JSON Schema",
+  "properties": {
+    "id": {
+      "type": "string"
+    }
+  },
+  "required": [ "id" ],
+  "additionalProperties": false
+}

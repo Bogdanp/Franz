@@ -12,6 +12,7 @@
          racket/match
          "alert.rkt"
          "broker-detail.rkt"
+         "create-schema-dialog.rkt"
          "group-detail.rkt"
          "hacks.rkt"
          "keychain.rkt"
@@ -263,7 +264,18 @@
                    details]))
               (update-connection updated-details)
               (reload-metadata)))
-           (m:get-workspace-renderer id))))))
+           (m:get-workspace-renderer id)))))
+     (menu-item-separator)
+     (menu-item
+      "&Create Schema..."
+      #:enabled? (not (not (ConnectionDetails-schema-registry-id details)))
+      (lambda ()
+        (render
+         (create-schema-dialog
+          #:create-action
+          (lambda (name type schema)
+            (create-schema name type schema id)
+            (reload-metadata)))))))
     (menu
      "&View"
      (menu-item

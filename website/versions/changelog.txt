@@ -2,6 +2,7 @@
 ## Added
 
 * Further improvements to Lua error reporting.
+* Support for creating, updating and deleting schemas.
 
 ## Fixed
 
