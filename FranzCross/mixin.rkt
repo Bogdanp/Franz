@@ -1,6 +1,7 @@
 #lang racket/gui/easy
 
-(require racket/class
+(require (for-syntax racket/base)
+         racket/class
          racket/string
          "hacks.rkt")
 
@@ -82,7 +83,8 @@
 ;; window ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide
- mix-close-window)
+ mix-close-window
+ mix-set!-closer)
 
 (define ((mix-close-window on-close-proc [out-proc void]) %)
   (class %
@@ -91,6 +93,12 @@
     (define/augment (on-close)
       (on-close-proc))
     (out-proc (λ () (show #f)))))
+
+(define-syntax (mix-set!-closer stx)
+  (syntax-case stx ()
+    [(_ close!-id)
+     #'(mix-close-window void (λ (close!-proc)
+                                (set! close!-id close!-proc)))]))
 
 
 ;; window<%> ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
