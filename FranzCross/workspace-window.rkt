@@ -157,6 +157,22 @@
                  (@selected-item:= #f)
                  (reload-metadata)))))
            event)]
+         [(Schema? item)
+          (render-popup-menu*
+           workspace-renderer
+           (popup-menu
+            (menu-item
+             "Delete"
+             (lambda ()
+               (define message
+                 (format "Delete ~a? This action cannot be undone." (Schema-name item)))
+               (when (confirm #:title "Delete Schema"
+                              #:message message
+                              #:renderer workspace-renderer)
+                 (delete-schema (Schema-name item) id)
+                 (@selected-item:= #f)
+                 (reload-metadata)))))
+           event)]
          [else (void)]))
      #:new-topic-action new-topic
      details (@state . ~> . state-metadata)))
