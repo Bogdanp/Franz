@@ -36,6 +36,7 @@
  pool-activate-registry
  pool-deactivate-registry
  pool-get-schema
+ pool-create-schema
  pool-delete-schema
  pool-open-iterator
  pool-get-records
@@ -327,20 +328,26 @@
 
                    [`(get-schema ,res-ch ,nack ,id ,name)
                     (define result
-                      (delay/thread
-                       (define registry (state-ref-registry s id))
-                       (unless registry
-                         (error 'get-schema "Schema Registry not configured"))
-                       (sr:get-schema registry name)))
+                      (call-with-state-schema-registry*
+                       s id
+                       (lambda (r)
+                         (sr:get-schema r name))))
+                    (state-add-req s (req result res-ch nack))]
+
+                   [`(create-schema ,res-ch ,nack ,id ,name ,type ,schema)
+                    (define result
+                      (call-with-state-schema-registry*
+                       s id
+                       (lambda (r)
+                         (sr:create-schema r name type schema))))
                     (state-add-req s (req result res-ch nack))]
 
                    [`(delete-schema ,res-ch ,nack ,id ,name)
                     (define result
-                      (delay/thread
-                       (define registry (state-ref-registry s id))
-                       (unless registry
-                         (error 'delete-schema "Schema Registry not configured"))
-                       (sr:delete-schema registry name)))
+                      (call-with-state-schema-registry*
+                       s id
+                       (lambda (r)
+                         (sr:delete-schema r name))))
                     (state-add-req s (req result res-ch nack))]
 
                    [`(open-iterator ,res-ch ,nack ,id ,topic ,offset)
@@ -467,6 +474,9 @@
 (define (pool-get-schema id name [p (current-pool)])
   (force (sync (pool-send p get-schema id name))))
 
+(define (pool-create-schema id name type schema [p (current-pool)])
+  (force (sync (pool-send p create-schema id name type schema))))
+
 (define (pool-delete-schema id name [p (current-pool)])
   (force (sync (pool-send p delete-schema id name))))
 
@@ -590,6 +600,15 @@
 
 (define (state-clear-iterators s)
   (struct-copy state s [iterators (hasheqv)]))
+
+(define (call-with-state-schema-registry s id proc)
+  (define registry (state-ref-registry s id))
+  (unless registry
+    (error 'get-schema "Schema Registry not configured"))
+  (proc registry))
+
+(define (call-with-state-schema-registry* s id proc)
+  (delay/thread (call-with-state-schema-registry s id proc)))
 
 
 ;; iter ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

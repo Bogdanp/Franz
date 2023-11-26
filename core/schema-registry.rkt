@@ -98,6 +98,12 @@
                         [in-workspace id : UVarint] : Schema)
   (pool-get-schema id name))
 
+(define-rpc (create-schema [named name : String]
+                           [of-type type : Symbol]
+                           [with-schema schema : String]
+                           [in-workspace id : UVarint])
+  (pool-create-schema id name type schema))
+
 (define-rpc (delete-schema [named name : String]
                            [in-workspace id : UVarint])
   (pool-delete-schema id name))

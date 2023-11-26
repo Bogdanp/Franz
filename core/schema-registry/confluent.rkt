@@ -37,6 +37,15 @@
       #:version (impl:Schema-version schema)
       #:schema (impl:Schema-schema schema)))
 
+   (define (create-schema self name type schema)
+     (define client
+       (confluent-registry-client self))
+     (define the-schema
+       (impl:make-Schema
+        #:type type
+        #:schema schema))
+     (impl:register-schema client name the-schema))
+
    (define (delete-schema self name)
      (define client (confluent-registry-client self))
      (impl:delete-subject client name))
