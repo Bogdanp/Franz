@@ -36,6 +36,7 @@
  pool-activate-registry
  pool-deactivate-registry
  pool-get-schema
+ pool-check-schema
  pool-create-schema
  pool-delete-schema
  pool-open-iterator
@@ -334,6 +335,14 @@
                          (sr:get-schema r name))))
                     (state-add-req s (req result res-ch nack))]
 
+                   [`(check-schema ,res-ch ,nack ,id ,name ,schema)
+                    (define result
+                      (call-with-state-schema-registry*
+                       s id
+                       (lambda (r)
+                         (sr:check-schema r name schema))))
+                    (state-add-req s (req result res-ch nack))]
+
                    [`(create-schema ,res-ch ,nack ,id ,name ,type ,schema)
                     (define result
                       (call-with-state-schema-registry*
@@ -473,6 +482,9 @@
 
 (define (pool-get-schema id name [p (current-pool)])
   (force (sync (pool-send p get-schema id name))))
+
+(define (pool-check-schema id name schema [p (current-pool)])
+  (force (sync (pool-send p check-schema id name schema))))
 
 (define (pool-create-schema id name type schema [p (current-pool)])
   (force (sync (pool-send p create-schema id name type schema))))

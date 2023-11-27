@@ -37,6 +37,17 @@
       #:version (impl:Schema-version schema)
       #:schema (impl:Schema-schema schema)))
 
+   (define (check-schema self name schema)
+     (define client
+       (confluent-registry-client self))
+     (define current-schema
+       (impl:get-subject-version client name 'latest))
+     (define the-schema
+       (impl:make-Schema
+        #:type (impl:Schema-type current-schema)
+        #:schema schema))
+     (impl:check-schema client name the-schema))
+
    (define (create-schema self name type schema)
      (define client
        (confluent-registry-client self))

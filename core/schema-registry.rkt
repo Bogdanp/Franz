@@ -98,6 +98,11 @@
                         [in-workspace id : UVarint] : Schema)
   (pool-get-schema id name))
 
+(define-rpc (check-schema [named name : String]
+                          [with-updated-schema schema : String]
+                          [in-workspace id : UVarint])
+  (pool-check-schema id name schema))
+
 (define-rpc (create-schema [named name : String]
                            [of-type type : Symbol]
                            [with-schema schema : String]
