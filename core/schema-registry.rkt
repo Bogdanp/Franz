@@ -100,7 +100,7 @@
 
 (define-rpc (check-schema [named name : String]
                           [with-updated-schema schema : String]
-                          [in-workspace id : UVarint])
+                          [in-workspace id : UVarint] : Bool)
   (pool-check-schema id name schema))
 
 (define-rpc (create-schema [named name : String]
