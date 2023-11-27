@@ -6,12 +6,14 @@
          racket/format
          racket/match
          racket/port
+         "alert.rkt"
          "common.rkt"
          "editor.rkt"
          "info-view.rkt"
          "observable.rkt"
          "thread.rkt"
-         "view.rkt")
+         "view.rkt"
+         "window-manager.rkt")
 
 (provide
  schema-detail)
@@ -20,11 +22,13 @@
   (define-observables
     [@tab 'information]
     [@schema s])
-  (thread*
-   (call-with-status-proc
-    (lambda (status)
-      (status "Fetching Schema")
-      (@schema:= (get-schema (Schema-name s) id)))))
+  (define (fetch-schema)
+    (thread*
+     (call-with-status-proc
+      (lambda (status)
+        (status "Fetching Schema")
+        (@schema:= (get-schema (Schema-name s) id))))))
+  (fetch-schema)
   (vpanel
    #:alignment '(left top)
    #:margin '(10 10)
@@ -52,9 +56,10 @@
        (observable-view
         @schema
         (lambda (schema)
-          (infos
-           `(("Type" . ,(~Schema-type schema))
-             ("Latest Version" . ,(~a (Schema-version schema)))))))]
+          (vpanel
+           (infos
+            `(("Type" . ,(~Schema-type schema))
+              ("Latest Version" . ,(~a (Schema-version schema))))))))]
       ['source
        (define/obs @lang
          (let-observable ([s @schema])
@@ -63,19 +68,57 @@
              [(? SchemaType.json?) 'json]
              [(? SchemaType.protobuf?) 'protobuf]
              [_ 'json])))
-       (editor
-        #:lang @lang
-        (let-observable ([s @schema]
-                         [l @lang])
-          (define code
-            (or (Schema-schema s) ""))
-          (case l
-            [(json) (call-with-output-string
-                     (lambda (out)
-                       (call-with-input-string code
-                         (lambda (in)
-                           (pretty-print-json in out)))))]
-            [else code])))]))))
+       (define/obs @init-schema
+         (let-observable ([s @schema]
+                          [l @lang])
+           (define code
+             (or (Schema-schema s) ""))
+           (case l
+             [(json) (call-with-output-string
+                      (lambda (out)
+                        (call-with-input-string code
+                          (lambda (in)
+                            (pretty-print-json in out)))))]
+             [else code])))
+       (define-observables
+         [@update-schema (obs-peek @init-schema)])
+       (vpanel
+        (editor
+         #:lang @lang
+         @init-schema
+         @update-schema:=)
+        (hpanel
+         #:stretch '(#t #f)
+         #:alignment '(right center)
+         (button "Reset" fetch-schema)
+         (button
+          "Check Compatibility"
+          (lambda ()
+            (call-with-status-proc
+             (lambda (status)
+               (status "Checking Schema Compatibility")
+               (define ok? (check-schema (Schema-name s) ^@update-schema id))
+               (unless ok?
+                 (alert
+                  "Check Schema"
+                  "This schema is incompatible with the latest version."
+                  #:renderer (get-workspace-renderer id)))))))
+         (button
+          "Update Schema"
+          (lambda ()
+            (let ([s ^@schema])
+              (call-with-status-proc
+               (lambda (status)
+                 (status "Updating Schema")
+                 (create-schema
+                  (Schema-name s)
+                  (match (Schema-type s)
+                    [(SchemaType.avro) 'avro]
+                    [(SchemaType.json) 'json]
+                    [(SchemaType.protobuf) 'protobuf])
+                  ^@update-schema
+                  id)))
+              (fetch-schema))))))]))))
 
 (define (~Schema-type s)
   (match (Schema-type s)

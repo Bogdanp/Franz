@@ -3,7 +3,16 @@
 (require "window-manager.rkt")
 
 (provide
+ alert
  confirm)
+
+(define (alert title message
+               #:renderer [renderer (get-welcome-renderer)])
+  (gui:message-box
+   title
+   message
+   (renderer-root renderer)
+   '(ok caution)))
 
 (define (confirm #:title title
                  #:message message
