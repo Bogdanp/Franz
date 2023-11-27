@@ -6,7 +6,7 @@
                ["avro-lib" #:version "1.1"]
                "base"
                "buid-lib"
-               ["confluent-schema-registry-lib" #:version "0.2.2"]
+               ["confluent-schema-registry-lib" #:version "0.2.3"]
                "db-lib"
                ["deta-lib" #:version "0.11"]
                "http-easy-lib"
