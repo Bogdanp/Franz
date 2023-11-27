@@ -7,6 +7,7 @@
          (prefix-in protobuf: protocol-buffers)
          racket/match
          racket/port
+         racket/promise
          "generic.rkt"
          "schema.rkt"
          "varint.rkt")
@@ -17,10 +18,9 @@
 (struct confluent-registry (client codecs)
   #:methods gen:registry
   [(define (get-schemas self)
-     (define subjects
-       (impl:get-all-subjects (confluent-registry-client self)))
-     (for/list ([subject (in-list subjects)])
-       (make-Schema #:name subject)))
+     (define client (confluent-registry-client self))
+     (for/list/concurrent ([name (in-list (impl:get-all-subjects client))])
+       (get-schema self name)))
 
    (define (get-schema self name)
      (define client (confluent-registry-client self))
