@@ -135,6 +135,20 @@ extension ResourceConfig: Identifiable {
   }
 }
 
+// MARK: - SchemaType
+extension SchemaType {
+  var symbol: Symbol {
+    switch self {
+    case .avro:
+      return "avro"
+    case .json:
+      return "json"
+    case .protobuf:
+      return "protobuf"
+    }
+  }
+}
+
 // MARK: - TokenSpan
 extension TokenSpan {
   var range: NSRange {

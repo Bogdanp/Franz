@@ -30,6 +30,8 @@ class WorkspaceWindowController: NSWindowController {
   private var statusMu = DispatchSemaphore(value: 1)
   private var statusCookie = 0
 
+  private var createSchemaCtl: NSViewController?
+
   var connectionId: UVarint? {
     conn?.id
   }
@@ -226,6 +228,37 @@ class WorkspaceWindowController: NSWindowController {
     window?.addTabbedWindow(tab, ordered: .above)
     tab.makeKeyAndOrderFront(self)
   }
+
+  @objc func createSchema(_ sender: Any) {
+    let dismiss = { [weak self] in
+      guard let self, let ctl = self.createSchemaCtl else { return }
+      self.createSchemaCtl = nil
+      self.window?.contentViewController?.dismiss(ctl)
+    }
+    let form = NewSchemaForm { [weak self] name, type, schema in
+      guard let self else { return }
+      let status = makeStatusProc()
+      status("Creating Schema")
+      Backend.shared.createSchema(
+        named: name,
+        ofType: type.symbol,
+        withSchema: schema,
+        inWorkspace: self.id
+      ).onComplete { [weak self] in
+        status("Ready")
+        self?.loadMetadata(forcingReload: true)
+        dismiss()
+      }
+    } cancelAction: {
+      dismiss()
+    }
+    createSchemaCtl = NSHostingController(
+      rootView: form
+        .frame(width: 450, height: 400, alignment: .leading)
+        .padding(.all, 20)
+    )
+    window?.contentViewController?.presentAsSheet(createSchemaCtl!)
+  }
 }
 
 // MARK: NSMenuItemValidation
@@ -235,6 +268,8 @@ extension WorkspaceWindowController: NSMenuItemValidation {
       // Using TabState here is fairly piggy.
       return detailCtl.currentEntryKind == .topic &&
         TabState.shared.get(.topicDetail) as? TopicDetailView.Tab == .messages
+    } else if menuItem.action == #selector(createSchema(_:)) {
+      return conn.schemaRegistryId != nil
     }
     return true
   }

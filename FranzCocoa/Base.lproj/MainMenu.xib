@@ -429,6 +429,13 @@ DQ
                                     <action selector="configureSchemaRegistry:" target="-1" id="5m4-tf-e51"/>
                                 </connections>
                             </menuItem>
+                            <menuItem isSeparatorItem="YES" id="Dkf-Hw-TrY"/>
+                            <menuItem title="Create Schema..." id="hrN-mo-Szh">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="createSchema:" target="-1" id="M01-Dl-VuL"/>
+                                </connections>
+                            </menuItem>
                         </items>
                     </menu>
                 </menuItem>
