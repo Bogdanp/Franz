@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="22155" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="22155"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="SchemaEditorToolbarController" customModule="Franz" customModuleProvider="target">
+            <connections>
+                <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customView translatesAutoresizingMaskIntoConstraints="NO" id="Hz6-mo-xeY">
+            <rect key="frame" x="0.0" y="0.0" width="480" height="28"/>
+            <subviews>
+                <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="frk-1y-Kgw">
+                    <rect key="frame" x="0.0" y="-2" width="480" height="5"/>
+                </box>
+                <box horizontalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="KsL-3c-K87">
+                    <rect key="frame" x="-2" y="1" width="5" height="27"/>
+                </box>
+                <box horizontalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="e4d-Ja-H9q">
+                    <rect key="frame" x="477" y="1" width="5" height="27"/>
+                </box>
+                <segmentedControl verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Q9R-v4-mfq">
+                    <rect key="frame" x="373" y="2" width="104" height="24"/>
+                    <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="momentary" id="2cL-my-NuY">
+                        <font key="font" metaFont="system"/>
+                        <segments>
+                            <segment image="square.and.pencil" catalog="system" width="32"/>
+                            <segment image="checkmark" catalog="system" width="32" tag="1"/>
+                            <segment image="clear" catalog="system" width="32" tag="2"/>
+                        </segments>
+                    </segmentedCell>
+                    <connections>
+                        <action selector="didPressSegmentedControl:" target="-2" id="nES-vH-imc"/>
+                    </connections>
+                </segmentedControl>
+            </subviews>
+            <constraints>
+                <constraint firstItem="frk-1y-Kgw" firstAttribute="top" secondItem="Q9R-v4-mfq" secondAttribute="bottom" constant="3" id="BoC-1M-kO1"/>
+                <constraint firstAttribute="trailing" secondItem="e4d-Ja-H9q" secondAttribute="trailing" id="CL2-Sm-gho"/>
+                <constraint firstAttribute="bottom" secondItem="e4d-Ja-H9q" secondAttribute="bottom" constant="1" id="GkW-EO-gC3"/>
+                <constraint firstItem="frk-1y-Kgw" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" id="J8c-x6-zOh"/>
+                <constraint firstItem="KsL-3c-K87" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" id="MHA-Ej-7J1"/>
+                <constraint firstItem="KsL-3c-K87" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" id="RV3-qH-ZJg"/>
+                <constraint firstAttribute="trailing" secondItem="frk-1y-Kgw" secondAttribute="trailing" id="Rbm-8n-hCP"/>
+                <constraint firstItem="Q9R-v4-mfq" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="4" id="Swe-aX-TX0"/>
+                <constraint firstAttribute="bottom" secondItem="frk-1y-Kgw" secondAttribute="bottom" id="VwG-id-d8F"/>
+                <constraint firstItem="e4d-Ja-H9q" firstAttribute="leading" secondItem="Q9R-v4-mfq" secondAttribute="trailing" constant="5" id="ZaL-OC-NhY"/>
+                <constraint firstItem="e4d-Ja-H9q" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" id="euV-Wf-xWO"/>
+                <constraint firstAttribute="bottom" secondItem="KsL-3c-K87" secondAttribute="bottom" constant="1" id="lmu-Dh-1u4"/>
+            </constraints>
+            <point key="canvasLocation" x="65" y="154"/>
+        </customView>
+    </objects>
+    <resources>
+        <image name="checkmark" catalog="system" width="14" height="13"/>
+        <image name="clear" catalog="system" width="15" height="14"/>
+        <image name="square.and.pencil" catalog="system" width="17" height="15"/>
+    </resources>
+</document>

@@ -441,20 +441,39 @@ extension EditorTextView {
 struct Editor: NSViewControllerRepresentable {
   typealias NSViewControllerType = EditorViewController
 
-  var code: String = ""
+  @Binding var code: String
   var language: Language = .lua
   var border: NSBorderType = .noBorder
   var isEditable = true
 
+  class Coordinator: EditorViewControllerDelegate {
+    private var parent: Editor
+
+    init(_ parent: Editor) {
+      self.parent = parent
+    }
+
+    func codeDidChange(_ sender: EditorViewController) {
+      parent.code = sender.code
+    }
+  }
+
+  func makeCoordinator() -> Coordinator {
+    return Coordinator(self)
+  }
+
   func makeNSViewController(context: Context) -> EditorViewController {
     let ctl = EditorViewController()
     ctl.configure(code: code, language: language, border: border)
+    ctl.delegate = context.coordinator
     ctl.isEditable = isEditable
     return ctl
   }
 
   func updateNSViewController(_ ctl: EditorViewController, context: Context) {
-    ctl.configure(code: code, language: language, border: border)
+    if code != ctl.code {
+      ctl.configure(code: code, language: language, border: border)
+    }
     ctl.isEditable = isEditable
   }
 }
