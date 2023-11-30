@@ -11,8 +11,8 @@ on:
 name: Build on macOS
 jobs:
   build_core_arm64:
-    runs-on: macos-12
-    name: Build core (arm64) on macOS 12
+    runs-on: macos-13
+    name: Build core (arm64) on macOS 13
     steps:
       - uses: actions/checkout@master
       - uses: Bogdanp/setup-racket@v1.10
@@ -64,8 +64,8 @@ jobs:
             FranzCocoa/resources/runtime-arm64/
 
   build_core_x86_64:
-    runs-on: macos-12
-    name: Build core (x86_64) on macOS 12
+    runs-on: macos-13
+    name: Build core (x86_64) on macOS 13
     steps:
       - uses: actions/checkout@master
       - uses: Bogdanp/setup-racket@v1.10
@@ -108,8 +108,8 @@ jobs:
             FranzCocoa/resources/runtime-x86_64/
 
   build_mac_app:
-    runs-on: macos-12
-    name: Build Franz.app on macOS 12
+    runs-on: macos-13
+    name: Build Franz.app on macOS 13
     needs:
       - build_core_arm64
       - build_core_x86_64
@@ -203,8 +203,8 @@ jobs:
           path: dist/Franz.dmg
 
   build_mac_app_mas:
-    runs-on: macos-12
-    name: Build Franz.app on macOS 12 (MAS)
+    runs-on: macos-13
+    name: Build Franz.app on macOS 13 (MAS)
     needs:
       - build_core_arm64
       - build_core_x86_64
