@@ -1,7 +1,8 @@
-# 2023.12.01 (Version 1.5, Build 1)
+# 2023.12.03 (Version 1.5, Build 1)
 ## Added
 
-* Further improvements to Lua error reporting.
+* Improvements to Lua error reporting.
+* Jump to Line in the Scripting Window.
 * Support for creating, updating and deleting schemas.
 
 ## Fixed
