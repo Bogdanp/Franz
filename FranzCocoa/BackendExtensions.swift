@@ -33,9 +33,9 @@ extension Breadcrumb: CustomStringConvertible {
   public var description: String {
     let timestampStr = Date(timeIntervalSince1970: Double(timestamp)).ISO8601Format()
     if let details {
-      return "\(timestampStr)\n level: \(level)\n message: \(message)\n details: \(details)"
+      return "\(timestampStr) (\(level))\n \(message)\n details: \(details)"
     }
-    return "\(timestampStr)\n level: \(level)\n message: \(message)"
+    return "\(timestampStr) (\(level))\n \(message)"
   }
 }
 
