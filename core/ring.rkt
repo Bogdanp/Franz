@@ -4,6 +4,7 @@
          racket/match)
 
 (provide
+ make-ring
  ring?
  ring-length
  ring-push!

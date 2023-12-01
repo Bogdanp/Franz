@@ -14,6 +14,7 @@
 
          ;; For RPC:
          "auto-update.rkt"
+         "breadcrumb.rkt"
          "connection-details.rkt"
          "lexer.rkt"
          "release.rkt"

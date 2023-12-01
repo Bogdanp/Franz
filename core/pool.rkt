@@ -2,15 +2,19 @@
 
 (require (prefix-in k: kafka)
          (prefix-in k: kafka/iterator)
+         (prefix-in k: kafka/logger)
          (prefix-in k: kafka/producer)
          racket/list
          racket/match
+         racket/port
          racket/promise
          threading
+         "breadcrumb.rkt"
          "broker.rkt"
          "connection-details.rkt"
          "group.rkt"
          "logger.rkt"
+         "ring.rkt"
          (prefix-in sr: "schema-registry/generic.rkt")
          (prefix-in sr: "schema-registry/schema.rkt"))
 
@@ -44,6 +48,7 @@
  pool-reset-iterator
  pool-close-iterator
  pool-publish-record
+ pool-get-breadcrumbs
  pool-shutdown)
 
 (struct pool (ch thd))
@@ -53,6 +58,8 @@
   (define thd
     (thread/suspend-to-kill
      (lambda ()
+       (define log-receiver
+         (make-log-receiver k:kafka-logger 'debug))
        (let loop ([s (make-state)])
          (define res-state
            (with-handlers ([exn:fail?
@@ -401,12 +408,22 @@
                        (sync evt)))
                     (state-add-req s (req result res-ch nack))]
 
+                   [`(get-breadcrumbs ,res-ch ,nack)
+                    (define breadcrumbs
+                      (ring->list (state-breadcrumbs s)))
+                    (state-add-req s (req breadcrumbs res-ch nack))]
+
                    [`(shutdown ,res-ch ,nack)
                     (for ([c (in-hash-values (state-clients s))])
                       (k:disconnect-all c))
                     (~> (state-clear-iterators s)
                         (state-clear-clients _)
                         (state-add-req _ (req #t res-ch nack)))])))
+              (handle-evt
+               log-receiver
+               (match-lambda
+                 [(vector level message data _topic)
+                  (state-add-breadcrumb s level message data)]))
               (append
                (for/list ([r (in-list (state-reqs s))])
                  (match-define (req res res-ch _nack) r)
@@ -507,6 +524,9 @@
 (define (pool-publish-record id topic pid key value [p (current-pool)])
   (force (sync (pool-send p publish-record id topic pid key value))))
 
+(define (pool-get-breadcrumbs [p (current-pool)])
+  (force (sync (pool-send p get-breadcrumbs))))
+
 (define (pool-shutdown [p (current-pool)])
   (sync (pool-send p shutdown)))
 
@@ -541,10 +561,11 @@
    scripts ;; client-id -> (topic -> table?)
    registries ;; client-id -> registry?
    iterators
-   iterators-seq))
+   iterators-seq
+   breadcrumbs))
 
 (define (make-state)
-  (state null (hasheqv) 0 (hasheqv) (hasheqv) (hasheqv) 0))
+  (state null (hasheqv) 0 (hasheqv) (hasheqv) (hasheqv) 0 (make-ring 1024)))
 
 (define (state-add-req s r)
   (struct-copy state s [reqs (cons r (state-reqs s))]))
@@ -621,6 +642,20 @@
 
 (define (call-with-state-schema-registry* s id proc)
   (delay/thread (call-with-state-schema-registry s id proc)))
+
+(define (state-add-breadcrumb s level message data)
+  (begin0 s
+    (ring-push!
+     (state-breadcrumbs s)
+     (make-Breadcrumb
+      #:level level
+      #:message message
+      #:details (and (k:fault? data)
+                     (call-with-output-string
+                      (lambda (out)
+                        (define err (k:fault-original-error data))
+                        (parameterize ([current-error-port out])
+                          ((error-display-handler) (exn-message err) err)))))))))
 
 
 ;; iter ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
