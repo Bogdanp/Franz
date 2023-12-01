@@ -1,6 +1,8 @@
 #lang racket/gui/easy
 
-(require franz/broker
+(require franz/breadcrumb
+         (submod franz/breadcrumb rpc)
+         franz/broker
          franz/connection-details
          (submod franz/connection-details rpc)
          franz/schema-registry
@@ -8,6 +10,7 @@
          franz/schema-registry/schema
          (submod franz/workspace rpc)
          net/sendurl
+         racket/date
          racket/format
          racket/match
          "alert.rkt"
@@ -298,6 +301,10 @@
       m:render-check-for-updates-dialog)
      (menu-item-separator)
      (menu-item
+      "Export Debug Info..."
+      do-export-debug-info)
+     (menu-item-separator)
+     (menu-item
       "About &Franz"
       m:render-about-window)))
    (if-view
@@ -328,6 +335,29 @@
   (define keychain (current-keychain))
   (define password (and keychain (get-password keychain (SchemaRegistry-password-id registry))))
   (activate-schema-registry registry password id))
+
+(define (do-export-debug-info)
+  (define maybe-filename
+    (gui:put-file
+     #f ;message
+     #f ;parent
+     #f ;directory
+     "debug.txt" ;filename
+     "txt" ;extension
+     null ;style
+     '(("Plain Text" "*.txt"))))
+  (when maybe-filename
+    (call-with-output-file maybe-filename
+      #:exists 'truncate/replace
+      (lambda (out)
+        (for/list ([crumb (in-list (get-breadcrumbs))])
+          (define timestamp-str
+            (date->string (seconds->date (Breadcrumb-timestamp crumb)) #t))
+          (fprintf out "~a (~a)~n" timestamp-str (Breadcrumb-level crumb))
+          (fprintf out " ~a~n" (Breadcrumb-message crumb))
+          (when (Breadcrumb-details crumb)
+            (fprintf out " details: ~a~n" (Breadcrumb-details crumb)))
+          (fprintf out "~n"))))))
 
 (module+ main
   (require "testing.rkt")
