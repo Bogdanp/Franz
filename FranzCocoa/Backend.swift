@@ -501,18 +501,18 @@ public struct Breadcrumb: Readable, Writable {
   public let timestamp: UVarint
   public let level: Symbol
   public let message: String
-  public let moreInfo: String?
+  public let details: String?
 
   public init(
     timestamp: UVarint,
     level: Symbol,
     message: String,
-    moreInfo: String?
+    details: String?
   ) {
     self.timestamp = timestamp
     self.level = level
     self.message = message
-    self.moreInfo = moreInfo
+    self.details = details
   }
 
   public static func read(from inp: InputPort, using buf: inout Data) -> Breadcrumb {
@@ -520,7 +520,7 @@ public struct Breadcrumb: Readable, Writable {
       timestamp: UVarint.read(from: inp, using: &buf),
       level: Symbol.read(from: inp, using: &buf),
       message: String.read(from: inp, using: &buf),
-      moreInfo: String?.read(from: inp, using: &buf)
+      details: String?.read(from: inp, using: &buf)
     )
   }
 
@@ -528,7 +528,7 @@ public struct Breadcrumb: Readable, Writable {
     timestamp.write(to: out)
     level.write(to: out)
     message.write(to: out)
-    moreInfo.write(to: out)
+    details.write(to: out)
   }
 }
 

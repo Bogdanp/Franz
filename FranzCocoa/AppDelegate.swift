@@ -48,6 +48,28 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     WindowManager.shared.openManual()
   }
 
+  @IBAction func didPushExportDebugInfoButton(_ sender: Any) {
+    Backend.shared.getBreadcrumbs().onComplete { crumbs in
+      guard crumbs.count > 0 else { return }
+      let dialog = NSSavePanel()
+      dialog.allowedContentTypes = [.utf8PlainText]
+      dialog.nameFieldStringValue = "debug.txt"
+      dialog.title = "Save Debug Info"
+      switch dialog.runModal() {
+      case .OK:
+        guard let url = dialog.url else { return }
+        let data = crumbs.map { $0.description }.joined(separator: "\n\n").data(using: .utf8)
+        do {
+          try data?.write(to: url, options: .atomic)
+        } catch {
+          Error.alert(withError: error)
+        }
+      default:
+        ()
+      }
+    }
+  }
+
 #if !MAC_APP_STORE_BUILD
   @IBAction func didPushCheckForUpdatesButton(_ sender: Any) {
     var canceled = false

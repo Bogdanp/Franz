@@ -512,6 +512,12 @@ DQ
                                     <action selector="didPushManualButton:" target="Voe-Tx-rLC" id="DM5-C8-8Y5"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Export Debug Info..." id="nFI-02-d0k">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="didPushExportDebugInfoButton:" target="Voe-Tx-rLC" id="QSc-va-ugP"/>
+                                </connections>
+                            </menuItem>
                         </items>
                     </menu>
                 </menuItem>
