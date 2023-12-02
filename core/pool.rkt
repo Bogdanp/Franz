@@ -565,7 +565,7 @@
    breadcrumbs))
 
 (define (make-state)
-  (state null (hasheqv) 0 (hasheqv) (hasheqv) (hasheqv) 0 (make-ring 256)))
+  (state null (hasheqv) 0 (hasheqv) (hasheqv) (hasheqv) 0 (make-ring 100)))
 
 (define (state-add-req s r)
   (struct-copy state s [reqs (cons r (state-reqs s))]))
