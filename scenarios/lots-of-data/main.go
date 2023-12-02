@@ -52,8 +52,8 @@ func main() {
 	ival := (24 * time.Hour) / time.Duration(*numCandles)
 	log.Println(ival)
 	for i := 0; i < *numDays; i++ {
-		ts := st
 		for part := 0; part < *numPartitions; part++ {
+			ts := st
 			log.Println(ts, part)
 			for j := 0; j < *numCandles; j++ {
 				k := ts.Format(time.RFC3339Nano)
