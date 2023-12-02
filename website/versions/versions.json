@@ -1,6 +1,20 @@
 [
   {
     "arch": "arm64",
+    "version": "1.5.0001",
+    "macURL": "https://franz.defn.io/releases/Franz%201.5.0001.universal.dmg",
+    "linuxURL": "https://franz.defn.io/releases/Franz%201.5.0001.linux.arm64.tar.gz",
+    "windowsURL": "https://franz.defn.io/releases/Franz%201.5.0001.win32.arm64.zip"
+  },
+  {
+    "arch": "x86_64",
+    "version": "1.5.0001",
+    "macURL": "https://franz.defn.io/releases/Franz%201.5.0001.universal.dmg",
+    "linuxURL": "https://franz.defn.io/releases/Franz%201.5.0001.linux.x86_64.tar.gz",
+    "windowsURL": "https://franz.defn.io/releases/Franz%201.5.0001.win32.x86_64.zip"
+  },
+  {
+    "arch": "arm64",
     "version": "1.4.0001",
     "macURL": "https://franz.defn.io/releases/Franz%201.4.0001.universal.dmg",
     "linuxURL": "https://franz.defn.io/releases/Franz%201.4.0001.linux.arm64.tar.gz",
