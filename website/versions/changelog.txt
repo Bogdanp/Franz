@@ -9,6 +9,7 @@
 
 * Double & triple click to select words in the Scripting Window on
   Windows and Linux.
+* Partition starvation issue when jumping to old offsets.
 
 # 2023.11.12 (Version 1.4, Build 1)
 ## Added
