@@ -12,7 +12,7 @@
 
   <description>
     <p>Franz is a desktop client for Apache Kafka and other Apache Kafka-compatible brokers like RedPanda. Use it to inspect and modify the state of your cluster, search for your data, modify consumer groups and more.</p>
-    <p>Franz is available for a free 30-day trial. Individual and company licenses can be purchased at <a href="https://franz.defn.io/buy.html"> https://franz.defn.io/buy.html</a>.</p>
+    <p>Franz is available for a free 30-day trial. Individual and company licenses can be purchased at https://franz.defn.io/buy.html.</p>
   </description>
 
   <launchable type="desktop-id">io.defn.Franz.desktop</launchable>
@@ -32,9 +32,6 @@
     </screenshot>
     <screenshot>
       <image>https://franz.defn.io/assets/05-lua-scripting.png</image>
-    </screenshot>
-    <screenshot>
-      <image>https://franz.defn.io/assets/06-data-visualization.png</image>
     </screenshot>
   </screenshots>
 
