@@ -1014,7 +1014,12 @@ fileprivate struct IteratorResetForm: View {
         case .earliest:
           resetAction(.earliest)
         case .timestamp:
-          resetAction(.timestamp(UVarint(timestamp.timeIntervalSince1970*1000)))
+          // The time component of the picker defaults to the current
+          // second, so we have to truncate that part off until the
+          // .hourMinuteAndSecond style becomes available on macOS, or
+          // until we write a custom component for this.
+          let timestamp = UVarint((timestamp.timeIntervalSince1970/60).rounded()) * 60 * 1000
+          resetAction(.timestamp(timestamp))
         case .recent:
           resetAction(.recent(delta))
         case .latest:
