@@ -59,17 +59,29 @@ func main() {
 				k := ts.Format(time.RFC3339Nano)
 				v, _ := json.Marshal(candle{rand.Float64(), rand.Float64(), rand.Float64(), rand.Float64()})
 
-				p.Produce(&kafka.Message{
-					TopicPartition: kafka.TopicPartition{
-						Topic:     &topic,
-						Partition: int32(part),
-					},
-					Key:       []byte(k),
-					Value:     v,
-					Timestamp: ts,
-				}, nil)
+				for {
+					err := p.Produce(&kafka.Message{
+						TopicPartition: kafka.TopicPartition{
+							Topic:     &topic,
+							Partition: int32(part),
+						},
+						Key:       []byte(k),
+						Value:     v,
+						Timestamp: ts,
+					}, nil)
+					if err == nil {
+						break
+					} else if err.(kafka.Error).Code() == kafka.ErrQueueFull {
+						log.Println("queue full")
+						p.Flush(1000)
+						continue
+					} else if err != nil {
+						panic(err)
+					}
+				}
 				ts = ts.Add(ival)
 			}
+			p.Flush(1000)
 		}
 		p.Flush(1000)
 		st = st.Add(time.Hour * 24)
