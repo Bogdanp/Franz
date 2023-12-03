@@ -1,4 +1,4 @@
-# 2023.12.03 (Version 1.5, Build 1)
+# 2023.12.04 (Version 1.5, Build 1)
 ## Added
 
 * Improvements to Lua error reporting.
