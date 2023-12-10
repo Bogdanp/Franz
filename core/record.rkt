@@ -1,6 +1,6 @@
 #lang racket/base
 
-(require (prefix-in k: kafka/iterator)
+(require (prefix-in k: kafka/private/record)
          lua/value
          (only-in lua/private/table table-ht)
          "iterator.rkt")
