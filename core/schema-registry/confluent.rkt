@@ -63,9 +63,15 @@
 
    (define (decode-record self r)
      (match-define (record _ _ _ k v _) r)
-     (struct-copy record r
-                  [key (or (and k (decode self k)) k)]
-                  [value (or (and v (decode self v)) v)]))])
+     (define decoded-k (or (and k (decode self k)) k))
+     (define decoded-v (or (and v (decode self v)) v))
+     (if (and (eq? k decoded-k)
+              (eq? v decoded-v))
+         r
+         (struct-copy
+          record r
+          [key decoded-k]
+          [value decoded-v])))])
 
 (define (make-confluent-registry c)
   (confluent-registry c (make-hasheqv)))
