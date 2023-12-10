@@ -1,4 +1,8 @@
 # 2024.01.15 (Version 1.6, Build 1)
+## Changed
+
+* Improved read throughput.
+
 ## Fixed
 
 * macOS: Jump Popover timestamps' seconds components are truncated.
