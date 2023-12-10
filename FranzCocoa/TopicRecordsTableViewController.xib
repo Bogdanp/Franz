@@ -261,7 +261,7 @@
                             </textFieldCell>
                         </textField>
                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="e9Q-le-xZQ">
-                            <rect key="frame" x="307" y="8.5" width="21" height="15"/>
+                            <rect key="frame" x="41" y="8.5" width="552" height="15"/>
                             <buttonCell key="cell" type="bevel" bezelStyle="regularSquare" image="chevron.left.forwardslash.chevron.right" catalog="system" imagePosition="only" state="on" inset="2" id="5FP-MI-nqF">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" metaFont="system"/>
@@ -281,6 +281,7 @@
                         <constraint firstAttribute="bottom" secondItem="jsI-LL-yRY" secondAttribute="bottom" id="aTL-Qb-g43"/>
                         <constraint firstItem="e9Q-le-xZQ" firstAttribute="centerY" secondItem="zvF-UQ-lrL" secondAttribute="centerY" id="b0s-Af-C8z"/>
                         <constraint firstAttribute="bottom" secondItem="RoJ-Xe-vsH" secondAttribute="bottom" id="bmM-bd-rW9"/>
+                        <constraint firstItem="e9Q-le-xZQ" firstAttribute="leading" secondItem="5m5-1S-yET" secondAttribute="trailing" constant="8" symbolic="YES" id="h0s-C8-aYg"/>
                         <constraint firstAttribute="trailing" secondItem="jsI-LL-yRY" secondAttribute="trailing" constant="1" id="ju2-VO-04V"/>
                         <constraint firstItem="jsI-LL-yRY" firstAttribute="top" secondItem="5m5-1S-yET" secondAttribute="bottom" constant="8" id="kzD-5k-GO6"/>
                         <constraint firstItem="jsI-LL-yRY" firstAttribute="leading" secondItem="zvF-UQ-lrL" secondAttribute="leading" constant="1" id="mS7-xy-U1S"/>

@@ -272,6 +272,7 @@ class TopicRecordsTableViewController: NSViewController {
         }
       }
 
+      var truncated = false
       var totalBytes = UVarint(0)
       self.longestKey = -1
       self.longestKeyLen = 0
@@ -285,6 +286,7 @@ class TopicRecordsTableViewController: NSViewController {
             let n = items.count - row
             logger.debug("setRecords: removing first \(n) items")
             items.removeFirst(n)
+            truncated = true
             break
           }
           if let key = it.record.key, self.longestKeyLen < key.count {
@@ -304,6 +306,7 @@ class TopicRecordsTableViewController: NSViewController {
             let n = items.count - row
             logger.debug("setRecords: removing last \(n) items")
             items.removeLast(n)
+            truncated = true
             break
           }
           if let key = it.record.key, self.longestKeyLen < key.count {
@@ -339,7 +342,11 @@ class TopicRecordsTableViewController: NSViewController {
         }
 
         let bytesStr = self.bytesFmt.string(fromByteCount: Int64(totalBytes))
-        self.statsLabel.stringValue = "Records: \(items.count) (\(bytesStr))"
+        self.statsLabel.stringValue = (
+          truncated
+          ? "Records: \(items.count) (\(bytesStr), truncated)"
+          : "Records: \(items.count) (\(bytesStr))"
+        )
         completionHandler()
       }
     }
