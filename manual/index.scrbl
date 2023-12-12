@@ -808,6 +808,16 @@ Confluent Schema Registry.
   converted to a number, returns @tt{false}.
 }
 
+@deflua[Timestamp (seconds localtime) Timestamp]{
+  Returns an instance of a Timestamp. Both arguments are optional.
+
+  If provided, the @tt{timestamp} argument represents seconds since the
+  UNIX epoch (such as the values returned by @lua[os.time]). The second
+  argument determines whether the given timestamp is interpreted using
+  the local timezone. The second argument defaults to @tt{true} if not
+  provided or if @tt{nil}.
+}
+
 @subsection{Renderers}
 
 The bindings documented in this section can be used to render aggregated
@@ -854,9 +864,8 @@ data to a window when @tech[#:key "apply"]{applying} a script.
   For use on the y axis of @lua[render.CandlestickChart]s.
 }
 
-@deflua[render.Timestamp (seconds) Timestamp]{
-  Returns an instance of a timestamp value. The argument must be the
-  number of seconds since the UNIX epoch.
+@deflua[render.Timestamp (seconds localtime) Timestamp]{
+  An alias for @lua[Timestamp].
 }
 
 @deflua[render.LineChart (xlabel ylabel) Chart]{

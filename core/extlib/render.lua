@@ -115,20 +115,7 @@ render.Candlestick = Class {
     end
 }
 
-render.Timestamp = Class {
-    name = "Timestamp",
-    constructor = function(ts)
-        check("Timestamp", ts, "number")
-        return {
-            __type = "Timestamp",
-            ts = ts
-        }
-    end
-}
-
-function render.Timestamp:__lt(other)
-    return self.ts < other.ts
-end
+render.Timestamp = Timestamp
 
 
 -- Stack ---------------------------------------------------------------

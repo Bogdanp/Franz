@@ -10,6 +10,7 @@
          noise/backend
          noise/serde
          racket/contract
+         racket/date
          racket/file
          racket/port
          racket/runtime-path
@@ -378,7 +379,8 @@ SCRIPT
   class.lua
   kafka.lua
   msgpack.lua
-  render.lua)
+  render.lua
+  timestamp.lua)
 
 (define symbol->bytes
   (compose1 string->bytes/utf-8 symbol->string))
@@ -412,47 +414,60 @@ SCRIPT
     [else
      v]))
 
+(define (make-class-module mod mod-id class-name [binds null])
+  (cons mod-id (λ (env _name)
+                 (for ([bind (in-list binds)])
+                   (apply table-set! env bind))
+                 (define the-class (car (dynamic-require mod '#%chunk)))
+                 (table-set! env class-name the-class))))
+
+(define (make-table-module mod mod-id [binds null])
+  (cons mod-id (λ (env name)
+                 (for ([bind (in-list binds)])
+                   (apply table-set! env bind))
+                 (define table (car (dynamic-require mod '#%chunk)))
+                 (table-set! env name table))))
+
 (define (make-extlib-modules)
-  `((#"avro" . ,(λ (env name)
-                  (table-set! env #"#%avro-make-codec" make-codec)
-                  (table-set! env #"#%avro-codec-read" codec-read)
-                  (table-set! env #"#%avro-tolua" ->lua)
-                  (define mod (car (dynamic-require avro.lua '#%chunk)))
-                  (table-set! env name mod)))
-    (#"class" . ,(λ (env _name)
-                   (define Class (car (dynamic-require class.lua '#%chunk)))
-                   (table-set! env #"Class" Class)))
-    (#"kafka" . ,(λ (env name)
-                   (table-set! env #"#%parse-Internal" parse-Internal)
-                   (table-set! env #"#%InternalOffsetCommit?" InternalOffsetCommit?)
-                   (table-set! env #"#%InternalOffsetCommit-group" InternalOffsetCommit-group)
-                   (table-set! env #"#%InternalOffsetCommit-topic" InternalOffsetCommit-topic)
-                   (table-set! env #"#%InternalOffsetCommit-partition-id" InternalOffsetCommit-partition-id)
-                   (table-set! env #"#%InternalOffsetCommit-offset" InternalOffsetCommit-offset)
-                   (table-set! env #"#%InternalGroupMetadata?" InternalGroupMetadata?)
-                   (table-set! env #"#%InternalGroupMetadata-group" InternalGroupMetadata-group)
-                   (table-set! env #"#%InternalGroupMetadata-generation" InternalGroupMetadata-generation)
-                   (table-set! env #"#%InternalGroupMetadata-protocol-type" InternalGroupMetadata-protocol-type)
-                   (table-set! env #"#%InternalGroupMetadata-protocol-data" InternalGroupMetadata-protocol-data)
-                   (table-set! env #"#%InternalGroupMetadata-leader" InternalGroupMetadata-leader)
-                   (table-set! env #"#%InternalGroupMetadata-members" InternalGroupMetadata-members)
-                   (table-set! env #"#%InternalGroupMember-id" InternalGroupMember-id)
-                   (table-set! env #"#%InternalGroupMember-client-id" InternalGroupMember-client-id)
-                   (table-set! env #"#%InternalGroupMember-client-host" InternalGroupMember-client-host)
-                   (table-set! env #"#%InternalGroupMember-rebalance-timeout" InternalGroupMember-rebalance-timeout)
-                   (table-set! env #"#%InternalGroupMember-session-timeout" InternalGroupMember-session-timeout)
-                   (table-set! env #"#%InternalGroupMember-subscription" InternalGroupMember-subscription)
-                   (table-set! env #"#%InternalGroupMember-assignment" InternalGroupMember-assignment)
-                   (define mod (car (dynamic-require kafka.lua '#%chunk)))
-                   (table-set! env name mod)))
-    (#"msgpack" . ,(λ (env name)
-                     (table-set! env #"#%msgpack-read" read-msgpack)
-                     (table-set! env #"#%msgpack-tolua" ->lua)
-                     (define mod (car (dynamic-require msgpack.lua '#%chunk)))
-                     (table-set! env name mod)))
-    (#"render" . ,(λ (env name)
-                    (define mod (car (dynamic-require render.lua '#%chunk)))
-                    (table-set! env name mod)))))
+  (list
+   (make-class-module class.lua #"class" #"Class")
+   (make-class-module
+    timestamp.lua #"timestamp" #"Timestamp"
+    `((#"#%date->isostring" ,(lambda (d)
+                               (parameterize ([date-display-format 'iso-8601])
+                                 (string->bytes/utf-8 (date->string d #t)))))))
+   (make-table-module
+    avro.lua #"avro"
+    `((#"#%avro-make-codec" ,make-codec)
+      (#"#%avro-codec-read" ,codec-read)
+      (#"#%avro-tolua" ,->lua)))
+   (make-table-module
+    kafka.lua #"kafka"
+    `((#"#%parse-Internal" ,parse-Internal)
+      (#"#%InternalOffsetCommit?" ,InternalOffsetCommit?)
+      (#"#%InternalOffsetCommit-group" ,InternalOffsetCommit-group)
+      (#"#%InternalOffsetCommit-topic" ,InternalOffsetCommit-topic)
+      (#"#%InternalOffsetCommit-partition-id" ,InternalOffsetCommit-partition-id)
+      (#"#%InternalOffsetCommit-offset" ,InternalOffsetCommit-offset)
+      (#"#%InternalGroupMetadata?" ,InternalGroupMetadata?)
+      (#"#%InternalGroupMetadata-group" ,InternalGroupMetadata-group)
+      (#"#%InternalGroupMetadata-generation" ,InternalGroupMetadata-generation)
+      (#"#%InternalGroupMetadata-protocol-type" ,InternalGroupMetadata-protocol-type)
+      (#"#%InternalGroupMetadata-protocol-data" ,InternalGroupMetadata-protocol-data)
+      (#"#%InternalGroupMetadata-leader" ,InternalGroupMetadata-leader)
+      (#"#%InternalGroupMetadata-members" ,InternalGroupMetadata-members)
+      (#"#%InternalGroupMember-id" ,InternalGroupMember-id)
+      (#"#%InternalGroupMember-client-id" ,InternalGroupMember-client-id)
+      (#"#%InternalGroupMember-client-host" ,InternalGroupMember-client-host)
+      (#"#%InternalGroupMember-rebalance-timeout" ,InternalGroupMember-rebalance-timeout)
+      (#"#%InternalGroupMember-session-timeout" ,InternalGroupMember-session-timeout)
+      (#"#%InternalGroupMember-subscription" ,InternalGroupMember-subscription)
+      (#"#%InternalGroupMember-assignment" ,InternalGroupMember-assignment)))
+   (make-table-module
+    msgpack.lua #"msgpack"
+    `((#"#%msgpack-read" ,read-msgpack)
+      (#"#%msgpack-tolua" ,->lua)))
+   (make-table-module render.lua #"render")))
 
 (define (call-with-lua-extlib proc)
   (define mods
@@ -475,4 +490,6 @@ SCRIPT
   (check-equal? (lua-eval "return 42") '(42))
   (check-true (car (eval-fixture "avro-basics.lua")))
   (check-true (car (eval-fixture "kafka-basics.lua")))
-  (check-true (car (eval-fixture "msgpack-basics.lua"))))
+  (check-true (car (eval-fixture "msgpack-basics.lua")))
+  (check-true (car (eval-fixture "render-basics.lua")))
+  (check-true (car (eval-fixture "timestamp.lua"))))
