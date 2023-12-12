@@ -31,6 +31,8 @@
 (provide
  records-table)
 
+(struct records (truncated? data))
+
 (define (records-table id topic
                        [call-with-status-proc (λ (proc) (proc void))]
                        #:get-details-proc [get-details (λ () (m:get-workspace-details id))]
@@ -39,7 +41,7 @@
   (define conn-id (ConnectionDetails-id conn))
   (define-observables
     [@config (get-topic-config conn topic)]
-    [@records (vector)]
+    [@records (records #f (vector))]
     [@live? #t]
     [@fetching? #f])
   (define/obs @buttons-enabled?
@@ -53,7 +55,7 @@
        (open-iterator topic (IteratorOffset.recent 20) id))))
   (define (fetch [replace? #f])
     (define config ^@config)
-    (define max-rows (* 10 1000))
+    (define max-rows (* 1 1000 1000))
     (define max-size (topic-config-request-bytes config))
     (define max-buffer (topic-config-buffer-bytes config))
     (define sort-direction (topic-config-sort-direction config))
@@ -67,7 +69,7 @@
          (not (null? new-records)))
        (cond
          [have-new?
-          (update-observable [old-records @records]
+          (update-observable [(records _ old-records) @records]
             (define ress
               (if replace?
                   (list->vector new-records)
@@ -84,8 +86,8 @@
                                (> next-total max-buffer))
                    (values next-total idx (add1 n))))
                (if (> last-idx 0)
-                   (vector-drop ress (add1 last-idx))
-                   ress)]
+                   (records #t (vector-drop ress (add1 last-idx)))
+                   (records #f ress))]
               [else
                (vector-sort! ress IteratorResult>)
                (define last-idx
@@ -96,10 +98,10 @@
                                (> next-total max-buffer))
                    (values next-total idx)))
                (if (< last-idx (sub1 (vector-length ress)))
-                   (vector-take ress last-idx)
-                   ress)]))]
+                   (records #t (vector-take ress last-idx))
+                   (records #f ress))]))]
          [replace?
-          (@records:= (vector))]
+          (@records:= (records #f (vector)))]
          [else
           (void)])
        (begin0 have-new?
@@ -123,7 +125,7 @@
        (3 100)
        (4 300))))
   (define (do-apply-script script)
-    (update-observable [ress @records]
+    (update-observable [(records _ ress) @records]
       (define originals
         (for/list ([res (in-vector ress)])
           (IteratorResult->original res)))
@@ -196,7 +198,7 @@
      '("Partition" "Offset" "Timestamp" "Key" "Value")
      #:column-widths
      (get-column-widths*)
-     @records
+     (@records . ~> . records-data)
      #:entry->row
      (lambda (res)
        (define r (IteratorResult->record res))
@@ -223,7 +225,7 @@
       (mix-context-event
        (lambda (event maybe-index)
          (when (and maybe-index (not ^@live?))
-           (define r (IteratorResult->record (vector-ref ^@records maybe-index)))
+           (define r (IteratorResult->record (vector-ref (records-data ^@records) maybe-index)))
            (render-popup-menu*
             (get-parent)
             (apply
@@ -245,10 +247,11 @@
     (hpanel
      #:stretch '(#t #f)
      (text
-      (let-observable ([records @records])
-        (format "Records: ~a (~a)"
-                (vector-length records)
-                (~size (get-size records)))))
+      (let-observable ([(records truncated? data) @records])
+        (format "Records: ~a (~a~a)"
+                (vector-length data)
+                (~size (get-size data))
+                (if truncated? ", truncated" ""))))
      (spacer)
      (button
       code-bmp
@@ -262,7 +265,7 @@
          (if live? pause-bmp play-bmp)
          (lambda ()
            (unless live?
-             (@records:= (vector)))
+             (@records:= (records #f (vector))))
            (@live?:= (not live?))))))
      (button
       gear-bmp
