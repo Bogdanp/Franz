@@ -1,7 +1,7 @@
 #lang scribble/manual
 
 @(require (for-syntax racket/base
-                      syntax/parse)
+                      syntax/parse/pre)
           racket/string
           scribble/core
           scribble/html-properties

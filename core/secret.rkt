@@ -4,7 +4,7 @@
                      racket/port
                      racket/string
                      racket/syntax
-                     syntax/parse))
+                     syntax/parse/pre))
 
 (begin-for-syntax
   (define here (simplify-path (build-path (syntax-source #'here) 'up))))

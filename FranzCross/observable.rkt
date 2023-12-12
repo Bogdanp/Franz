@@ -2,7 +2,7 @@
 
 (require (for-syntax racket/base
                      racket/syntax
-                     syntax/parse)
+                     syntax/parse/pre)
          racket/gui/easy
          racket/gui/easy/operator)
 
