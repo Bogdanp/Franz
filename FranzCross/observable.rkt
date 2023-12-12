@@ -4,7 +4,8 @@
                      racket/syntax
                      syntax/parse/pre)
          racket/gui/easy
-         racket/gui/easy/operator)
+         racket/gui/easy/operator
+         racket/match)
 
 (provide
  define-observables
@@ -30,16 +31,26 @@
   (syntax-parse stx
     [(_ ([id:id obs-expr:expr]) body ...+)
      #'(obs-expr . ~> . (λ (id) body ...))]
+    [(_ ([(match-e ...+) obs-expr:expr]) body ...+)
+     #'(obs-expr . ~> . (match-lambda [(match-e ...) body ...]))]
     [(_ ([id:id obs-expr:expr] ...+) body ...+)
      #'(obs-combine
         (lambda (id ...)
           body ...)
+        obs-expr ...)]
+    [(_ ([(match-e ...+) obs-expr:expr] ...+) body ...+)
+     #'(obs-combine
+        (match-lambda**
+         [((match-e ...) ...)
+          body ...])
         obs-expr ...)]))
 
 (define-syntax (update-observable stx)
   (syntax-parse stx
     [(_ [id:id obs-expr:expr] body ...+)
      #'(obs-expr . <~ . (λ (id) body ...))]
+    [(_ [(match-e ...+) obs-expr:expr] body ...+)
+     #'(obs-expr . <~ . (match-lambda [(match-e ...) body ...]))]
     [(_ obs-expr:expr body ...+)
      #:with it (format-id #'obs-expr "it")
      #'(update-observable [it obs-expr] body ...)]))
@@ -67,4 +78,11 @@
    (obs-peek
     (let-observable ([port @port])
       (add1 port)))
-   (add1 ^@port)))
+   (add1 ^@port))
+
+  (check-equal?
+   (obs-peek
+    (let-observable ([(? string? host) @host]
+                     [(? number? port) @port])
+      (cons host port)))
+   (cons "127.0.0.1" 80)))
