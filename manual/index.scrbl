@@ -818,6 +818,25 @@ Confluent Schema Registry.
   provided or if @tt{nil}.
 }
 
+@deflua[Timestamp.at (year month day hour minute second localtime) Timestamp]{
+  Creates a new timestamp at the given instant. The @tt{localtime}
+  argument defaults to @tt{true}.
+}
+
+@deflua[Timestamp:tolocal () Timestamp]{
+  Returns a new timestamp at the same instant as this timestamp, but
+  set to local time.
+}
+
+@deflua[Timestamp:toutc () Timestamp]{
+  Returns a new timestamp at the same instant as this timestamp, but
+  set to UTC.
+}
+
+@deflua[Timestamp:isostring () string]{
+  Formats this timestamp using IS8601.
+}
+
 @subsection{Renderers}
 
 The bindings documented in this section can be used to render aggregated
