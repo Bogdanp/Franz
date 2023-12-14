@@ -376,6 +376,10 @@ See @registry-yt{this YouTube video} for a live demo.
   Within a @tech{Workspace Window}, reloads the connection metadata.
 }
 
+@defkbd[(ctl shift J)]{
+  Within a @tech{Scripting Window}, opens the Jump to Line dialog.
+}
+
 @defkbd[(ctl shift return)]{
   Within a @tech{Scripting Window}, runs the script against the current
   batch of loaded records.
