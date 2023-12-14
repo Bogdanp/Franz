@@ -82,12 +82,12 @@ stream live data being published on a topic or jump to any offset you
 like and paginate through the data manually.
 
 When you open the Records Table tab on a topic, it immediately starts
-streaming recent data into the table.  You can stop this by pressing
-the ``Toggle Live Mode'' button on the bottom left corner of the
-table.  You can configure how much data is requested from the topic on
-each fetch by click the ``Options...'' button in the bottom right, and
-you can manually load more data by pressing the ``Load More
-Records...''  button.
+streaming recent data into the table. You can stop this by pressing the
+``Toggle Live Mode'' button on the bottom left corner of the table. You
+can configure how much data is @tech[#:key "request size"]{requested}
+from the topic on each fetch by click the ``Options...'' button in the
+bottom right, and you can manually load more data by pressing the ``Load
+More Records...'' button.
 
 From the ``Options...'' popover, you can also jump to any offset you
 like.  See @tech{Jump Popover} for details.
@@ -1182,6 +1182,24 @@ this store to PEM format by running:
 Finally, select the @filepath{client.pem} file as @emph{both} the SSL
 Key and the SSL Cert from the Franz Connection Dialog and connect to
 your broker.
+
+@section{Advanced Topics}
+
+@subsection{Buffering}
+
+When Franz loads topic data into the @tech{Records Table}, it issues
+one request per partition. The maximum amount requested per partition
+is controlled by the @deftech{request size} setting. Once it has
+received data from all topics, it sorts the data according to the
+@deftech{sort} setting and discards any data that doesn't fit within
+the @deftech{buffer size} setting. When data is discarded, the Record
+Table's status bar contains the ``truncated'' string.
+
+The default @tech{request size} is 1MiB, and the default @tech{buffer
+size} is 2MiB. The default sort is ``descending'', meaning that
+older records are discarded before newer ones. These settings can be
+changed on a per-topic basis from the ``Options...'' popover in the
+@tech{Records Table}.
 
 @section{Privacy}
 
