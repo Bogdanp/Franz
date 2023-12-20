@@ -827,6 +827,10 @@ Confluent Schema Registry.
   argument defaults to @tt{true}.
 }
 
+@deflua[Timestamp.fromisostring (str) Timestamp]{
+  Parses the given ISO8601-formatted timestamp.
+}
+
 @deflua[Timestamp:tolocal () Timestamp]{
   Returns a new timestamp at the same instant as this timestamp, but
   set to local time.

@@ -1,7 +1,9 @@
 #lang lua
 
 local seconds_to_date = racket["seconds->date"]
+local date_to_seconds = racket.lib("racket/date", "date*->seconds")
 local date_to_string = _ENV["#%date->isostring"]
+local string_to_date = _ENV["#%isostring->date"]
 
 local Timestamp = Class {
     name = "Timestamp",
@@ -44,6 +46,14 @@ function Timestamp.at(year, month, day, hour, minute, second, localtime)
     return Timestamp(seconds, localtime)
 end
 
+function Timestamp.fromisostring(s)
+    local d = string_to_date(s or "")
+    if not d then
+        error(string.format("Timestamp.fromisostring: invalid date '%s'", s))
+    end
+    return Timestamp(date_to_seconds(d, false))
+end
+
 function Timestamp:components()
     return os.date(self.localtime and "*t" or "!*t", self.ts)
 end
@@ -64,6 +74,10 @@ function Timestamp:toutc()
         return self
     end
     return Timestamp(self.ts, false)
+end
+
+function Timestamp:__eq(other)
+    return self.ts == other.ts
 end
 
 function Timestamp:__le(other)

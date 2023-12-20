@@ -12,6 +12,7 @@
          racket/contract
          racket/date
          racket/file
+         racket/match
          racket/port
          racket/runtime-path
          "iterator.rkt"
@@ -365,6 +366,60 @@ SCRIPT
 
 ;; extlib ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(define nanos/second
+  (* 1 1000 1000 1000))
+
+(define (date->isostring d)
+  (parameterize ([date-display-format 'iso-8601])
+    (string->bytes/utf-8 (date->string d #t))))
+
+(define (isostring->date s)
+  (with-handlers ([(λ (e)
+                     (or (regexp-match? #rx"match-define: no matching clause" (exn-message e))
+                         (regexp-match? #rx"find-seconds: non-existent date" (exn-message e))))
+                   (λ (_) #f)])
+    (match-define
+      (regexp #px"^(....)-(..)-(..)[ T](..):(..):(..)(\\.([0-9]{1,9}))?(Z|([-+]..:..))?$"
+              (list _
+                    (app string->number year)
+                    (app string->number month)
+                    (app string->number day)
+                    (app string->number hour)
+                    (app string->number minute)
+                    (app string->number second)
+                    _ ;; nanosecond with prefix
+                    nanosecond-str
+                    timezone-str
+                    _ ;; +- offset
+                    ))
+      (bytes->string/utf-8 s))
+    (define nanosecond
+      (let ([n (or (and nanosecond-str (string->number nanosecond-str)) 0)])
+        (if (zero? n)
+            0
+            (inexact->exact
+             (* (/ n (expt 10 (add1 (floor (log n 10))))) nanos/second)))))
+    (define utc-seconds
+      (find-seconds second minute hour day month year #f))
+    (define utc-date
+      (struct-copy date*
+                   (seconds->date utc-seconds #f)
+                   [nanosecond nanosecond]))
+    (match timezone-str
+      [(or "" "Z" "+00:00" "-00:00") utc-date]
+      [(regexp #rx"([-+])([0-9]+):([0-9]+)"
+               (list _
+                     sign-str
+                     (app string->number hours)
+                     (app string->number minutes)))
+       (define offset
+         (let ([offset (+ (* hours 3600)
+                          (* minutes 60))])
+           (case sign-str
+             [("-")    offset]
+             [("+") (- offset)])))
+       (seconds->date (+ (date*->seconds utc-date #f) offset) #f)])))
+
 (define-syntax (defmod stx)
   (syntax-parse stx
     [(_ name:id)
@@ -433,9 +488,8 @@ SCRIPT
    (make-class-module class.lua #"class" #"Class")
    (make-class-module
     timestamp.lua #"timestamp" #"Timestamp"
-    `((#"#%date->isostring" ,(lambda (d)
-                               (parameterize ([date-display-format 'iso-8601])
-                                 (string->bytes/utf-8 (date->string d #t)))))))
+    `((#"#%date->isostring" ,date->isostring)
+      (#"#%isostring->date" ,isostring->date)))
    (make-table-module
     avro.lua #"avro"
     `((#"#%avro-make-codec" ,make-codec)

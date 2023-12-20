@@ -13,4 +13,6 @@ assert(components.min == 30, "minute component")
 assert(components.sec == 45, "second component")
 assert(not components.isdst, "isdst component")
 
+assert(t == Timestamp.fromisostring("2023-05-29T12:30:45Z"))
+
 return true
