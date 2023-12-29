@@ -4,18 +4,22 @@
          (prefix-in k: kafka)
          noise/backend
          noise/serde
-         (only-in openssl ssl-make-client-context ssl-secure-client-context)
          racket/contract
+         racket/lazy-require
          racket/match
          racket/path
          racket/port
          racket/random
          racket/string
-         (prefix-in sasl: sasl/aws-msk-iam)
-         (prefix-in sasl: sasl/scram)
-         (prefix-in sasl: sasl/plain)
          threading
          (prefix-in meta: "metadata.rkt"))
+
+(lazy-require
+ [openssl (ssl-make-client-context
+           ssl-secure-client-context)]
+ [sasl/aws-msk-iam ([make-aws-msk-iam-ctx sasl:make-aws-msk-iam-ctx])]
+ [sasl/scram (make-scram-client-ctx sasl:make-scram-client-ctx)]
+ [sasl/plain (plain-client-message sasl:plain-client-message)])
 
 (provide
  (enum-out AuthMechanism)
