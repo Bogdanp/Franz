@@ -6,7 +6,7 @@
          deta
          noise/backend
          noise/serde
-         racket/contract
+         racket/contract/base
          racket/date
          racket/port
          racket/runtime-path
@@ -17,26 +17,26 @@
          "query.rkt")
 
 (provide
- current-connection
- migrate!
-
  (schema-out connection-details)
- get-connections
- get-connection
- insert-connection!
- update-connection!
- touch-connection!
- delete-connection!
-
  (schema-out schema-registry)
- get-schema-registry
- insert-schema-registry!
- update-schema-registry!
- delete-schema-registry!
+ (contract-out
+  [current-connection (parameter/c (or/c #f connection?))]
+  [migrate! (-> void?)]
 
- maybe-adjust-trial-deadline
+  [get-connections (-> (listof connection-details?))]
+  [get-connection (-> id/c (or/c #f connection-details?))]
+  [insert-connection! (-> connection-details? connection-details?)]
+  [update-connection! (-> connection-details? connection-details?)]
+  [touch-connection! (-> id/c void?)]
+  [delete-connection! (-> id/c void?)]
 
- get-buid)
+  [get-schema-registry (-> id/c (or/c #f schema-registry?))]
+  [insert-schema-registry! (-> schema-registry? schema-registry?)]
+  [update-schema-registry! (-> schema-registry? schema-registry?)]
+  [delete-schema-registry! (-> id/c void?)]
+
+  [maybe-adjust-trial-deadline (-> void?)]
+  [get-buid (-> string?)]))
 
 (define-logger metadata)
 
@@ -49,8 +49,7 @@
 (define id/c
   exact-nonnegative-integer?)
 
-(define/contract current-connection
-  (parameter/c (or/c #f connection?))
+(define current-connection
   (make-parameter #f))
 
 (define-syntax (conn stx)
@@ -107,34 +106,28 @@
   (lambda (c)
     (set-connection-details-updated-at c (current-seconds))))
 
-(define/contract (get-connections)
-  (-> (listof connection-details?))
+(define (get-connections)
   (sequence->list
    (in-entities conn (~> (from connection-details #:as c)
                          (order-by ([c.last-used-at #:desc]))))))
 
-(define/contract (get-connection id)
-  (-> id/c (or/c #f connection-details?))
+(define (get-connection id)
   (lookup conn (~> (from connection-details #:as c)
                    (where (= c.id ,id)))))
 
-(define/contract (insert-connection! c)
-  (-> connection-details? connection-details?)
+(define (insert-connection! c)
   (insert-one! conn c))
 
-(define/contract (update-connection! c)
-  (-> connection-details? connection-details?)
+(define (update-connection! c)
   (update-one! conn c #:force? #t))
 
-(define/contract (touch-connection! id)
-  (-> id/c void?)
+(define (touch-connection! id)
   (query-exec conn (~> (from connection-details #:as c)
                        (update [updated-at ,(current-seconds)]
                                [last-used-at ,(current-seconds)])
                        (where (= c.id ,id)))))
 
-(define/contract (delete-connection! id)
-  (-> id/c void?)
+(define (delete-connection! id)
   (query-exec conn (~> (from connection-details #:as c)
                        (where (= c.id ,id))
                        (delete))))
@@ -191,21 +184,17 @@
   (lambda (c)
     (set-schema-registry-updated-at c (current-seconds))))
 
-(define/contract (get-schema-registry id)
-  (-> id/c (or/c #f schema-registry?))
+(define (get-schema-registry id)
   (lookup conn (~> (from schema-registry #:as r)
                    (where (= r.id ,id)))))
 
-(define/contract (insert-schema-registry! r)
-  (-> schema-registry? schema-registry?)
+(define (insert-schema-registry! r)
   (insert-one! conn r))
 
-(define/contract (update-schema-registry! r)
-  (-> schema-registry? schema-registry?)
+(define (update-schema-registry! r)
   (update-one! conn r #:force? #t))
 
-(define/contract (delete-schema-registry! id)
-  (-> id/c void?)
+(define (delete-schema-registry! id)
   (query-exec conn (~> (from schema-registry #:as r)
                        (where (= r.id ,id))
                        (delete))))

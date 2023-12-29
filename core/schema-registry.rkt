@@ -1,17 +1,23 @@
 #lang racket/base
 
-(require (prefix-in csr: confluent/schema-registry)
-         (only-in db sql-null sql-null->false)
-         (prefix-in http: net/http-easy)
+(require (only-in db sql-null sql-null->false)
          noise/backend
          noise/serde
-         racket/contract
+         racket/contract/base
+         racket/lazy-require
          racket/match
          threading
          (prefix-in meta: "metadata.rkt")
          "pool.rkt"
-         "schema-registry/confluent.rkt"
          "schema-registry/schema.rkt")
+
+(lazy-require
+ [confluent/schema-registry
+  ([make-client csr:make-client])]
+ [net/http-easy
+  ([basic-auth http:basic-auth])]
+ ["schema-registry/confluent.rkt"
+  (make-confluent-registry)])
 
 (provide
  (enum-out SchemaRegistryKind)

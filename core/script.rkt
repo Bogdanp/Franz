@@ -9,7 +9,7 @@
          messagepack
          noise/backend
          noise/serde
-         racket/contract
+         racket/contract/base
          racket/date
          racket/file
          racket/match

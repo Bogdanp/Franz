@@ -1,7 +1,7 @@
 #lang racket/base
 
 (require noise/serde
-         racket/contract
+         racket/contract/base
          "schema-registry/schema.rkt")
 
 (provide

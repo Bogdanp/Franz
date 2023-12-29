@@ -4,7 +4,7 @@
          (prefix-in k: kafka)
          noise/backend
          noise/serde
-         racket/contract
+         racket/contract/base
          racket/lazy-require
          racket/match
          racket/path
