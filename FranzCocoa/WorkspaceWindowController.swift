@@ -12,7 +12,7 @@ fileprivate var logger = Logger(
 class WorkspaceWindowController: NSWindowController {
   private var conn: ConnectionDetails!
   private var pass: String?
-  private var id: UVarint!
+  private var id: UVarint?
   private weak var connectFuture: Future<String, UVarint>?
 
   private var metadata: Metadata?
@@ -117,6 +117,7 @@ class WorkspaceWindowController: NSWindowController {
   }
 
   private func activateRegistry(_ registry: SchemaRegistry) {
+    guard let id else { return }
     var password: String?
     if let passwordId = registry.passwordId {
       switch Keychain.shared.get(passwordWithId: passwordId, forResource: "schema registry") {
@@ -134,6 +135,7 @@ class WorkspaceWindowController: NSWindowController {
   }
 
   private func deactivateRegistry() {
+    guard let id else { return }
     Error.wait(Backend.shared.deactivateSchemaRegistry(inWorkspace: id))
   }
 
@@ -143,10 +145,11 @@ class WorkspaceWindowController: NSWindowController {
       return
     }
     self.status("Fetching Metadata")
-    Backend.shared.getMetadata(forcingReload: reload, inWorkspace: id).onComplete { meta in
+    Backend.shared.getMetadata(forcingReload: reload, inWorkspace: id).onComplete { [weak self] meta in
+      guard let self else { return }
       self.metadata = meta
-      self.sidebarCtl.configure(withId: self.id, andConn: self.conn, andMetadata: meta)
-      self.detailCtl.configure(withId: self.id)
+      self.sidebarCtl.configure(withId: id, andConn: self.conn, andMetadata: meta)
+      self.detailCtl.configure(withId: id)
       self.status("Ready")
       proc()
     }
@@ -178,6 +181,7 @@ class WorkspaceWindowController: NSWindowController {
   }
 
   @objc func newTopic(_ sender: Any) {
+    guard let id else { return }
     let ctl = NewTopicFormViewController()
     ctl.delegate = self
     ctl.configure(withId: id)
@@ -193,6 +197,7 @@ class WorkspaceWindowController: NSWindowController {
   }
 
   @objc func configureSchemaRegistry(_ sender: Any) {
+    guard let id else { return }
     let ctl = ConfigureSchemaRegistryFormViewController()
     let reg = conn.schemaRegistryId.flatMap { Error.wait(Backend.shared.getSchemaRegistry($0)) }
     ctl.delegate = self
@@ -230,6 +235,7 @@ class WorkspaceWindowController: NSWindowController {
   }
 
   @objc func createSchema(_ sender: Any) {
+    guard let id else  { return }
     let dismiss = { [weak self] in
       guard let self, let ctl = self.createSchemaCtl else { return }
       self.createSchemaCtl = nil
@@ -243,7 +249,7 @@ class WorkspaceWindowController: NSWindowController {
         named: name,
         ofType: type.symbol,
         withSchema: schema,
-        inWorkspace: self.id
+        inWorkspace: id
       ).onComplete { [weak self] in
         status("Ready")
         self?.loadMetadata(forcingReload: true)
@@ -266,8 +272,16 @@ extension WorkspaceWindowController: NSMenuItemValidation {
   func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
     if menuItem.action == #selector(jumpToOffset(_:)) {
       // Using TabState here is fairly piggy.
-      return detailCtl.currentEntryKind == .topic &&
+      return (
+        detailCtl.currentEntryKind == .topic &&
         TabState.shared.get(.topicDetail) as? TopicDetailView.Tab == .messages
+      )
+    } else if (
+      menuItem.action == #selector(newTopic(_:)) ||
+      menuItem.action == #selector(newRecord(_:)) ||
+      menuItem.action == #selector(configureSchemaRegistry(_:))
+    ) {
+      return id != nil
     } else if menuItem.action == #selector(createSchema(_:)) {
       return conn.schemaRegistryId != nil
     }
@@ -366,7 +380,7 @@ extension WorkspaceWindowController: PublishRecordFormDelegate {
     partitionId pid: UVarint,
     key: String?,
     andValue value: String?) {
-
+      guard let id else { return }
       let status = makeStatusProc()
       status("Publishing Record")
       Backend.shared.publishRecord(
@@ -495,6 +509,7 @@ extension WorkspaceWindowController: WorkspaceSidebarDelegate {
   }
 
   func sidebar(didDeleteTopic topic: Topic) {
+    guard let id else { return }
     status("Deleting Topic \(topic.name)")
     Backend.shared.deleteTopic(named: topic.name, inWorkspace: id).onComplete { _ in
       self.loadMetadata()
@@ -502,6 +517,7 @@ extension WorkspaceWindowController: WorkspaceSidebarDelegate {
   }
 
   func sidebar(didDeleteConsumerGroup group: Group) {
+    guard let id else { return }
     status("Deleting Group \(group.id)")
     Backend.shared.deleteGroup(named: group.id, inWorkspace: id).onComplete { _ in
       self.loadMetadata()
@@ -509,6 +525,7 @@ extension WorkspaceWindowController: WorkspaceSidebarDelegate {
   }
 
   func sidebar(didDeleteSchema schema: Schema) {
+    guard let id else { return }
     status("Deleting Schema \(schema.name)")
     Backend.shared.deleteSchema(named: schema.name, inWorkspace: id).onComplete { _ in
       self.loadMetadata()
