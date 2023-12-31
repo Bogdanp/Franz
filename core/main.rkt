@@ -13,7 +13,7 @@
          "version.rkt"
 
          ;; For RPC:
-         "auto-update.rkt"
+         "auto-update.rkt"  ;; noqa
          "breadcrumb.rkt"
          "connection-details.rkt"
          "lexer.rkt"
