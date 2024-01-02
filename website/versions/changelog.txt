@@ -5,7 +5,7 @@
 
 ## Changed
 
-* Improved read throughput.
+* Improved record read throughput & reduced memory utilization.
 
 ## Fixed
 
