@@ -3,22 +3,19 @@ CROSS_PREFIX=raco cross --version ${CROSS_VERSION} --target x86_64-linux
 
 .PHONY: serve
 serve:
-	python -m http.server
+	raco chief start
 
 .PHONY: deploy
-deploy: atom.xml manual/index.html
-	rsync \
-		--exclude Makefile \
-		--exclude api \
-		--exclude api.rkt \
-		--exclude api_dist \
-		--exclude feed.rkt \
-		-avh . franz:~/www/
+deploy: atom.xml build/index.html manual/index.html
+	rsync -avh build/ franz:~/www/
 
 .PHONY: deploy_api
 deploy_api: api_dist/bin/api
 	rsync -avh api_dist/ franz:~/api/
 	ssh racksnaps "sudo -S systemctl restart franz-api"
+
+build/%.html: pages/%.rkt
+	racket build.rkt
 
 manual/index.html: ../manual/*.scrbl
 	raco scribble --html --dest manual +m ../manual/index.scrbl
