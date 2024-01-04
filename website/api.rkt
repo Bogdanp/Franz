@@ -1,11 +1,11 @@
 #lang at-exp racket/base
 
-(require racket/format
+(require franz/license
+         racket/format
          racket/string
          threading
          web-server/dispatch
-         web-server/http
-         "../core/license.rkt")
+         web-server/http)
 
 (define (webhook req)
   (define quantity
