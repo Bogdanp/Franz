@@ -11,12 +11,16 @@
 (define-runtime-path assets-dir "assets")
 (define-runtime-path atom.xml "atom.xml")
 (define-runtime-path build-dir "build")
+(define-runtime-path manual-dir "manual")
 (define-runtime-path pages-dir "pages")
+(define-runtime-path versions-dir "versions")
 
 (define (build)
   (delete-directory/files build-dir #:must-exist? #f)
   (make-directory* build-dir)
   (copy-directory/files assets-dir (build-path build-dir "assets"))
+  (copy-directory/files manual-dir (build-path build-dir "manual"))
+  (copy-directory/files versions-dir (build-path build-dir "versions"))
   (copy-file atom.xml (build-path build-dir "atom.xml"))
   (for ([p (in-directory pages-dir)]
         #:unless (regexp-match? #rx#"^\\.#" (file-name-from-path p))
