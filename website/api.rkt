@@ -42,7 +42,7 @@
 (module+ main
   (require racket/async-channel
            racket/cmdline
-           racket/contract
+           racket/contract/base
            web-server/servlet-dispatch
            web-server/web-server)
   (define-values (host port)
