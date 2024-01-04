@@ -4,4 +4,5 @@
 (define deps
   '("base"
     "commonmark-lib"
+    "gregor-lib"
     "koyo-lib"))
