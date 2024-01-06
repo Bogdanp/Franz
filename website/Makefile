@@ -1,6 +1,9 @@
 CROSS_VERSION=8.7
 CROSS_PREFIX=raco cross --version ${CROSS_VERSION} --target x86_64-linux
 
+.PHONY: build
+build: atom.xml build/index.html manual/index.html
+
 .PHONY: serve
 serve:
 	raco chief start
