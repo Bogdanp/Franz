@@ -1,7 +1,7 @@
 #lang info
 
 (define version "1.6")
-(define build-number 1)
+(define build-number 2)
 
 (define collection "FranzCross")
 (define deps '("base"
