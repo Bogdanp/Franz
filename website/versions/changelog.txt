@@ -1,3 +1,8 @@
+# 2024.01.11 (Version 1.6, Build 2)
+## Fixed
+
+* Issues with SCRAM and PLAIN SASL authentication.
+
 # 2024.01.06 (Version 1.6, Build 1)
 ## Added
 
