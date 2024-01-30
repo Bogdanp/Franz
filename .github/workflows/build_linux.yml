@@ -10,7 +10,7 @@ jobs:
     name: Build Franz on Ubuntu 22.04
     steps:
       - uses: actions/checkout@master
-      - uses: Bogdanp/setup-racket@v1.10
+      - uses: Bogdanp/setup-racket@v1.11
         with:
           architecture: 'x64'
           distribution: 'full'
@@ -37,7 +37,7 @@ jobs:
         run: bash ./build.sh
         working-directory: FranzCross
       - name: Upload distribution
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Franz.tar.gz
           path: FranzCross/Franz.tar.gz

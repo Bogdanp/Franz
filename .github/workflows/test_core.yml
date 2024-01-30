@@ -28,7 +28,7 @@ jobs:
           KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: "1"
     steps:
       - uses: actions/checkout@master
-      - uses: Bogdanp/setup-racket@v1.10
+      - uses: Bogdanp/setup-racket@v1.11
         with:
           architecture: 'x64'
           distribution: 'full'
