@@ -1,5 +1,11 @@
 on:
   push:
+  workflow_dispatch:
+    inputs:
+      masBuild:
+        description: "Build for Mac App Store"
+        required: false
+        type: boolean
 name: Build on macOS
 jobs:
   build_core:
@@ -148,3 +154,99 @@ jobs:
         with:
           name: Franz.dmg
           path: dist/Franz.dmg
+
+  build_mac_app_mas:
+    runs-on: macos-14
+    name: Build Franz.app on macOS 14 (MAS)
+    needs:
+      - build_core
+    if: inputs.masBuild
+    steps:
+      - uses: actions/checkout@master
+      - uses: Bogdanp/setup-racket@v1.11
+        with:
+          architecture: 'arm64'
+          distribution: 'full'
+          variant: 'CS'
+          version: '8.11.1'
+          packages: http-easy-lib
+      - name: Install Noise
+        run: |
+          mkdir ../../sandbox
+          git clone --depth 1 --branch racket-8.11.1 https://github.com/Bogdanp/Noise ../../sandbox/Noise
+          raco pkg install -D --batch --auto ../../sandbox/noise/Racket/noise-serde-lib/
+          pushd ../../sandbox/Noise
+          make
+      - name: Download core arm64
+        uses: actions/download-artifact@v4
+        with:
+          name: core-arm64
+          path: FranzCocoa/resources/
+      - name: Download core x86_64
+        uses: actions/download-artifact@v4
+        with:
+          name: core-x86_64
+          path: FranzCocoa/resources/
+      - name: Download manual x86_64
+        uses: actions/download-artifact@v4
+        with:
+          name: manual-x86_64
+          path: FranzCocoa/resources/manual/
+      - name: Show artifacts
+        run: find FranzCocoa/resources
+      - name: Install Certificates
+        run: |
+          # https://docs.github.com/en/actions/deployment/deploying-xcode-applications/installing-an-apple-certificate-on-macos-runners-for-xcode-development
+          MAC_DEV_CER_PATH=$RUNNER_TEMP/madev.p12
+          MAC_DIST_CER_PATH=$RUNNER_TEMP/madist.p12
+          DEVELOPER_INSTALLER_CER_PATH=$RUNNER_TEMP/devinst.p12
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          echo -n "$MAC_DEV_CER" | base64 --decode -o $MAC_DEV_CER_PATH
+          echo -n "$MAC_DIST_CER" | base64 --decode -o $MAC_DIST_CER_PATH
+          echo -n "$DEVELOPER_INSTALLER_CER" | base64 --decode -o $DEVELOPER_INSTALLER_CER_PATH
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security import $MAC_DEV_CER_PATH -P "$MAC_DEV_CER_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security import $MAC_DIST_CER_PATH -P "$MAC_DIST_CER_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security import $DEVELOPER_INSTALLER_CER_PATH -P "$DEVELOPER_INSTALLER_CER_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security list-keychain -d user -s $KEYCHAIN_PATH
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo -n "$MAC_PROVISIONING_PROFILE" | \
+            base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/franz.provisionprofile
+          ls -l ~/Library/MobileDevice/Provisioning\ Profiles/
+        env:
+          DEVELOPER_INSTALLER_CER: ${{ secrets.DEVELOPER_INSTALLER_CER }}
+          DEVELOPER_INSTALLER_CER_PASSWORD: ${{ secrets.DEVELOPER_INSTALLER_CER_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+          MAC_DEV_CER: ${{ secrets.MAC_DEV_CER }}
+          MAC_DEV_CER_PASSWORD: ${{ secrets.MAC_DEV_CER_PASSWORD }}
+          MAC_DIST_CER: ${{ secrets.MAC_DIST_CER }}
+          MAC_DIST_CER_PASSWORD: ${{ secrets.MAC_DIST_CER_PASSWORD }}
+          MAC_PROVISIONING_PROFILE: ${{ secrets.MAC_PROVISIONING_PROFILE }}
+      - name: Build & Upload App
+        run: |
+          mkdir -p dist
+          xcodebuild \
+            archive \
+            -project FranzCocoa.xcodeproj/ \
+            -scheme 'Franz MAS' \
+            -destination 'generic/platform=macOS' \
+            -archivePath dist/Franz.xcarchive
+          xcodebuild \
+            -exportArchive \
+            -archivePath dist/Franz.xcarchive \
+            -exportOptionsPlist FranzCocoa/MASExportOptions.plist \
+            -exportPath dist/
+          xcrun altool \
+            --upload-package dist/Franz.pkg \
+            --type macos \
+            --asc-public-id '69a6de7a-5947-47e3-e053-5b8c7c11a4d1' \
+            --apple-id '6470144907' \
+            --bundle-id 'io.defn.Franz' \
+            --bundle-short-version-string "$(/usr/libexec/PlistBuddy -c 'Print ApplicationProperties:CFBundleShortVersionString' dist/Franz.xcarchive/Info.plist)" \
+            --bundle-version "$(/usr/libexec/PlistBuddy -c 'Print ApplicationProperties:CFBundleVersion' dist/Franz.xcarchive/Info.plist)" \
+            --username 'bogdan@defn.io' \
+            --password "$APPLE_ID_PASSWORD"
+        env:
+          APPLE_ID_PASSWORD: ${{ secrets.NOTARY_PASSWORD }}
