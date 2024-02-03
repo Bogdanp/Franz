@@ -157,7 +157,7 @@ jobs:
 
   build_mac_app_mas:
     runs-on: macos-14
-    name: Build Franz.app on macOS 14 (MAS)
+    name: Build Franz.app on macOS-14 (MAS)
     needs:
       - build_core
     if: inputs.masBuild
