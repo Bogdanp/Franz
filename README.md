@@ -1,10 +1,11 @@
+<img alt="Franz Logo" src=".github/media/logo.png" width="64" align="right">
+
+# Franz
+
 <p align="center">
   <a href="https://franz.defn.io">
-    <img alt="Franz Logo" src=".github/media/logo.png" width="256">
+    <img alt="Screenshots of various Franz windows" src=".github/media/hero.png" width="800px">
   </a>
-  <h1 align="center">
-    Franz
-  </h1>
 </p>
 
 Franz is a native macOS desktop client for Apache Kafka. It is **not**
@@ -36,4 +37,4 @@ consider [purchasing a license].
 
 ## License
 
-    Copyright 2022, 2023 CLEARTYPE SRL.  All rights reserved.
+    Copyright 2022-2024 CLEARTYPE SRL.  All rights reserved.
