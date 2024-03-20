@@ -11,7 +11,7 @@
   (gui:message-box
    title
    message
-   (renderer-root renderer)
+   (and renderer (renderer-root renderer))
    '(ok caution)))
 
 (define (confirm #:title title
@@ -26,6 +26,6 @@
      action-label
      cancel-label
      #f
-     (renderer-root renderer)
+     (and renderer (renderer-root renderer))
      '(caution default=2)))
   (eqv? res 1))

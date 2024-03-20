@@ -2,7 +2,9 @@
 
 (require buid
          franz/connection-details
+         (submod franz/connection-details rpc)
          racket/format
+         racket/lazy-require
          racket/match
          (prefix-in ~ threading)
          "combinator.rkt"
@@ -10,6 +12,9 @@
          "mixin.rkt"
          "observable.rkt"
          "view.rkt")
+
+(lazy-require
+ ["alert.rkt" (alert)])
 
 (provide
  connection-dialog)
@@ -38,7 +43,37 @@
     [@ssl-cert-path (ConnectionDetails-ssl-cert-path details)]
     [@use-http-proxy? (not (not (ConnectionDetails-http-proxy-addr details)))]
     [@http-proxy-host (or (~and~> (ConnectionDetails-http-proxy-addr details) get-http-proxy-host) "127.0.0.1")]
-    [@http-proxy-port (or (~and~> (ConnectionDetails-http-proxy-addr details) get-http-proxy-port) 1080)])
+    [@http-proxy-port (or (~and~> (ConnectionDetails-http-proxy-addr details) get-http-proxy-port) 1080)]
+    [@testing-connection? #f]
+    [@test-connection-label "Test Connection"])
+  (define (get-details)
+    (define http-proxy-addr
+      (and ^@use-http-proxy?
+           (format "~a:~a"
+                   ^@http-proxy-host
+                   ^@http-proxy-port)))
+    (define password (->optional-str ^@password))
+    (define password-id
+      (or (ConnectionDetails-password-id details)
+          (buid)))
+    (when keychain
+      (if password
+          (put-password keychain password-id password)
+          (remove-password keychain password-id)))
+    (make-ConnectionDetails
+     #:id (ConnectionDetails-id details)
+     #:name (or (->optional-str ^@name) "Unnamed Connection")
+     #:http-proxy-addr http-proxy-addr
+     #:bootstrap-host ^@host
+     #:bootstrap-port ^@port
+     #:auth-mechanism ^@mechanism
+     #:username (->optional-str ^@username)
+     #:password-id password-id
+     #:aws-region (->optional-str ^@aws-region)
+     #:aws-access-key-id (->optional-str ^@aws-access-key-id)
+     #:use-ssl ^@use-ssl?
+     #:ssl-key-path ^@ssl-key-path
+     #:ssl-cert-path ^@ssl-cert-path))
   (dialog
    #:title title
    #:size '(520 #f)
@@ -129,38 +164,28 @@
         (cancel)
         (close!)))
      (button
-      #:style '(border)
-      save-label
+      @test-connection-label
+      #:enabled? (@testing-connection? . ~> . not)
       (lambda ()
-        (define http-proxy-addr
-          (and ^@use-http-proxy?
-               (format "~a:~a"
-                       ^@http-proxy-host
-                       ^@http-proxy-port)))
-        (define password (->optional-str ^@password))
-        (define password-id
-          (or (ConnectionDetails-password-id details)
-              (buid)))
-        (when keychain
-          (if password
-              (put-password keychain password-id password)
-              (remove-password keychain password-id)))
-        (define saved-details
-          (make-ConnectionDetails
-           #:id (ConnectionDetails-id details)
-           #:name (or (->optional-str ^@name) "Unnamed Connection")
-           #:http-proxy-addr http-proxy-addr
-           #:bootstrap-host ^@host
-           #:bootstrap-port ^@port
-           #:auth-mechanism ^@mechanism
-           #:username (->optional-str ^@username)
-           #:password-id password-id
-           #:aws-region (->optional-str ^@aws-region)
-           #:aws-access-key-id (->optional-str ^@aws-access-key-id)
-           #:use-ssl ^@use-ssl?
-           #:ssl-key-path ^@ssl-key-path
-           #:ssl-cert-path ^@ssl-cert-path))
-        (save saved-details close!)))))))
+        (@testing-connection?:= #t)
+        (thread
+         (lambda ()
+           (@test-connection-label:= "Testing Connection...")
+           (match (test-connection (get-details))
+             [#f
+              (@testing-connection?:= #f)
+              (@test-connection-label:= "Connection OK")
+              (sleep 3)
+              (@test-connection-label:= "Test Connection")]
+             [message
+              (@testing-connection?:= #f)
+              (alert #:renderer #f "Connection Failed" message)])))))
+     (button
+      save-label
+      #:style '(border)
+      #:enabled? (@testing-connection? . ~> . not)
+      (lambda ()
+        (save (get-details) close!)))))))
 
 (define (~AuthMechanism v)
   (match v
