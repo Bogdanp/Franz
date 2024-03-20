@@ -40,8 +40,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     WindowManager.shared.showWelcomeWindow()
   }
 
-  @IBAction func didPushPreferencesButton(_ sender: Any) {
-    WindowManager.shared.showPreferencesWindow()
+  @IBAction func didPushSettingsButton(_ sender: Any) {
+    WindowManager.shared.showSettingsWindow()
   }
 
   @IBAction func didPushManualButton(_ sender: Any) {

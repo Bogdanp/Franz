@@ -33,9 +33,9 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="VOq-y0-SEH"/>
-                            <menuItem title="Preferences…" keyEquivalent="," id="BOF-NM-1cW">
+                            <menuItem title="Settings..." keyEquivalent="," id="BOF-NM-1cW">
                                 <connections>
-                                    <action selector="didPushPreferencesButton:" target="Voe-Tx-rLC" id="ILF-kf-5tw"/>
+                                    <action selector="didPushSettingsButton:" target="Voe-Tx-rLC" id="ILF-kf-5tw"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="wFC-TO-SCJ"/>

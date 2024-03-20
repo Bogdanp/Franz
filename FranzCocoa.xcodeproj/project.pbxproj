@@ -110,7 +110,7 @@
 		43CDBAC22AE411A0003063D7 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432C24622903F03B00C6F336 /* Error.swift */; };
 		43CDBAC32AE411A0003063D7 /* Identifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D03DD728FB03940049D44D /* Identifiers.swift */; };
 		43CDBAC42AE411A0003063D7 /* WelcomeWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CD623928CE27DB00095144 /* WelcomeWindowController.swift */; };
-		43CDBAC52AE411A0003063D7 /* PreferencesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D3AEA928FFDF3500D52E92 /* PreferencesWindowController.swift */; };
+		43CDBAC52AE411A0003063D7 /* SettingsWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D3AEA928FFDF3500D52E92 /* SettingsWindowController.swift */; };
 		43CDBAC62AE411A0003063D7 /* WindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CD623628CE27B200095144 /* WindowManager.swift */; };
 		43CDBAC72AE411A0003063D7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CD621828CE24B000095144 /* AppDelegate.swift */; };
 		43CDBAC82AE411A0003063D7 /* AutoUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43F987A5292A81D400E5E1DE /* AutoUpdater.swift */; };
@@ -154,7 +154,7 @@
 		43CDBAF02AE411A0003063D7 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43CD621C28CE24B100095144 /* MainMenu.xib */; };
 		43CDBAF12AE411A0003063D7 /* ConnectionTableCellView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43804AB828D1A026002880FE /* ConnectionTableCellView.xib */; };
 		43CDBAF22AE411A0003063D7 /* HexViewerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8DCC729546B200056E9FD /* HexViewerViewController.xib */; };
-		43CDBAF32AE411A0003063D7 /* PreferencesWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D3AEAA28FFDF3500D52E92 /* PreferencesWindowController.xib */; };
+		43CDBAF32AE411A0003063D7 /* SettingsWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D3AEAA28FFDF3500D52E92 /* SettingsWindowController.xib */; };
 		43CDBAF42AE411A0003063D7 /* DataViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 435EBE5429542E7C00DCFEBF /* DataViewController.xib */; };
 		43CDBAF52AE411A0003063D7 /* TopicRecordsTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 437A77DE290D5AA1001965B0 /* TopicRecordsTableViewController.xib */; };
 		43CDBAF62AE411A0003063D7 /* RecordWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B3C0712952FFFF00E0289C /* RecordWindowController.xib */; };
@@ -168,8 +168,8 @@
 		43D03DD828FB03940049D44D /* Identifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D03DD728FB03940049D44D /* Identifiers.swift */; };
 		43D3AEA628FFD8D100D52E92 /* Pasteboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D3AEA528FFD8D100D52E92 /* Pasteboard.swift */; };
 		43D3AEA828FFD96500D52E92 /* Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D3AEA728FFD96500D52E92 /* Defaults.swift */; };
-		43D3AEAB28FFDF3500D52E92 /* PreferencesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D3AEA928FFDF3500D52E92 /* PreferencesWindowController.swift */; };
-		43D3AEAC28FFDF3500D52E92 /* PreferencesWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D3AEAA28FFDF3500D52E92 /* PreferencesWindowController.xib */; };
+		43D3AEAB28FFDF3500D52E92 /* SettingsWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D3AEA928FFDF3500D52E92 /* SettingsWindowController.swift */; };
+		43D3AEAC28FFDF3500D52E92 /* SettingsWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D3AEAA28FFDF3500D52E92 /* SettingsWindowController.xib */; };
 		43DF30722B0FC9AC00308269 /* JumpToLineWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43DF30702B0FC9AC00308269 /* JumpToLineWindowController.swift */; };
 		43DF30732B0FC9AC00308269 /* JumpToLineWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43DF30702B0FC9AC00308269 /* JumpToLineWindowController.swift */; };
 		43DF30742B0FC9AC00308269 /* JumpToLineWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43DF30712B0FC9AC00308269 /* JumpToLineWindowController.xib */; };
@@ -274,8 +274,8 @@
 		43D03DD728FB03940049D44D /* Identifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Identifiers.swift; sourceTree = "<group>"; };
 		43D3AEA528FFD8D100D52E92 /* Pasteboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pasteboard.swift; sourceTree = "<group>"; };
 		43D3AEA728FFD96500D52E92 /* Defaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Defaults.swift; sourceTree = "<group>"; };
-		43D3AEA928FFDF3500D52E92 /* PreferencesWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesWindowController.swift; sourceTree = "<group>"; };
-		43D3AEAA28FFDF3500D52E92 /* PreferencesWindowController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PreferencesWindowController.xib; sourceTree = "<group>"; };
+		43D3AEA928FFDF3500D52E92 /* SettingsWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindowController.swift; sourceTree = "<group>"; };
+		43D3AEAA28FFDF3500D52E92 /* SettingsWindowController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SettingsWindowController.xib; sourceTree = "<group>"; };
 		43DF30702B0FC9AC00308269 /* JumpToLineWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JumpToLineWindowController.swift; sourceTree = "<group>"; };
 		43DF30712B0FC9AC00308269 /* JumpToLineWindowController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = JumpToLineWindowController.xib; sourceTree = "<group>"; };
 		43E5AE8B291245E000C74966 /* DispatchQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DispatchQueue.swift; sourceTree = "<group>"; };
@@ -391,8 +391,6 @@
 				431C698128F2E0C60082986A /* NewTopicFormViewController.xib */,
 				43D03DD528FAFE3B0049D44D /* Notifications.swift */,
 				43D3AEA528FFD8D100D52E92 /* Pasteboard.swift */,
-				43D3AEA928FFDF3500D52E92 /* PreferencesWindowController.swift */,
-				43D3AEAA28FFDF3500D52E92 /* PreferencesWindowController.xib */,
 				43CBADD2290FB8D70066C7CE /* PublishRecordFormViewController.swift */,
 				43CBADD3290FB8D70066C7CE /* PublishRecordFormViewController.xib */,
 				43B3C06C2952FB9000E0289C /* RecordDetailViewController.swift */,
@@ -408,6 +406,8 @@
 				432244EC2B187CDB0012E013 /* SchemaEditorToolbarController.xib */,
 				43E64A062928F2BF00FDBF29 /* ScriptWindowController.swift */,
 				43E64A072928F2BF00FDBF29 /* ScriptWindowController.xib */,
+				43D3AEA928FFDF3500D52E92 /* SettingsWindowController.swift */,
+				43D3AEAA28FFDF3500D52E92 /* SettingsWindowController.xib */,
 				436E720C28D760BF00ECBF49 /* SidebarEntryCellView.swift */,
 				436E720E28D760D400ECBF49 /* SidebarEntryCellView.xib */,
 				4314EDF728D85E0E00431770 /* SidebarGroupCellView.swift */,
@@ -601,7 +601,7 @@
 				43804AB928D1A026002880FE /* ConnectionTableCellView.xib in Resources */,
 				43B8DCC929546B200056E9FD /* HexViewerViewController.xib in Resources */,
 				43DF30742B0FC9AC00308269 /* JumpToLineWindowController.xib in Resources */,
-				43D3AEAC28FFDF3500D52E92 /* PreferencesWindowController.xib in Resources */,
+				43D3AEAC28FFDF3500D52E92 /* SettingsWindowController.xib in Resources */,
 				435EBE5629542E7C00DCFEBF /* DataViewController.xib in Resources */,
 				437A77E0290D5AA1001965B0 /* TopicRecordsTableViewController.xib in Resources */,
 				43B3C0732952FFFF00E0289C /* RecordWindowController.xib in Resources */,
@@ -637,7 +637,7 @@
 				43CDBAF12AE411A0003063D7 /* ConnectionTableCellView.xib in Resources */,
 				43CDBAF22AE411A0003063D7 /* HexViewerViewController.xib in Resources */,
 				43DF30752B0FC9AC00308269 /* JumpToLineWindowController.xib in Resources */,
-				43CDBAF32AE411A0003063D7 /* PreferencesWindowController.xib in Resources */,
+				43CDBAF32AE411A0003063D7 /* SettingsWindowController.xib in Resources */,
 				43CDBAF42AE411A0003063D7 /* DataViewController.xib in Resources */,
 				43CDBAF52AE411A0003063D7 /* TopicRecordsTableViewController.xib in Resources */,
 				43CDBAF62AE411A0003063D7 /* RecordWindowController.xib in Resources */,
@@ -771,7 +771,7 @@
 				432244F82B18DB760012E013 /* NewSchemaForm.swift in Sources */,
 				43D03DD828FB03940049D44D /* Identifiers.swift in Sources */,
 				43CD623B28CE27DB00095144 /* WelcomeWindowController.swift in Sources */,
-				43D3AEAB28FFDF3500D52E92 /* PreferencesWindowController.swift in Sources */,
+				43D3AEAB28FFDF3500D52E92 /* SettingsWindowController.swift in Sources */,
 				43CD623728CE27B200095144 /* WindowManager.swift in Sources */,
 				43CD621928CE24B000095144 /* AppDelegate.swift in Sources */,
 				43F987A6292A81D400E5E1DE /* AutoUpdater.swift in Sources */,
@@ -831,7 +831,7 @@
 				432244F92B18DB760012E013 /* NewSchemaForm.swift in Sources */,
 				43CDBAC32AE411A0003063D7 /* Identifiers.swift in Sources */,
 				43CDBAC42AE411A0003063D7 /* WelcomeWindowController.swift in Sources */,
-				43CDBAC52AE411A0003063D7 /* PreferencesWindowController.swift in Sources */,
+				43CDBAC52AE411A0003063D7 /* SettingsWindowController.swift in Sources */,
 				43CDBAC62AE411A0003063D7 /* WindowManager.swift in Sources */,
 				43CDBAC72AE411A0003063D7 /* AppDelegate.swift in Sources */,
 				43CDBAC82AE411A0003063D7 /* AutoUpdater.swift in Sources */,

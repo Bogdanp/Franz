@@ -109,6 +109,6 @@ class WelcomeWindowContentViewController: NSViewController {
 
   @IBAction func didPushTrialButton(_ sender: Any) {
     WindowManager.shared.closeWelcomeWindow()
-    WindowManager.shared.showPreferencesWindow(selectingTab: .license)
+    WindowManager.shared.showSettingsWindow(selectingTab: .license)
   }
 }

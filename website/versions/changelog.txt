@@ -3,6 +3,10 @@
 
 * A "Test Connection" button to the connection info dialog.
 
+## Changed
+
+* macOS: "Preferences" has been renamed to "Settings".
+
 # 2024.01.11 (Version 1.6, Build 2)
 ## Fixed
 

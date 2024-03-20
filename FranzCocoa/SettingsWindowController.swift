@@ -5,21 +5,21 @@ import SwiftUI
 
 fileprivate let logger = Logger(
   subsystem: "io.defn.Franz",
-  category: "Preferences"
+  category: "Settings"
 )
 
-enum PreferencesTab: Int {
+enum SettingsTab: Int {
   case general = 0
   case connections = 1
   case license = 2
   case updates = 3
 }
 
-class PreferencesWindowController: NSWindowController {
-  private lazy var tabController = PreferencesTabViewController()
+class SettingsWindowController: NSWindowController {
+  private lazy var tabController = SettingsTabViewController()
 
   convenience init() {
-    self.init(windowNibName: "PreferencesWindowController")
+    self.init(windowNibName: "SettingsWindowController")
   }
 
   override func windowDidLoad() {
@@ -61,16 +61,16 @@ class PreferencesWindowController: NSWindowController {
     window?.center()
   }
 
-  func display(tab: PreferencesTab) {
+  func display(tab: SettingsTab) {
     tabController.selectedTabViewItemIndex = tab.rawValue
   }
 }
 
-// MARK: - PreferencesTabViewDelegate
-extension PreferencesWindowController: PreferencesTabViewDelegate {
-  func preferencesTabView(didSelectItem item: NSTabViewItem) {
+// MARK: - SettingsTabViewDelegate
+extension SettingsWindowController: SettingsTabViewDelegate {
+  func settingsTabView(didSelectItem item: NSTabViewItem) {
     let index = tabController.tabView.indexOfTabViewItem(item)
-    guard let window, let tab = PreferencesTab(rawValue: index) else {
+    guard let window, let tab = SettingsTab(rawValue: index) else {
       return
     }
 
@@ -91,18 +91,18 @@ extension PreferencesWindowController: PreferencesTabViewDelegate {
   }
 }
 
-// MARK: - PreferencesTabViewController
-protocol PreferencesTabViewDelegate: AnyObject {
-  func preferencesTabView(didSelectItem item: NSTabViewItem)
+// MARK: - SettingsTabViewController
+protocol SettingsTabViewDelegate: AnyObject {
+  func settingsTabView(didSelectItem item: NSTabViewItem)
 }
 
-fileprivate class PreferencesTabViewController: NSTabViewController {
-  var delegate: PreferencesTabViewDelegate?
+fileprivate class SettingsTabViewController: NSTabViewController {
+  var delegate: SettingsTabViewDelegate?
 
   override func tabView(_ tabView: NSTabView, didSelect tabViewItem: NSTabViewItem?) {
     super.tabView(tabView, didSelect: tabViewItem)
     guard let item = tabViewItem else { return }
-    delegate?.preferencesTabView(didSelectItem: item)
+    delegate?.settingsTabView(didSelectItem: item)
   }
 }
 

@@ -7,7 +7,7 @@ class WindowManager {
   static var shared = WindowManager()
 
   private var welcomeWindowController: WelcomeWindowController?
-  private var preferencesWindowController: PreferencesWindowController?
+  private var settingsWindowController: SettingsWindowController?
   private var updatesWindowController: UpdatesWindowController?
   private var updatesProgressWindowController: UpdatesProgressWindowController?
   private var jumpToLineWindowController: JumpToLineWindowController?
@@ -92,14 +92,14 @@ class WindowManager {
     welcomeWindowController = nil
   }
 
-  func showPreferencesWindow(selectingTab tab: PreferencesTab = .general) {
+  func showSettingsWindow(selectingTab tab: SettingsTab = .general) {
     assert(Thread.isMainThread)
-    if preferencesWindowController == nil {
-      preferencesWindowController = PreferencesWindowController()
+    if settingsWindowController == nil {
+      settingsWindowController = SettingsWindowController()
     }
-    preferencesWindowController?.window?.center()
-    preferencesWindowController?.showWindow(self)
-    preferencesWindowController?.display(tab: tab)
+    settingsWindowController?.window?.center()
+    settingsWindowController?.showWindow(self)
+    settingsWindowController?.display(tab: tab)
   }
 
   func showScriptWindow(
@@ -195,7 +195,7 @@ class WindowManager {
       return true
     }
 
-    showPreferencesWindow(selectingTab: .license)
+    showSettingsWindow(selectingTab: .license)
     return false
   }
 

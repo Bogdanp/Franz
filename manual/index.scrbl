@@ -357,7 +357,7 @@ See @registry-yt{this YouTube video} for a live demo.
 }
 
 @defkbd[(cmd @",")]{
-  Opens the Preferences Window.
+  Opens the Settings Window.
 }
 
 
@@ -390,7 +390,7 @@ See @registry-yt{this YouTube video} for a live demo.
 }
 
 @defkbd[(ctl @";")]{
-  Within a @tech{Workspace Window}, opens the Preferences Window.
+  Within a @tech{Workspace Window}, opens the Settings Window.
 }
 
 
@@ -1212,8 +1212,8 @@ changed on a per-topic basis from the ``Options...'' popover in the
 @section{Privacy}
 
 Apart from when checking for updates, Franz never phones home for any
-reason.  Automatic Updates can be turned off from the Preferences
-Window (@kbd[cmd @","]).
+reason.  Automatic Updates can be turned off from the Settings Window
+(@kbd[cmd @","]).
 
 @section{Credits}
 
