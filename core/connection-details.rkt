@@ -166,6 +166,12 @@
                              (ConnectionDetails-http-proxy-addr c)])
                   (k:make-http-proxy host port)))))
 
+(define-rpc (test-connection [_ c : ConnectionDetails] : (Optional String))
+  (with-handlers ([exn:fail? exn-message])
+    (define client (ConnectionDetails->client c))
+    (begin0 (and (k:client-metadata client) #f)
+      (k:disconnect-all client))))
+
 (define-rpc (get-connections : (Listof ConnectionDetails))
   (map meta->ConnectionDetails (meta:get-connections)))
 
