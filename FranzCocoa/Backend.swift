@@ -1962,10 +1962,22 @@ public class Backend {
     )
   }
 
-  public func touchConnection(_ c: ConnectionDetails) -> Future<String, Void> {
+  public func testConnection(_ c: ConnectionDetails) -> Future<String, String?> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0033).write(to: out)
+        c.write(to: out)
+      },
+      readProc: { (inp: InputPort, buf: inout Data) -> String? in
+        return String?.read(from: inp, using: &buf)
+      }
+    )
+  }
+
+  public func touchConnection(_ c: ConnectionDetails) -> Future<String, Void> {
+    return impl.send(
+      writeProc: { (out: OutputPort) in
+        UVarint(0x0034).write(to: out)
         c.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> Void in }
@@ -1975,7 +1987,7 @@ public class Backend {
   public func updateConnection(_ c: ConnectionDetails) -> Future<String, ConnectionDetails> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0034).write(to: out)
+        UVarint(0x0035).write(to: out)
         c.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> ConnectionDetails in
@@ -1987,7 +1999,7 @@ public class Backend {
   public func updateResourceConfigs(_ configs: [String: String], forResourceNamed name: String, andResourceType type: Symbol, inWorkspace id: UVarint) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0035).write(to: out)
+        UVarint(0x0036).write(to: out)
         configs.write(to: out)
         name.write(to: out)
         type.write(to: out)
@@ -2000,7 +2012,7 @@ public class Backend {
   public func updateSchemaRegistry(_ r: SchemaRegistry) -> Future<String, SchemaRegistry> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0036).write(to: out)
+        UVarint(0x0037).write(to: out)
         r.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> SchemaRegistry in

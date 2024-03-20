@@ -25,6 +25,7 @@ class ConnectionDetailsFormViewController: NSViewController {
   @IBOutlet weak var awsAccessKeyIdField: NSTextField!
   @IBOutlet weak var awsAccessKeySecretField: NSSecureTextField!
   @IBOutlet weak var cancelButton: NSButton!
+  @IBOutlet weak var testButton: NSButton!
   @IBOutlet weak var actionButton: NSButton!
 
   @IBOutlet weak var proxyViewHeightConstraint: NSLayoutConstraint!
@@ -178,6 +179,8 @@ class ConnectionDetailsFormViewController: NSViewController {
     sslKeyButton.title = sslKeyPathBookmark == nil ? "SSL Key..." : "SSL Key*..."
     sslCertButton.isEnabled = enableSslCheckbox.state == .on
     sslCertButton.title = sslCertPathBookmark == nil ? "SSL Cert...": "SSL Cert*..."
+
+    testButton.image = nil
   }
 
   @IBAction func didToggleEnableHttpProxy(_ sender: Any) {
@@ -253,7 +256,31 @@ class ConnectionDetailsFormViewController: NSViewController {
     self.dismiss(self)
   }
 
+  @IBAction func didPushTestButton(_ sender: Any) {
+    guard let details = getDetails() else { return }
+    testButton.image = nil
+    testButton.isEnabled = false
+    actionButton.isEnabled = false
+    Backend.shared.testConnection(details).onComplete { [weak self] message in
+      guard let self else { return }
+      self.testButton.isEnabled = true
+      self.actionButton.isEnabled = true
+      if let message {
+        Error.alert(withError: message)
+      } else {
+        testButton.image = NSImage(systemSymbolName: "checkmark.circle", accessibilityDescription: nil)
+        testButton.imagePosition = .imageTrailing
+      }
+    }
+  }
+
   @IBAction func didPushActionButton(_ sender: Any) {
+    guard let details = getDetails() else { return }
+    self.dismiss(self)
+    actionProc(details)
+  }
+
+  private func getDetails() -> ConnectionDetails? {
     var username: String?
     var password: String?
     var awsRegion: String?
@@ -267,17 +294,15 @@ class ConnectionDetailsFormViewController: NSViewController {
       awsRegion = awsRegionField.stringValue == "" ? "us-east-1" : awsRegionField.stringValue
       if awsAccessKeyIdField.stringValue == "" {
         awsAccessKeyIdField.becomeFirstResponder()
-        return
+        return nil
       }
       awsAccessKeyId = awsAccessKeyIdField.stringValue
       if awsAccessKeySecretField.stringValue == "" {
         awsAccessKeySecretField.becomeFirstResponder()
-        return
+        return nil
       }
       password = awsAccessKeySecretField.stringValue
     }
-
-    self.dismiss(self)
 
     var passwordId = details?.passwordId
     if passwordId == nil {
@@ -285,7 +310,7 @@ class ConnectionDetailsFormViewController: NSViewController {
         passwordId = try Backend.shared.generatePasswordId().wait()
       } catch {
         logger.error("failed to generate password id: \(error.localizedDescription)")
-        return
+        return nil
       }
     }
 
@@ -315,7 +340,7 @@ class ConnectionDetailsFormViewController: NSViewController {
       httpProxyAddr = "\(host):\(port)"
     }
 
-    actionProc(ConnectionDetails(
+    return ConnectionDetails(
       id: details?.id,
       name: nameField.stringValue == "" ? "Unnamed Connection" : nameField.stringValue,
       httpProxyAddr: httpProxyAddr,
@@ -331,6 +356,6 @@ class ConnectionDetailsFormViewController: NSViewController {
       sslKeyPath: sslKeyPathBookmark,
       sslCertPath: sslCertPathBookmark,
       schemaRegistryId: nil
-    ))
+    )
   }
 }
