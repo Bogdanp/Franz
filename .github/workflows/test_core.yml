@@ -33,13 +33,13 @@ jobs:
           architecture: 'x64'
           distribution: 'full'
           variant: 'CS'
-          version: '8.11.1'
+          version: '8.12'
       - name: Install Noise
         run: |
           env GIT_LFS_SKIP_SMUDGE=1 \
             git clone \
               --depth 1 \
-              --branch racket-8.11.1 \
+              --branch racket-8.12 \
               https://github.com/Bogdanp/Noise Noise
           raco pkg install -D --batch --auto Noise/Racket/noise-serde-lib/
       - name: Prepare secrets
