@@ -1366,6 +1366,10 @@ public class Backend {
     )
   }
 
+  public func activateLicense(_ key: String) async throws -> Bool {
+    return try await FutureUtil.asyncify(activateLicense(key))
+  }
+
   public func activateSchemaRegistry(_ r: SchemaRegistry, withPassword password: String?, inWorkspace id: UVarint) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
@@ -1378,6 +1382,10 @@ public class Backend {
     )
   }
 
+  public func activateSchemaRegistry(_ r: SchemaRegistry, withPassword password: String?, inWorkspace id: UVarint) async throws -> Void {
+    return try await FutureUtil.asyncify(activateSchemaRegistry(r, withPassword: password, inWorkspace: id))
+  }
+
   public func activateScript(_ script: String, forTopic topic: String, inWorkspace id: UVarint) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
@@ -1388,6 +1396,10 @@ public class Backend {
       },
       readProc: { (inp: InputPort, buf: inout Data) -> Void in }
     )
+  }
+
+  public func activateScript(_ script: String, forTopic topic: String, inWorkspace id: UVarint) async throws -> Void {
+    return try await FutureUtil.asyncify(activateScript(script, forTopic: topic, inWorkspace: id))
   }
 
   public func applyScript(_ script: String, toRecords records: [IteratorRecord], inWorkspace id: UVarint) -> Future<String, ApplyResult> {
@@ -1404,6 +1416,10 @@ public class Backend {
     )
   }
 
+  public func applyScript(_ script: String, toRecords records: [IteratorRecord], inWorkspace id: UVarint) async throws -> ApplyResult {
+    return try await FutureUtil.asyncify(applyScript(script, toRecords: records, inWorkspace: id))
+  }
+
   public func checkForUpdates() -> Future<String, UpdateAvailable?> {
     return impl.send(
       writeProc: { (out: OutputPort) in
@@ -1413,6 +1429,10 @@ public class Backend {
         return UpdateAvailable?.read(from: inp, using: &buf)
       }
     )
+  }
+
+  public func checkForUpdates() async throws -> UpdateAvailable? {
+    return try await FutureUtil.asyncify(checkForUpdates())
   }
 
   public func checkSchema(named name: String, withUpdatedSchema schema: String, inWorkspace id: UVarint) -> Future<String, Bool> {
@@ -1429,6 +1449,10 @@ public class Backend {
     )
   }
 
+  public func checkSchema(named name: String, withUpdatedSchema schema: String, inWorkspace id: UVarint) async throws -> Bool {
+    return try await FutureUtil.asyncify(checkSchema(named: name, withUpdatedSchema: schema, inWorkspace: id))
+  }
+
   public func closeAllWorkspaces() -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
@@ -1436,6 +1460,10 @@ public class Backend {
       },
       readProc: { (inp: InputPort, buf: inout Data) -> Void in }
     )
+  }
+
+  public func closeAllWorkspaces() async throws -> Void {
+    return try await FutureUtil.asyncify(closeAllWorkspaces())
   }
 
   public func closeIterator(withId id: UVarint) -> Future<String, Void> {
@@ -1448,6 +1476,10 @@ public class Backend {
     )
   }
 
+  public func closeIterator(withId id: UVarint) async throws -> Void {
+    return try await FutureUtil.asyncify(closeIterator(withId: id))
+  }
+
   public func closeWorkspace(_ id: UVarint) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
@@ -1456,6 +1488,10 @@ public class Backend {
       },
       readProc: { (inp: InputPort, buf: inout Data) -> Void in }
     )
+  }
+
+  public func closeWorkspace(_ id: UVarint) async throws -> Void {
+    return try await FutureUtil.asyncify(closeWorkspace(id))
   }
 
   public func createSchema(named name: String, ofType type: Symbol, withSchema schema: String, inWorkspace id: UVarint) -> Future<String, Void> {
@@ -1469,6 +1505,10 @@ public class Backend {
       },
       readProc: { (inp: InputPort, buf: inout Data) -> Void in }
     )
+  }
+
+  public func createSchema(named name: String, ofType type: Symbol, withSchema schema: String, inWorkspace id: UVarint) async throws -> Void {
+    return try await FutureUtil.asyncify(createSchema(named: name, ofType: type, withSchema: schema, inWorkspace: id))
   }
 
   public func createTopic(named name: String, withPartitions partitions: UVarint, andReplicationFactor replicationFactor: UVarint, andOptions options: [TopicOption], inWorkspace id: UVarint) -> Future<String, Void> {
@@ -1485,6 +1525,10 @@ public class Backend {
     )
   }
 
+  public func createTopic(named name: String, withPartitions partitions: UVarint, andReplicationFactor replicationFactor: UVarint, andOptions options: [TopicOption], inWorkspace id: UVarint) async throws -> Void {
+    return try await FutureUtil.asyncify(createTopic(named: name, withPartitions: partitions, andReplicationFactor: replicationFactor, andOptions: options, inWorkspace: id))
+  }
+
   public func deactivateSchemaRegistry(inWorkspace id: UVarint) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
@@ -1493,6 +1537,10 @@ public class Backend {
       },
       readProc: { (inp: InputPort, buf: inout Data) -> Void in }
     )
+  }
+
+  public func deactivateSchemaRegistry(inWorkspace id: UVarint) async throws -> Void {
+    return try await FutureUtil.asyncify(deactivateSchemaRegistry(inWorkspace: id))
   }
 
   public func deactivateScript(forTopic topic: String, inWorkspace id: UVarint) -> Future<String, Void> {
@@ -1506,6 +1554,10 @@ public class Backend {
     )
   }
 
+  public func deactivateScript(forTopic topic: String, inWorkspace id: UVarint) async throws -> Void {
+    return try await FutureUtil.asyncify(deactivateScript(forTopic: topic, inWorkspace: id))
+  }
+
   public func deleteConnection(_ c: ConnectionDetails) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
@@ -1514,6 +1566,10 @@ public class Backend {
       },
       readProc: { (inp: InputPort, buf: inout Data) -> Void in }
     )
+  }
+
+  public func deleteConnection(_ c: ConnectionDetails) async throws -> Void {
+    return try await FutureUtil.asyncify(deleteConnection(c))
   }
 
   public func deleteGroup(named groupId: String, inWorkspace id: UVarint) -> Future<String, Void> {
@@ -1527,6 +1583,10 @@ public class Backend {
     )
   }
 
+  public func deleteGroup(named groupId: String, inWorkspace id: UVarint) async throws -> Void {
+    return try await FutureUtil.asyncify(deleteGroup(named: groupId, inWorkspace: id))
+  }
+
   public func deleteSchema(named name: String, inWorkspace id: UVarint) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
@@ -1536,6 +1596,10 @@ public class Backend {
       },
       readProc: { (inp: InputPort, buf: inout Data) -> Void in }
     )
+  }
+
+  public func deleteSchema(named name: String, inWorkspace id: UVarint) async throws -> Void {
+    return try await FutureUtil.asyncify(deleteSchema(named: name, inWorkspace: id))
   }
 
   public func deleteSchemaRegistry(_ id: UVarint) -> Future<String, Void> {
@@ -1548,6 +1612,10 @@ public class Backend {
     )
   }
 
+  public func deleteSchemaRegistry(_ id: UVarint) async throws -> Void {
+    return try await FutureUtil.asyncify(deleteSchemaRegistry(id))
+  }
+
   public func deleteTopic(named name: String, inWorkspace id: UVarint) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
@@ -1557,6 +1625,10 @@ public class Backend {
       },
       readProc: { (inp: InputPort, buf: inout Data) -> Void in }
     )
+  }
+
+  public func deleteTopic(named name: String, inWorkspace id: UVarint) async throws -> Void {
+    return try await FutureUtil.asyncify(deleteTopic(named: name, inWorkspace: id))
   }
 
   public func fetchOffsets(forGroupNamed groupId: String, inWorkspace id: UVarint) -> Future<String, GroupOffsets> {
@@ -1572,6 +1644,10 @@ public class Backend {
     )
   }
 
+  public func fetchOffsets(forGroupNamed groupId: String, inWorkspace id: UVarint) async throws -> GroupOffsets {
+    return try await FutureUtil.asyncify(fetchOffsets(forGroupNamed: groupId, inWorkspace: id))
+  }
+
   public func fetchRelease(release r: Release) -> Future<String, String> {
     return impl.send(
       writeProc: { (out: OutputPort) in
@@ -1582,6 +1658,10 @@ public class Backend {
         return String.read(from: inp, using: &buf)
       }
     )
+  }
+
+  public func fetchRelease(release r: Release) async throws -> String {
+    return try await FutureUtil.asyncify(fetchRelease(release: r))
   }
 
   public func findTopicGroups(forTopic topic: String, inWorkspace id: UVarint) -> Future<String, [String]> {
@@ -1597,6 +1677,10 @@ public class Backend {
     )
   }
 
+  public func findTopicGroups(forTopic topic: String, inWorkspace id: UVarint) async throws -> [String] {
+    return try await FutureUtil.asyncify(findTopicGroups(forTopic: topic, inWorkspace: id))
+  }
+
   public func generatePasswordId() -> Future<String, String> {
     return impl.send(
       writeProc: { (out: OutputPort) in
@@ -1606,6 +1690,10 @@ public class Backend {
         return String.read(from: inp, using: &buf)
       }
     )
+  }
+
+  public func generatePasswordId() async throws -> String {
+    return try await FutureUtil.asyncify(generatePasswordId())
   }
 
   public func getBreadcrumbs() -> Future<String, [Breadcrumb]> {
@@ -1619,6 +1707,10 @@ public class Backend {
     )
   }
 
+  public func getBreadcrumbs() async throws -> [Breadcrumb] {
+    return try await FutureUtil.asyncify(getBreadcrumbs())
+  }
+
   public func getChangelog() -> Future<String, String> {
     return impl.send(
       writeProc: { (out: OutputPort) in
@@ -1628,6 +1720,10 @@ public class Backend {
         return String.read(from: inp, using: &buf)
       }
     )
+  }
+
+  public func getChangelog() async throws -> String {
+    return try await FutureUtil.asyncify(getChangelog())
   }
 
   public func getConnection(_ id: UVarint) -> Future<String, ConnectionDetails?> {
@@ -1642,6 +1738,10 @@ public class Backend {
     )
   }
 
+  public func getConnection(_ id: UVarint) async throws -> ConnectionDetails? {
+    return try await FutureUtil.asyncify(getConnection(id))
+  }
+
   public func getConnections() -> Future<String, [ConnectionDetails]> {
     return impl.send(
       writeProc: { (out: OutputPort) in
@@ -1651,6 +1751,10 @@ public class Backend {
         return [ConnectionDetails].read(from: inp, using: &buf)
       }
     )
+  }
+
+  public func getConnections() async throws -> [ConnectionDetails] {
+    return try await FutureUtil.asyncify(getConnections())
   }
 
   public func getLatestRelease(forArch arch: Symbol) -> Future<String, Release?> {
@@ -1665,6 +1769,10 @@ public class Backend {
     )
   }
 
+  public func getLatestRelease(forArch arch: Symbol) async throws -> Release? {
+    return try await FutureUtil.asyncify(getLatestRelease(forArch: arch))
+  }
+
   public func getLicense() -> Future<String, String?> {
     return impl.send(
       writeProc: { (out: OutputPort) in
@@ -1674,6 +1782,10 @@ public class Backend {
         return String?.read(from: inp, using: &buf)
       }
     )
+  }
+
+  public func getLicense() async throws -> String? {
+    return try await FutureUtil.asyncify(getLicense())
   }
 
   public func getMetadata(forcingReload reload: Bool, inWorkspace id: UVarint) -> Future<String, Metadata> {
@@ -1689,6 +1801,10 @@ public class Backend {
     )
   }
 
+  public func getMetadata(forcingReload reload: Bool, inWorkspace id: UVarint) async throws -> Metadata {
+    return try await FutureUtil.asyncify(getMetadata(forcingReload: reload, inWorkspace: id))
+  }
+
   public func getRecords(_ id: UVarint, withMaxBytes maxBytes: UVarint) -> Future<String, [IteratorResult]> {
     return impl.send(
       writeProc: { (out: OutputPort) in
@@ -1702,6 +1818,10 @@ public class Backend {
     )
   }
 
+  public func getRecords(_ id: UVarint, withMaxBytes maxBytes: UVarint) async throws -> [IteratorResult] {
+    return try await FutureUtil.asyncify(getRecords(id, withMaxBytes: maxBytes))
+  }
+
   public func getReleases(forArch arch: Symbol) -> Future<String, [Release]> {
     return impl.send(
       writeProc: { (out: OutputPort) in
@@ -1712,6 +1832,10 @@ public class Backend {
         return [Release].read(from: inp, using: &buf)
       }
     )
+  }
+
+  public func getReleases(forArch arch: Symbol) async throws -> [Release] {
+    return try await FutureUtil.asyncify(getReleases(forArch: arch))
   }
 
   public func getResourceConfigs(forResourceNamed name: String, resourceType type: Symbol, inWorkspace id: UVarint) -> Future<String, [ResourceConfig]> {
@@ -1728,6 +1852,10 @@ public class Backend {
     )
   }
 
+  public func getResourceConfigs(forResourceNamed name: String, resourceType type: Symbol, inWorkspace id: UVarint) async throws -> [ResourceConfig] {
+    return try await FutureUtil.asyncify(getResourceConfigs(forResourceNamed: name, resourceType: type, inWorkspace: id))
+  }
+
   public func getSchema(named name: String, inWorkspace id: UVarint) -> Future<String, Schema> {
     return impl.send(
       writeProc: { (out: OutputPort) in
@@ -1741,6 +1869,10 @@ public class Backend {
     )
   }
 
+  public func getSchema(named name: String, inWorkspace id: UVarint) async throws -> Schema {
+    return try await FutureUtil.asyncify(getSchema(named: name, inWorkspace: id))
+  }
+
   public func getSchemaRegistry(_ id: UVarint) -> Future<String, SchemaRegistry> {
     return impl.send(
       writeProc: { (out: OutputPort) in
@@ -1751,6 +1883,10 @@ public class Backend {
         return SchemaRegistry.read(from: inp, using: &buf)
       }
     )
+  }
+
+  public func getSchemaRegistry(_ id: UVarint) async throws -> SchemaRegistry {
+    return try await FutureUtil.asyncify(getSchemaRegistry(id))
   }
 
   public func getScript(forTopic topic: String, inWorkspace id: UVarint) -> Future<String, String> {
@@ -1766,6 +1902,10 @@ public class Backend {
     )
   }
 
+  public func getScript(forTopic topic: String, inWorkspace id: UVarint) async throws -> String {
+    return try await FutureUtil.asyncify(getScript(forTopic: topic, inWorkspace: id))
+  }
+
   public func getTrialDeadline() -> Future<String, Varint> {
     return impl.send(
       writeProc: { (out: OutputPort) in
@@ -1775,6 +1915,10 @@ public class Backend {
         return Varint.read(from: inp, using: &buf)
       }
     )
+  }
+
+  public func getTrialDeadline() async throws -> Varint {
+    return try await FutureUtil.asyncify(getTrialDeadline())
   }
 
   public func installCallback(internalWithId id: UVarint, andAddr addr: Varint) -> Future<String, Void> {
@@ -1788,6 +1932,10 @@ public class Backend {
     )
   }
 
+  public func installCallback(internalWithId id: UVarint, andAddr addr: Varint) async throws -> Void {
+    return try await FutureUtil.asyncify(installCallback(internalWithId: id, andAddr: addr))
+  }
+
   public func isLicenseValid() -> Future<String, Bool> {
     return impl.send(
       writeProc: { (out: OutputPort) in
@@ -1797,6 +1945,10 @@ public class Backend {
         return Bool.read(from: inp, using: &buf)
       }
     )
+  }
+
+  public func isLicenseValid() async throws -> Bool {
+    return try await FutureUtil.asyncify(isLicenseValid())
   }
 
   public func lex(_ code: String, using lexer: Lexer) -> Future<String, [Token]> {
@@ -1810,6 +1962,10 @@ public class Backend {
         return [Token].read(from: inp, using: &buf)
       }
     )
+  }
+
+  public func lex(_ code: String, using lexer: Lexer) async throws -> [Token] {
+    return try await FutureUtil.asyncify(lex(code, using: lexer))
   }
 
   public func openIterator(forTopic topic: String, andOffset offset: IteratorOffset, inWorkspace id: UVarint) -> Future<String, UVarint> {
@@ -1826,6 +1982,10 @@ public class Backend {
     )
   }
 
+  public func openIterator(forTopic topic: String, andOffset offset: IteratorOffset, inWorkspace id: UVarint) async throws -> UVarint {
+    return try await FutureUtil.asyncify(openIterator(forTopic: topic, andOffset: offset, inWorkspace: id))
+  }
+
   public func openWorkspace(withConn conn: ConnectionDetails, andPassword password: String?) -> Future<String, UVarint> {
     return impl.send(
       writeProc: { (out: OutputPort) in
@@ -1839,6 +1999,10 @@ public class Backend {
     )
   }
 
+  public func openWorkspace(withConn conn: ConnectionDetails, andPassword password: String?) async throws -> UVarint {
+    return try await FutureUtil.asyncify(openWorkspace(withConn: conn, andPassword: password))
+  }
+
   public func ping() -> Future<String, String> {
     return impl.send(
       writeProc: { (out: OutputPort) in
@@ -1848,6 +2012,10 @@ public class Backend {
         return String.read(from: inp, using: &buf)
       }
     )
+  }
+
+  public func ping() async throws -> String {
+    return try await FutureUtil.asyncify(ping())
   }
 
   public func ppJson(_ code: String) -> Future<String, String> {
@@ -1860,6 +2028,10 @@ public class Backend {
         return String.read(from: inp, using: &buf)
       }
     )
+  }
+
+  public func ppJson(_ code: String) async throws -> String {
+    return try await FutureUtil.asyncify(ppJson(code))
   }
 
   public func publishRecord(toTopic topic: String, andPartition pid: UVarint, withKey key: Data?, andValue value: Data?, inWorkspace id: UVarint) -> Future<String, IteratorRecord> {
@@ -1878,6 +2050,10 @@ public class Backend {
     )
   }
 
+  public func publishRecord(toTopic topic: String, andPartition pid: UVarint, withKey key: Data?, andValue value: Data?, inWorkspace id: UVarint) async throws -> IteratorRecord {
+    return try await FutureUtil.asyncify(publishRecord(toTopic: topic, andPartition: pid, withKey: key, andValue: value, inWorkspace: id))
+  }
+
   public func resetIterator(withId id: UVarint, toOffset offset: IteratorOffset) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
@@ -1887,6 +2063,10 @@ public class Backend {
       },
       readProc: { (inp: InputPort, buf: inout Data) -> Void in }
     )
+  }
+
+  public func resetIterator(withId id: UVarint, toOffset offset: IteratorOffset) async throws -> Void {
+    return try await FutureUtil.asyncify(resetIterator(withId: id, toOffset: offset))
   }
 
   public func resetPartitionOffset(forGroupNamed groupId: String, andTopic topic: String, andPartitionId pid: UVarint, andTarget target: Symbol, andOffset offset: UVarint?, inWorkspace id: UVarint) -> Future<String, Void> {
@@ -1904,6 +2084,10 @@ public class Backend {
     )
   }
 
+  public func resetPartitionOffset(forGroupNamed groupId: String, andTopic topic: String, andPartitionId pid: UVarint, andTarget target: Symbol, andOffset offset: UVarint?, inWorkspace id: UVarint) async throws -> Void {
+    return try await FutureUtil.asyncify(resetPartitionOffset(forGroupNamed: groupId, andTopic: topic, andPartitionId: pid, andTarget: target, andOffset: offset, inWorkspace: id))
+  }
+
   public func resetTopicOffsets(forGroupNamed groupId: String, andTopic topic: String, andTarget target: Symbol, inWorkspace id: UVarint) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
@@ -1915,6 +2099,10 @@ public class Backend {
       },
       readProc: { (inp: InputPort, buf: inout Data) -> Void in }
     )
+  }
+
+  public func resetTopicOffsets(forGroupNamed groupId: String, andTopic topic: String, andTarget target: Symbol, inWorkspace id: UVarint) async throws -> Void {
+    return try await FutureUtil.asyncify(resetTopicOffsets(forGroupNamed: groupId, andTopic: topic, andTarget: target, inWorkspace: id))
   }
 
   public func saveConnection(_ c: ConnectionDetails) -> Future<String, ConnectionDetails> {
@@ -1929,6 +2117,10 @@ public class Backend {
     )
   }
 
+  public func saveConnection(_ c: ConnectionDetails) async throws -> ConnectionDetails {
+    return try await FutureUtil.asyncify(saveConnection(c))
+  }
+
   public func saveSchemaRegistry(_ r: SchemaRegistry) -> Future<String, SchemaRegistry> {
     return impl.send(
       writeProc: { (out: OutputPort) in
@@ -1939,6 +2131,10 @@ public class Backend {
         return SchemaRegistry.read(from: inp, using: &buf)
       }
     )
+  }
+
+  public func saveSchemaRegistry(_ r: SchemaRegistry) async throws -> SchemaRegistry {
+    return try await FutureUtil.asyncify(saveSchemaRegistry(r))
   }
 
   public func startAutoUpdater(withFrequency frequency: UVarint?, andArch arch: Symbol, andVersion version: String) -> Future<String, Void> {
@@ -1953,6 +2149,10 @@ public class Backend {
     )
   }
 
+  public func startAutoUpdater(withFrequency frequency: UVarint?, andArch arch: Symbol, andVersion version: String) async throws -> Void {
+    return try await FutureUtil.asyncify(startAutoUpdater(withFrequency: frequency, andArch: arch, andVersion: version))
+  }
+
   public func stopAutoUpdater() -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
@@ -1960,6 +2160,10 @@ public class Backend {
       },
       readProc: { (inp: InputPort, buf: inout Data) -> Void in }
     )
+  }
+
+  public func stopAutoUpdater() async throws -> Void {
+    return try await FutureUtil.asyncify(stopAutoUpdater())
   }
 
   public func testConnection(_ c: ConnectionDetails) -> Future<String, String?> {
@@ -1974,6 +2178,10 @@ public class Backend {
     )
   }
 
+  public func testConnection(_ c: ConnectionDetails) async throws -> String? {
+    return try await FutureUtil.asyncify(testConnection(c))
+  }
+
   public func touchConnection(_ c: ConnectionDetails) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
@@ -1982,6 +2190,10 @@ public class Backend {
       },
       readProc: { (inp: InputPort, buf: inout Data) -> Void in }
     )
+  }
+
+  public func touchConnection(_ c: ConnectionDetails) async throws -> Void {
+    return try await FutureUtil.asyncify(touchConnection(c))
   }
 
   public func updateConnection(_ c: ConnectionDetails) -> Future<String, ConnectionDetails> {
@@ -1994,6 +2206,10 @@ public class Backend {
         return ConnectionDetails.read(from: inp, using: &buf)
       }
     )
+  }
+
+  public func updateConnection(_ c: ConnectionDetails) async throws -> ConnectionDetails {
+    return try await FutureUtil.asyncify(updateConnection(c))
   }
 
   public func updateResourceConfigs(_ configs: [String: String], forResourceNamed name: String, andResourceType type: Symbol, inWorkspace id: UVarint) -> Future<String, Void> {
@@ -2009,6 +2225,10 @@ public class Backend {
     )
   }
 
+  public func updateResourceConfigs(_ configs: [String: String], forResourceNamed name: String, andResourceType type: Symbol, inWorkspace id: UVarint) async throws -> Void {
+    return try await FutureUtil.asyncify(updateResourceConfigs(configs, forResourceNamed: name, andResourceType: type, inWorkspace: id))
+  }
+
   public func updateSchemaRegistry(_ r: SchemaRegistry) -> Future<String, SchemaRegistry> {
     return impl.send(
       writeProc: { (out: OutputPort) in
@@ -2019,6 +2239,10 @@ public class Backend {
         return SchemaRegistry.read(from: inp, using: &buf)
       }
     )
+  }
+
+  public func updateSchemaRegistry(_ r: SchemaRegistry) async throws -> SchemaRegistry {
+    return try await FutureUtil.asyncify(updateSchemaRegistry(r))
   }
 
   public func installCallback(announceUpdate proc: @escaping (String, Release) -> Void) -> Future<String, Void> {

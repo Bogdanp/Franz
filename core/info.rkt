@@ -16,7 +16,7 @@
                "libzstd"
                ["lua-lib" #:version "0.4.1"]
                "messagepack-lib"
-               ["noise-serde-lib" #:version "0.5"]
+               ["noise-serde-lib" #:version "0.7"]
                ["protocol-buffers-lib" #:version "0.1.2"]
                ["sasl-lib" #:version "1.3"]
                "snappy-lib"
