@@ -5,7 +5,11 @@
 
 ## Changed
 
-* macOS: "Preferences" has been renamed to "Settings".
+* "Preferences" has been renamed to "Settings" on macOS.
+
+## Fixed
+
+* A visual glitch on the Welcome Window pane splitter in macOS.
 
 # 2024.01.11 (Version 1.6, Build 2)
 ## Fixed
