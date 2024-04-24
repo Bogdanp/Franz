@@ -51,6 +51,7 @@ fileprivate class SplitView: NSSplitView {
 fileprivate class SplitViewController: NSSplitViewController {
   override func loadView() {
     splitView = SplitView()
+    splitView.dividerStyle = .thin // gets rid of the circle
     splitView.isVertical = true // true = horizontal
     super.loadView()
   }
