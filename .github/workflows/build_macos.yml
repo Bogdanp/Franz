@@ -28,13 +28,13 @@ jobs:
           architecture: ${{ matrix.arch }}
           distribution: 'full'
           variant: 'CS'
-          version: '8.12'
+          version: '8.13'
           packages: http-easy-lib
       - name: Clone Noise
         run: |
           mkdir ../../sandbox
           env GIT_LFS_SKIP_SMUDGE=1 \
-            git clone --depth 1 --branch racket-8.12 https://github.com/Bogdanp/Noise ../../sandbox/Noise
+            git clone --depth 1 --branch racket-8.13 https://github.com/Bogdanp/Noise ../../sandbox/Noise
           raco pkg install -D --batch --auto ../../sandbox/noise/Racket/noise-serde-lib/
       - name: Prepare secrets
         run: |
@@ -74,12 +74,12 @@ jobs:
           architecture: 'arm64'
           distribution: 'full'
           variant: 'CS'
-          version: '8.12'
+          version: '8.13'
           packages: http-easy-lib
       - name: Install Noise
         run: |
           mkdir ../../sandbox
-          git clone --depth 1 --branch racket-8.12 https://github.com/Bogdanp/Noise ../../sandbox/Noise
+          git clone --depth 1 --branch racket-8.13 https://github.com/Bogdanp/Noise ../../sandbox/Noise
           raco pkg install -D --batch --auto ../../sandbox/noise/Racket/noise-serde-lib/
           pushd ../../sandbox/Noise
           make
@@ -168,12 +168,12 @@ jobs:
           architecture: 'arm64'
           distribution: 'full'
           variant: 'CS'
-          version: '8.12'
+          version: '8.13'
           packages: http-easy-lib
       - name: Install Noise
         run: |
           mkdir ../../sandbox
-          git clone --depth 1 --branch racket-8.12 https://github.com/Bogdanp/Noise ../../sandbox/Noise
+          git clone --depth 1 --branch racket-8.13 https://github.com/Bogdanp/Noise ../../sandbox/Noise
           raco pkg install -D --batch --auto ../../sandbox/noise/Racket/noise-serde-lib/
           pushd ../../sandbox/Noise
           make
