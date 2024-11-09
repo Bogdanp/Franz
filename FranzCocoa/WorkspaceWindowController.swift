@@ -235,7 +235,7 @@ class WorkspaceWindowController: NSWindowController {
   }
 
   @objc func createSchema(_ sender: Any) {
-    guard let id else  { return }
+    guard let id else { return }
     let dismiss = { [weak self] in
       guard let self, let ctl = self.createSchemaCtl else { return }
       self.createSchemaCtl = nil
