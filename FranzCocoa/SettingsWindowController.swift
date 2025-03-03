@@ -202,31 +202,21 @@ fileprivate struct ConnectionsView: View {
 
 // MARK: - LicenseView
 fileprivate struct LicenseView: View {
-  @State var activatedLicense = Error.wait(Backend.shared.getLicense()) ?? ""
+  @State var isLoading = false
+  @State var activatedLicense = ""
+  @State var trialActive = false
+  @State var trialDeadline: String = ""
   @State var license = ""
-  let (trialActive, trialDeadline): (Bool, String) = {
-    if let deadline = Error.wait(Backend.shared.getTrialDeadline()) {
-      let now = UVarint(NSDate().timeIntervalSince1970)
-      let date = Date(timeIntervalSince1970: TimeInterval(Int(deadline)))
-      return (deadline > now, DateFormatter.localizedString(
-        from: date,
-        dateStyle: .long,
-        timeStyle: .none
-      ))
-    }
-    return (false, "")
-  }()
 
   var body: some View {
-    if activatedLicense != "" {
-      VStack(alignment: .leading) {
+    VStack(alignment: .leading) {
+      if isLoading {
+        ProgressView()
+      } else if activatedLicense != "" {
         Text("Full Version Activated")
           .font(.largeTitle)
         Text("Thank you for supporting Franz development by purchasing a license.")
-      }
-      .padding()
-    } else if trialActive {
-      VStack(alignment: .leading) {
+      } else if trialActive {
         Text("Trial Active")
           .font(.largeTitle)
         Text("""
@@ -245,10 +235,7 @@ fileprivate struct LicenseView: View {
           .keyboardShortcut(.return)
           .disabled(license == "")
         }
-      }
-      .padding()
-    } else {
-      VStack(alignment: .leading) {
+      } else {
         Text("Trial Expired")
           .font(.largeTitle)
         Text("""
@@ -267,7 +254,25 @@ fileprivate struct LicenseView: View {
           .disabled(license == "")
         }
       }
-      .padding()
+    }
+    .padding()
+    .task {
+      do {
+        isLoading = true
+        defer { isLoading = false }
+        activatedLicense = try await Backend.shared.getLicense() ?? ""
+        let deadline = try await Backend.shared.getTrialDeadline()
+        let now = UVarint(NSDate().timeIntervalSince1970)
+        let date = Date(timeIntervalSince1970: TimeInterval(Int(deadline)))
+        trialActive = deadline > now
+        trialDeadline = DateFormatter.localizedString(
+          from: date,
+          dateStyle: .long,
+          timeStyle: .none
+        )
+      } catch {
+        Error.alert(withError: error)
+      }
     }
   }
 

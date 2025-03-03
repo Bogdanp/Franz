@@ -85,7 +85,7 @@ class DataViewController: NSViewController {
     switch format {
     case .json:
       if let code = String(data: data, encoding: .utf8),
-         let formatted = Error.wait(Backend.shared.ppJson(code)) {
+         let formatted = Error.wait(Backend.shared.ppJson(code: code)) {
         data = formatted.data(using: .utf8)
         reset()
       }

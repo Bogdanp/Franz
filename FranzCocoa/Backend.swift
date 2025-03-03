@@ -3,7 +3,7 @@ import Foundation
 import NoiseBackend
 import NoiseSerde
 
-public enum AuthMechanism: Readable, Writable {
+public enum AuthMechanism: Readable, Sendable, Writable {
   case plain
   case scramSHA256
   case scramSHA512
@@ -39,7 +39,7 @@ public enum AuthMechanism: Readable, Writable {
   }
 }
 
-public enum ChartScale: Readable, Writable {
+public enum ChartScale: Readable, Sendable, Writable {
   case numerical(Float64, Float64, ChartScaleType)
 
   public static func read(from inp: InputPort, using buf: inout Data) -> ChartScale {
@@ -67,7 +67,7 @@ public enum ChartScale: Readable, Writable {
   }
 }
 
-public enum ChartScaleType: Readable, Writable {
+public enum ChartScaleType: Readable, Sendable, Writable {
   case linear
   case log
 
@@ -93,7 +93,7 @@ public enum ChartScaleType: Readable, Writable {
   }
 }
 
-public enum ChartStyle: Readable, Writable {
+public enum ChartStyle: Readable, Sendable, Writable {
   case area
   case bar
   case candlestick(UVarint?)
@@ -137,7 +137,7 @@ public enum ChartStyle: Readable, Writable {
   }
 }
 
-public enum ChartValue: Readable, Writable {
+public enum ChartValue: Readable, Sendable, Writable {
   case candlestick(Float64, Float64, Float64, Float64)
   case categorical(String)
   case numerical(Float64)
@@ -191,7 +191,7 @@ public enum ChartValue: Readable, Writable {
   }
 }
 
-public enum IteratorOffset: Readable, Writable {
+public enum IteratorOffset: Readable, Sendable, Writable {
   case earliest
   case latest
   case recent(UVarint)
@@ -241,7 +241,7 @@ public enum IteratorOffset: Readable, Writable {
   }
 }
 
-public enum IteratorResult: Readable, Writable {
+public enum IteratorResult: Readable, Sendable, Writable {
   case original(IteratorRecord)
   case transformed(IteratorRecord, IteratorRecord)
 
@@ -275,7 +275,7 @@ public enum IteratorResult: Readable, Writable {
   }
 }
 
-public enum Lexer: Readable, Writable {
+public enum Lexer: Readable, Sendable, Writable {
   case json
   case lua
   case protobuf
@@ -306,7 +306,7 @@ public enum Lexer: Readable, Writable {
   }
 }
 
-public enum ReduceResult: Readable, Writable {
+public enum ReduceResult: Readable, Sendable, Writable {
   case chart(Chart)
   case number(Float64)
   case stack(Stack)
@@ -364,7 +364,7 @@ public enum ReduceResult: Readable, Writable {
   }
 }
 
-public enum SchemaRegistryKind: Readable, Writable {
+public enum SchemaRegistryKind: Readable, Sendable, Writable {
   case confluent
 
   public static func read(from inp: InputPort, using buf: inout Data) -> SchemaRegistryKind {
@@ -385,7 +385,7 @@ public enum SchemaRegistryKind: Readable, Writable {
   }
 }
 
-public enum SchemaType: Readable, Writable {
+public enum SchemaType: Readable, Sendable, Writable {
   case avro
   case json
   case protobuf
@@ -416,7 +416,7 @@ public enum SchemaType: Readable, Writable {
   }
 }
 
-public enum TokenType: Readable, Writable {
+public enum TokenType: Readable, Sendable, Writable {
   case whitespace
   case punctuation
   case comment
@@ -467,7 +467,7 @@ public enum TokenType: Readable, Writable {
   }
 }
 
-public struct ApplyResult: Readable, Writable {
+public struct ApplyResult: Readable, Sendable, Writable {
   public let items: [IteratorResult]
   public let output: Data
   public let reduced: ReduceResult?
@@ -497,7 +497,7 @@ public struct ApplyResult: Readable, Writable {
   }
 }
 
-public struct Breadcrumb: Readable, Writable {
+public struct Breadcrumb: Readable, Sendable, Writable {
   public let timestamp: UVarint
   public let level: Symbol
   public let message: String
@@ -532,7 +532,7 @@ public struct Breadcrumb: Readable, Writable {
   }
 }
 
-public struct Broker: Readable, Writable {
+public struct Broker: Readable, Sendable, Writable {
   public let id: UVarint
   public let host: String
   public let port: UVarint
@@ -572,7 +572,7 @@ public struct Broker: Readable, Writable {
   }
 }
 
-public struct Chart: Readable, Writable {
+public struct Chart: Readable, Sendable, Writable {
   public let style: ChartStyle
   public let pairs: [ChartPair]
   public let xScale: ChartScale?
@@ -617,7 +617,7 @@ public struct Chart: Readable, Writable {
   }
 }
 
-public struct ChartPair: Readable, Writable {
+public struct ChartPair: Readable, Sendable, Writable {
   public let x: ChartValue
   public let y: ChartValue
 
@@ -642,7 +642,7 @@ public struct ChartPair: Readable, Writable {
   }
 }
 
-public struct ConnectionDetails: Readable, Writable {
+public struct ConnectionDetails: Readable, Sendable, Writable {
   public let id: UVarint?
   public let name: String
   public let httpProxyAddr: String?
@@ -732,7 +732,7 @@ public struct ConnectionDetails: Readable, Writable {
   }
 }
 
-public struct Group: Readable, Writable {
+public struct Group: Readable, Sendable, Writable {
   public let id: String
   public let stats: Stats
 
@@ -757,7 +757,7 @@ public struct Group: Readable, Writable {
   }
 }
 
-public struct GroupOffsets: Readable, Writable {
+public struct GroupOffsets: Readable, Sendable, Writable {
   public let groupId: String
   public let topics: [GroupTopic]
   public let state: Symbol
@@ -787,7 +787,7 @@ public struct GroupOffsets: Readable, Writable {
   }
 }
 
-public struct GroupPartitionOffset: Readable, Writable {
+public struct GroupPartitionOffset: Readable, Sendable, Writable {
   public let partitionId: UVarint
   public let highWatermark: Varint
   public let offset: Varint
@@ -832,7 +832,7 @@ public struct GroupPartitionOffset: Readable, Writable {
   }
 }
 
-public struct GroupTopic: Readable, Writable {
+public struct GroupTopic: Readable, Sendable, Writable {
   public let name: String
   public let partitions: [GroupPartitionOffset]
 
@@ -857,7 +857,7 @@ public struct GroupTopic: Readable, Writable {
   }
 }
 
-public struct IteratorRecord: Readable, Writable {
+public struct IteratorRecord: Readable, Sendable, Writable {
   public let partitionId: UVarint
   public let offset: UVarint
   public let timestamp: UVarint
@@ -902,7 +902,7 @@ public struct IteratorRecord: Readable, Writable {
   }
 }
 
-public struct Metadata: Readable, Writable {
+public struct Metadata: Readable, Sendable, Writable {
   public let brokers: [Broker]
   public let topics: [Topic]
   public let groups: [Group]
@@ -937,7 +937,7 @@ public struct Metadata: Readable, Writable {
   }
 }
 
-public struct Release: Readable, Writable {
+public struct Release: Readable, Sendable, Writable {
   public let arch: Symbol
   public let version: String
   public let macUrl: String?
@@ -977,7 +977,7 @@ public struct Release: Readable, Writable {
   }
 }
 
-public struct ResourceConfig: Readable, Writable {
+public struct ResourceConfig: Readable, Sendable, Writable {
   public let name: String
   public let value: String?
   public let isReadOnly: Bool
@@ -1022,7 +1022,7 @@ public struct ResourceConfig: Readable, Writable {
   }
 }
 
-public struct Schema: Readable, Writable {
+public struct Schema: Readable, Sendable, Writable {
   public let id: UVarint?
   public let name: String
   public let type: SchemaType?
@@ -1062,7 +1062,7 @@ public struct Schema: Readable, Writable {
   }
 }
 
-public struct SchemaRegistry: Readable, Writable {
+public struct SchemaRegistry: Readable, Sendable, Writable {
   public let id: UVarint?
   public let kind: SchemaRegistryKind
   public let url: String
@@ -1102,7 +1102,7 @@ public struct SchemaRegistry: Readable, Writable {
   }
 }
 
-public struct Stack: Readable, Writable {
+public struct Stack: Readable, Sendable, Writable {
   public let direction: Symbol
   public let children: [ReduceResult]
 
@@ -1127,7 +1127,7 @@ public struct Stack: Readable, Writable {
   }
 }
 
-public struct Stats: Readable, Writable {
+public struct Stats: Readable, Sendable, Writable {
   public let minLag: Varint
   public let maxLag: Varint
   public let sumLag: Varint
@@ -1157,7 +1157,7 @@ public struct Stats: Readable, Writable {
   }
 }
 
-public struct TableRow: Readable, Writable {
+public struct TableRow: Readable, Sendable, Writable {
   public let columns: [String]
 
   public init(
@@ -1177,7 +1177,7 @@ public struct TableRow: Readable, Writable {
   }
 }
 
-public struct Token: Readable, Writable {
+public struct Token: Readable, Sendable, Writable {
   public let type: TokenType
   public let span: TokenSpan
 
@@ -1202,7 +1202,7 @@ public struct Token: Readable, Writable {
   }
 }
 
-public struct TokenSpan: Readable, Writable {
+public struct TokenSpan: Readable, Sendable, Writable {
   public let pos: UVarint
   public let len: UVarint
 
@@ -1227,7 +1227,7 @@ public struct TokenSpan: Readable, Writable {
   }
 }
 
-public struct Topic: Readable, Writable {
+public struct Topic: Readable, Sendable, Writable {
   public let name: String
   public let partitions: [TopicPartition]
   public let isInternal: Bool
@@ -1262,7 +1262,7 @@ public struct Topic: Readable, Writable {
   }
 }
 
-public struct TopicOption: Readable, Writable {
+public struct TopicOption: Readable, Sendable, Writable {
   public let key: String
   public let value: String
 
@@ -1287,7 +1287,7 @@ public struct TopicOption: Readable, Writable {
   }
 }
 
-public struct TopicPartition: Readable, Writable {
+public struct TopicPartition: Readable, Sendable, Writable {
   public let id: UVarint
   public let leaderId: Varint
   public let replicaNodeIds: [UVarint]
@@ -1322,7 +1322,7 @@ public struct TopicPartition: Readable, Writable {
   }
 }
 
-public struct UpdateAvailable: Readable, Writable {
+public struct UpdateAvailable: Readable, Sendable, Writable {
   public let changelog: String
   public let release: Release
 
@@ -1347,7 +1347,7 @@ public struct UpdateAvailable: Readable, Writable {
   }
 }
 
-public class Backend {
+public final class Backend: Sendable {
   let impl: NoiseBackend.Backend!
 
   init(withZo zo: URL, andMod mod: String, andProc proc: String) {
@@ -1873,7 +1873,7 @@ public class Backend {
     return try await FutureUtil.asyncify(getSchema(named: name, inWorkspace: id))
   }
 
-  public func getSchemaRegistry(_ id: UVarint) -> Future<String, SchemaRegistry> {
+  public func getSchemaRegistry(id: UVarint) -> Future<String, SchemaRegistry> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0021).write(to: out)
@@ -1885,8 +1885,8 @@ public class Backend {
     )
   }
 
-  public func getSchemaRegistry(_ id: UVarint) async throws -> SchemaRegistry {
-    return try await FutureUtil.asyncify(getSchemaRegistry(id))
+  public func getSchemaRegistry(id: UVarint) async throws -> SchemaRegistry {
+    return try await FutureUtil.asyncify(getSchemaRegistry(id: id))
   }
 
   public func getScript(forTopic topic: String, inWorkspace id: UVarint) -> Future<String, String> {
@@ -1951,7 +1951,7 @@ public class Backend {
     return try await FutureUtil.asyncify(isLicenseValid())
   }
 
-  public func lex(_ code: String, using lexer: Lexer) -> Future<String, [Token]> {
+  public func lex(code: String, using lexer: Lexer) -> Future<String, [Token]> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x0026).write(to: out)
@@ -1964,8 +1964,8 @@ public class Backend {
     )
   }
 
-  public func lex(_ code: String, using lexer: Lexer) async throws -> [Token] {
-    return try await FutureUtil.asyncify(lex(code, using: lexer))
+  public func lex(code: String, using lexer: Lexer) async throws -> [Token] {
+    return try await FutureUtil.asyncify(lex(code: code, using: lexer))
   }
 
   public func openIterator(forTopic topic: String, andOffset offset: IteratorOffset, inWorkspace id: UVarint) -> Future<String, UVarint> {
@@ -2018,7 +2018,7 @@ public class Backend {
     return try await FutureUtil.asyncify(ping())
   }
 
-  public func ppJson(_ code: String) -> Future<String, String> {
+  public func ppJson(code: String) -> Future<String, String> {
     return impl.send(
       writeProc: { (out: OutputPort) in
         UVarint(0x002a).write(to: out)
@@ -2030,8 +2030,8 @@ public class Backend {
     )
   }
 
-  public func ppJson(_ code: String) async throws -> String {
-    return try await FutureUtil.asyncify(ppJson(code))
+  public func ppJson(code: String) async throws -> String {
+    return try await FutureUtil.asyncify(ppJson(code: code))
   }
 
   public func publishRecord(toTopic topic: String, andPartition pid: UVarint, withKey key: Data?, andValue value: Data?, inWorkspace id: UVarint) -> Future<String, IteratorRecord> {
@@ -2245,7 +2245,7 @@ public class Backend {
     return try await FutureUtil.asyncify(updateSchemaRegistry(r))
   }
 
-  public func installCallback(announceUpdate proc: @escaping (String, Release) -> Void) -> Future<String, Void> {
+  public func installCallback(announceUpdate proc: @escaping @Sendable (String, Release) -> Void) -> Future<String, Void> {
     return NoiseBackend.installCallback(id: 0, rpc: self.installCallback(internalWithId:andAddr:)) { inp in
       var buf = Data(count: 8*1024)
       proc(

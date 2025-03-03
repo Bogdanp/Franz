@@ -108,7 +108,7 @@ class WorkspaceWindowController: NSWindowController {
       onComplete: { id in
         self.id = id
         if let schemaRegistryId = self.conn.schemaRegistryId,
-           let registry = Error.wait(Backend.shared.getSchemaRegistry(schemaRegistryId)) {
+           let registry = Error.wait(Backend.shared.getSchemaRegistry(id: schemaRegistryId)) {
           self.activateRegistry(registry)
         }
         self.loadMetadata(forcingReload: false)
@@ -199,7 +199,7 @@ class WorkspaceWindowController: NSWindowController {
   @objc func configureSchemaRegistry(_ sender: Any) {
     guard let id else { return }
     let ctl = ConfigureSchemaRegistryFormViewController()
-    let reg = conn.schemaRegistryId.flatMap { Error.wait(Backend.shared.getSchemaRegistry($0)) }
+    let reg = conn.schemaRegistryId.flatMap { Error.wait(Backend.shared.getSchemaRegistry(id: $0)) }
     ctl.delegate = self
     ctl.configure(withId: id, andRegistry: reg)
     window?.contentViewController?.presentAsSheet(ctl)

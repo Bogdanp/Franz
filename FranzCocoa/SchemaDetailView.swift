@@ -145,7 +145,7 @@ struct SchemaDetailView: View {
     }
     switch type {
     case .avro, .json:
-      return Error.wait(Backend.shared.ppJson(code)) ?? ""
+      return Error.wait(Backend.shared.ppJson(code: code)) ?? ""
     case .protobuf:
       return code
     }

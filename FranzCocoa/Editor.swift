@@ -116,11 +116,11 @@ class EditorViewController: NSViewController {
     case .plain:
       return []
     case .json:
-      return Error.wait(Backend.shared.lex(code, using: .json)) ?? []
+      return Error.wait(Backend.shared.lex(code: code, using: .json)) ?? []
     case .lua:
-      return Error.wait(Backend.shared.lex(code, using: .lua)) ?? []
+      return Error.wait(Backend.shared.lex(code: code, using: .lua)) ?? []
     case .protobuf:
-      return Error.wait(Backend.shared.lex(code, using: .protobuf)) ?? []
+      return Error.wait(Backend.shared.lex(code: code, using: .protobuf)) ?? []
     }
   }
 
