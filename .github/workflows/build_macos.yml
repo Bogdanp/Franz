@@ -63,8 +63,8 @@ jobs:
             FranzCocoa/resources/runtime-${{ matrix.platform }}/
 
   build_mac_app:
-    runs-on: macos-14
-    name: Build Franz.app on macOS-14
+    runs-on: macos-15
+    name: Build Franz.app on macOS-15
     needs:
       - build_core
     steps:
@@ -156,8 +156,8 @@ jobs:
           path: dist/Franz.dmg
 
   build_mac_app_mas:
-    runs-on: macos-14
-    name: Build Franz.app on macOS-14 (MAS)
+    runs-on: macos-15
+    name: Build Franz.app on macOS-15 (MAS)
     needs:
       - build_core
     if: inputs.masBuild
