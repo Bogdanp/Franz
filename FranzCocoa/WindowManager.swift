@@ -155,10 +155,11 @@ class WindowManager {
   }
 
   func showResultWindow(_ res: ApplyResult) {
+    let ctl = NSHostingController(rootView: ResultDetail(res: res))
     let frame = NSPanel()
     frame.title = "Result"
     frame.styleMask = [.titled, .closable, .resizable]
-    frame.contentView = NSHostingView(rootView: ResultDetail(res: res))
+    frame.contentViewController = ctl
     frame.center()
     frame.makeKeyAndOrderFront(nil)
   }

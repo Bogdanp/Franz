@@ -16,6 +16,7 @@ struct ResultDetail: View {
       }
     }
     .background()
+    .frame(minWidth: 400, minHeight: 240)
   }
 }
 
