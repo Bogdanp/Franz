@@ -38,6 +38,7 @@
                                            (get-password keychain _)))))]
     [@aws-region (~optional-str (ConnectionDetails-aws-region details))]
     [@aws-access-key-id (~optional-str (ConnectionDetails-aws-access-key-id details))]
+    [@aws-session-token ""]
     [@use-ssl? (ConnectionDetails-use-ssl details)]
     [@ssl-key-path (ConnectionDetails-ssl-key-path details)]
     [@ssl-cert-path (ConnectionDetails-ssl-cert-path details)]
@@ -71,6 +72,7 @@
      #:password-id password-id
      #:aws-region (->optional-str ^@aws-region)
      #:aws-access-key-id (->optional-str ^@aws-access-key-id)
+     #:aws-session-token (->optional-str ^@aws-session-token)
      #:use-ssl ^@use-ssl?
      #:ssl-key-path ^@ssl-key-path
      #:ssl-cert-path ^@ssl-cert-path))
@@ -134,7 +136,8 @@
         (hpanel
          (labeled "Region:" (input @aws-region (drop1 @aws-region:=)))
          (labeled "Access Key:" (input @aws-access-key-id (drop1 @aws-access-key-id:=)) #:width #f))
-        (labeled "Secret Key:" (password @password (drop1 @password:=))))])
+        (labeled "Secret Key:" (password @password (drop1 @password:=)))
+        (labeled "Session Token:" (password @aws-session-token (drop1 @aws-session-token:=))))])
     (hpanel
      (labeled
       ""
@@ -171,7 +174,13 @@
         (thread
          (lambda ()
            (@test-connection-label:= "Testing Connection...")
-           (match (test-connection (get-details))
+           (match (test-connection
+                   (let ([details (get-details)])
+                     (if keychain
+                         (~~> (ConnectionDetails-password-id details)
+                              (get-password keychain _)
+                              (set-ConnectionDetails-password details _))
+                         details)))
              [#f
               (@testing-connection?:= #f)
               (@test-connection-label:= "Connection OK")
@@ -179,6 +188,7 @@
               (@test-connection-label:= "Test Connection")]
              [message
               (@testing-connection?:= #f)
+              (@test-connection-label:= "Test Connection")
               (alert #:renderer #f "Connection Failed" message)])))))
      (button
       save-label
