@@ -97,7 +97,7 @@ SCRIPT
        (:br)))))))
 
 (define variants
-  '(("Linux (Flatpak; x86_64)" "https://flathub.org/apps/io.defn.Franz")
+  '(("Linux (x86_64)"          "https://franz.defn.io/releases/Franz%20Latest.linux.x86_64.zip")
     ("macOS 13+ (Universal)"   "https://franz.defn.io/releases/Franz%20Latest.universal.dmg")
     ("Windows 10+ (x86_64)"    "https://franz.defn.io/releases/Franz%20Latest.win32.x86_64.zip")))
 
