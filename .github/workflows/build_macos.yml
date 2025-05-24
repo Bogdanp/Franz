@@ -213,7 +213,7 @@ jobs:
           security list-keychain -d user -s $KEYCHAIN_PATH
           mkdir -p ~/Library/Developer/Xcode/UserData/Provisioning\ Profiles
           echo -n "$MAC_PROVISIONING_PROFILE" | \
-            base64 --decode -o ~/Library/Developer/Xcode/UserData/Provisioning\ Profiles/franz.provisionprofile
+            base64 --decode -o ~/Library/Developer/Xcode/UserData/Provisioning\ Profiles/273e8eab-e18d-4d8d-8297-e646e7e8199e.provisionprofile
           ls -l ~/Library/Developer/Xcode/UserData/Provisioning\ Profiles
         env:
           DEVELOPER_INSTALLER_CER: ${{ secrets.DEVELOPER_INSTALLER_CER }}
