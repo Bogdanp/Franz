@@ -95,6 +95,7 @@
    [(password-id sql-null) string/f #:nullable]
    [(aws-region sql-null) string/f #:nullable]
    [(aws-access-key-id sql-null) string/f #:nullable]
+   [(aws-session-token sql-null) string/f #:nullable]
    [(ssl-on? #f) boolean/f]
    [(ssl-key-path sql-null) string/f #:nullable]
    [(ssl-cert-path sql-null) string/f #:nullable]

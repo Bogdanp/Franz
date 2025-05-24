@@ -24,6 +24,7 @@ class ConnectionDetailsFormViewController: NSViewController {
   @IBOutlet weak var awsRegionField: NSTextField!
   @IBOutlet weak var awsAccessKeyIdField: NSTextField!
   @IBOutlet weak var awsAccessKeySecretField: NSSecureTextField!
+  @IBOutlet weak var awsSessionTokenField: NSSecureTextField!
   @IBOutlet weak var cancelButton: NSButton!
   @IBOutlet weak var testButton: NSButton!
   @IBOutlet weak var actionButton: NSButton!
@@ -91,6 +92,9 @@ class ConnectionDetailsFormViewController: NSViewController {
       }
       if let accessKeyId = details.awsAccessKeyId {
         awsAccessKeyIdField.stringValue = accessKeyId
+      }
+      if let sessionToken = details.awsSessionToken {
+        awsSessionTokenField.stringValue = sessionToken
       }
       enableSslCheckbox.state = details.useSsl ? .on : .off
       sslKeyPathBookmark = details.sslKeyPath
@@ -165,10 +169,10 @@ class ConnectionDetailsFormViewController: NSViewController {
       authViewHeightConstraint.constant = 26
       plainAuthView.setFrameOrigin(authView.bounds.origin)
     case .aws:
-      authView.setFrameSize(NSSize(width: 490, height: 52))
+      authView.setFrameSize(NSSize(width: 490, height: 86))
       authView.addSubview(awsAuthView)
       awsAuthView.setFrameOrigin(authView.bounds.origin)
-      authViewHeightConstraint.constant = 52
+      authViewHeightConstraint.constant = 86
     }
 
     view.window?.setContentSize(NSSize(
@@ -285,6 +289,7 @@ class ConnectionDetailsFormViewController: NSViewController {
     var password: String?
     var awsRegion: String?
     var awsAccessKeyId: String?
+    var awsSessionToken: String?
     let authMechanism = self.authMechanism
     switch authMechanism {
     case .plain, .scramSHA256, .scramSHA512:
@@ -302,6 +307,9 @@ class ConnectionDetailsFormViewController: NSViewController {
         return nil
       }
       password = awsAccessKeySecretField.stringValue
+      if awsSessionTokenField.stringValue != "" {
+        awsSessionToken = awsSessionTokenField.stringValue
+      }
     }
 
     var passwordId = details?.passwordId
@@ -352,6 +360,7 @@ class ConnectionDetailsFormViewController: NSViewController {
       passwordId: password != nil ? passwordId : nil,
       awsRegion: awsRegion,
       awsAccessKeyId: awsAccessKeyId,
+      awsSessionToken: awsSessionToken,
       useSsl: enableSslCheckbox.state == .on,
       sslKeyPath: sslKeyPathBookmark,
       sslCertPath: sslCertPathBookmark,

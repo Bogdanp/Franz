@@ -654,6 +654,7 @@ public struct ConnectionDetails: Readable, Sendable, Writable {
   public let passwordId: String?
   public let awsRegion: String?
   public let awsAccessKeyId: String?
+  public let awsSessionToken: String?
   public let useSsl: Bool
   public var sslKeyPath: String?
   public var sslCertPath: String?
@@ -671,6 +672,7 @@ public struct ConnectionDetails: Readable, Sendable, Writable {
     passwordId: String?,
     awsRegion: String?,
     awsAccessKeyId: String?,
+    awsSessionToken: String?,
     useSsl: Bool,
     sslKeyPath: String?,
     sslCertPath: String?,
@@ -687,6 +689,7 @@ public struct ConnectionDetails: Readable, Sendable, Writable {
     self.passwordId = passwordId
     self.awsRegion = awsRegion
     self.awsAccessKeyId = awsAccessKeyId
+    self.awsSessionToken = awsSessionToken
     self.useSsl = useSsl
     self.sslKeyPath = sslKeyPath
     self.sslCertPath = sslCertPath
@@ -706,6 +709,7 @@ public struct ConnectionDetails: Readable, Sendable, Writable {
       passwordId: String?.read(from: inp, using: &buf),
       awsRegion: String?.read(from: inp, using: &buf),
       awsAccessKeyId: String?.read(from: inp, using: &buf),
+      awsSessionToken: String?.read(from: inp, using: &buf),
       useSsl: Bool.read(from: inp, using: &buf),
       sslKeyPath: String?.read(from: inp, using: &buf),
       sslCertPath: String?.read(from: inp, using: &buf),
@@ -725,6 +729,7 @@ public struct ConnectionDetails: Readable, Sendable, Writable {
     passwordId.write(to: out)
     awsRegion.write(to: out)
     awsAccessKeyId.write(to: out)
+    awsSessionToken.write(to: out)
     useSsl.write(to: out)
     sslKeyPath.write(to: out)
     sslCertPath.write(to: out)

@@ -48,6 +48,7 @@
   [(password-id #f) : (Optional String) #:contract (or/c #f string?)]
   [(aws-region #f) : (Optional String) #:contract (or/c #f string?)]
   [(aws-access-key-id #f) : (Optional String) #:contract (or/c #f string?)]
+  [(aws-session-token #f) : (Optional String) #:contract (or/c #f string?)]
   [(use-ssl #f) : Bool #:contract boolean?]
   [(ssl-key-path #f) : (Optional String) #:contract (or/c #f string?) #:mutable]
   [(ssl-cert-path #f) : (Optional String) #:contract (or/c #f string?) #:mutable]
@@ -80,6 +81,7 @@
    #:password-id (sql-null->false (meta:connection-details-password-id c))
    #:aws-region (sql-null->false (meta:connection-details-aws-region c))
    #:aws-access-key-id (sql-null->false (meta:connection-details-aws-access-key-id c))
+   #:aws-session-token (sql-null->false (meta:connection-details-aws-session-token c))
    #:use-ssl (meta:connection-details-ssl-on? c)
    #:ssl-key-path (sql-null->false (meta:connection-details-ssl-key-path c))
    #:ssl-cert-path (sql-null->false (meta:connection-details-ssl-cert-path c))
@@ -97,6 +99,7 @@
      #:password-id (or (ConnectionDetails-password-id c) sql-null)
      #:aws-region (or (ConnectionDetails-aws-region c) sql-null)
      #:aws-access-key-id (or (ConnectionDetails-aws-access-key-id c) sql-null)
+     #:aws-session-token (or (ConnectionDetails-aws-session-token c) sql-null)
      #:ssl-on? (ConnectionDetails-use-ssl c)
      #:ssl-key-path (or (ConnectionDetails-ssl-key-path c) sql-null)
      #:ssl-cert-path (or (ConnectionDetails-ssl-cert-path c) sql-null)
@@ -136,6 +139,7 @@
                            (define region (ConnectionDetails-aws-region c))
                            (define access-key-id (ConnectionDetails-aws-access-key-id c))
                            (define secret-access-key (ConnectionDetails-password c))
+                           (define session-token (ConnectionDetails-aws-session-token c))
                            (and region
                                 access-key-id
                                 secret-access-key
@@ -144,6 +148,7 @@
                                                   #:region region
                                                   #:access-key-id access-key-id
                                                   #:secret-access-key secret-access-key
+                                                  #:session-token session-token
                                                   #:server-name host))))])
    #:ssl-ctx (and (ConnectionDetails-use-ssl c)
                   (let ([key-path (ConnectionDetails-ssl-key-path c)]
