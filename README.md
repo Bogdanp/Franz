@@ -37,4 +37,4 @@ consider [purchasing a license].
 
 ## License
 
-    Copyright 2022-2024 CLEARTYPE SRL.  All rights reserved.
+    Copyright 2022-2025 CLEARTYPE SRL.  All rights reserved.
