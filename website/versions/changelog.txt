@@ -1,3 +1,8 @@
+# 2025.08.01 (Version 1.8, Build 1)
+## Fixed
+
+* An issue with testing SSL-based connections.
+
 # 2025.05.24 (Version 1.7, Build 1)
 ## Added
 
