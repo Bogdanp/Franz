@@ -214,7 +214,7 @@ fileprivate struct ScriptWindowKey: Hashable, Equatable {
   let topic: String
 }
 
-fileprivate func bookmarkDataToURL(_ string: String) -> URL? {
+func bookmarkDataToURL(_ string: String) -> URL? {
   var isStale = false
   guard let base64Data = string.data(using: .utf8) else { return nil}
   guard let bookmarkData = Data(base64Encoded: base64Data) else { return nil }

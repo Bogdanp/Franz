@@ -261,21 +261,33 @@ class ConnectionDetailsFormViewController: NSViewController {
   }
 
   @IBAction func didPushTestButton(_ sender: Any) {
-    guard let details = getDetails() else { return }
+    guard var details = getDetails() else { return }
     testButton.image = nil
     testButton.isEnabled = false
     actionButton.isEnabled = false
-    Backend.shared.testConnection(details).onComplete { [weak self] message in
-      guard let self else { return }
-      self.testButton.isEnabled = true
-      self.actionButton.isEnabled = true
-      if let message {
-        Error.alert(withError: message)
-      } else {
-        testButton.image = NSImage(systemSymbolName: "checkmark.circle", accessibilityDescription: nil)
-        testButton.imagePosition = .imageTrailing
-      }
+    var keyURL: URL?
+    var certURL: URL?
+    if let sslKeyPath = details.sslKeyPath,
+       let sslCertPath = details.sslCertPath {
+      keyURL = bookmarkDataToURL(sslKeyPath)
+      certURL = bookmarkDataToURL(sslCertPath)
+      details.sslKeyPath = keyURL?.relativePath
+      details.sslCertPath = certURL?.relativePath
     }
+    Backend.shared.testConnection(details)
+      .onComplete { [weak self] message in
+        keyURL?.stopAccessingSecurityScopedResource()
+        certURL?.stopAccessingSecurityScopedResource()
+        guard let self else { return }
+        self.testButton.isEnabled = true
+        self.actionButton.isEnabled = true
+        if let message {
+          Error.alert(withError: message)
+        } else {
+          testButton.image = NSImage(systemSymbolName: "checkmark.circle", accessibilityDescription: nil)
+          testButton.imagePosition = .imageTrailing
+        }
+      }
   }
 
   @IBAction func didPushActionButton(_ sender: Any) {
