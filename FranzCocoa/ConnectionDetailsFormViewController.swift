@@ -151,9 +151,9 @@ class ConnectionDetailsFormViewController: NSViewController {
   private func reset() {
     httpProxyView.removeFromSuperview()
     if enableHttpProxyCheckbox.state == .on {
-      proxyView.setFrameSize(NSSize(width: 490, height: 26))
+      proxyView.setFrameSize(NSSize(width: 490, height: 32))
       proxyView.addSubview(httpProxyView)
-      proxyViewHeightConstraint.constant = 26
+      proxyViewHeightConstraint.constant = 32
       httpProxyView.setFrameOrigin(proxyView.bounds.origin)
     } else {
       proxyView.setFrameSize(NSSize(width: 490, height: 0))
@@ -164,20 +164,20 @@ class ConnectionDetailsFormViewController: NSViewController {
     awsAuthView.removeFromSuperview()
     switch authMechanism {
     case .plain, .scramSHA256, .scramSHA512:
-      authView.setFrameSize(NSSize(width: 490, height: 26))
+      authView.setFrameSize(NSSize(width: 490, height: 35))
       authView.addSubview(plainAuthView)
-      authViewHeightConstraint.constant = 26
+      authViewHeightConstraint.constant = 35
       plainAuthView.setFrameOrigin(authView.bounds.origin)
     case .aws:
-      authView.setFrameSize(NSSize(width: 490, height: 86))
+      authView.setFrameSize(NSSize(width: 490, height: 92))
       authView.addSubview(awsAuthView)
       awsAuthView.setFrameOrigin(authView.bounds.origin)
-      authViewHeightConstraint.constant = 86
+      authViewHeightConstraint.constant = 92
     }
 
     view.window?.setContentSize(NSSize(
       width: 490,
-      height: 185 + proxyView.frame.height + authView.bounds.height
+      height: 215 + proxyView.frame.height + authView.bounds.height
     ))
     sslKeyButton.isEnabled = enableSslCheckbox.state == .on
     sslKeyButton.title = sslKeyPathBookmark == nil ? "SSL Key..." : "SSL Key*..."
