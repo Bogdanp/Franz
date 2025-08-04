@@ -1,6 +1,6 @@
 #lang info
 
-(define version "1.8")
+(define version "1.9")
 (define build-number 1)
 
 (define collection "FranzCross")
