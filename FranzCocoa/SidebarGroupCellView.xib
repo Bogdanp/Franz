@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21507" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24112" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21507"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24112"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -13,32 +12,22 @@
             <rect key="frame" x="0.0" y="0.0" width="280" height="22"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <visualEffectView blendingMode="behindWindow" material="sidebar" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="RAY-R6-e27">
-                    <rect key="frame" x="0.0" y="0.0" width="280" height="22"/>
-                    <subviews>
-                        <button hidden="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Gms-O3-yg7">
-                            <rect key="frame" x="258" y="0.0" width="22" height="23"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="22" id="1sO-SW-faK"/>
-                                <constraint firstAttribute="width" constant="22" id="2Mx-Ye-VwP"/>
-                            </constraints>
-                            <buttonCell key="cell" type="bevel" bezelStyle="rounded" image="chevron.down" catalog="system" imagePosition="overlaps" alignment="center" imageScaling="proportionallyDown" inset="2" id="ran-cZ-Gui">
-                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                <font key="font" metaFont="systemSemibold" size="10"/>
-                            </buttonCell>
-                            <color key="contentTintColor" name="tertiaryLabelColor" catalog="System" colorSpace="catalog"/>
-                            <connections>
-                                <action selector="didPushToggleCollapseButton:" target="c22-O7-iKe" id="zt5-AG-Sd4"/>
-                            </connections>
-                        </button>
-                    </subviews>
+                <button hidden="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Gms-O3-yg7">
+                    <rect key="frame" x="253" y="0.0" width="22" height="23"/>
+                    <buttonCell key="cell" type="bevel" bezelStyle="rounded" image="chevron.down" catalog="system" imagePosition="overlaps" alignment="center" imageScaling="proportionallyDown" inset="2" id="ran-cZ-Gui">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="systemSemibold" size="10"/>
+                    </buttonCell>
+                    <color key="contentTintColor" name="tertiaryLabelColor" catalog="System" colorSpace="catalog"/>
                     <constraints>
-                        <constraint firstAttribute="bottom" secondItem="Gms-O3-yg7" secondAttribute="bottom" id="96y-Fg-TIf"/>
-                        <constraint firstAttribute="trailing" secondItem="Gms-O3-yg7" secondAttribute="trailing" id="DO0-Li-k9N"/>
-                        <constraint firstItem="Gms-O3-yg7" firstAttribute="top" secondItem="RAY-R6-e27" secondAttribute="top" id="dYO-HV-Okk"/>
+                        <constraint firstAttribute="height" constant="22" id="1sO-SW-faK"/>
+                        <constraint firstAttribute="width" constant="22" id="2Mx-Ye-VwP"/>
                     </constraints>
-                </visualEffectView>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="End-Kp-vZA">
+                    <connections>
+                        <action selector="didPushToggleCollapseButton:" target="c22-O7-iKe" id="zt5-AG-Sd4"/>
+                    </connections>
+                </button>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="End-Kp-vZA">
                     <rect key="frame" x="3" y="4" width="46" height="14"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="Brokers" id="v5p-vg-fvo">
                         <font key="font" metaFont="systemMedium" size="11"/>
@@ -48,10 +37,9 @@
                 </textField>
             </subviews>
             <constraints>
-                <constraint firstAttribute="trailing" secondItem="RAY-R6-e27" secondAttribute="trailing" id="LqB-3g-cBB"/>
-                <constraint firstItem="RAY-R6-e27" firstAttribute="centerY" secondItem="End-Kp-vZA" secondAttribute="centerY" id="ZKN-QM-ZkC"/>
+                <constraint firstAttribute="trailing" secondItem="Gms-O3-yg7" secondAttribute="trailing" constant="5" id="2CR-Cm-urY"/>
+                <constraint firstItem="Gms-O3-yg7" firstAttribute="centerY" secondItem="c22-O7-iKe" secondAttribute="centerY" id="ndy-hF-Lou"/>
                 <constraint firstItem="End-Kp-vZA" firstAttribute="centerY" secondItem="c22-O7-iKe" secondAttribute="centerY" id="q2w-Ch-Qpc"/>
-                <constraint firstItem="RAY-R6-e27" firstAttribute="leading" secondItem="c22-O7-iKe" secondAttribute="leading" id="w0K-y4-Wqp"/>
                 <constraint firstItem="End-Kp-vZA" firstAttribute="leading" secondItem="c22-O7-iKe" secondAttribute="leading" constant="5" id="wOu-Zb-hmS"/>
             </constraints>
             <connections>
