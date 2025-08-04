@@ -220,7 +220,7 @@ extension ScriptWindowController: NSMenuItemValidation {
 // MARK: - NSToolbarDelegate
 extension ScriptWindowController: NSToolbarDelegate {
   private func makeSymbolConfig() -> NSImage.SymbolConfiguration {
-    return NSImage.SymbolConfiguration(pointSize: 18, weight: .regular)
+    return NSImage.SymbolConfiguration(pointSize: 14, weight: .regular)
   }
 
   private func bolt(accented: Bool = false) -> NSImage {
@@ -261,7 +261,7 @@ extension ScriptWindowController: NSToolbarDelegate {
   }
 
   func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-    return [.apply, .flexibleSpace, .toggleActive]
+    return [.apply, .toggleActive]
   }
 }
 
