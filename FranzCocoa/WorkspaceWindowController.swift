@@ -341,12 +341,12 @@ extension WorkspaceWindowController: NSToolbarDelegate {
       }
   }
 
-  func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-    return [.toggleSidebar, .sidebarTrackingSeparator, .statusBar, .flexibleSpace, .reloadButton, .publishButton]
+  func toolbarAllowedItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
+    return [.reloadButton, .publishButton]
   }
 
-  func toolbarAllowedItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-    return [.toggleSidebar, .sidebarTrackingSeparator, .statusBar, .flexibleSpace, .reloadButton, .publishButton]
+  func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
+    return [.toggleSidebar, .sidebarTrackingSeparator, .flexibleSpace, .statusBar, .flexibleSpace, .reloadButton, .publishButton]
   }
 }
 
