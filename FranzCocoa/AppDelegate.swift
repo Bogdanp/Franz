@@ -7,6 +7,14 @@ import SwiftUI
 @main
 class AppDelegate: NSObject, NSApplicationDelegate {
   func applicationDidFinishLaunching(_ aNotification: Notification) {
+    // XXX: Escape squircle jail.
+    if #available(macOS 26, *) {
+      if let image = NSImage(named: "AppIcon") {
+        NSApplication.shared.dockTile.contentView = NSImageView(image: image)
+        NSApplication.shared.dockTile.display()
+      }
+    }
+
     FutureUtil.set(defaultErrorHandler: { err in
       Error.alert(withError: err)
     })
