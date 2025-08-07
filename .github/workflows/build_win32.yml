@@ -6,8 +6,8 @@ on:
 name: Build on Windows
 jobs:
   build_win32_app:
-    runs-on: windows-2019
-    name: Build Franz on Windows 2019
+    runs-on: windows-2022
+    name: Build Franz on Windows 2022
     steps:
       - name: Set up Git
         run: |
