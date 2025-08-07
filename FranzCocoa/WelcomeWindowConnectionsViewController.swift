@@ -45,6 +45,8 @@ class WelcomeWindowConnectionsViewController: NSViewController {
 
   @objc func didRequestSelectConnection(_ sender: NSTableView) {
     assert(Thread.isMainThread)
+    guard sender.selectedRow >= 0 else { return }
+    guard sender.selectedRow < connections.count else { return }
     let conn = connections[sender.selectedRow]
     Error.wait(Backend.shared.touchConnection(conn))
     guard let passwordId = conn.passwordId else {
