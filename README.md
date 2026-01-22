@@ -22,9 +22,9 @@ consider [purchasing a license].
 
 ### Requirements
 
-* [Racket 8.9 CS](https://racket-lang.org/)
-* macOS 12.3+
-* Xcode 12+
+* [Racket 9.0 CS](https://racket-lang.org/)
+* macOS 26+
+* Xcode 26+
 
 ### First-time Setup
 
