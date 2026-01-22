@@ -6,9 +6,9 @@ jobs:
     name: Build core (${{ matrix.platform }}) on ${{ matrix.environment }}
     strategy:
       matrix:
-        environment: [macos-13, macos-14]
+        environment: [macos-14-large, macos-14]
         include:
-          - environment: macos-13
+          - environment: macos-14-large
             platform: x86_64
             arch: x64
           - environment: macos-14
