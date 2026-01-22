@@ -56,8 +56,8 @@ jobs:
             FranzCocoa/resources/runtime-${{ matrix.platform }}/
 
   build_mac_app:
-    runs-on: macos-15
-    name: Build Franz.app on macOS-15
+    runs-on: macos-26
+    name: Build Franz.app on macOS 26
     needs:
       - build_core
     steps:
