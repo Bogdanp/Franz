@@ -125,7 +125,7 @@
        (3 100)
        (4 300))))
   (define (do-apply-script script)
-    (update-observable [(records _ ress) @records]
+    (update-observable [(records truncated? ress) @records]
       (define originals
         (for/list ([res (in-vector ress)])
           (IteratorResult->original res)))
@@ -155,8 +155,10 @@
          (window
           #:title (format "[~a] Result" topic)
           (apply vpanel views))))
-      (list->vector
-       (ApplyResult-items res))))
+      (records
+       truncated?
+       (list->vector
+        (ApplyResult-items res)))))
   (define (do-publish-tombstone r)
     (when (confirm #:title "Really publish tombstone?"
                    #:message "This action cannot be undone."
