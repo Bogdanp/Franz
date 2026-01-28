@@ -6,13 +6,23 @@ on:
 name: Build on Linux
 jobs:
   build_linux_app:
-    runs-on: ubuntu-22.04
-    name: Build Franz on Ubuntu 22.04
+    runs-on: ${{ matrix.environment }}
+    name: Build Franz (${{ matrix.platform }}) on ${{ matrix.environment }}
+    strategy:
+      matrix:
+        environment: [ubuntu-22.04, ubuntu-22.04-arm]
+        include:
+          - environment: ubuntu-22.04
+            platform: x86_64
+            arch: x64
+          - environment: ubuntu-22.04-arm
+            platform: arm64
+            arch: arm64
     steps:
       - uses: actions/checkout@master
       - uses: Bogdanp/setup-racket@v1.14
         with:
-          architecture: 'x64'
+          architecture: ${{ matrix.arch }}
           distribution: 'full'
           variant: 'CS'
           version: '9.0'
@@ -39,5 +49,5 @@ jobs:
       - name: Upload distribution
         uses: actions/upload-artifact@v4
         with:
-          name: Franz.tar.gz
+          name: Franz-${{ matrix.platform }}.tar.gz
           path: FranzCross/Franz.tar.gz
