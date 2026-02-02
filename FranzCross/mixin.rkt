@@ -46,7 +46,6 @@
      [min-height min-height]
      [stretchable-width stretchable-width]
      [stretchable-height stretchable-height]
-
      [callback (λ (self event)
                  (unless editing?
                    (define editor (send self get-editor))
