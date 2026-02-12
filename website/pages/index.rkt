@@ -97,9 +97,10 @@ SCRIPT
        (:br)))))))
 
 (define variants
-  '(("Linux (x86_64)"          "https://franz.defn.io/releases/Franz%20Latest.linux.x86_64.tar.gz")
-    ("macOS 13+ (Universal)"   "https://franz.defn.io/releases/Franz%20Latest.universal.dmg")
-    ("Windows 10+ (x86_64)"    "https://franz.defn.io/releases/Franz%20Latest.win32.x86_64.zip")))
+  '(("Linux (x86_64)"         "https://franz.defn.io/releases/Franz%20Latest.linux.x86_64.tar.gz")
+    ("macOS 15 (Universal)"   "https://franz.defn.io/releases/Franz%201.7.0001.universal.dmg")
+    ("macOS 26+ (Universal)"  "https://franz.defn.io/releases/Franz%20Latest.universal.dmg")
+    ("Windows 10+ (x86_64)"   "https://franz.defn.io/releases/Franz%20Latest.win32.x86_64.zip")))
 
 (define features
   '(("Explore Topics"

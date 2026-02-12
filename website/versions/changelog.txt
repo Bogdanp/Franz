@@ -1,3 +1,8 @@
+# 2026.03.01 (Version 1.9, Build 1)
+## Changed
+
+* macOS: changed to require macOS 26+.
+
 # 2025.08.01 (Version 1.8, Build 1)
 ## Fixed
 
