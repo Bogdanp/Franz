@@ -25,13 +25,13 @@ jobs:
           architecture: ${{ matrix.arch }}
           distribution: 'full'
           variant: 'CS'
-          version: '9.0'
+          version: '9.1'
       - name: Install Noise
         run: |
           env GIT_LFS_SKIP_SMUDGE=1 \
             git clone \
               --depth 1 \
-              --branch racket-9.0 \
+              --branch racket-9.1 \
               https://github.com/Bogdanp/Noise Noise
           raco pkg install -D --batch --auto Noise/Racket/noise-serde-lib/
       - name: Prepare secrets
