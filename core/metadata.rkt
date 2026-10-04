@@ -273,9 +273,7 @@
   (put-metadata! 'trial-deadline (number->string seconds)))
 
 (define-rpc (is-license-valid : Bool)
-  (or (get-license)
-      (> (get-trial-deadline)
-         (current-seconds))))
+  #t)
 
 (define-rpc (get-trial-deadline : Varint)
   (string->number
@@ -351,14 +349,7 @@
        (lambda (_)
          (define deadline (get-trial-deadline))
          (maybe-adjust-trial-deadline)
-         (check-equal? deadline (get-trial-deadline)))))
-    (test-case "necessary"
-      (call-with-test-connection
-       (lambda (_)
-         (define d (seconds->date (- (current-seconds) trial-grace-period)))
-         (reset-trial-deadline! (date-year d) (date-month d) (date-day d))
-         (maybe-adjust-trial-deadline)
-         (check-true (> (get-trial-deadline) (current-seconds))))))))
+         (check-equal? deadline (get-trial-deadline)))))))
 
 
 ;; buids ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -35,9 +35,8 @@
         (.container
          (:ul.footer__links
           (footer-link "/" "Home")
-          (footer-link "/buy.html" "Pricing")
           (footer-link "/manual/" "Manual")
-          (footer-link "/license.html" "License")
+          (footer-link "https://github.com/Bogdanp/Franz/blob/master/LICENSE" "License")
           (footer-link "/privacy.html" "Privacy")
           (footer-link "/atom.xml" '((type "application/rss+xml")) "RSS Feed")
           (footer-link "https://www.youtube.com/channel/UCtVE9Z4cqIaAUIDaU7dFvJg/" "YouTube")

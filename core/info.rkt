@@ -2,6 +2,7 @@
 
 (define collection "franz")
 (define version "1.9")
+(define license 'BSD-3-Clause)
 (define deps
   '(["amazon-msk-sasl-lib" #:version "0.3"]
     ["avro-lib" #:version "1.1"]

@@ -49,25 +49,6 @@ final class FranzCocoaUITests: XCTestCase {
     window.typeKey("q", modifierFlags:.command)
   }
 
-  func testExpiredTrial() throws {
-    let keyData = try Data(contentsOf: Bundle(for: type(of: self)).url(
-      forResource: "fixtures/expired-trial-key",
-      withExtension: "txt"
-    )!)
-    let key = String(data: keyData, encoding: .utf8)!.trimmingCharacters(in: .whitespacesAndNewlines)
-    let app = makeUIApp(withDatabasePath: fixture("2022-12-06-expired-trial"))
-    app.launch()
-    try createLocalConnection(app)
-
-    let licenseWindow = app.windows["License"]
-    let licenseField = licenseWindow.groups.children(matching: .textField).element
-    licenseField.click()
-    licenseField.typeText(key)
-    licenseWindow.buttons["Activate License"].click()
-    XCTAssertTrue(licenseWindow.staticTexts["Full Version Activated"].isHittable)
-    licenseWindow.typeKey("q", modifierFlags:.command)
-  }
-
   func testMechanismSelector() throws {
     let app = makeUIApp()
     app.launch()

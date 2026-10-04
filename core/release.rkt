@@ -5,14 +5,17 @@
          noise/serde
          racket/file
          racket/format
-         racket/port)
+         racket/match
+         racket/port
+         racket/string)
 
 (provide
  (record-out Release)
  get-changelog
  get-releases
  get-latest-release
- fetch-release)
+ fetch-release
+ version>?)
 
 (define versions-service-url
   (or (getenv "FRANZ_VERSIONS_SERVICE_URL") "https://franz.defn.io/versions/"))
@@ -42,7 +45,7 @@
        #:mac-url (hash-ref release-data 'macURL #f)
        #:linux-url (hash-ref release-data 'linuxURL #f)
        #:windows-url (hash-ref release-data 'windowsURL #f))))
-  (sort releases string>? #:key Release-version))
+  (sort releases version>? #:key Release-version))
 
 (define-rpc (get-latest-release [for-arch arch : Symbol] : (Optional Release))
   (define releases
@@ -60,3 +63,17 @@
         (error 'fetch-release "unexpected response from server: ~a" (http:response-body res)))
       (copy-port (http:response-output res) out)))
   (path->string release-path))
+
+(define (version>? a b)
+  (> (version-number a)
+     (version-number b)))
+
+(define (version-number s)
+  (match-define
+    (list (app string->number major)
+          (app string->number minor)
+          (app string->number build))
+    (string-split s "."))
+  (+ (* major 1000000)
+     (* minor 10000)
+     build))

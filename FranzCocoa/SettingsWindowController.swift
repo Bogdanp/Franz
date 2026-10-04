@@ -202,84 +202,13 @@ fileprivate struct ConnectionsView: View {
 
 // MARK: - LicenseView
 fileprivate struct LicenseView: View {
-  @State var isLoading = false
-  @State var activatedLicense = ""
-  @State var trialActive = false
-  @State var trialDeadline: String = ""
-  @State var license = ""
-
   var body: some View {
     VStack(alignment: .leading) {
-      if isLoading {
-        ProgressView()
-      } else if activatedLicense != "" {
-        Text("Full Version Activated")
-          .font(.largeTitle)
-        Text("Thank you for supporting Franz development by purchasing a license.")
-      } else if trialActive {
-        Text("Trial Active")
-          .font(.largeTitle)
-        Text("""
-        Your trial ends on \(trialDeadline). Please [purchase a license]\
-        (https://franz.defn.io) to support Franz development and to continue \
-        using the software past that date.
-        """)
-        Form {
-          TextField("License Key:", text: $license)
-            .onSubmit {
-              activate()
-            }
-          Button("Activate License") {
-            activate()
-          }
-          .keyboardShortcut(.return)
-          .disabled(license == "")
-        }
-      } else {
-        Text("Trial Expired")
-          .font(.largeTitle)
-        Text("""
-        Your trial has ended.  Please [purchase a license](https://franz.defn.io) \
-        to continue using Franz.
-        """)
-        Form {
-          TextField("License Key:", text: $license)
-            .onSubmit {
-              activate()
-            }
-          Button("Activate License") {
-            activate()
-          }
-          .keyboardShortcut(.return)
-          .disabled(license == "")
-        }
-      }
+      Text("Full Version Activated")
+        .font(.largeTitle)
+      Text("Franz is now Open Source. Thank you for supporting its development.")
     }
     .padding()
-    .task {
-      do {
-        isLoading = true
-        defer { isLoading = false }
-        activatedLicense = try await Backend.shared.getLicense() ?? ""
-        let deadline = try await Backend.shared.getTrialDeadline()
-        let now = UVarint(NSDate().timeIntervalSince1970)
-        let date = Date(timeIntervalSince1970: TimeInterval(Int(deadline)))
-        trialActive = deadline > now
-        trialDeadline = DateFormatter.localizedString(
-          from: date,
-          dateStyle: .long,
-          timeStyle: .none
-        )
-      } catch {
-        Error.alert(withError: error)
-      }
-    }
-  }
-
-  private func activate() {
-    if let activated = Error.wait(Backend.shared.activateLicense(license)), activated {
-      activatedLicense = Error.wait(Backend.shared.getLicense()) ?? ""
-    }
   }
 }
 

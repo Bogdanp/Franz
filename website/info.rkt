@@ -1,6 +1,7 @@
 #lang info
 
 (define collection "franzdefnio")
+(define license 'BSD-3-Clause)
 (define deps
   '("base"
     "commonmark-lib"

@@ -2,10 +2,7 @@
 
 (require franz/connection-details
          (submod franz/connection-details rpc)
-         (submod franz/metadata rpc)
-         net/sendurl
          (prefix-in p: pict)
-         racket/date
          racket/gui/easy/font
          racket/string
          "auto-update.rkt"
@@ -116,45 +113,19 @@
               (lambda (prefs)
                 (put-topic-config* conn prefs)))]))))]
       ['license
-       (define-observables
-         [@activated? (and (get-license) #t)]
-         [@license ""])
        (detail-view
         "License"
-        (if-view
-         @activated?
-         (vpanel
-          #:alignment '(left top)
-          (text
-           #:font (font #:weight 'bold system-font font-size-l)
-           "Full Version Activated")
-          (text
-           #:font system-font-m
-           (string-join
-            '("Thank you for supporting Franz development by"
-              "purchasing a license.")
-            "\n")))
-         (vpanel
-          #:alignment '(left top)
-          #:stretch '(#t #f)
-          (text
-           (format
-            "Your trial ~a on ~a."
-            (if (is-license-valid) "expires" "expired")
-            (date->string (seconds->date (get-trial-deadline)))))
-          (hpanel
-           (hpanel
-            (text "License:")
-            (input @license (drop1 (λ:= @license))))
-           (button
-            "Activate"
-            (lambda ()
-              (when (activate-license ^@license)
-                (@activated?:= #t)))))
-          (button
-           "Purchase a License"
-           (lambda ()
-             (send-url "https://franz.defn.io/buy.html"))))))]
+        (vpanel
+         #:alignment '(left top)
+         (text
+          #:font (font #:weight 'bold system-font font-size-l)
+          "Full Version Activated")
+         (text
+          #:font system-font-m
+          (string-join
+           '("Franz is now Open Source. Thank you for supporting"
+             "its development.")
+           "\n"))))]
       ['updates
        (define-observables
          [@check-for-updates? (get-preference 'auto-update:check? #t)]

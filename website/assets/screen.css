@@ -113,25 +113,6 @@ ul {
   text-transform: uppercase;
 }
 
-.ctas__purchase-button {
-  background: #fff;
-  display: inline-block;
-  padding: 4px 8px;
-  border: 1px solid #dedede;
-  border-radius: 5px;
-  font-size: 1.2rem;
-  font-weight: 200;
-}
-
-.ctas__purchase-button:hover {
-  border-color: #000;
-  text-decoration: none;
-}
-
-.ctas__purchase-button strong {
-  font-weight: 400;
-}
-
 .binding {
   display: inline-block;
   padding: 3px 7px;

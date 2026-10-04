@@ -15,12 +15,13 @@ use the Franz Application and Services.
 
 # Data We Collect Automatically
 
-When you download and use the Franz Application, we collect information
-automatically from your system in order to confirm the technical
-requirements needed to activate the Services, including:
+When you use the Franz Application, it periodically checks our website
+for updates. When it does, we collect the following information
+automatically from your system:
 
-* License Key
+* Franz Application Version
 * Operating System Version
+* A randomly-generated installation identifier
 
 # Personal Information We May Collect That You Provide to Us
 
@@ -53,16 +54,6 @@ each third-party provider are listed below.
 Our website and any information you submit through our website is
 hosted and processed by our service partner Hetzner Online GmbH.
 https://www.hetzner.com/legal/privacy-policy/
-
-# Payment Processing
-
-If you choose to purchase available Services, the information
-collected and process includes your name, e-mail address, IP address,
-billing address, phone number, payment account information, and other
-information about you submitted to verify who you are or to work to
-prevent fraud. This payment information and details will be received
-and processed securely by our payment processor, Paddle.com Inc.
-https://www.paddle.com/legal/privacy
 
 ### Use and processing of collected information
 

@@ -15,24 +15,7 @@ class WelcomeWindowContentViewController: NSViewController {
     let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") ?? "Unknown"
     versionLabel.stringValue = "Version \(version) (Build \(build))"
 
-#if MAC_APP_STORE_BUILD
     trialButton.isHidden = true
-#else
-    trialButton.isHidden = true
-    if Error.wait(Backend.shared.getLicense()) == nil {
-      trialButton.isHidden = false
-      if let deadlineSeconds =  Error.wait(Backend.shared.getTrialDeadline()) {
-        let now = Date()
-        let deadline = Date(timeIntervalSince1970: TimeInterval(Int(deadlineSeconds)))
-        let remaining = Int(deadline.timeIntervalSince(now)) / 86400
-        if remaining <= 0 {
-          trialButton.title = "Trial Expired!"
-        } else {
-          trialButton.title = "\(remaining) Days Remaining in Trial"
-        }
-      }
-    }
-#endif
   }
 
   private func makeLogoView() -> NSView {
@@ -105,10 +88,5 @@ class WelcomeWindowContentViewController: NSViewController {
 
   @IBAction func didPushMastodonButton(_ sender: Any) {
     NSWorkspace.shared.open(URL(string: "https://hachyderm.io/@franz_app")!)
-  }
-
-  @IBAction func didPushTrialButton(_ sender: Any) {
-    WindowManager.shared.closeWelcomeWindow()
-    WindowManager.shared.showSettingsWindow(selectingTab: .license)
   }
 }

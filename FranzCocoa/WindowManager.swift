@@ -22,11 +22,6 @@ class WindowManager {
     preferringExisting preferExisting: Bool = true
   ) -> WorkspaceWindowController? {
     assert(Thread.isMainThread)
-#if !MAC_APP_STORE_BUILD
-    guard checkLicense() else {
-      return nil
-    }
-#endif
     guard let id = conn.id else {
       preconditionFailure()
     }
@@ -189,15 +184,6 @@ class WindowManager {
     if let url = Bundle.main.url(forResource: "resources/manual/index", withExtension: "html") {
       NSWorkspace.shared.open(url)
     }
-  }
-
-  private func checkLicense() -> Bool {
-    if let ok = Error.wait(Backend.shared.isLicenseValid()), ok {
-      return true
-    }
-
-    showSettingsWindow(selectingTab: .license)
-    return false
   }
 
   private func removeSecureURLs(forConnectionWithId id: UVarint) {

@@ -4,7 +4,6 @@
                      racket/syntax
                      syntax/parse/pre)
          racket/match
-         racket/string
          "logger.rkt"
          "release.rkt")
 
@@ -113,20 +112,3 @@
 (define-auto-updater-methods
   [stop]
   [check])
-
-
-;; help ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(define (version>? a b)
-  (> (version-number a)
-     (version-number b)))
-
-(define (version-number s)
-  (match-define
-    (list (app string->number major)
-          (app string->number minor)
-          (app string->number build))
-    (string-split s "."))
-  (+ (* major 1000000)
-     (* minor 10000)
-     build))

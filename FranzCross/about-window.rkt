@@ -21,7 +21,7 @@
     (spacer)
     (text (format "Copyright ~a CLEARTYPE SRL."
                   (date-year (seconds->date (current-seconds)))))
-    (text "All rights reserved."))))
+    (text "Released under the BSD 3-Clause License."))))
 
 (module+ main
   (render

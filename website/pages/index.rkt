@@ -87,11 +87,7 @@ SCRIPT
         (:br)
         (:a#download-button.ctas__download-button
          ([:href "https://franz.defn.io/releases/Franz%20Latest.universal.dmg"])
-         "Download")
-        &nbsp
-        (:a.ctas__purchase-button
-         ([:href "/buy.html"])
-         "Purchase a License"))
+         "Download"))
        (:br)
        (:br)
        (:br)))))))

@@ -18,7 +18,7 @@
     (header "Privacy Policy")
     (:section
      (.container
-      (:p "Last Updated: December 1st, 2022")
+      (:p "Last Updated: October 4th, 2026")
       ,@(privacy-policy))))))
 
 (define (privacy-policy)
